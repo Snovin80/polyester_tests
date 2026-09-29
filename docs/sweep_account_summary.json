@@ -1,0 +1,281 @@
+{
+ "balances": {
+  "doc_params": {
+   "subaccount_id": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/ Optional subaccount public id (base58)."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/balances"
+   ],
+   "real": [
+    200,
+    "/v1/balances"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "balances__history": {
+  "doc_params": {
+   "account_code": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Optional account bucket filter (comma-separated codes or names: funding, trading)."
+   },
+   "ledger": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Optional public asset filter."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window (defaults to 1d). Select range"
+   },
+   "subaccount_id": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/ Optional subaccount public id (base58)."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/balances/history"
+   ],
+   "real": [
+    200,
+    "/v1/balances/history"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "transfers": {
+  "doc_params": {
+   "ledger": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "Optional public asset filter."
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 1000 Maximum rows to return (default 100, max 1000)."
+   },
+   "page_token": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by the previous response."
+   },
+   "reversed": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "true=newest first; false=oldest first. Unset False True"
+   },
+   "subaccount_id": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/ Optional subaccount public id (base58)."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/transfers?limit=100&reversed=false"
+   ],
+   "real": [
+    200,
+    "/v1/transfers"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    100
+   ],
+   "limit_100000": [
+    400,
+    "{\"code\":\"BAD_REQUEST\",\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"request_validation_failed: validation error: limit: must be less than or equal to 1000\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"status\":400,\"detail\":\"request_validation_failed: limit must be an unsigned 32-bit integer.\",\"code\":\"BAD_REQUEST\",\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"request_validation_failed: limit must be an unsigned 32-bit integer.\",\"code\":\"BAD_REQUEST\"}"
+   ]
+  },
+  "missing": [
+   "transfers[].destination.chainId",
+   "transfers[].source.chainId"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "equity__history__series": {
+  "doc_params": {
+   "account_code": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Optional account bucket filter (comma-separated codes or names: funding, trading)."
+   },
+   "group_by": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Grouping mode (defaults to account). Select group_by"
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window (defaults to 1d). Select range"
+   },
+   "subaccount_id": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/ Optional subaccount public id (base58)."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/equity/history/series"
+   ],
+   "real": [
+    200,
+    "/v1/equity/history/series"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "equity__portfolio__history__series": {
+  "doc_params": {
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window (defaults to 1d). Select range"
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/equity/portfolio/history/series"
+   ],
+   "real": [
+    403,
+    "/v1/equity/portfolio/history/series"
+   ],
+   "extra_param": [
+    403,
+    "{\"detail\":\"portfolio_root_jwt_required: Portfolio reads require an interactive root-account identity; API keys and subaccount identities cannot expand to the root portfolio.\",\"code\":\"PERMISSION_DENIED\",\"type\":\"https://polyester.dev/problems/permission-denied\",\"title\":\"Permission Denied\",\"status\":403"
+   ]
+  }
+ },
+ "equity__portfolio__snapshot": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/equity/portfolio/snapshot"
+   ],
+   "real": [
+    403,
+    "/v1/equity/portfolio/snapshot"
+   ],
+   "extra_param": [
+    403,
+    "{\"type\":\"https://polyester.dev/problems/permission-denied\",\"title\":\"Permission Denied\",\"status\":403,\"detail\":\"portfolio_root_jwt_required: Portfolio reads require an interactive root-account identity; API keys and subaccount identities cannot expand to the root portfolio.\",\"code\":\"PERMISSION_DENIED\""
+   ]
+  }
+ },
+ "vip__status": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/vip/status"
+   ],
+   "real": [
+    403,
+    "/v1/vip/status"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "vip__tiers": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/vip/tiers"
+   ],
+   "real": [
+    403,
+    "/v1/vip/tiers"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "rate-limits": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/rate-limits"
+   ],
+   "real": [
+    403,
+    "/v1/rate-limits"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ }
+}
