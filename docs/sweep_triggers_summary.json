@@ -1,0 +1,263 @@
+{
+ "triggers": {
+  "doc_params": {
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 1000"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by the previous response."
+   },
+   "parentOrderId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/"
+   },
+   "status": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Repeatable or comma-separated TriggerStatus enum names Select status"
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/"
+   },
+   "symbol": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": ""
+   },
+   "symbolId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional filter by stable numeric pair ID. Zero means all symbols."
+   },
+   "triggerType": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Select triggerType"
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/triggers?limit=100"
+   ],
+   "real": [
+    200,
+    "/v1/triggers"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_100000": [
+    400,
+    "{\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\"}"
+   ],
+   "filter_symbol_ETH-USDT": [
+    200,
+    100,
+    [
+     "ETH-USDT"
+    ]
+   ],
+   "filter_status_CANCELED": [
+    400,
+    0,
+    []
+   ],
+   "filter_status_FILLED": [
+    400,
+    0,
+    []
+   ]
+  },
+  "missing": [],
+  "extra": [
+   "triggers[].takeProfit",
+   "triggers[].takeProfit.triggerPrice",
+   "triggers[].takeProfit.side",
+   "triggers[].takeProfit.child",
+   "triggers[].takeProfit.child.marketIoc",
+   "triggers[].trailing",
+   "triggers[].trailing.activationPrice",
+   "triggers[].trailing.maxSlippageBps",
+   "triggers[].trailing.peakPrice",
+   "triggers[].trailing.trailingDistanceBps",
+   "triggers[].trailing.trailingDistanceTicks",
+   "triggers[].trailing.triggerPrice",
+   "triggers[].trailing.troughPrice",
+   "triggers[].trailing.triggerDirection",
+   "triggers[].trailing.triggerPriceSource",
+   "triggers[].trailingStop",
+   "triggers[].trailingStop.activationPrice",
+   "triggers[].trailingStop.maxSlippageBps",
+   "triggers[].trailingStop.trailingDistanceBps",
+   "triggers[].trailingStop.trailingDistanceTicks",
+   "triggers[].trailingStop.side",
+   "triggers[].ladder",
+   "triggers[].ladder.levels",
+   "triggers[].ladder.postOnly",
+   "triggers[].ladder.priceMax",
+   "triggers[].ladder.priceMin",
+   "triggers[].ladder.side",
+   "triggers[].ladderState",
+   "triggers[].ladderState.executedQty",
+   "triggers[].ladderState.levels",
+   "triggers[].ladderState.priceMax",
+   "triggers[].ladderState.priceMin",
+   "triggers[].ladderState.ladderDistribution",
+   "triggers[].twap",
+   "triggers[].twap.durationMs",
+   "triggers[].twap.sliceIntervalMs",
+   "triggers[].twap.side",
+   "triggers[].twap.marketIoc",
+   "triggers[].twap.marketIoc.maxSlippageBps",
+   "triggers[].twapState",
+   "triggers[].twapState.durationMs",
+   "triggers[].twapState.executedQty",
+   "triggers[].twapState.sliceCount",
+   "triggers[].twapState.sliceIndex",
+   "triggers[].twapState.sliceIntervalMs",
+   "triggers[].failureReason"
+  ],
+  "types": []
+ },
+ "triggers__trigger_id": {
+  "doc_params": {
+   "trigger_id": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required > 0 Trigger ID (base58 public ID)"
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/"
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/triggers/9155001234567"
+   ],
+   "real": [
+    200,
+    "/v1/triggers/ZfhZc1pbB5D"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [
+   "trigger.completedAt",
+   "trigger.parentOrderId",
+   "trigger.stopLoss.child.marketIoc"
+  ],
+  "extra": [
+   "trigger.stopLoss.child.limitGtc",
+   "trigger.stopLoss.child.limitGtc.postOnly",
+   "trigger.stopLoss.child.limitGtc.price"
+  ],
+  "types": []
+ },
+ "triggers__trigger_id__events": {
+  "doc_params": {
+   "trigger_id": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required > 0"
+   },
+   "eventType": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional TriggerEventType enum name. EVENT_UNSPECIFIED returns all events. Select eventType"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 1000"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by the previous response."
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^[1-9A…m-z]+$/"
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/triggers/9155001234567/events?limit=100"
+   ],
+   "real": [
+    200,
+    "/v1/triggers/ZfhZc1pbB5D/events"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    400,
+    "{\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400}"
+   ],
+   "limit_100000": [
+    400,
+    "{\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\"}"
+   ]
+  },
+  "missing": [
+   "events[].childSeq",
+   "events[].firePx",
+   "nextPageToken"
+  ],
+  "extra": [],
+  "types": []
+ }
+}
