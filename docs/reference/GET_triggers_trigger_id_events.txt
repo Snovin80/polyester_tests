@@ -1,0 +1,701 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/triggers/trigger_id/events
+Скачано: 2026-09-29 08:44 UTC (curl с компьютера автора; из облака страницу закрывает Cloudflare)
+
+=== ТЕКСТ СТРАНИЦЫ ===
+GET /v1/triggers/{trigger_id}/events — API Playground
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+TESTNET
+Polyester is best experienced on desktop.
+Mobile support is coming soon.
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+REST
+gRPC
+Streams
+Account
+Address Book
+Copy Address Book Entry
+path]:fill-primary">
+Create Address Book Entry
+path]:fill-primary">
+Create Address Book Tag
+path]:fill-primary">
+Delete Address Book Entry
+path]:fill-primary">
+Delete Address Book Tag
+path]:fill-primary">
+Get Address Book View
+path]:fill-primary">
+Get Withdraw Whitelist View
+path]:fill-primary">
+List Address Book Entries
+path]:fill-primary">
+List Address Books
+path]:fill-primary">
+List Internal Transfer Whitelist
+path]:fill-primary">
+List Transfer Counterparties
+path]:fill-primary">
+List Transfer Destinations
+path]:fill-primary">
+Update Address Book Entry
+path]:fill-primary">
+Update Address Book Tag
+path]:fill-primary">
+API Key
+Create API Key
+path]:fill-primary">
+Delete API Key
+path]:fill-primary">
+Get API Key
+path]:fill-primary">
+List API Keys
+path]:fill-primary">
+Update API Key
+path]:fill-primary">
+Auth
+Accept Terms
+path]:fill-primary">
+Create Wallet Challenge
+path]:fill-primary">
+Login With Wallet
+path]:fill-primary">
+Get Auth Context
+path]:fill-primary">
+Internal Transfer
+Create Internal Transfer
+path]:fill-primary">
+Ledger Read
+Get Balance History
+path]:fill-primary">
+Get Balances
+path]:fill-primary">
+Get Equity History Series
+path]:fill-primary">
+Get Portfolio Equity History Series
+path]:fill-primary">
+Get Portfolio Equity Snapshot
+path]:fill-primary">
+List Transfers
+path]:fill-primary">
+MFA
+Begin MFA Challenge
+path]:fill-primary">
+Begin Passkey Enrollment
+path]:fill-primary">
+Begin TOTP Enrollment
+path]:fill-primary">
+Delete MFA Factor
+path]:fill-primary">
+Finish Passkey Challenge
+path]:fill-primary">
+Finish Passkey Enrollment
+path]:fill-primary">
+Finish TOTP Enrollment
+path]:fill-primary">
+List MFA Factors
+path]:fill-primary">
+Regenerate Recovery Codes
+path]:fill-primary">
+Update MFA Factor
+path]:fill-primary">
+Verify Recovery Code Challenge
+path]:fill-primary">
+Verify TOTP Challenge
+path]:fill-primary">
+Policy
+Create API Key Policy
+path]:fill-primary">
+Create Subaccount Policy
+path]:fill-primary">
+Delete API Key Policy
+path]:fill-primary">
+Delete Subaccount Policy
+path]:fill-primary">
+Get API Key Policy
+path]:fill-primary">
+Get Subaccount Policy
+path]:fill-primary">
+List API Key Policies
+path]:fill-primary">
+List Subaccount Policies
+path]:fill-primary">
+Set API Key Policy
+path]:fill-primary">
+Set Subaccount Policy
+path]:fill-primary">
+Update API Policy
+path]:fill-primary">
+Update Subaccount Policy
+path]:fill-primary">
+Profile
+Claim Generated Username
+path]:fill-primary">
+Generate Username Options
+path]:fill-primary">
+Get Profile
+path]:fill-primary">
+Get Username History
+path]:fill-primary">
+Update Profile
+path]:fill-primary">
+Resolve
+Resolve Account
+path]:fill-primary">
+Social Verification
+Get Social Verification
+path]:fill-primary">
+Mark Social Verification Ready
+path]:fill-primary">
+Start Social Verification
+path]:fill-primary">
+Subaccount
+Create Subaccount
+path]:fill-primary">
+Create Subaccount Challenge
+path]:fill-primary">
+Invite Subaccount Member
+path]:fill-primary">
+List Subaccount Invites
+path]:fill-primary">
+List Subaccount Members
+path]:fill-primary">
+List Subaccounts
+path]:fill-primary">
+Remove Subaccount Member
+path]:fill-primary">
+Respond Subaccount Invite
+path]:fill-primary">
+Set Subaccount Member MFA Requirement
+path]:fill-primary">
+Update Subaccount
+path]:fill-primary">
+Update Subaccount Member Role
+path]:fill-primary">
+Subaccount Role
+Get Effective Subaccount Permissions
+path]:fill-primary">
+List Subaccount Roles
+path]:fill-primary">
+Subaccount View
+Get Subaccount View
+path]:fill-primary">
+List Subaccount Activity
+path]:fill-primary">
+VIP
+Get VIP Status
+path]:fill-primary">
+List VIP Tiers
+path]:fill-primary">
+Chain
+Chain Analytics
+Get Unified Asset Balances
+path]:fill-primary">
+Get Zipped Asset Supply
+path]:fill-primary">
+Get Zipped Asset Supply Group
+path]:fill-primary">
+Deposit Address
+Create Deposit Address
+path]:fill-primary">
+List Deposit Addresses
+path]:fill-primary">
+Guard Signer
+Batch Sign Protected Actions
+path]:fill-primary">
+Create Guard Signer Wallet
+path]:fill-primary">
+Export Guard Signer Wallet
+path]:fill-primary">
+Get Guard Signer Status
+path]:fill-primary">
+Rotate Guard Signer Wallet
+path]:fill-primary">
+Sign Protected Action
+path]:fill-primary">
+Lifecycle Read
+Get Flow By Id
+path]:fill-primary">
+List Flows
+path]:fill-primary">
+List Flows By Tx
+path]:fill-primary">
+Withdraw
+Create Trading Withdraw
+path]:fill-primary">
+Create Wallet Trading Withdraw
+path]:fill-primary">
+Validate Withdraw Destination
+path]:fill-primary">
+Zipper
+Get Deposit & Withdraw Config
+path]:fill-primary">
+Marketdata
+Market Data
+Get Candles
+path]:fill-primary">
+Get Spot Config
+path]:fill-primary">
+Get Trades
+path]:fill-primary">
+Market Overview
+Get Currency Conversion Config
+path]:fill-primary">
+Get Currency Conversion Rates
+path]:fill-primary">
+Get Spot Volume History
+path]:fill-primary">
+List Market Overviews
+path]:fill-primary">
+Orderbook
+Get Order Book
+path]:fill-primary">
+Trading
+Claims
+Claim Daily Reward
+path]:fill-primary">
+Get Daily Claim Status
+path]:fill-primary">
+Fee
+Get Spot Fee Rates
+path]:fill-primary">
+Orders
+Get Open Orders
+path]:fill-primary">
+Get Order
+path]:fill-primary">
+Get Order History
+path]:fill-primary">
+Get User Trades
+path]:fill-primary">
+Batch Cancel Orders
+path]:fill-primary">
+Batch Create Orders
+path]:fill-primary">
+Batch Replace Orders
+path]:fill-primary">
+Cancel All After (Dead-Man Switch)
+path]:fill-primary">
+Cancel All Orders
+path]:fill-primary">
+Cancel Order
+path]:fill-primary">
+Create Order
+path]:fill-primary">
+Modify Order
+path]:fill-primary">
+Preview Order
+path]:fill-primary">
+Rate Limit
+Get Rate Limit Config
+path]:fill-primary">
+Get Trading Rate Limits
+path]:fill-primary">
+Triggers
+Cancel Trigger
+path]:fill-primary">
+Create Trigger
+path]:fill-primary">
+Get Trigger
+path]:fill-primary">
+List Trigger Events
+path]:fill-primary">
+List Triggers
+path]:fill-primary">
+Modify Trigger
+path]:fill-primary">
+Pause Trigger
+path]:fill-primary">
+Resume Trigger
+path]:fill-primary">
+Workspace
+Layout
+Create Layout Share Link
+path]:fill-primary">
+Delete Layout
+path]:fill-primary">
+Delete Layout Template Subscription
+path]:fill-primary">
+Get Layout
+path]:fill-primary">
+List Layouts
+path]:fill-primary">
+Get Layout Template Version
+path]:fill-primary">
+List Layout Template Versions
+path]:fill-primary">
+List My Layout Template Subscriptions
+path]:fill-primary">
+List Owner Published Layouts
+path]:fill-primary">
+Publish Layout
+path]:fill-primary">
+Resolve Layout Share Token
+path]:fill-primary">
+Revoke Layout Share Link
+path]:fill-primary">
+Set Layout Template Subscription
+path]:fill-primary">
+Unpublish Layout
+path]:fill-primary">
+Upsert Layout
+path]:fill-primary">
+Polychart
+Create Layer Share Link
+path]:fill-primary">
+Delete Drawing
+path]:fill-primary">
+Delete Layer
+path]:fill-primary">
+Get Layer Snapshot
+path]:fill-primary">
+Get Layer Subscribe Tokens
+path]:fill-primary">
+Get Market Layers
+path]:fill-primary">
+List Inbox Market Layers
+path]:fill-primary">
+List Owner Published Layers
+path]:fill-primary">
+Publish Layer
+path]:fill-primary">
+Resolve Layer Share Token
+path]:fill-primary">
+Revoke Layer Share Link
+path]:fill-primary">
+Set Layer Subscriptions
+path]:fill-primary">
+Unpublish Layer
+path]:fill-primary">
+Upsert Drawing
+path]:fill-primary">
+Upsert Layer
+path]:fill-primary">
+Whiteboard
+Archive Whiteboard
+path]:fill-primary">
+Create Whiteboard
+path]:fill-primary">
+Get Whiteboard
+path]:fill-primary">
+List Whiteboards
+path]:fill-primary">
+Mint Whiteboard Join Token
+path]:fill-primary">
+Update Whiteboard
+path]:fill-primary">
+Update Whiteboard ACL
+path]:fill-primary">
+Last Updated:
+23h ago
+Copy URL
+TriggersService
+List Trigger Events
+List append-only trigger events for a trigger, including child-order actions, with optional event-category filtering and reverse-time pagination.
+Copy URL
+Method
+GET
+Path
+/v1/triggers/{trigger_id}/events
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/triggers/
+Send
+Request
+Testnet
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/triggers/9155001234567/events?limit=100' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"events": [
+"cancelReason": "USER_REQUEST",
+"childOrderId": "5USXJZmk",
+"childSeq": 1,
+"eventType": "FIRED",
+"firePx": "0.005",
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT",
+"triggerId": "59VD7Lar",
+"triggerType": "STOP_LOSS",
+"tsNs": "1735689600000000000"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+trigger_id
+string
+required
+> 0
+Query parameters
+Example
+eventType
+enum
+must be defined value
+Optional TriggerEventType enum name. EVENT_UNSPECIFIED returns all events.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s343-eventType" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select eventType
+limit
+integer
+≤ 1000
+pageToken
+string
+max 512 chars
+Opaque keyset cursor returned by the previous response.
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Response
+Form
+JSON
+events
+object[]
+Events ordered by event time descending, child sequence descending, and stable event tie-breakers descending.
+11 fields
+cancelReason
+enum
+Why an admitted trigger was canceled.
+USER_REQUEST
+OCO
+PARENT_CANCELED_NO_FILL
+MISSING_REASON_CODE
+INTERNAL_ERROR
+Example
+USER_REQUEST
+childOrderId
+string
+/^[1-9A…m-z]+$/
+Child order ID created by this event, if any.
+Example
+5USXJZmk
+childSeq
+integer (int32)
+Child sequence number for multi-child trigger strategies.
+Example
+1
+eventType
+enum
+Event category.
+FIRED
+CANCELED
+UPDATED
+FAILED
+ACTIVATED
+Example
+FIRED
+failureReason
+enum
+Why an admitted trigger failed.
+UNKNOWN_SYMBOL
+PAIR_DISABLED
+MIN_NOTIONAL
+TICK_SIZE
+INSUFFICIENT_FUNDS
+RISK_LIMIT
+DUPLICATE_CLIENT_ID
+MARKET_HALTED
+ENGINE_BUSY
+ACCOUNT_UNKNOWN
+ORDER_UNKNOWN
+POST_ONLY_CROSS
+REDUCE_ONLY_BLOCKED
+PRICE_BAND_VIOLATION
+MARKET_CAP_VIOLATION
+EMPTY_BOOK
+FOK_INSUFFICIENT_LIQUIDITY
+FEE_ASSET_NOT_ALLOWED
+MARKET_PRICE_UNAVAILABLE
+STALE_QUOTE
+MIN_QUANTITY
+STEP_SIZE
+INVALID_SIZING
+MAX_QUOTE_DEBIT_TOO_SMALL
+FEE_CEILING_EXCEEDED
+TRIGGER_PRICE_INVALID
+TRIGGER_PRICE_SOURCE_UNSUPPORTED
+TRAILING_DISTANCE_INVALID
+MODIFICATION_REQUIRES_REPLACE
+ORDER_ALREADY_TERMINAL
+CONFLICT_IDEMPOTENCY_KEY_REUSE
+RATE_LIMITED
+POLICY_SPOT_TRADE_DENY
+POLICY_MARKET_DENY
+POLICY_MAX_NOTIONAL
+POLICY_MAX_OPEN_ORDERS
+POLICY_TRADING_HALTED
+MAX_SLIPPAGE_INVALID
+MISSING_REASON_CODE
+INTERNAL_ERROR
+firePx
+string
+/^[0-9]…9]+)?$/
+Price that caused a conditional trigger to fire, in quote units scaled by 1e9. Absent for time-scheduled triggers such as TWAP.
+Example
+0.005
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Public account or sub-account ID associated with the trigger.
+Example
+45LUmqjT
+symbol
+string
+Trading symbol numeric identifier.
+Example
+BTC-USDT
+triggerId
+string
+/^[1-9A…m-z]+$/
+Trigger ID associated with the event.
+Example
+59VD7Lar
+triggerType
+enum
+Trigger type at the time of the event.
+STOP_LOSS
+TAKE_PROFIT
+TRAILING_STOP
+TWAP
+LADDER
+Example
+STOP_LOSS
+tsNs
+string
+/^[0-9]+$/
+Event timestamp in nanoseconds since epoch (UTC).
+Example
+1735689600000000000
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/triggers/
+Send
+Request
+Testnet
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/triggers/9155001234567/events?limit=100' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"events": [
+"cancelReason": "USER_REQUEST",
+"childOrderId": "5USXJZmk",
+"childSeq": 1,
+"eventType": "FIRED",
+"firePx": "0.005",
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT",
+"triggerId": "59VD7Lar",
+"triggerType": "STOP_LOSS",
+"tsNs": "1735689600000000000"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+
+=== ПРИМЕРЫ (блоки кода со страницы, дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/triggers/9155001234567/events?limit=100' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "events": [
+    {
+      "cancelReason": "USER_REQUEST",
+      "childOrderId": "5USXJZmk",
+      "childSeq": 1,
+      "eventType": "FIRED",
+      "firePx": "0.005",
+      "subaccountId": "45LUmqjT",
+      "symbol": "BTC-USDT",
+      "triggerId": "59VD7Lar",
+      "triggerType": "STOP_LOSS",
+      "tsNs": "1735689600000000000"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
