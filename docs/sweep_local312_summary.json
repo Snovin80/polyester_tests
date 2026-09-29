@@ -1,0 +1,1127 @@
+{
+ "trading__daily-claim": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    401,
+    "/v1/trading/daily-claim"
+   ],
+   "real": [
+    401,
+    "/v1/trading/daily-claim"
+   ],
+   "extra_param": [
+    401,
+    "{\"code\":\"UNAUTHENTICATED\",\"detail\":\"unauthenticated\",\"status\":401,\"title\":\"Unauthorized\",\"type\":\"https://polyester.dev/problems/UNAUTHENTICATED\"}"
+   ]
+  }
+ },
+ "trading__rate-limits": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Optional sub-account public identifier."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/trading/rate-limits"
+   ],
+   "real": [
+    200,
+    "/v1/trading/rate-limits"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "vip__status": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/vip/status"
+   ],
+   "real": [
+    403,
+    "/v1/vip/status"
+   ],
+   "extra_param": [
+    403,
+    "forbidden\n"
+   ]
+  }
+ },
+ "vip__tiers": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/vip/tiers"
+   ],
+   "real": [
+    200,
+    "/v1/vip/tiers"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "rate-limits": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/rate-limits"
+   ],
+   "real": [
+    200,
+    "/v1/rate-limits"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "chain__deposit-withdraw__config": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/chain/deposit-withdraw/config"
+   ],
+   "real": [
+    200,
+    "/v1/chain/deposit-withdraw/config"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "chain__deposit-addresses": {
+  "doc_params": {
+   "chainId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional PolyChain-registered source chain id filter. When omitted, the response returns all known deposit addresses for the selected target, ordered by ascending chain id."
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Optional subaccount public id. When omitted, the authenticated caller's root account is used as the target account."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/chain/deposit-addresses"
+   ],
+   "real": [
+    200,
+    "/v1/chain/deposit-addresses"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "chain__flows": {
+  "doc_params": {
+   "flowKind": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional product flow kind filter. Unspecified includes all kinds. Select flowKind"
+   },
+   "flowState": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional lifecycle state filter. Unspecified includes all states permitted by the selected scope. Select flowState"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of flows to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "orderBy": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Timestamp used for ordering and pagination. Defaults to last activity. Select orderBy"
+   },
+   "ownerAccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Public account identifier for a main account or subaccount."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by a previous response. The cursor is exclusive and bound to the caller, filters, account selector, sort direction, and ordering timestamp."
+   },
+   "polyesterChainIds": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional Polyester Chain ids to include. Maximum 100 unique ids."
+   },
+   "scope": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Selects open, terminal, or all lifecycle flows. Select scope"
+   },
+   "smartAccountAddress": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Smart account address on Polyester Chain."
+   },
+   "sort": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Sort direction for the selected ordering timestamp. Select sort"
+   },
+   "txRef": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Optional transaction reference filter. Matches source or latest activity transaction identifiers across supported chains."
+   },
+   "unifiedAssetIds": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional unified asset ids to include. Maximum 100 unique ids."
+   },
+   "zippedAssetIds": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional chain asset mapping ids to include. Maximum 100 unique ids."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/chain/flows"
+   ],
+   "real": [
+    200,
+    "/v1/chain/flows"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    100
+   ],
+   "limit_100000": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"validation error: limit: must be less than or equal to 500\",\"code\":\"invalid_request\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"detail\":\"invalid limit\",\"code\":\"invalid_request\",\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"code\":\"invalid_request\",\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"invalid limit\"}"
+   ]
+  },
+  "missing": [
+   "flows[].currentProgress.approveCount",
+   "flows[].currentProgress.currentConfirmations",
+   "flows[].currentProgress.currentStepExpectedDurationMs",
+   "flows[].currentProgress.currentStepStartedAtUnixMs",
+   "flows[].currentProgress.rejectCount",
+   "flows[].currentProgress.requiredApprovals",
+   "flows[].currentProgress.requiredConfirmations",
+   "flows[].currentProgress.requiredRejections",
+   "flows[].currentProgress.validatorCount",
+   "flows[].isOpen",
+   "flows[].lifecycleReason",
+   "flows[].requestFee.amountE18.hi",
+   "flows[].zipperReason",
+   "flows[].zipperReason.code",
+   "flows[].zipperReason.message",
+   "flows[].zipperReason.reasonId"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "chain__flows__flow_id": {
+  "doc_params": {
+   "flow_id": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required 6-64 chars /^flow_…m-z]+$/ Public, URL-safe lifecycle identifier returned by list/search responses."
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/chain/flows/flow_7YWHMfk9JZeLMgZauHuiSxhI"
+   ],
+   "real": [
+    200,
+    "/v1/chain/flows/flow_CQbG4JvFt7V"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [
+   "flow.fromLiveState",
+   "flow.observedSteps[].activities[].approveCount",
+   "flow.observedSteps[].activities[].currentConfirmations",
+   "flow.observedSteps[].activities[].kind",
+   "flow.observedSteps[].activities[].lifecycleReason",
+   "flow.observedSteps[].activities[].rejectCount",
+   "flow.observedSteps[].activities[].requiredApprovals",
+   "flow.observedSteps[].activities[].requiredConfirmations",
+   "flow.observedSteps[].activities[].requiredRejections",
+   "flow.observedSteps[].activities[].validatorCount",
+   "flow.observedSteps[].activities[].zipperReason",
+   "flow.observedSteps[].activities[].zipperReason.code",
+   "flow.observedSteps[].activities[].zipperReason.message",
+   "flow.observedSteps[].activities[].zipperReason.reasonId",
+   "flow.observedSteps[].approveCount",
+   "flow.observedSteps[].assetIds.zippedAssetId",
+   "flow.observedSteps[].blockTimeMovingAverageMs",
+   "flow.observedSteps[].currentConfirmations",
+   "flow.observedSteps[].lifecycleReason",
+   "flow.observedSteps[].polyesterChainId",
+   "flow.observedSteps[].rejectCount",
+   "flow.observedSteps[].requestFee",
+   "flow.observedSteps[].requestFee.amountE18",
+   "flow.observedSteps[].requestFee.amountE18.hi",
+   "flow.observedSteps[].requestFee.amountE18.lo",
+   "flow.observedSteps[].requestFee.assetIds",
+   "flow.observedSteps[].requestFee.assetIds.unifiedAssetId",
+   "flow.observedSteps[].requestFee.assetIds.zippedAssetId",
+   "flow.observedSteps[].requestFee.recipientAddress",
+   "flow.observedSteps[].requestFee.status",
+   "flow.observedSteps[].requiredApprovals",
+   "flow.observedSteps[].requiredConfirmations",
+   "flow.observedSteps[].requiredRejections",
+   "flow.observedSteps[].validatorCount",
+   "flow.observedSteps[].zipperReason",
+   "flow.observedSteps[].zipperReason.code",
+   "flow.observedSteps[].zipperReason.message",
+   "flow.observedSteps[].zipperReason.reasonId",
+   "flow.summary.assetIds.zippedAssetId",
+   "flow.summary.currentProgress.approveCount",
+   "flow.summary.currentProgress.currentConfirmations",
+   "flow.summary.currentProgress.currentStepExpectedDurationMs",
+   "flow.summary.currentProgress.currentStepStartedAtUnixMs",
+   "flow.summary.currentProgress.rejectCount",
+   "flow.summary.currentProgress.requiredApprovals",
+   "flow.summary.currentProgress.requiredConfirmations",
+   "flow.summary.currentProgress.requiredRejections",
+   "flow.summary.currentProgress.validatorCount",
+   "flow.summary.isOpen",
+   "flow.summary.lifecycleReason",
+   "flow.summary.polyesterChainId",
+   "flow.summary.requestFee",
+   "flow.summary.requestFee.amountE18",
+   "flow.summary.requestFee.amountE18.hi",
+   "flow.summary.requestFee.amountE18.lo",
+   "flow.summary.requestFee.assetIds",
+   "flow.summary.requestFee.assetIds.unifiedAssetId",
+   "flow.summary.requestFee.assetIds.zippedAssetId",
+   "flow.summary.requestFee.recipientAddress",
+   "flow.summary.requestFee.status",
+   "flow.summary.sourceTxHash",
+   "flow.summary.txOccurrenceIndex",
+   "flow.summary.zipperReason",
+   "flow.summary.zipperReason.code",
+   "flow.summary.zipperReason.message",
+   "flow.summary.zipperReason.reasonId"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "chain__flows__by-tx__tx_hash__matches": {
+  "doc_params": {
+   "tx_hash": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required Chain transaction identifier to search for. Accepts a 0x-prefixed 32-byte EVM hash or a printable chain-native transaction id such as a Solana signature, Bitcoin txid, Litecoin txid, Dogecoin"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of matches to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "lookupKind": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Lookup mode that determines which transaction references are searched. Select lookupKind"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by a previous response. The cursor is exclusive and bound to the transaction hash and lookup mode."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/chain/flows/by-tx/0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890/matches"
+   ],
+   "real": [
+    200,
+    "/v1/chain/flows/by-tx/0x18d01bdb328845dee3aef6b7c268520698a2b6d3a4cc4336eedfd33b5ce5a851/matches"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    1
+   ],
+   "limit_100000": [
+    400,
+    "{\"title\":\"Bad Request\",\"status\":400,\"detail\":\"validation error: limit: must be less than or equal to 500\",\"code\":\"invalid_request\",\"type\":\"https://polyester.dev/problems/invalid_request\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"status\":400,\"detail\":\"invalid limit\",\"code\":\"invalid_request\",\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"invalid_request\"}"
+   ]
+  },
+  "missing": [
+   "matches[].assetIds.zippedAssetId",
+   "matches[].isOpen",
+   "matches[].lifecycleReason",
+   "matches[].zipperReason",
+   "matches[].zipperReason.code",
+   "matches[].zipperReason.message",
+   "matches[].zipperReason.reasonId",
+   "nextPageToken"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "chain__guard-signer__status": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Optional subaccount public id. When omitted, the authenticated caller's root account is used as the target account."
+   }
+  },
+  "calls": {
+   "example": [
+    404,
+    "/v1/chain/guard-signer/status"
+   ],
+   "real": [
+    404,
+    "/v1/chain/guard-signer/status"
+   ],
+   "extra_param": [
+    404,
+    "404 page not found\n"
+   ]
+  }
+ },
+ "chain__analytics__unified-asset-balances": {
+  "doc_params": {
+   "assetId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Unified asset identifier."
+   },
+   "asset_id": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": true,
+    "desc": "required > 0 Unified asset identifier."
+   },
+   "bucket": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 3 chars /^$|^(1…h|1d)$/ Optional bucket duration. Valid buckets depend on range and must keep chart density useful. Select bucket"
+   },
+   "endTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "end_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window. Defaults to 1d. Select range"
+   },
+   "startTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "start_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/chain/analytics/unified-asset-balances?asset_id=100"
+   ],
+   "real": [
+    400,
+    "/v1/chain/analytics/unified-asset-balances?asset_id="
+   ],
+   "no_required": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"asset_id is required\",\"code\":\"invalid_request\"}"
+   ],
+   "extra_param": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"asset_id is required\",\"code\":\"invalid_request\"}"
+   ]
+  }
+ },
+ "chain__analytics__zipped-asset-supply": {
+  "doc_params": {
+   "bucket": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 3 chars /^$|^(1…h|1d)$/ Optional bucket duration. Valid buckets depend on range and must keep chart density useful. Select bucket"
+   },
+   "endTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "end_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window. Defaults to 1d. Select range"
+   },
+   "startTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "start_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "zippedAssetId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Zipped asset route identifier."
+   },
+   "zipped_asset_id": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": true,
+    "desc": "required > 0 Zipped asset route identifier."
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/chain/analytics/zipped-asset-supply?zipped_asset_id=100"
+   ],
+   "real": [
+    400,
+    "/v1/chain/analytics/zipped-asset-supply?zipped_asset_id="
+   ],
+   "no_required": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"zipped_asset_id is required\",\"code\":\"invalid_request\"}"
+   ],
+   "extra_param": [
+    400,
+    "{\"detail\":\"zipped_asset_id is required\",\"code\":\"invalid_request\",\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400}"
+   ]
+  }
+ },
+ "chain__analytics__zipped-asset-supply__group": {
+  "doc_params": {
+   "bucket": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 3 chars /^$|^(1…h|1d)$/ Optional bucket duration. Valid buckets depend on range and must keep chart density useful. Select bucket"
+   },
+   "endTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "end_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "groupId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "1-64 chars Zipped asset group identifier."
+   },
+   "group_id": {
+    "in": "query",
+    "type": "string",
+    "required": true,
+    "desc": "required 1-64 chars Zipped asset group identifier."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window. Defaults to 1d. Select range"
+   },
+   "startTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "start_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/chain/analytics/zipped-asset-supply/group?group_id=tether-group"
+   ],
+   "real": [
+    400,
+    "/v1/chain/analytics/zipped-asset-supply/group?group_id="
+   ],
+   "no_required": [
+    400,
+    "{\"status\":400,\"detail\":\"group_id is required\",\"code\":\"invalid_request\",\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\"}"
+   ],
+   "extra_param": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid_request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"group_id is required\",\"code\":\"invalid_request\"}"
+   ]
+  }
+ },
+ "polychart__markets__engine_symbol_id__layers": {
+  "doc_params": {
+   "engine_symbol_id": {
+    "in": "path",
+    "type": "integer",
+    "required": true,
+    "desc": "required > 0 Engine symbol identifier for the market to load."
+   }
+  },
+  "calls": {
+   "example": [
+    404,
+    "/v1/polychart/markets/1/layers"
+   ],
+   "real": [
+    404,
+    "/v1/polychart/markets/2/layers"
+   ],
+   "extra_param": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ]
+  }
+ },
+ "polychart__markets__engine_symbol_id__layers__inbox": {
+  "doc_params": {
+   "engine_symbol_id": {
+    "in": "path",
+    "type": "integer",
+    "required": true,
+    "desc": "required > 0 Engine symbol identifier for the market inbox."
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of layers to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to caller, market, and inbox sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    404,
+    "/v1/polychart/markets/1/layers/inbox"
+   ],
+   "real": [
+    404,
+    "/v1/polychart/markets/2/layers/inbox"
+   ],
+   "extra_param": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_0": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_100000": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_-1": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_abc": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ]
+  }
+ },
+ "layouts": {
+  "doc_params": {
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of layouts to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to the authenticated caller and newest-updated sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    404,
+    "/v1/layouts"
+   ],
+   "real": [
+    404,
+    "/v1/layouts"
+   ],
+   "extra_param": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_0": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_100000": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_-1": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_abc": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ]
+  }
+ },
+ "layouts__templates__subscriptions": {
+  "doc_params": {
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of subscriptions to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to the authenticated caller and newest-updated sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    404,
+    "/v1/layouts/templates/subscriptions"
+   ],
+   "real": [
+    404,
+    "/v1/layouts/templates/subscriptions"
+   ],
+   "extra_param": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_0": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_100000": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_-1": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ],
+   "limit_abc": [
+    404,
+    "{\"error_msg\":\"404 Route Not Found\"}\n"
+   ]
+  }
+ },
+ "collab__whiteboards": {
+  "doc_params": {
+   "includeArchived": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "When true, include archived boards in the response. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of boards to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to the authenticated caller, archive filter, and newest-updated sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    401,
+    "/v1/collab/whiteboards"
+   ],
+   "real": [
+    401,
+    "/v1/collab/whiteboards"
+   ],
+   "extra_param": [
+    401,
+    "{\"code\":\"SIGNATURE_INVALID\"}\n"
+   ],
+   "limit_0": [
+    401,
+    "{\"code\":\"SIGNATURE_INVALID\"}\n"
+   ],
+   "limit_100000": [
+    401,
+    "{\"code\":\"SIGNATURE_INVALID\"}\n"
+   ],
+   "limit_-1": [
+    401,
+    "{\"code\":\"SIGNATURE_INVALID\"}\n"
+   ],
+   "limit_abc": [
+    401,
+    "{\"code\":\"SIGNATURE_INVALID\"}\n"
+   ]
+  }
+ },
+ "auth__profile": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/profile"
+   ],
+   "real": [
+    403,
+    "/v1/auth/profile"
+   ],
+   "extra_param": [
+    403,
+    "{\"code\":\"permission_denied\",\"message\":\"interactive session required\",\"details\":[{\"type\":\"auth.v1.AuthErrorDetail\",\"value\":\"CAgSHGludGVyYWN0aXZlIHNlc3Npb24gcmVxdWlyZWQ\",\"debug\":{\"code\":\"AUTH_SESSION_KIND_NOT_ALLOWED\",\"message\":\"interactive session required\"}}]}"
+   ]
+  }
+ },
+ "auth__api-keys": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "Optional filter: only keys scoped to this sub-account (opaque ID). The caller must own or administer the sub-account. If unset, only non-revoked keys owned by the caller are returned."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/api-keys"
+   ],
+   "real": [
+    403,
+    "/v1/auth/api-keys"
+   ],
+   "extra_param": [
+    403,
+    "forbidden\n"
+   ]
+  }
+ },
+ "auth__subaccounts": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/auth/subaccounts"
+   ],
+   "real": [
+    200,
+    "/v1/auth/subaccounts"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [
+   "subaccounts[].color",
+   "subaccounts[].icon",
+   "subaccounts[].requireMemberMfa",
+   "subaccounts[].smartAccountSaltNonce"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "auth__policies__api-keys": {
+  "doc_params": {
+   "keyId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^ak_[a…]{32}$/ Optional API key context for delegated administration. When omitted, only policies owned by the caller's root account are returned."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/policies/api-keys"
+   ],
+   "real": [
+    403,
+    "/v1/auth/policies/api-keys"
+   ],
+   "extra_param": [
+    403,
+    "forbidden\n"
+   ]
+  }
+ },
+ "auth__mfa__factors": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/mfa/factors"
+   ],
+   "real": [
+    403,
+    "/v1/auth/mfa/factors"
+   ],
+   "extra_param": [
+    403,
+    "{\"code\":\"permission_denied\",\"message\":\"interactive session required\",\"details\":[{\"type\":\"auth.v1.AuthErrorDetail\",\"value\":\"CAgSHGludGVyYWN0aXZlIHNlc3Npb24gcmVxdWlyZWQ\",\"debug\":{\"code\":\"AUTH_SESSION_KIND_NOT_ALLOWED\",\"message\":\"interactive session required\"}}]}"
+   ]
+  }
+ },
+ "auth__address-books": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/auth/address-books"
+   ],
+   "real": [
+    200,
+    "/v1/auth/address-books"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [
+   "books[].label",
+   "books[].scope.subaccountId"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "auth__transfer-destinations": {
+  "doc_params": {
+   "kind": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional destination type filter. Select kind"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of destinations to return. Defaults to 200 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to account, subaccount scope, destination type filter, and stable destination sort order."
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Optional subaccount scope. Omit to use the root account address book."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/auth/transfer-destinations"
+   ],
+   "real": [
+    200,
+    "/v1/auth/transfer-destinations"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    2
+   ],
+   "limit_100000": [
+    400,
+    "bad request\n"
+   ],
+   "limit_-1": [
+    400,
+    "bad limit\n"
+   ],
+   "limit_abc": [
+    400,
+    "bad limit\n"
+   ]
+  },
+  "missing": [
+   "destinations[].addressBookEntry.note",
+   "destinations[].addressBookEntry.scope.subaccountId",
+   "destinations[].addressBookEntry.tags",
+   "destinations[].addressBookEntry.tags[].color",
+   "destinations[].addressBookEntry.tags[].createdAt",
+   "destinations[].addressBookEntry.tags[].name",
+   "destinations[].addressBookEntry.tags[].scope",
+   "destinations[].addressBookEntry.tags[].scope.rootAccountId",
+   "destinations[].addressBookEntry.tags[].scope.scopeType",
+   "destinations[].addressBookEntry.tags[].scope.subaccountId",
+   "destinations[].addressBookEntry.tags[].tagId",
+   "destinations[].addressBookEntry.tags[].updatedAt",
+   "destinations[].scope.subaccountId",
+   "nextPageToken"
+  ],
+  "extra": [
+   "destinations[].addressBookEntry.internal",
+   "destinations[].addressBookEntry.internal.rootAccountId",
+   "destinations[].addressBookEntry.internal.rootUsername",
+   "destinations[].addressBookEntry.internal.smartAccountAddress",
+   "destinations[].addressBookEntry.internal.subaccountLabel",
+   "destinations[].addressBookEntry.internal.targetAccountId",
+   "destinations[].addressBookEntry.internal.targetScopeType",
+   "destinations[].internal",
+   "destinations[].internal.rootAccountId",
+   "destinations[].internal.rootUsername",
+   "destinations[].internal.smartAccountAddress",
+   "destinations[].internal.subaccountLabel",
+   "destinations[].internal.targetAccountId",
+   "destinations[].internal.targetScopeType"
+  ],
+  "types": []
+ }
+}
