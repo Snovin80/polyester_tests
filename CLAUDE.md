@@ -28,32 +28,43 @@
   `docs/bot/journal.md` и `docs/bot/CLAUDE_bot.md`. Журнал большой: искать
   grep'ом, целиком не читать. Перед отчётом — grep по «ОТПРАВЛЕНО».
 
-## Задание (29.09)
+## Задание (30.09): весь справочник REST против живого API
 
-1. `POST /v1/orders/replace-batch` против справочника
-   (`testnet.polyester.com/docs/api-docs/rest/POST/v1/orders/replace-batch`).
-   Тело по справочнику: `{symbol, requestId, subaccountId?, items[{orderId,
-   newPriceTicks, newQtyScaled, newClientOrderId, newAttachedRisk}]}`, до 50.
-   Что проверить:
-   - Поле `newPriceTicks`: в примере справочника обычная цена "0.005", а не
-     число тиков. Что принимает API на деле: десятичную цену или тики?
-   - `actionTaken AMENDED` в справочнике: «cancels the original order's
-     remaining quantity without a successor». В `modify` AMENDED значит
-     правку того же ордера (id тот же, qty меньше). Что делает replace-batch
-     на деле при уменьшении qty?
-   - Границы: пустой `items`, 51 элемент, qty 0, пункт без изменений, один
-     ордер дважды в запросе, чужой/несуществующий orderId, повтор requestId.
-   - Поля ответа против справочника (`results[]`: itemIndex, oldOrderId,
-     replacementOrderId, status, actionTaken, code, error).
-2. Граничные значения в триггерах (`POST /v1/triggers`): цены 0, отрицательные,
-   больше/меньше рынка, неверный шаг, лишние знаки, пустые/лишние поля,
-   трейлинг-дистанция на границах. Коды ошибок — против справочника
-   (TRIGGER_PRICE_INVALID, TRAILING_DISTANCE_INVALID и т.д.). Все созданные
-   триггеры — DELETE по id в конце.
+Сделано раньше (29.09): replace-batch и границы триггеров — отправлено,
+см. `docs/report_2026-09-29.txt`, повторно не проверять.
 
-Итог — `docs/findings_ГГГГ-ММ-ДД.md`: по каждому пункту что в доках, что на
-деле, сырой ответ (тело JSON дословно + время UTC + HTTP-код). Не баг — так и
-написать.
+Цель — найти пачкой расхождения «справочник против API». Бонус облака
+почти кончился (~$27): работать экономно, по разделам, после КАЖДОГО
+раздела — коммит и push, чтобы при остановке ничего не пропало.
+
+Порядок разделов (файлы `docs/polyester_docs/api-docs/rest__<METHOD>__v1__*.txt`):
+1. spot (config, fee-rates, orders, trades, свечи), orders (open, история),
+   orderbook, market, trading.
+2. balances, transfers, equity, vip, rate-limits.
+3. triggers (GET-часть; POST/DELETE уже проверены).
+4. chain (flows, депозиты/выводы — только чтение).
+5. Остальное по остатку: polychart, layouts, share, collab. auth — только
+   GET и только то, что пускает API-ключ (403 «только сессия» — известно).
+
+Как:
+- Только GET и безопасные вызовы. Ордера, триггеры, переводы, выводы НЕ
+  создавать; ключи, настройки, адресную книгу НЕ менять.
+- По каждому эндпоинту: вызов по примеру справочника + с обязательными
+  параметрами; сверить поля ответа (имя, тип, есть/нет, формат чисел и
+  времени), обязательность параметров, коды ошибок (неверный/лишний
+  параметр, пустой, граница limit). Пример из справочника не проходит —
+  это тоже находка.
+- Одним скриптом `tests/docs_sweep.py` на раздел, короткий вывод; сырые
+  ответы — `docs/raw_sweep_<раздел>.jsonl`.
+- Мелочи, которые команда ответит «by design» (пропуск нулевых полей, время
+  объектом {seconds,nanos}), в находки не включать — одной строкой в конце.
+- Перед итогом — grep по `docs/bot/journal.md` («ОТПРАВЛЕНО») и список ниже:
+  отправленное не повторять.
+
+Итог — `docs/findings_ГГГГ-ММ-ДД.md` (по разделам: что в доках, что на деле,
+сырой ответ + время UTC + HTTP-код) и черновик отчёта `docs/report_ГГГГ-ММ-ДД.txt`
+по правилам ниже. Отчёт не отправлять — автор отдаёт его на сверку в
+локальную сессию.
 
 ## Отчёты команде (правила автора)
 
@@ -119,4 +130,14 @@
   cancel снимает), повтор requestId — «reproduced».
 - 28.09: Polyester Scan и Flows API (requestFee, tx доставки, шаги, сайт
   Scan) — 29.09 несколько тикетов подтверждены.
+- 18–23.09: MCP (стакан, цены, spot config, search_docs); фильтр symbol в
+  open orders, префикс PAIR_STATUS_, повтор clientOrderId, attachedRisk при
+  частичном исполнении, dead-man и триггеры, maxSlippage в SDK, msgspec
+  32 бит; dead-man не возвращает область и нет чтения; isMaker/feeIsRebate
+  пропадают в GET /v1/spot/trades.
+- 29.09: replace-batch (всегда REPLACED, oldOrderId 1, replacementOrderId
+  при CONFLICT, чужая пара, шаг цены TP/SL); триггеры (clientTriggerId
+  не помечен required и 65+ → 503, дубль → 502, 404 после POST / ARMED
+  после DELETE, фильтры parentOrderId и status, ladder postOnly,
+  trailingDistanceTicks) — «checking».
 - Сняты как не баги: DOGE объём в свечах; open свечи = close прошлой минуты.
