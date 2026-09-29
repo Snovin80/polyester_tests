@@ -93,13 +93,42 @@ o = []
 w = o.append
 w(f"""# Findings 2026-09-29 (перепроверено)
 
-Все утверждения ниже — из свежего прогона 29.09 (replace-batch — около 09:56–09:58 UTC, триггеры — около 09:59–10:20 UTC). Для каждого пункта: что в справочнике (дословно из `docs/reference/`, скачано 29.09 08:44 UTC), что на деле, сырой ответ (тело дословно, время UTC, HTTP-код). Не баг — так и написано.
+Все утверждения ниже — из свежего прогона 29.09 (replace-batch — около 09:56–09:58 UTC, триггеры — около 09:59–10:20 UTC). Для каждого пункта: что в справочнике (дословно из `docs/polyester_docs/`, выгрузка 29.09 11:20 UTC; страницы эндпоинтов совпадают со снимком 08:44 слово в слово), что на деле, сырой ответ (тело дословно, время UTC, HTTP-код). Не баг — так и написано.
 
 Сырые логи: `docs/raw_replace_batch_2026-09-29.jsonl` ({len(rb_rows)} вызовов), `docs/raw_triggers_2026-09-29.jsonl` ({len(tr_rows)} вызовов), `docs/raw_triggers_filters_2026-09-29.jsonl` ({len(tf_rows)} вызовов). Скрипты: `tests/bugtest1_replace_batch.py`, `tests/bugtest2_triggers.py`, сборка этого файла — `tests/make_findings.py`. Первый прогон (до перепроверки) — в истории git. Текст для команды (EN + RU + «Проверено») — `docs/report_2026-09-29.txt`.
 
 Аккаунт общий. Ордера — ETH-USDT BUY 0.005 по 1350 (рынок ≈2700) и AVAX-USDT BUY по 5.7 (рынок ≈11.5), post-only. Дочерние ордера триггеров — SELL 22.8 / BUY 5.0–5.7, трейлинг — с activationPrice ≈2× рынка. Всё своё снято по id; cancel-all не вызывался. Итог уборки — в разделе 3.
 
 """)
+
+w("""## 0. Сверка с полной документацией (docs/polyester_docs/, 11:20 UTC)
+
+| Пункт | Что нашлось в документации | Итог |
+|---|---|---|
+| 1.2 AMENDED, 1.5 замена без изменений | user-docs/trade__manage-orders: «An in-place amend is limited to a Limit order that keeps its price and does not increase its total quantity»; «Amend or Replace — Amends when possible … The final Order ID can change»; connect GetBatchReplaceStatus: «AMENDED is cancel-only: no successor exists»; пример ответа там же — AMENDED с replacementOrderId = oldOrderId | пункты объединены и усилены; живьём: GetBatchReplaceStatus свежей замены с уменьшением qty — REPLACED |
+| 1.1 newPriceTicks / newQtyScaled | developer-docs/connectrpc__scaled-integers: «Polyester REST APIs expose decimal values as strings … REST clients do not need to decode *_scaled, *_ticks …» | newPriceTicks соответствует; newQtyScaled (replace-batch и modify) — нет: только целое, «0.0045» строкой и числом — 400 |
+| 1.4 привязанный TP/SL | api-docs POST /v1/orders: attachedRisk «arm after the parent order fills», triggerPrice «scaled by 1e9»; про проверку цены — ничего | без изменений |
+| 1.6 acceptedTs | общего правила о формате времени в REST нет; REST и connect страницы — строка | без изменений |
+| 2.1 clientTriggerId | connect CreateTrigger: «min 1 chars», максимума нет; SDK: «reuse replayable … clientTriggerID» | повтор после DELETE → прежний триггер — по докам нормально, убрано из отчёта |
+| 2.2 «не с той стороны» | user-docs stop-loss: «A Last Price trade at or below 95,000 USDT activates the stop» | **не баг по докам**, убрано из отчёта |
+| 2.3 qty ниже минимума | user-docs ladder/twap: «Every rounded child must independently satisfy … minimum-order rules»; order-triggers: «A child rejection is a terminal trigger failure»; stop-loss: «An accepted trigger does not prove that the later child is admitted» | **не баг по докам**, убрано из отчёта |
+| 2.7 ladder postOnly | REST — required; connect — Unset/False/True | в отчёте: расхождение REST и connect |
+| 2.8 чтение после записи | developer-docs/shared-concepts__client-order-ids: «GetOrder briefly waits server-side … returns a temporary unavailable error instead of NOT_FOUND» (про ордера) | усилено сравнением; журнал бота: 24.09 не воспроизвелось, сейчас 3 из 10 |
+| 2.9 фильтры | connect ListTriggers: parentOrderId — «Optional filter by attached parent order ID», статусы STATUS_* | живьём: в connect фильтр работает (ровно 2 ноги, несуществующий id — 400), в REST нет ни base58, ни числом |
+| отправленное ранее | docs/bot/journal.md, «ОТПРАВЛЕНО» | дублей нет; родственное помечено «Addition/Related» (28.09 modify, 27.09 502, 24.09 scaled) |
+
+""")
+for lab in ["M2 replace-batch qty 5000->4500"]:
+    if lab in ALL: w(raw(lab, cut=600))
+for e in rb_rows:
+    if e["label"].startswith("M2 ConnectRPC GetBatchReplaceStatus +0.5s"):
+        w(raw(e, cut=600))
+for lab in ["K9 replace-batch newQtyScaled десятичной строкой '0.0045'", "K10 replace-batch newQtyScaled числом 0.0045",
+            "K11 modify newQtyScaled десятичной строкой '0.0045'"]:
+    w(raw(lab, cut=500))
+for e in tf_rows:
+    if e["label"].startswith(("FILT10", "FILT11", "FILT12")):
+        w(raw(e, cut=450))
 
 # ================= ЧАСТЬ 1 =================
 w("## Часть 1. POST /v1/orders/replace-batch\n\n")
@@ -252,7 +281,7 @@ for lab in ["H2 SUB GET ордер основного счёта", "H3 SUB repla
 
 # ================= ЧАСТЬ 2 =================
 w("## Часть 2. POST /v1/triggers\n\n")
-w("""Пара AVAX-USDT (шаг цены 0.001, minQty 0.1, min notional 5). Справочник — `docs/reference/POST_triggers.txt`, `GET_triggers.txt`, `GET_triggers_trigger_id.txt`, `DELETE_triggers_trigger_id.txt`.
+w("""Пара AVAX-USDT (шаг цены 0.001, minQty 0.1, min notional 5). Справочник — `docs/polyester_docs/api-docs/rest__POST__v1__triggers.txt`, `rest__GET__v1__triggers.txt`, `rest__GET__v1__triggers__trigger_id.txt`, `rest__DELETE__v1__triggers__trigger_id.txt` и ConnectRPC-версии `connect__triggers.v1.TriggersService__*.txt`.
 Уже отправлено (не дублирую): «цены scaled вместо decimal» в справочнике триггеров, childOrderId «1». Ниже родственное помечено «дополнение».
 
 """)
@@ -302,7 +331,7 @@ fire_rows = []
 for e in fire_after:
     t = (J(e) or {}).get("trigger", {})
     fire_rows.append(f"| {e['label'].split(' | ')[0]} | {t.get('status')} | {t.get('failureReason', '-')} |")
-w("""### 2.2 Цена «не с той стороны» рынка: принимается и срабатывает на следующей сделке
+w("""### 2.2 Цена «не с той стороны» рынка: принимается и срабатывает на следующей сделке (по докам — не баг, см. раздел 0)
 
 В доках: TRIGGER_PRICE_INVALID есть в списке кодов (страница replace-batch); на странице POST /v1/triggers — ни слова, когда он приходит.
 На деле: все 10 сочетаний (SELL/BUY × stopLoss/takeProfit, выше/ниже рынка, ровно по bid/ask) создаются со статусом ARMED; направление (BELOW/ABOVE) выводится из типа и стороны, а не из рынка. Цена 0 и отрицательная — VALIDATION_ERROR; TRIGGER_PRICE_INVALID не пришёл ни разу.
@@ -345,7 +374,7 @@ if "FIRE2 публичные сделки (limit 50)" in ALL:
     t50 = [t for t in (J(e) or {}).get("trades", []) if t["executedAt"].startswith("2026-09-29T10:29:50")]
     w(f"`GET /v1/spot/markets/AVAX-USDT/trades` — {e['utc']} — HTTP {e['http']} — сделки 10:29:50 из ответа (выборка):\n```\n{json.dumps(t50, ensure_ascii=False)}\n```\n")
 
-w("""### 2.3 qty ниже минимума принимается при создании
+w("""### 2.3 qty ниже минимума принимается при создании (по докам — не баг, см. раздел 0)
 
 В доках: ограничений qty на странице нет. Для ордеров биржа отклоняет MIN_QTY / MIN_NOTIONAL (обратная проверка ниже).
 На деле: stop-loss с qty 0.05 (minQty пары 0.1; дочерний ордер 0.05 × 22.8 = 1.14 USDT < 5) — 200, ARMED. Ladder и TWAP с qty 0.2 (на уровень/слайс 0.1) — 200, через ~1 с FAILED с failureReason MIN_NOTIONAL.
