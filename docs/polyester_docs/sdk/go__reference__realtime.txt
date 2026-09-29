@@ -1,0 +1,372 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/realtime
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Realtime · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Realtime
+Realtime
+Copy page
+View as Markdown
+Open in
+client.Realtime
+is the shared Centrifugo WebSocket client. Prefer typed service helpers
+(
+client.Orders.Subscribe
+,
+client.Balances.Subscribe
+, …). They return
+*realtime.Subscription[T]
+Realtime is binary-only: the transport negotiates
+centrifuge-protobuf
+and uses length-delimited
+Protobuf control frames and publication payloads. JSON wire mode applies only to ConnectRPC
+debugging, never to realtime. Incoming WebSocket messages and protobuf record/field lengths are
+capped at 8 MiB.
+Managed order-book and market-overview subscriptions return dedicated types that expose
+Updates()
+instead of
+Messages()
+SetOnError(...)
+and
+Err()
+; register
+the callback so a managed feed failure cannot leave quoting logic on a frozen book.
+Subscription contract
+API
+Behavior
+Messages()
+<-chan T
+of decoded publications; closes when the sub ends
+Done()
+Signal when the subscription has fully stopped
+Err()
+Terminal error (
+*errors.QueueOverflowError
+on overflow)
+SetOnError
+Callback for background transport/feed errors
+Resubscribes()
+Count of successful reconnect subscriptions; continuity may be lost
+TakeResubscribed()
+Edge-triggered reconnect-gap signal for reconciliation
+Close()
+Stop the subscription
+There is no
+Recv()
+method in Go.
+Range or select on
+Messages()
+(or
+Updates()
+for
+managed books).
+sub
+,
+err
+client
+Orders
+Subscribe
+(
+ctx
+,
+accountID
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+// handshake already completed
+defer
+sub
+Close
+()
+sub
+SetOnError
+(
+func
+(
+err
+error
+) {
+log
+Printf
+(
+"realtime interruption:
+%v
+"
+,
+err
+)
+})
+for
+order
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+order
+Status
+,
+order
+OrderID
+)
+}
+if
+err
+sub
+Err
+();
+err
+!=
+nil
+log
+Printf
+(
+"ended:
+%v
+"
+,
+err
+)
+}
+Handshake before return
+SubscribeProto
+/ service subscribe helpers wait for the Centrifugo connect/subscribe handshake
+(including private token fetch) before returning. Initial auth failures return an error immediately;
+they do not reconnect forever in the background.
+Reconnects after a successful handshake use capped exponential backoff with per-subscription
+jitter. A successful resubscription resets the backoff.
+Private channels need Account ID
+Private channels require API-key credentials and an Account ID (
+Subscribe(ctx, accountID)
+or
+Config.DefaultAccountID
+/
+POLYESTER_ACCOUNT_ID
+).
+Fail-closed overflow
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+No silent drops
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Bounded queues. A slow consumer fails the subscription with
+*errors.QueueOverflowError
+instead of dropping updates.
+Generic typed subscriptions default to a 1000-item queue. Managed order-book subscriptions use a
+dedicated 200-item update queue. Either queue fails closed on overflow.
+Snapshot-then-stream
+Order book and market overview managed subscriptions snapshot via REST, then stream deltas/batches
+with gap recovery. Their create methods wait for the WebSocket handshake and initial snapshot
+before returning. Prefer those helpers over wiring raw channels yourself.
+Lower-level
+sub
+,
+err
+realtime
+SubscribeProto
+(
+ctx
+,
+client
+Realtime
+,
+channel
+,
+decodeFn
+)
+See
+Streaming
+Session model:
+WebSocket session model
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Public trades
+Next
+Social verification
+On this page
+Subscription contract
+Handshake before return
+Private channels need Account ID
+Fail-closed overflow
+Snapshot-then-stream
+Lower-level
+Related Topics
+Share this page
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+sub, err := client.Orders.Subscribe(ctx, accountID)
+if err != nil { log.Fatal(err) } // handshake already completed
+defer sub.Close()
+sub.SetOnError(func(err error) {
+    log.Printf("realtime interruption: %v", err)
+})
+
+for order := range sub.Messages() {
+    fmt.Println(order.Status, order.OrderID)
+}
+if err := sub.Err(); err != nil {
+    log.Printf("ended: %v", err)
+}
+
+---
+
+sub, err := realtime.SubscribeProto(ctx, client.Realtime, channel, decodeFn)

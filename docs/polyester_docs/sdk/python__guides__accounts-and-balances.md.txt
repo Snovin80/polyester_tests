@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/accounts-and-balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+## Funding vs trading
+Ledger balances have separate **funding** and **trading** buckets per asset.
+- An external deposit can stop in **funding** or continue to **trading**, depending on its route
+- Spot orders spend **trading**
+- Move funding → trading on-chain (or via the Polyester UI), not through a ConnectRPC balance call
+Balance component fields are **scaled integer decimal strings** (ledger u128). Format with `format_ledger_u128` for display.
+```python
+from polyester import format_ledger_u128
+balances = await client.balances.list()
+for b in balances.balances:
+print(
+b.asset_id,
+format_ledger_u128(b.funding),
+format_ledger_u128(b.trading),
+format_ledger_u128(b.available),
+)
+```
+Optional scope: `account={"subaccount_id": "..."}` or `sub_account_id=...`.
+Also on `client.balances`: `get_balance_history`, `get_equity_history`, `list_holds`, and `subscribe` for live updates. See [Balances](https://testnet.polyester.com/docs/sdk/python/reference/balances).
+## Account scope
+Pass `"main"`, `"active"`, or `{"subaccount_id": "..."}` on scoped services, or set `default_sub_account_id` / `default_account_id` on the client. Private streams need Account ID.
+## Subaccounts & policies
+The Python SDK exposes subaccount **reads** (including members, invites, and activity) plus private subaccount streams. `client.policies` is subscribe-only. Create/update/delete and membership or policy administration require the Polyester app/TypeScript session client.
+A subaccount-scoped API key also needs its own attached API-key policy. Permit ledger reads for balance reads/streams and add the required trading actions for mutations. The API-key policy and subaccount policy are distinct and both constrain the request.
+## Profile & API keys
+`client.auth` and `client.api_keys` cover identity and key metadata. Unary key-metadata reads work with an API key; the private administration stream requires its API-key administration permission. **Creating** keys is JWT/session-only.
+## Transfer history
+`client.transfers` lists transfer history. Money movement mutations: [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/python/guides/deposits-and-withdrawals).
+> **Private realtime**
+>
+> Balance and trade streams need API-key auth plus Account ID. See [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming).

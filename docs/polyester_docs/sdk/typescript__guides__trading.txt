@@ -1,0 +1,1386 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/trading
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Trading
+Trading
+Copy page
+View as Markdown
+Open in
+Everything here needs an authenticated client. See
+Authentication
+Place an order
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+const
+result
+=
+await
+client
+orders
+create
+({
+symbolId
+,
+side:
+"buy"
+,
+// "buy" | "sell"
+qty:
+"0.25"
+,
+// decimal string
+execution: {
+type:
+"limit_gtc"
+,
+price:
+"64250.5"
+,
+postOnly:
+true
+,
+},
+clientOrderId:
+crypto
+randomUUID
+(),
+});
+// This acknowledges admission, not a fill or working-state transition.
+console
+log
+(
+result
+orderId
+,
+result
+acceptedAt
+);
+Choose one explicit execution:
+Useful optional top-level fields:
+Field
+Values
+Purpose
+clientOrderId
+string
+Account-scoped duplicate guard and reconciliation key.
+maxQuoteDebit
+decimal string
+Quote-asset spend cap instead of
+qty
+market_ioc
+and BUY
+limit_ioc
+only.
+feeAsset
+"quote"
+or
+"base"
+Which asset pays the fee. Defaults to
+"quote"
+selfTradePreventionMode
+"expire_taker"
+,
+"expire_maker"
+, or
+"expire_both"
+STP when your own orders would match.
+account
+"main"
+,
+"active"
+, or
+Which account (see
+Accounts & balances
+).
+The SDK rejects malformed decimal values and excess fractional precision before send. It does not
+automatically validate a price or quantity against current tick, step, or minimum rules; use the
+catalog validator when you need that preflight. Prices accept up to nine decimal places, so
+"64250.5000000001"
+throws
+CatalogConversionError
+from
+ceiling throws the same error before network I/O. These ceilings are not exchange limits.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Pre-validate for forms
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use the catalog without placing anything:
+client.catalog.orders.validateSpotOrderDecimalInput(...)
+returns structured
+errors, and
+getSpotOrderConstraints(pair)
+exposes tick, step, minimum, and wire ceilings
+for UI hints.
+maxPrice
+,
+maxQtyBase
+,
+maxNotionalQuote
+, and
+maxQuoteSlippage
+are decimal-string protobuf wire ceilings. The validator does not
+enforce them. The backend remains authoritative because exchange rules and available balance can
+change.
+Use
+limit_gtd
+for a limit order that expires at a specific UTC instant.
+expireAt
+is an integer
+epoch-millisecond timestamp. The SDK validates that it is representable; the venue validates how
+far in the future it may be. Read models show
+timeInForce: "GTD"
+and optional
+expireAt
+Attach risk to an order
+An order can carry take-profit, stop-loss, or trailing-stop legs that activate when it fills:
+await
+client
+orders
+create
+({
+symbolId
+,
+side:
+"buy"
+,
+qty:
+"0.1"
+,
+execution: { type:
+"limit_gtc"
+, price:
+"64000"
+},
+risk: {
+takeProfit: {
+triggerPrice:
+"70000"
+,
+execution: { type:
+"limit_gtc"
+, price:
+"69950"
+},
+},
+stopLoss: {
+triggerPrice:
+"60000"
+,
+execution: { type:
+"market_ioc"
+},
+},
+oco:
+true
+,
+// one-cancels-other between the two legs
+},
+});
+Valid
+risk
+combinations:
+takeProfit
++
+stopLoss
+,
+takeProfit
++
+trailingStop
+, or any one
+alone.
+oco: true
+is only valid on a pair; a single leg with
+oco: true
+is rejected.
+Take-profit and stop-loss legs require an explicit
+execution
+market_ioc
+or
+limit_gtc
+with a price. Trailing stops take
+trailingDistance
+(absolute or bps), optional
+activationPrice
+, and
+maxSlippage
+; they execute as market IOC.
+Modify an order
+Patch price, quantity, client id, or attached risk:
+await
+client
+orders
+modify
+({
+symbolId
+,
+orderId:
+order
+orderId
+,
+// or clientOrderId: "..."
+newPrice:
+"64100"
+,
+newQty:
+"0.2"
+,
+});
+// replace or clear attached risk
+await
+client
+orders
+modify
+({
+symbolId
+,
+orderId:
+order
+orderId
+,
+risk: {
+stopLoss: {
+triggerPrice:
+"61000"
+,
+execution: { type:
+"market_ioc"
+},
+},
+},
+});
+await
+client
+orders
+modify
+({
+symbolId
+,
+orderId:
+order
+orderId
+,
+clearRisk:
+true
+,
+});
+modify
+generates a
+requestId
+automatically. Pass your own stable value when you might retry
+the same logical change. The result's
+actionTaken
+is
+"AMENDED"
+or
+"REPLACED"
+replace, cancel and later modifies use
+finalOrderId
+, not the id you sent.
+Cancel orders
+// One order, by id or client id
+await
+client
+orders
+cancel
+({ orderId:
+order
+orderId
+});
+await
+client
+orders
+cancel
+({ clientOrderId:
+"my-key-123"
+,
+symbolId
+});
+// Bulk, with a dry run first
+const
+preview
+=
+await
+client
+orders
+cancelAll
+({ symbolIds: [
+symbolId
+], dryRun:
+true
+});
+console
+log
+(
+`${
+preview
+matchedOrders
+} orders would be cancelled`
+);
+await
+client
+orders
+cancelAll
+({ symbolIds: [
+symbolId
+], side:
+"buy"
+});
+Omit
+symbolIds
+(or pass
+) to match all symbols. It accepts up to 100 positive IDs; duplicate
+IDs and their order do not change the result.
+cancelAll
+generates a
+requestId
+when omitted.
+Reuse that ID with the same criteria only for an ambiguous retry; completed results are retained for
+at least two minutes, so use a fresh ID for each new cancellation.
+Batch orders
+Batch mutations are best effort and preserve item order. For
+batchCreate
+,
+requestId
+is the
+idempotency boundary; the SDK generates one when omitted, but provide and reuse a stable value for
+an ambiguous retry. Within 15 minutes, the same payload and
+requestId
+replay the original
+results and timestamp; a different payload with that
+requestId
+returns
+CONFLICT_IDEMPOTENCY_KEY_REUSE
+clientOrderId
+values are optional correlation identifiers and must
+be unique when supplied. The limits are 20 creates, 50 modifications, and 50 cancellations.
+const
+result
+=
+await
+client
+orders
+batchCreate
+({
+requestId:
+"quotes-42"
+,
+items: [
+symbolId
+,
+side:
+"buy"
+,
+qty:
+"0.01"
+,
+execution: { type:
+"limit_gtc"
+, price:
+"64000"
+, postOnly:
+true
+},
+clientOrderId:
+"quote-bid-42"
+,
+},
+symbolId
+,
+side:
+"sell"
+,
+qty:
+"0.01"
+,
+execution: { type:
+"limit_gtc"
+, price:
+"65000"
+, postOnly:
+true
+},
+clientOrderId:
+"quote-ask-42"
+,
+},
+],
+});
+for
+(
+const
+item
+of
+result
+results
+) {
+if
+(
+item
+status
+===
+"rejected"
+)
+console
+error
+(
+item
+clientOrderId
+,
+item
+error
+?.
+code
+);
+}
+A rejected item is
+status: "rejected"
+error
+can be missing when the server omitted a structured
+detail.
+Use
+batchReplace
+to move a whole quote set on one symbol with the same patch shape as
+modify
+,
+or
+batchCancel
+with explicit order keys. Accepted results acknowledge admission, not execution:
+confirm final state through the order read or stream surface, or for a replacement batch through
+getBatchReplaceStatus
+Each
+batchReplace
+admission and status item reports
+actionTaken
+"AMENDED"
+is cancel-only:
+there is no replacement order,
+replacementOrderId
+is
+undefined
+, and the status item's
+orderStatus
+describes
+oldOrderId
+oldOrderId
+until its terminal state is
+confirmed.
+Protect a market maker with cancel-all-after
+Arm the dead-man switch only after startup reconciliation confirms the open orders you intend to
+protect. Refresh it before expiry:
+const
+requestId
+=
+crypto
+randomUUID
+();
+const
+heartbeat
+=
+await
+client
+orders
+cancelAllAfter
+({
+timeoutSec:
+15
+,
+symbolId
+,
+requestId
+,
+});
+console
+log
+(
+heartbeat
+status
+,
+heartbeat
+expiresAtNs
+);
+Create a new
+requestId
+for each deliberate heartbeat. Reuse that ID only when retrying the same
+ambiguous heartbeat. If a refresh fails or its expiry is uncertain, stop quoting and reconcile.
+Disable the timer during a controlled shutdown with
+cancelAllAfter({ timeoutSec: 0 })
+Read orders
+// Open orders. Drain every page; one call is not the full book.
+let
+pageToken
+=
+""
+;
+const
+open
+=
+do
+const
+page
+=
+await
+client
+orders
+listOpen
+({ symbolId: [
+symbolId
+],
+pageToken
+, limit:
+100
+});
+open
+push
+(
+page
+orders
+);
+pageToken
+=
+page
+nextPageToken
+;
+}
+while
+(
+pageToken
+!==
+""
+);
+// History, paginated
+pageToken
+=
+""
+;
+do
+const
+page
+=
+await
+client
+orders
+listHistory
+({
+pageToken
+, limit:
+100
+});
+console
+log
+(
+page
+orders
+length
+);
+pageToken
+=
+page
+nextPageToken
+;
+}
+while
+(
+pageToken
+!==
+""
+);
+// One physical order and a page of its lineage executions
+const
+details
+=
+await
+client
+orders
+getDetails
+({ orderId:
+order
+orderId
+, limit:
+100
+});
+Use
+details.nextPageToken
+as
+pageToken
+with the same
+orderId
+to read later execution pages.
+The accompanying settlement transfers belong to matches on that page, so deduplicate transfers by
+txId
+across pages. Orders and trades include optional
+lineage: { id, generation }
+metadata that
+links physical replacements to their logical order.
+Live updates on a private channel:
+const
+unsubscribe
+=
+client
+orders
+subscribe
+({
+accountId
+,
+onEvent
+order
+)
+=>
+console
+log
+(
+order
+status
+,
+order
+orderId
+),
+});
+subscribe
+returns before the channel is confirmed. If a write depends on this stream being
+ready, wait for its first
+onOpen
+; it can fire again after reconnect, so do not put one-time writes
+inside that callback. See
+Streaming
+Your trade fills
+const
+trades
+,
+transfers
+,
+nextPageToken
+}
+=
+await
+client
+trades
+list
+({
+symbolId:
+String
+(
+symbolId
+),
+includeTransfers:
+true
+,
+});
+const
+unsubscribe
+=
+client
+trades
+subscribe
+({
+accountId
+,
+onEvent
+trade
+)
+=>
+console
+log
+(
+"filled"
+,
+trade
+qty
+,
+"@"
+,
+trade
+price
+),
+});
+For durable replay after the last observed fill, pass its
+matchId
+as
+afterMatchId
+with the
+positive numeric
+symbolId
+string. Subscribe before replaying and deduplicate overlap by
+symbolId
+,
+matchId
+, and
+orderId
+lineageId
+and optionally
+throughGeneration
+; it is mutually exclusive with
+orderId
+settlement
+transfers
+across pages by
+txId
+Standalone triggers
+Server-side automations that place a child order when a condition fires. Five types:
+stop_loss
+,
+take_profit
+,
+trailing_stop
+,
+twap
+, and
+ladder
+const
+created
+=
+await
+client
+triggers
+create
+({
+triggerType:
+"stop_loss"
+,
+symbolId
+,
+side:
+"sell"
+,
+qty:
+"0.1"
+,
+triggerPrice:
+"60000"
+,
+execution: { type:
+"market_ioc"
+},
+});
+// trailing stop: follow the price at a fixed distance
+await
+client
+triggers
+create
+({
+triggerType:
+"trailing_stop"
+,
+symbolId
+,
+qty:
+"0.1"
+,
+trailingDistance: { kind:
+"distance"
+, distance:
+"500"
+},
+activationPrice:
+"68000"
+,
+});
+Every strategy has an explicit shape. Stop-loss and take-profit accept
+side
+,
+triggerPrice
+, and
+an execution (
+market_ioc
+,
+limit_gtc
+,
+limit_ioc
+, or
+limit_fok
+). Trailing stops always sell
+with market IOC. TWAP accepts
+side
+,
+durationMs
+,
+sliceIntervalMs
+, and either
+market_ioc
+with optional per-slice
+maxSlippage
+or
+limit_gtc
+execution. Omit the market IOC slippage to use
+the pair default; otherwise provide an absolute decimal price delta or an integer 1–10,000 BPS
+limit. Ladder accepts
+side
+,
+priceMin
+,
+priceMax
+,
+levels
+(2 to 100), and optional
+postOnly
+;
+its children are limit GTC. TWAP and ladder runtime details report cumulative base-quantity
+executedQty
+as a decimal string; ladder also reports
+executedLevels
+, including partially filled
+levels. All variants share
+symbolId
+,
+qty
+, fee/STP options, and an optional
+clientTriggerId
+that the SDK generates when omitted.
+Lifecycle:
+await
+client
+triggers
+list
+({
+symbolId
+, pageToken:
+""
+});
+await
+client
+triggers
+modify
+({
+triggerId
+,
+symbolId
+, triggerPrice:
+"59500"
+});
+await
+client
+triggers
+cancel
+({
+triggerId
+});
+// Why did it fire / cancel / update?
+const
+events
+}
+=
+await
+client
+triggers
+listEvents
+({
+triggerId
+});
+Event types are
+fired
+,
+canceled
+,
+updated
+,
+failed
+, and
+activated
+triggers expose typed
+cancelReason
+and
+failureReason
+fields instead of a free-form event
+reason. Trailing-stop runtime details report the current threshold as
+triggerPrice
+; it is
+undefined
+until the trigger is armed and then moves with the peak or trough.
+Stream with
+client.triggers.subscribe(...)
+and
+client.triggers.subscribeEvents(...)
+Fees and trading quotas
+Before you show a fee in a UI, ask
+client.fees
+for the effective percents on that account. They
+already include VIP.
+"0.02"
+is 0.02%.
+const
+btc
+]
+=
+await
+client
+fees
+getSpotRates
+({ symbolIds: [
+symbolId
+] });
+console
+log
+(
+btc
+makerFeeRatePercent
+,
+btc
+takerFeeRatePercent
+,
+btc
+vipTier
+);
+The public VIP catalog and the caller's root-account qualification are on
+client.vip
+const
+catalog
+=
+await
+client
+vip
+listTiers
+();
+const
+status
+=
+await
+client
+vip
+getStatus
+();
+console
+log
+(
+status
+tier
+,
+status
+volumeTier
+,
+status
+aopTier
+);
+getStatus
+is always the root account, even if the active
+subaccount
+is something else. Full
+shapes:
+Fees
+and
+VIP
+Placement and cancellation are separate weighted pools.
+getConfig
+is the public VIP0+ table.
+getTradingLimits
+is what this account (and, with an
+API key
+, this key) can actually spend.
+const
+published
+=
+await
+client
+tradingRateLimits
+getConfig
+();
+const
+limits
+=
+await
+client
+tradingRateLimits
+getTradingLimits
+();
+const
+place
+=
+limits
+rules
+find
+((
+rule
+)
+=>
+rule
+policyClass
+===
+"trading_place"
+);
+console
+log
+(
+place
+?.
+quotaWeight
+,
+place
+?.
+burstWeight
+);
+A rejected place or cancel throws
+RateLimitError
+by
+clientOrderId
+; keep a replayable
+requestId
+unchanged when retrying its mutation. See
+Trading rate limits
+Retry safely
+Mutation identifiers have endpoint-specific behavior:
+orders.create
+clientOrderId
+for reconciliation; retained reuse returns a conflict.
+After an ambiguous timeout, reconcile with
+orders.getDetails({ clientOrderId })
+; an
+immediate lookup miss does not prove admission failed. Without
+clientOrderId
+, the outcome may
+remain unknown.
+orders.batchCreate
+requestId
+; per-item
+clientOrderId
+is optional correlation
+orders.modify
+/
+orders.cancelAll
+/
+orders.cancelAllAfter
+requestId
+Reconcile unknown create outcomes before resubmitting. Retry other mutations only on
+TransientError
+(network, timeout, rate limit). See
+Error handling
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Streaming
+Subscribe to realtime market data and private account updates with typed events and a uniform unsubscribe contract.
+Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+Deposits & withdrawals
+Move assets in and out: deposit addresses, internal transfers, withdrawals, and lifecycle tracking.
+Server-side usage
+Build per-request clients from cookies, verify sessions, and hydrate browser clients from the server.
+Error handling
+Triage errors with one instanceof check, retry safely, and handle MFA step-up flows.
+Previous
+Market data
+Next
+Streaming
+On this page
+Place an order
+Attach risk to an order
+Modify an order
+Cancel orders
+Batch orders
+Protect a market maker with cancel-all-after
+Read orders
+Your trade fills
+Standalone triggers
+Fees and trading quotas
+Retry safely
+Related Topics
+Share this page
+Trading
+Place, modify, and cancel spot orders, attach risk controls, and automate with standalone triggers.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+
+const result = await client.orders.create({
+	symbolId,
+	side: "buy", // "buy" | "sell"
+	qty: "0.25", // decimal string
+	execution: {
+		type: "limit_gtc",
+		price: "64250.5",
+		postOnly: true,
+	},
+	clientOrderId: crypto.randomUUID(),
+});
+
+// This acknowledges admission, not a fill or working-state transition.
+console.log(result.orderId, result.acceptedAt);
+
+---
+
+await client.orders.create({
+	symbolId,
+	side: "buy",
+	qty: "0.1",
+	execution: { type: "limit_gtc", price: "64000" },
+	risk: {
+		takeProfit: {
+			triggerPrice: "70000",
+			execution: { type: "limit_gtc", price: "69950" },
+		},
+		stopLoss: {
+			triggerPrice: "60000",
+			execution: { type: "market_ioc" },
+		},
+		oco: true, // one-cancels-other between the two legs
+	},
+});
+
+---
+
+await client.orders.modify({
+	symbolId,
+	orderId: order.orderId, // or clientOrderId: "..."
+	newPrice: "64100",
+	newQty: "0.2",
+});
+
+// replace or clear attached risk
+await client.orders.modify({
+	symbolId,
+	orderId: order.orderId,
+	risk: {
+		stopLoss: {
+			triggerPrice: "61000",
+			execution: { type: "market_ioc" },
+		},
+	},
+});
+await client.orders.modify({
+	symbolId,
+	orderId: order.orderId,
+	clearRisk: true,
+});
+
+---
+
+// One order, by id or client id
+await client.orders.cancel({ orderId: order.orderId });
+await client.orders.cancel({ clientOrderId: "my-key-123", symbolId });
+
+// Bulk, with a dry run first
+const preview = await client.orders.cancelAll({ symbolIds: [symbolId], dryRun: true });
+console.log(`${preview.matchedOrders} orders would be cancelled`);
+
+await client.orders.cancelAll({ symbolIds: [symbolId], side: "buy" });
+
+---
+
+const result = await client.orders.batchCreate({
+	requestId: "quotes-42",
+	items: [
+		{
+			symbolId,
+			side: "buy",
+			qty: "0.01",
+			execution: { type: "limit_gtc", price: "64000", postOnly: true },
+			clientOrderId: "quote-bid-42",
+		},
+		{
+			symbolId,
+			side: "sell",
+			qty: "0.01",
+			execution: { type: "limit_gtc", price: "65000", postOnly: true },
+			clientOrderId: "quote-ask-42",
+		},
+	],
+});
+
+for (const item of result.results) {
+	if (item.status === "rejected") console.error(item.clientOrderId, item.error?.code);
+}
+
+---
+
+const requestId = crypto.randomUUID();
+const heartbeat = await client.orders.cancelAllAfter({
+	timeoutSec: 15,
+	symbolId,
+	requestId,
+});
+
+console.log(heartbeat.status, heartbeat.expiresAtNs);
+
+---
+
+// Open orders. Drain every page; one call is not the full book.
+let pageToken = "";
+const open = [];
+do {
+	const page = await client.orders.listOpen({ symbolId: [symbolId], pageToken, limit: 100 });
+	open.push(...page.orders);
+	pageToken = page.nextPageToken;
+} while (pageToken !== "");
+
+// History, paginated
+pageToken = "";
+do {
+	const page = await client.orders.listHistory({ pageToken, limit: 100 });
+	console.log(page.orders.length);
+	pageToken = page.nextPageToken;
+} while (pageToken !== "");
+
+// One physical order and a page of its lineage executions
+const details = await client.orders.getDetails({ orderId: order.orderId, limit: 100 });
+
+---
+
+const unsubscribe = client.orders.subscribe({
+	accountId,
+	onEvent: (order) => console.log(order.status, order.orderId),
+});
+
+---
+
+const { trades, transfers, nextPageToken } = await client.trades.list({
+	symbolId: String(symbolId),
+	includeTransfers: true,
+});
+
+const unsubscribe = client.trades.subscribe({
+	accountId,
+	onEvent: (trade) => console.log("filled", trade.qty, "@", trade.price),
+});
+
+---
+
+const created = await client.triggers.create({
+	triggerType: "stop_loss",
+	symbolId,
+	side: "sell",
+	qty: "0.1",
+	triggerPrice: "60000",
+	execution: { type: "market_ioc" },
+});
+
+// trailing stop: follow the price at a fixed distance
+await client.triggers.create({
+	triggerType: "trailing_stop",
+	symbolId,
+	qty: "0.1",
+	trailingDistance: { kind: "distance", distance: "500" },
+	activationPrice: "68000",
+});
+
+---
+
+await client.triggers.list({ symbolId, pageToken: "" });
+await client.triggers.modify({ triggerId, symbolId, triggerPrice: "59500" });
+await client.triggers.cancel({ triggerId });
+
+// Why did it fire / cancel / update?
+const { events } = await client.triggers.listEvents({ triggerId });
+
+---
+
+const [btc] = await client.fees.getSpotRates({ symbolIds: [symbolId] });
+console.log(btc.makerFeeRatePercent, btc.takerFeeRatePercent, btc.vipTier);
+
+---
+
+const catalog = await client.vip.listTiers();
+const status = await client.vip.getStatus();
+console.log(status.tier, status.volumeTier, status.aopTier);
+
+---
+
+const published = await client.tradingRateLimits.getConfig();
+const limits = await client.tradingRateLimits.getTradingLimits();
+
+const place = limits.rules.find((rule) => rule.policyClass === "trading_place");
+console.log(place?.quotaWeight, place?.burstWeight);

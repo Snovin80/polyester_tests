@@ -1,0 +1,483 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/tutorials
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Live market ticker · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Tutorials
+Live market ticker
+Copy page
+View as Markdown
+Open in
+Smallest path into the SDK. Build a live ticker on Polyester testnet with public market data
+only. No keys, wallets, or sessions. By the end you will know the realtime contract every stream
+shares.
+About ten minutes.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+No credentials needed
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Every service in this tutorial is public. An unauthenticated
+PolyesterClient
+can call
+all of it.
+1
+Create a public client
+Install the SDK and create a client against the testnet environment. With no
+auth
+option, the
+client can still read all public market data.
+// ticker.ts
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({ environment:
+POLYESTER_TESTNET_ENVIRONMENT
+});
+await
+client
+catalog
+ensureReady
+();
+const
+SYMBOL
+=
+"BTC-USDT"
+;
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+SYMBOL
+);
+Trading and market-data streams use the stable numeric
+symbolId
+through the
+catalog
+2
+Stream the market overview
+The market overview is one row per market with last price and 24h stats. Its stream is
+snapshot-then-stream: it fetches the full set first, then merges live updates and emits the merged
+array. It also refetches automatically on reconnect, so you always render a consistent table.
+const
+overviewUnsub
+=
+client
+marketOverview
+subscribe
+({
+onEvent
+markets
+)
+=>
+const
+top
+=
+markets
+slice
+(
+0
+,
+5
+);
+for
+(
+const
+m
+of
+top
+) {
+const
+symbol
+=
+client
+catalog
+market
+requirePairSymbolBySymbolId
+(
+m
+symbolId
+);
+console
+log
+(
+symbol
+,
+m
+lastPrice
+);
+}
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+"overview error"
+,
+ctx
+error
+),
+});
+Every stream method follows the same shape: pass an
+onEvent
+handler (plus optional
+onOpen
+,
+onClose
+, and
+onError
+), and you get back an idempotent unsubscribe function.
+3
+Add a live candle feed
+Subscribe to one-minute candles for your symbol. Handlers receive fully parsed objects with decimal
+strings, the same shapes the request methods return.
+const
+candleUnsub
+=
+client
+candles
+subscribe
+({
+symbolId
+,
+timeframe:
+"1m"
+,
+onEvent
+candle
+)
+=>
+console
+log
+(
+"candle close"
+,
+candle
+close
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+"candle error"
+,
+ctx
+error
+),
+});
+You can seed history first with
+client.candles.list({ symbolId, timeframe: "1m", limit: 60 })
+,
+then let the stream keep it current.
+4
+Render a live order book
+createSubscription
+maintains a local order book: initial snapshot, sequence-checked deltas, and
+refetch after an observed sequence gap or reconnect. Your handler sees a complete book relative to
+the last applied snapshot or delta. Any
+depth
+in
+works. A connected feed that goes
+silent will not fire
+onError
+or refetch; if you need continuity, watch the last
+onEvent
+and
+resync with
+orderbook.get()
+Order book
+const
+book
+=
+client
+orderbook
+createSubscription
+({
+symbolId
+,
+depth:
+10
+,
+onEvent
+b
+)
+=>
+const
+bid
+=
+b
+bids
+0
+];
+const
+ask
+=
+b
+asks
+0
+];
+if
+(
+bid
+&&
+ask
+)
+console
+log
+(
+`bid ${
+bid
+price
+}  ask ${
+ask
+price
+}`
+);
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+"book error"
+,
+ctx
+error
+),
+});
+// Re-aggregate into coarser price buckets without reconnecting:
+book
+setBucket
+(
+"10"
+);
+5
+Run it and shut down
+Under the hood, one shared WebSocket client multiplexes all three streams, so this costs a single
+connection. Clean up on exit:
+process
+on
+(
+"SIGINT"
+, ()
+=>
+overviewUnsub
+();
+candleUnsub
+();
+book
+unsubscribe
+();
+client
+realtime
+disconnect
+();
+process
+exit
+(
+0
+);
+});
+bun
+run
+ticker.ts
+You should see the top markets, then a stream of candle closes and top-of-book updates.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+This runs on a server too
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+This script is a long-lived process, so it streams fine from Node, Bun, or a server, not just a
+browser. Subscriptions are only blocked inside a framework's SSR render pass, where you should
+fetch a snapshot during render and subscribe after the page hydrates. See
+Streaming
+Where to go next
+Market data guide
+for every public read and stream.
+Streaming guide
+for the realtime model in depth.
+Build a trading bot
+to act on this data.
+Related Topics
+Build a trading bot
+A complete testnet market-making bot, from API key to a live quoting loop with idempotent orders, reconnects, and graceful shutdown.
+Portfolio tracker
+Read balances and equity history, scope requests to subaccounts, and stream live balance updates for an authenticated user.
+Previous
+Requests & idempotency
+Next
+Build a trading bot
+On this page
+Where to go next
+Related Topics
+Share this page
+Live market ticker
+Stream tickers, candles, and a live order book with no authentication, using the shared realtime contract.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+// ticker.ts
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+
+const client = new PolyesterClient({ environment: POLYESTER_TESTNET_ENVIRONMENT });
+
+await client.catalog.ensureReady();
+const SYMBOL = "BTC-USDT";
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol(SYMBOL);
+
+---
+
+const overviewUnsub = client.marketOverview.subscribe({
+	onEvent: (markets) => {
+		const top = markets.slice(0, 5);
+		for (const m of top) {
+			const symbol = client.catalog.market.requirePairSymbolBySymbolId(m.symbolId);
+			console.log(symbol, m.lastPrice);
+		}
+	},
+	onError: (ctx) => console.error("overview error", ctx.error),
+});
+
+---
+
+const candleUnsub = client.candles.subscribe({
+	symbolId,
+	timeframe: "1m",
+	onEvent: (candle) => console.log("candle close", candle.close),
+	onError: (ctx) => console.error("candle error", ctx.error),
+});
+
+---
+
+const book = client.orderbook.createSubscription({
+	symbolId,
+	depth: 10,
+	onEvent: (b) => {
+		const bid = b.bids[0];
+		const ask = b.asks[0];
+		if (bid && ask) console.log(`bid ${bid.price}  ask ${ask.price}`);
+	},
+	onError: (ctx) => console.error("book error", ctx.error),
+});
+
+// Re-aggregate into coarser price buckets without reconnecting:
+book.setBucket("10");
+
+---
+
+process.on("SIGINT", () => {
+	overviewUnsub();
+	candleUnsub();
+	book.unsubscribe();
+	client.realtime.disconnect();
+	process.exit(0);
+});
+
+---
+
+bun run ticker.ts

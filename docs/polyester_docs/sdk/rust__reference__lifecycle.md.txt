@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/lifecycle.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+`client.lifecycle` correlates multi-step deposit, withdrawal, and transfer flows for operations dashboards.
+| Method                                | Purpose                               |
+| ------------------------------------- | ------------------------------------- |
+| `list_flows`                          | Paginated summaries                   |
+| `get_flow`                            | One flow by flow/intent ID            |
+| `get_flow_by_tx` / `list_flows_by_tx` | Transaction lookup                    |
+| `subscribe_open_flows`                | Public or account-specific open flows |
+| `subscribe_flow_detail`               | One flow's updates                    |
+```rust
+use polyester::proto::chain::lifecycle::v1::ListFlowsRequest;
+let flows = client.lifecycle.list_flows(ListFlowsRequest {
+limit: 50,
+}).await?;
+for flow in flows.flows {
+println!(
+"{} {} {} terminal={} reason={}",
+flow.intent_id, flow.flow_kind, flow.latest_step, flow.is_terminal, flow.lifecycle_reason
+);
+if let Some(zipper) = &flow.zipper_reason {
+println!("{} {} {}", zipper.reason_id, zipper.message, zipper.code);
+}
+}
+```
+Each flow summary exposes:
+- `lifecycle_reason`: product-facing catalog label (`unspecified`, `zipper_validation_rejected`, ledger-mirror variants, or `unknown_reason_
+` when the wire code is ahead of the SDK catalog).
+- `zipper_reason`: optional Zipper detail (`code`, `reason_id`, `message`) when Zipper supplied a precise rejection. Prefer `reason_id` / `message` for user-facing copy instead of raw numeric codes.
+Generated request page tokens are opaque. `subscribe_open_flows(Some(account_id))` is private; `None` uses the public open-flows channel. `subscribe_flow_detail(flow_id)` is public-by-flow-ID. Singular lookups return `Error::Transport` if a successful response omits the requested flow or its required summary; they never return an empty placeholder flow.
+Lifecycle progress is not the same as spendable balance. Confirm completed funding/trading balances before enabling dependent orders.

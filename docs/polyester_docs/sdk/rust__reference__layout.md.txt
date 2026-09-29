@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/layout.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Layout
+Layout collaboration APIs (reference-only).
+`client.layout` wraps app collaboration RPCs: reads, upsert/delete, share links, publish/unpublish, version history, and template subscriptions. Each method accepts the matching generated `polyester::proto::layout::v1` request and returns `ApiData`.
+## Methods
+| Group               | Methods                                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Saved layouts       | `get_layouts`, `get_layout`, `upsert_layout`, `delete_layout`                                                      |
+| Share links         | `resolve_layout_share_token`, `create_layout_share_link`, `revoke_layout_share_link`                               |
+| Published templates | `list_owner_published_layouts`, `publish_layout`, `unpublish_layout`                                               |
+| Versions            | `list_layout_template_versions`, `get_layout_template_version`                                                     |
+| Subscriptions       | `set_layout_template_subscription`, `delete_layout_template_subscription`, `list_my_layout_template_subscriptions` |
+```rust
+use polyester::proto::layout::v1::GetLayoutsRequest;
+let layouts = client.layout.get_layouts(GetLayoutsRequest {
+limit: 50,
+}).await?;
+println!("{}", layouts.raw);
+```
+List requests carry opaque `page_token` values. Mutation request messages contain the relevant layout/revision fields; inspect the generated type rather than inventing map keys.
+This is **not a supported API-key flow**. Layout collaboration is tied to the interactive app/session, and some deployments may not mount these routes. Use the TypeScript session client for production layout work.
+Do not blindly retry raw layout mutations. Never let layout availability block trading or risk controls.

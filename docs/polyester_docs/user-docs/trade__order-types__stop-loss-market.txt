@@ -1,0 +1,232 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/stop-loss-market
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Stop-Loss Market · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+svg]:size-3.5">
+/
+Stop-Loss Market
+Stop-Loss Market
+Copy page
+View as Markdown
+Open in
+A stop-loss market order triggers after a downside condition and then attempts immediate market-style execution.
+What it does
+A
+stop-loss market
+trigger watches for a downside condition, then attempts to submit a market-style child order.
+It prioritizes an execution attempt after activation rather than setting one fixed execution price.
+How it works
+Watch:
+Last Price is compared with the configured condition.
+Activate:
+the condition is met and Polyester attempts to admit the child order.
+Execute:
+the market-IOC child takes eligible liquidity within configured price protection.
+Reconcile:
+child orders, fills, and balances establish the final outcome.
+The trigger and child have separate states. An accepted trigger does not prove that the later child is admitted, filled, or settled.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+This is not a guaranteed exit
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The child can fill across several prices, fill only partially, or receive no fill within current protection and liquidity.
+When to use it
+Use it when an execution attempt matters most.
+Stop-Loss Market fits a downside condition where attempting to reduce exposure matters more than one fixed execution price.
+Avoid it when a precise exit price must be protected.
+Choose Stop-Loss Limit when selling below a defined price would be worse than leaving some or all of the position open.
+Confirm the active market, eligible side, quantity, trigger condition, price source, and price-protection control shown by the current form.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, worth about 1,000 USDT, and want to reduce your exposure if the price falls to
+95,000 USDT
+A Last Price trade at 95,000 USDT activates the stop.
+The best eligible bid can buy 0.006 BTC at 94,900 USDT, so the Market child fills that amount first.
+The next eligible bid can buy the remaining 0.004 BTC at 94,850 USDT, completing the order.
+Result:
+You sell the full 0.01 BTC for 948.80 USDT before fees, at an average price of 94,880 USDT.
+This is example liquidity. A real child order can fill partially or receive no fill when eligible bids do not exist within price protection.
+What to watch
+A gap can move available prices before the child is admitted.
+Price protection can produce a partial fill or no fill.
+Balance, policy, or market state can reject the child.
+Canceling after activation can race with execution.
+Verify the trigger in
+Order Triggers
+, then verify fills in
+Order History
+Related Topics
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Previous
+Ladder
+Next
+Stop-Loss Limit
+On this page
+What it does
+How it works
+When to use it
+Example
+What to watch
+Related Topics
+Share this page
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Share
+Copy Link

@@ -1,0 +1,693 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/catalog
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Catalog · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Catalog
+Catalog
+Copy page
+View as Markdown
+Open in
+client.catalog
+is a snapshot of venue reference data (assets, pairs, scales,
+routes
+) with typed
+readers on top. Every service consults it to turn symbols into ids and wire integers into exact
+decimal strings. This page documents the reader surface; for the design and the decimal-string
+contract, see
+Catalog & precision
+The four readers all hang off the catalog:
+Reader
+Covers
+catalog.market
+Trading assets and pairs: symbol and id lookups, listing status, price and quantity conversions.
+catalog.ledger
+Ledger assets: id and symbol lookups, amount conversion and display formatting.
+catalog.orders
+Per-pair order constraints (tick, step, minimums) and order input validation.
+catalog.zipper
+Deposit and withdraw chains,
+unified assets
+, per-chain routes, and contracts.
+Across every reader,
+get*
+and
+lookup*
+methods return
+null
+on a miss, and
+require*
+methods
+throw a
+CatalogLookupError
+from
+Lifecycle
+The catalog starts empty and fills itself from two public endpoints (spot config and
+zipper
+config) the first time something needs it. Service methods await readiness internally, so you only
+manage the lifecycle yourself before direct reader reads.
+await
+client
+catalog
+ensureReady
+();
+// fetch if empty, then resolve the snapshot
+Method
+Behavior
+ensureReady()
+Resolve the current snapshot, fetching if the catalog is empty.
+ready()
+Passive: resolve the current snapshot or an in-flight refresh, never start one.
+refresh()
+Force a refetch (deduplicated while one is in flight).
+state()
+where status is
+empty
+,
+refreshing
+,
+fresh
+, or
+stale
+snapshot()
+The current
+CatalogSnapshot
+, or throw
+CatalogNotReadyError
+if empty.
+setSnapshot(s)
+Replace the snapshot with one you already have.
+stale
+means a refresh failed and the previous snapshot is still being served rather than dropped.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+You rarely call ensureReady before service methods
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Any service method that needs reference data awaits readiness for you. Call
+ensureReady()
+yourself only before reading a reader directly, as in the examples
+below.
+catalog.market
+Assets and trading pairs, plus exact price and quantity conversions. Enriched pairs retain
+baseQuantityScale
+and
+quoteQuantityScale
+from the spot config. These fields can be absent in
+older snapshots; freshly populated catalogs preserve them.
+Assets also carry an optional
+marketDataVolumeScale
+, used to decode candle volume and
+market-overview 24h base volume. Pairs carry an optional
+referencePriceScale
+, used to decode
+composite reference candle prices. Snapshots without these fields fall back to the asset
+quantity scale and the 9-decimal trading price scale.
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+const
+pair
+=
+client
+catalog
+market
+requirePairBySymbol
+(
+"BTC-USDT"
+);
+const
+listed
+=
+client
+catalog
+market
+listPairs
+({ listed:
+true
+});
+Lookups (each has a
+get*
+null-returning and a
+require*
+throwing form):
+Assets:
+listAssets()
+,
+getAsset(key)
+/
+requireAsset(key)
+,
+getAssetBySymbol(sym)
+/
+requireAssetBySymbol(sym)
+,
+getAssetByLedgerId(id)
+/
+requireAssetByLedgerId(id)
+Pairs:
+listPairs(filter?)
+,
+getPair(key)
+/
+requirePair(key)
+,
+getPairBySymbol(sym)
+/
+requirePairBySymbol(sym)
+,
+getPairBySymbolId(id)
+/
+requirePairBySymbolId(id)
+Id and symbol crosswalk:
+getSymbolIdByPairSymbol(sym)
+/
+requireSymbolIdByPairSymbol(sym)
+,
+getPairSymbolBySymbolId(id)
+/
+requirePairSymbolBySymbolId(id)
+Conversions and formatting (all exact, all keyed by a pair):
+// Normalize UI input to the pair's precision by truncating excess fractional digits
+client
+catalog
+market
+normalizePriceInput
+(
+"64250.512345"
+,
+"BTC-USDT"
+);
+client
+catalog
+market
+normalizeQuantityInput
+(
+"0.2500"
+,
+"BTC-USDT"
+);
+// Strict decimal string <-> scaled integer conversion
+client
+catalog
+market
+decimalPriceToTicks
+(
+"64250.5"
+,
+"BTC-USDT"
+);
+client
+catalog
+market
+decimalQuantityToScaled
+(
+"0.25"
+,
+"BTC-USDT"
+);
+client
+catalog
+market
+priceTicksToDecimalString
+(
+64250500000000
+n
+,
+"BTC-USDT"
+);
+// "64250.5"
+// Display-rounded strings for UI
+client
+catalog
+market
+formatPrice
+(
+"64250.5"
+,
+"BTC-USDT"
+);
+client
+catalog
+market
+formatQuantity
+(
+"0.25"
+,
+"BTC-USDT"
+);
+Keys accept a pair symbol (
+"BTC-USDT"
+), a numeric
+symbolId
+, or
+/
+normalizePriceInput
+and
+normalizeQuantityInput
+are for partial form input: they truncate to
+catalog scale but do not round, snap to a tick grid, or check order constraints. The strict
+converters reject excess precision with
+CatalogConversionError
+, exported from
+catalog.ledger
+Ledger assets, addressed by symbol or numeric ledger id, with amount conversion and display
+formatting.
+const
+usdc
+=
+client
+catalog
+ledger
+requireAssetBySymbol
+(
+"USDC"
+);
+const
+display
+=
+client
+catalog
+ledger
+formatAmount
+(
+"1234.5"
+,
+"USDC"
+);
+// display-rounded
+catalog.orders
+Per-pair order constraints and order-input validation. Use these to build order forms and to
+pre-validate before calling
+client.orders.create
+const
+constraints
+=
+client
+catalog
+orders
+getSpotOrderConstraints
+(
+"BTC-USDT"
+);
+// tick size, step size, minimums, and protobuf wire ceilings
+const
+result
+=
+client
+catalog
+orders
+validateSpotOrderDecimalInput
+({
+pair:
+"BTC-USDT"
+,
+price:
+"64250.5"
+,
+quantity:
+"0.25"
+,
+});
+if
+(
+!
+result
+valid
+)
+console
+log
+(
+result
+errors
+);
+getSpotOrderConstraints(pair)
+returns tick, step, and minimum values, plus the decimal-string
+wire ceilings
+maxPrice
+for price,
+maxQtyBase
+for base quantity,
+maxNotionalQuote
+for quote
+amount, and
+maxQuoteSlippage
+for quote-denominated slippage.
+validateSpotOrderDecimalInput(input)
+returns
+, a structured list you can
+render inline in a form.
+assertSpotOrderDecimalInput(input)
+throws a
+CatalogValidationFailedError
+on the first
+violation instead of returning errors.
+Use these validators when you need pre-submit feedback.
+orders.create
+and
+orders.modify
+still
+perform strict shape and decimal-scale conversion, but do not automatically validate current tick,
+step, or minimum rules. The validator checks parsing, tick, step, and minimum rules. It does not
+enforce the four maxima. Those maxima are protobuf wire-format ceilings, not exchange limits.
+Order and trigger methods throw
+CatalogConversionError
+before network I/O when a decimal exceeds
+the corresponding ceiling. The backend is authoritative because catalog and balance state can
+change.
+catalog.zipper
+Use
+environment.chain.id
+for the
+Polyester chain
+ID. Zipper configuration and catalog
+snapshots do not expose
+polyesterChainId
+Deposit and withdraw chains, unified assets, and the per-chain routes that back
+deposits and withdrawals
+const
+chains
+=
+client
+catalog
+zipper
+listChains
+();
+const
+eth
+=
+client
+catalog
+zipper
+requireAssetBySymbol
+(
+"ETH"
+);
+const
+route
+=
+client
+catalog
+zipper
+requireAssetChain
+(
+"ETH"
+,
+"ethereum-sepolia"
+);
+Lookups:
+listChains()
+,
+requireChain(key)
+,
+requireChainByCode(code)
+,
+requireChainById(id)
+,
+requireChainIdByCode(code)
+,
+requireAssetBySymbol(sym)
+,
+requireAssetChain(asset, chain)
+, and
+requireAssetChainByZippedAssetId(id)
+Unknown assets never crash
+Events that reference an asset the catalog does not know resolve to a sentinel "unknown asset"
+rather than throwing mid-stream. Detect them with the
+isUnknownLedgerAsset
+and
+isUnknownZipperAsset
+guards exported from
+Owning the snapshot
+By default each client fetches and holds its own snapshot. Three config options change that, all
+covered in
+Client configuration
+catalogSnapshot
+seeds a client with a snapshot you already have (typically from SSR: the
+server calls
+catalog.snapshot()
+, bakes it into the page, and the browser client starts warm).
+catalogCell
+backs the snapshot with external, optionally reactive storage you control.
+catalog
+injects a fully managed
+ClientCatalog
+instance (mutually exclusive with the other
+two).
+The
+subpath exports the builders and reader types for these patterns:
+createPolyesterCatalog
+,
+buildCatalogSnapshot
+,
+createCatalogSnapshotReader
+,
+patchZipperCatalogSupply
+, the unknown-asset guards, and the reader and config types.
+Related
+Catalog & precision
+for the design.
+Orders
+and the
+Trading guide
+for order validation in context.
+Errors
+for the catalog error classes.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Candles
+Next
+Chain analytics
+On this page
+Lifecycle
+catalog.market
+catalog.ledger
+catalog.orders
+catalog.zipper
+Unknown assets never crash
+Owning the snapshot
+Related
+Related Topics
+Share this page
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.catalog.ensureReady(); // fetch if empty, then resolve the snapshot
+
+---
+
+await client.catalog.ensureReady();
+
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const pair = client.catalog.market.requirePairBySymbol("BTC-USDT");
+const listed = client.catalog.market.listPairs({ listed: true });
+
+---
+
+// Normalize UI input to the pair's precision by truncating excess fractional digits
+client.catalog.market.normalizePriceInput("64250.512345", "BTC-USDT");
+client.catalog.market.normalizeQuantityInput("0.2500", "BTC-USDT");
+
+// Strict decimal string <-> scaled integer conversion
+client.catalog.market.decimalPriceToTicks("64250.5", "BTC-USDT");
+client.catalog.market.decimalQuantityToScaled("0.25", "BTC-USDT");
+client.catalog.market.priceTicksToDecimalString(64250500000000n, "BTC-USDT"); // "64250.5"
+
+// Display-rounded strings for UI
+client.catalog.market.formatPrice("64250.5", "BTC-USDT");
+client.catalog.market.formatQuantity("0.25", "BTC-USDT");
+
+---
+
+const usdc = client.catalog.ledger.requireAssetBySymbol("USDC");
+const display = client.catalog.ledger.formatAmount("1234.5", "USDC"); // display-rounded
+
+---
+
+const constraints = client.catalog.orders.getSpotOrderConstraints("BTC-USDT");
+// tick size, step size, minimums, and protobuf wire ceilings
+
+const result = client.catalog.orders.validateSpotOrderDecimalInput({
+	pair: "BTC-USDT",
+	price: "64250.5",
+	quantity: "0.25",
+});
+if (!result.valid) console.log(result.errors);
+
+---
+
+const chains = client.catalog.zipper.listChains();
+const eth = client.catalog.zipper.requireAssetBySymbol("ETH");
+const route = client.catalog.zipper.requireAssetChain("ETH", "ethereum-sepolia");

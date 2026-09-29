@@ -1,0 +1,754 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/deposits-and-withdrawals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Deposits & withdrawals · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Deposits & withdrawals
+Deposits & withdrawals
+Copy page
+View as Markdown
+Open in
+What chains and assets are supported?
+Zipper
+is Polyester's deposit/withdraw bridge. Its public config lists
+supported chains,
+unified assets
+, and per-chain
+routes
+, including network fees and minimums:
+const
+config
+=
+await
+client
+zipper
+getDepositWithdrawConfig
+();
+Same data through the catalog's zipper reader, with lookups and conversions:
+await
+client
+catalog
+ensureReady
+();
+const
+chains
+=
+client
+catalog
+zipper
+listChains
+();
+const
+eth
+=
+client
+catalog
+zipper
+requireAssetBySymbol
+(
+"ETH"
+);
+const
+route
+=
+client
+catalog
+zipper
+requireAssetChain
+(
+"ETH"
+,
+"ethereum-sepolia"
+);
+Deposits
+Create (or fetch) a deposit address for an account on a chain, then send funds to it:
+const
+address
+=
+await
+client
+deposit
+createAddress
+({
+chainId
+});
+const
+addresses
+=
+await
+client
+deposit
+listAddresses
+();
+Addresses are per-account. Pass
+account
+for a
+subaccount
+'s address.
+Tracking with lifecycle flows
+Cross-chain ops (deposits, withdrawals) move through multi-step lifecycle flows. The lifecycle
+service reads and streams that state:
+const
+flows
+}
+=
+await
+client
+lifecycle
+listFlows
+({ limit:
+50
+});
+const
+flow
+=
+await
+client
+lifecycle
+getFlow
+({
+flowId
+});
+// find the flow for a transaction hash
+const
+byTx
+=
+await
+client
+lifecycle
+listFlowsByTx
+({
+txHash
+, lookupKind:
+"any"
+});
+// live progress
+const
+unsubscribe
+=
+client
+lifecycle
+subscribeFlowDetail
+({
+flowId
+,
+onEvent
+detail
+)
+=>
+updateProgress
+(
+detail
+),
+});
+subscribeOpenFlows
+streams summaries of all open flows for an account.
+Ledger transfers
+Every balance movement is a ledger transfer. List and stream them:
+const
+transfers
+,
+nextPageToken
+}
+=
+await
+client
+transfers
+list
+({ limit:
+50
+});
+const
+unsubscribe
+=
+client
+transfers
+subscribe
+({
+accountId
+,
+onEvent
+transfer
+)
+=>
+console
+log
+(
+transfer
+),
+});
+Internal transfers
+Move funds between Polyester accounts (root, subaccount, or another user) without touching a
+chain:
+const
+result
+=
+await
+client
+internalTransfers
+create
+({
+destination: { type:
+"subaccount"
+,
+subaccountId
+},
+assetId:
+2
+,
+quantity:
+"125.50"
+,
+idempotencyKey:
+crypto
+randomUUID
+(),
+});
+Resolve destinations with
+client.accounts.resolve(...)
+(
+client.addressBook.listTransferDestinations()
+). Requests are idempotent.
+Withdrawals from Trading
+Withdrawals out of Trading are signed intents. Two destinations:
+import
+type
+TradingWithdrawWalletSigner
+}
+from
+"@polyester/sdk"
+;
+const
+walletSigner
+TradingWithdrawWalletSigner
+=
+signerWallet:
+owner
+address
+,
+accountId:
+me
+accountId
+,
+signMessage
+message
+)
+=>
+owner
+signMessage
+({
+message
+}),
+};
+// Trading to Funding (stays on Polyester)
+await
+client
+tradingWithdraws
+createToFunding
+({
+assetId:
+2
+,
+quantity:
+"500.00"
+,
+idempotencyKey:
+crypto
+randomUUID
+(),
+walletSigner
+,
+});
+// Trading to an external chain
+await
+client
+tradingWithdraws
+createToExternalChain
+({
+assetId:
+2
+,
+quantity:
+"500.00"
+,
+destinationChainId:
+1
+,
+destinationAddress:
+address
+,
+idempotencyKey:
+crypto
+randomUUID
+(),
+walletSigner
+,
+});
+Each intent has a short deadline (about 5 minutes), a nonce, and an idempotency key.
+walletSigner
+signs the SDK's canonical EIP-191 text message with
+personal_sign
+; alternatively, provide a
+precomputed
+payloadSignature
+for API-key infrastructure.
+Before you ask anyone to sign an external-chain withdrawal, check the destination:
+const
+check
+=
+await
+client
+tradingWithdraws
+validateDestination
+({
+destinationChainId:
+1
+,
+destinationAddress:
+address
+,
+});
+if
+(
+!
+check
+valid
+)
+throw
+new
+Error
+(
+check
+message
+);
+// code says why: token contract, denylisted, ...
+This catches token contracts, unsupported chains, denylisted addresses, and Polyester
+smart accounts
+(which want an internal transfer instead) before a signature exists, and it returns the canonical
+form of the address to submit. See the
+withdrawals reference
+for every code.
+When a withdrawal fails after admission, the lifecycle reason names the cause:
+trading_withdraw_policy_denied
+,
+trading_withdraw_contract_reverted
+, or
+trading_withdraw_execution_failed
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Guard signers
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Accounts protected by a guard use
+client.guardSigner
+to co-sign protected actions.
+signProtectedAction
+/
+batchSignProtectedActions
+produce approvals.
+createWallet
+/
+rotateWallet
+/
+exportWallet
+manage the
+backend guard wallet.
+On-chain actions with the smart account
+For a real chain transaction from the user's smart account (not an API request), use
+environment's bundler and paymaster:
+import
+createPolyesterSmartAccount
+,
+createPolyesterSmartAccountClient
+,
+sendPolyesterUserOperation
+,
+waitForPolyesterUserOperationReceipt
+,
+warmPolyesterSmartAccountClient
+,
+}
+from
+"@polyester/sdk/smart-account"
+;
+const
+account
+=
+await
+createPolyesterSmartAccount
+({
+environment
+,
+owner
+});
+const
+smartAccountClient
+=
+createPolyesterSmartAccountClient
+(
+account
+, {
+environment
+});
+await
+warmPolyesterSmartAccountClient
+(
+smartAccountClient
+);
+const
+onPhase
+=
+(
+phase
+string
+,
+ms
+number
+)
+=>
+console
+log
+(
+phase
+,
+ms
+);
+const
+hash
+=
+await
+sendPolyesterUserOperation
+(
+smartAccountClient
+,
+destinationAddress
+, value:
+0
+n
+, data:
+"0x"
+}] },
+onWalletSignatureRequested
+=>
+setStatus
+(
+"confirm in wallet"
+),
+onPhase
+}
+);
+sendPolyesterUserOperation
+prepares the operation in one pass, then asks the wallet to sign.
+The returned hash identifies the submitted operation; it is not a receipt.
+Gas estimation errors throw; the SDK does not silently resend.
+onWalletSignatureRequested
+fires
+on the third-argument options object, immediately before the sign prompt.
+warmPolyesterSmartAccountClient
+primes the gas-price cache and opens RPC connections ahead of
+submission. It never throws and does not cache the nonce. Gas prices cache
+for 60 seconds by default (
+options.gasPriceCacheTtlMs
+). Repeated
+createPolyesterSmartAccountClient
+calls with the same account instance, environment fingerprint,
+and option values return the same client, preserving this cache.
+Each operation requests its own paymaster stub, then sponsorship data through
+pm_getPaymasterData
+by 20% with a 50,000 gas floor, so the sponsorship signature commits to the buffered limits.
+Submission failures after signing clear the gas-price cache; canceling a wallet prompt before
+signing completes preserves it.
+Wait for inclusion with the submitted hash:
+const
+receipt
+=
+await
+waitForPolyesterUserOperationReceipt
+(
+smartAccountClient
+,
+hash
+, {
+timeoutMs:
+120_000
+,
+onPhase
+,
+});
+if
+(
+!
+receipt
+success
+)
+throw
+new
+Error
+(
+"UserOperation reverted"
+);
+The helper checks
+pimlico_getUserOperationStatus
+immediately, then polls at the client's
+options.pollingIntervalMs
+(250 milliseconds by default). It obtains the receipt when the
+operation is included or reverted, rejects on
+failed
+or
+rejected
+, and clears cached fees on
+rejection. A
+not_found
+status continues polling and periodically checks for a
+receipt on-chain until the deadline. The default timeout is 120 seconds and bounds requests as
+well as polling delays. Receiving a receipt does not imply execution succeeded; check
+success
+onPhase(phase, ms)
+reports
+prepare
+,
+sign
+, and
+send
+durations during submission. Pass it to
+the receipt helper to report
+receipt
+duration too. Errors thrown by this timing observer are
+ignored.
+predictPolyesterSmartAccountAddress
+computes the address with no RPC calls.
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Trading
+Place, modify, and cancel spot orders, attach risk controls, and automate with standalone triggers.
+Streaming
+Subscribe to realtime market data and private account updates with typed events and a uniform unsubscribe contract.
+Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+Server-side usage
+Build per-request clients from cookies, verify sessions, and hydrate browser clients from the server.
+Error handling
+Triage errors with one instanceof check, retry safely, and handle MFA step-up flows.
+Previous
+Accounts & balances
+Next
+Server-side usage
+On this page
+What chains and assets are supported?
+Deposits
+Tracking with lifecycle flows
+Ledger transfers
+Internal transfers
+Withdrawals from Trading
+On-chain actions with the smart account
+Related Topics
+Share this page
+Deposits & withdrawals
+Move assets in and out: deposit addresses, internal transfers, withdrawals, and lifecycle tracking.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const config = await client.zipper.getDepositWithdrawConfig();
+
+---
+
+await client.catalog.ensureReady();
+
+const chains = client.catalog.zipper.listChains();
+const eth = client.catalog.zipper.requireAssetBySymbol("ETH");
+const route = client.catalog.zipper.requireAssetChain("ETH", "ethereum-sepolia");
+
+---
+
+const address = await client.deposit.createAddress({ chainId });
+const addresses = await client.deposit.listAddresses();
+
+---
+
+const { flows } = await client.lifecycle.listFlows({ limit: 50 });
+const flow = await client.lifecycle.getFlow({ flowId });
+
+// find the flow for a transaction hash
+const byTx = await client.lifecycle.listFlowsByTx({ txHash, lookupKind: "any" });
+
+// live progress
+const unsubscribe = client.lifecycle.subscribeFlowDetail({
+	flowId,
+	onEvent: (detail) => updateProgress(detail),
+});
+
+---
+
+const { transfers, nextPageToken } = await client.transfers.list({ limit: 50 });
+
+const unsubscribe = client.transfers.subscribe({
+	accountId,
+	onEvent: (transfer) => console.log(transfer),
+});
+
+---
+
+const result = await client.internalTransfers.create({
+	destination: { type: "subaccount", subaccountId },
+	assetId: 2,
+	quantity: "125.50",
+	idempotencyKey: crypto.randomUUID(),
+});
+
+---
+
+import type { TradingWithdrawWalletSigner } from "@polyester/sdk";
+
+const walletSigner: TradingWithdrawWalletSigner = {
+	signerWallet: owner.address,
+	accountId: me.accountId,
+	signMessage: (message) => owner.signMessage({ message }),
+};
+
+// Trading to Funding (stays on Polyester)
+await client.tradingWithdraws.createToFunding({
+	assetId: 2,
+	quantity: "500.00",
+	idempotencyKey: crypto.randomUUID(),
+	walletSigner,
+});
+
+// Trading to an external chain
+await client.tradingWithdraws.createToExternalChain({
+	assetId: 2,
+	quantity: "500.00",
+	destinationChainId: 1,
+	destinationAddress: address,
+	idempotencyKey: crypto.randomUUID(),
+	walletSigner,
+});
+
+---
+
+const check = await client.tradingWithdraws.validateDestination({
+	destinationChainId: 1,
+	destinationAddress: address,
+});
+
+if (!check.valid) throw new Error(check.message); // code says why: token contract, denylisted, ...
+
+---
+
+import {
+	createPolyesterSmartAccount,
+	createPolyesterSmartAccountClient,
+	sendPolyesterUserOperation,
+	waitForPolyesterUserOperationReceipt,
+	warmPolyesterSmartAccountClient,
+} from "@polyester/sdk/smart-account";
+
+const account = await createPolyesterSmartAccount({ environment, owner });
+const smartAccountClient = createPolyesterSmartAccountClient(account, { environment });
+
+await warmPolyesterSmartAccountClient(smartAccountClient);
+
+const onPhase = (phase: string, ms: number) => console.log(phase, ms);
+const hash = await sendPolyesterUserOperation(
+	smartAccountClient,
+	{ calls: [{ to: destinationAddress, value: 0n, data: "0x" }] },
+	{ onWalletSignatureRequested: () => setStatus("confirm in wallet"), onPhase }
+);
+
+---
+
+const receipt = await waitForPolyesterUserOperationReceipt(smartAccountClient, hash, {
+	timeoutMs: 120_000,
+	onPhase,
+});
+if (!receipt.success) throw new Error("UserOperation reverted");

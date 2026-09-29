@@ -1,0 +1,259 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Testnet Faucets · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Testnet Faucets
+Testnet Faucets
+Copy page
+View as Markdown
+Open in
+Polyester Testnet supports deposits of assets from supported blockchains’ own test networks. These assets let you test the deposit process from the source chain into Polyester.
+Testnet assets are different from the paper funds created by the Polyester team for paper trading competitions and giveaways. Paper funds are minted through a smart contract and can be created in unlimited amounts, allowing the team to distribute more or replace funds lost during trading.
+Source-chain testnet assets are issued on their respective networks, such as Bitcoin Testnet. Depending on the network, they may need to be mined or obtained through third-party faucets. Polyester does not control their supply or availability. Depositing these assets lets you test the actual source-chain integration.
+Below are the test networks supported by Polyester and the faucets where you can request funds. Expand an asset to view its networks, available faucets, and any requirements.
+Eligibility and Usage
+These faucets send testnet Assets without requiring a mainnet balance. After you receive funds,
+deposit
+them into Polyester.
+If a faucet is unavailable, see
+Faucet Backups
+Asset
+Network
+Faucet
+Notes
+AVAX
+Avalanche C Fuji
+Avalanche Builder Hub
+0.5 AVAX per claim. Free account required.
+BCH
+Bitcoin Cash Testnet
+Googol
+Select
+testnet
+, enter a BCH testnet address, and complete the CAPTCHA.
+BNB
+BNB Smart Chain Testnet
+GHOST
+0.01 BNB per claim.
+BTC
+Bitcoin Testnet
+CoinFaucet
+Use a Bitcoin Testnet3 address.
+DOGE
+Dogecoin Testnet
+doge.toys
+Can be unstable or unavailable. Use a Dogecoin testnet address.
+ETC
+Ethereum Classic Testnet
+ETCMC Monitor
+Proof-of-work faucet: uses your device's processing power. Amount depends on mining completed.
+ETH
+Ethereum Sepolia
+Google Cloud
+Google account sign-in required.
+ETH
+Base Sepolia
+OpenFaucet
+Proof-of-work browser mining. Keep the page open while mining.
+ETH
+Arbitrum Sepolia
+OpenFaucet
+Proof-of-work browser mining. Keep the page open while mining.
+ETH
+Robinhood Testnet
+Robinhood Chain
+0.01 ETH per claim. Google account sign-in required.
+LTC
+Litecoin Testnet
+CypherFaucet
+0.01 LTC per hour. CAPTCHA required.
+POL
+Polygon Amoy
+OpenFaucet
+Proof-of-work browser mining. Listed claim range: 0.01 to 0.05 POL.
+TRX
+Tron Nile
+NileEX
+1,000 TRX per claim. Enter a Nile wallet address and complete the CAPTCHA.
+XRP
+Ripple Testnet
+XRP Ledger
+Select
+Testnet
+Faucet amounts and availability can change. Use the faucet's own page for current terms.
+FAQ
+Do I need to connect and verify my Discord account to participate in testnet?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. Connecting your Discord account to your Polyester account is only required to claim paper assets. If you don’t want to use paper assets, you can obtain supported assets from external test networks through the
+Testnet Faucets
+page in the user docs, then deposit them into Polyester.
+Do I need to connect and verify my X account to participate in testnet?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. Connecting your X account to your Polyester account is only required to claim paper assets. If you don’t want to use paper assets, you can obtain supported assets from external test networks through the
+Testnet Faucets
+page in the user docs, then deposit them into Polyester.
+How do I obtain and deposit assets from external test networks?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A faucet is a website that provides testnet assets. Visit
+Testnet Faucets
+in the user docs to find faucets for supported assets and networks. After receiving the assets in your wallet, open Deposit in Polyester, choose the matching asset and test network, and send them to the deposit address shown. These faucets are operated by third parties, not Polyester. The links are provided for reference.
+Related Topics
+Faucet Backups
+Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+Confirmation Requirements
+See the confirmation requirements and estimated deposit times for supported chains.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Previous
+Confirmation Requirements
+Next
+Faucet Backups
+On this page
+Eligibility and Usage
+FAQ
+Related Topics
+Share this page
+Testnet Faucets
+Claim testnet Assets from faucets that do not require a mainnet balance.
+Share
+Copy Link

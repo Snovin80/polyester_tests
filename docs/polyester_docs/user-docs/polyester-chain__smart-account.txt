@@ -1,0 +1,230 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/smart-account
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Smart Account · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Chain
+svg]:size-3.5">
+/
+Smart Account
+Smart Account
+Copy page
+View as Markdown
+Open in
+Every
+Main Account
+and
+Subaccount
+is represented on
+Polyester Chain
+by a
+Safe
+smart account
+owner wallet
+is the non-custodial credential that authorizes it.
+Your owner wallet and Safe have different addresses and different jobs. The owner approves actions; the Safe executes them.
+Owner wallet and smart account
+Your owner wallet can be:
+an external non-custodial wallet
+an embedded non-custodial wallet created through an available Google or email sign-in.
+The owner wallet holds the credential used to authorize your Safe. Polyester does not become the owner because it sponsors gas, operates a bundler, or keeps you signed in.
+The Safe has no single private key or recovery phrase of its own. If you export an embedded wallet key, you are exporting the owner credential, not a separate Safe private key.
+How your smart account takes action
+Polyester prepares the call for your active Safe and the relevant protocol contract.
+Your owner credential authorizes the action.
+Polyester packages it as an ERC-4337 UserOperation.
+The Safe validates the authorization and executes the call.
+Polyester Chain records the resulting transaction and contract events.
+Your application session,
+MFA
+, permissions, and destination controls can add protection before an action reaches the Safe. They do not replace the owner credential.
+Your address can exist before deployment
+Polyester can calculate your Safe address before the account contract is deployed. This is called a
+counterfactual smart account
+The address can already support account setup, deposit-address attribution, and product records. The first eligible on-chain action deploys the Safe and executes the requested call together.
+Creating your account, signing in, receiving a deposit, or trading through
+PolyEngine
+does not necessarily deploy the Safe. A Funding transfer, withdrawal, whitelist change, or another signed on-chain action can become its first deployment.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Your first Chain action can deploy the Safe
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Deployment does not create a new account or change its address. It places the already predicted Safe contract on Polyester Chain.
+Main Accounts and Subaccounts
+Your Main Account and every Subaccount have separate Safe addresses. They can share the same owner wallet while keeping their balances, permissions, members, and activity separate.
+Switching accounts changes which Safe is active. It does not merge the accounts or move assets between them.
+Your Safe and your balances
+The Safe is your account identity and authorization layer, but not every balance appears as tokens held directly at the Safe address.
+Funding contracts hold route-specific
+Zipped Assets
+and record your
+Unified Asset
+movements. Trading balances, orders, fills, fees, and reservations remain in Polyester's private Trading system.
+Zipper
+vaults
+separately hold native external assets that back Zipped Assets.
+See
+Sign-In & Ownership
+for owner credentials and
+Gas Abstraction
+for sponsored smart-account actions.
+Related Topics
+Overview
+See how Polyester Chain supports your account, assets, and public on-chain activity.
+Gas Abstraction
+See how Polyester sponsors gas for your supported Polyester Chain actions.
+Validators
+See how Polyester Chain validators secure blocks and how other approval roles remain separate.
+RPC Nodes
+Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+Previous
+Overview
+Next
+Gas Abstraction
+On this page
+Owner wallet and smart account
+How your smart account takes action
+Your address can exist before deployment
+Main Accounts and Subaccounts
+Your Safe and your balances
+Related Topics
+Share this page
+Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Share
+Copy Link

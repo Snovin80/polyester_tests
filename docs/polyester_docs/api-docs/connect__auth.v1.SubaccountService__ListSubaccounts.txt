@@ -1,0 +1,258 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.SubaccountService/ListSubaccounts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.SubaccountService
+ListSubaccounts
+List sub-accounts owned by or shared with the caller.
+Copy URL
+Method
+POST
+Path
+auth.v1.SubaccountService/ListSubaccounts
+Service
+auth.v1.SubaccountService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+auth.v1.SubaccountService/ListSubaccounts
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.SubaccountService/ListSubaccounts' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"subaccounts": [
+"color": "#7C3AED",
+"icon": "💰",
+"id": "1",
+"label": "Market Making",
+"ownerAvatarUrl": "https://placehold.co/128x128.png",
+"ownerRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"ownerUsername": "trader_alpha",
+"requireMemberMfa": false,
+"revision": "1",
+"role": "VIEWER",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"smartAccountSaltNonce": 1,
+"status": "SUBACCOUNT_STATUS_ACTIVE",
+"subaccountPolicyId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"totalCreated": 1
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.ListSubaccountsRequest
+Response
+auth.v1.ListSubaccountsResponse
+Response
+Form
+JSON
+subaccounts
+object[]
+Sub-accounts owned by or shared with the caller, ordered by sub-account ID ascending.
+15 fields
+id
+string (fixed64)
+Sub-account identifier (opaque ID).
+role
+enum
+must be defined value
+Role of the current caller on this sub-account.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+label
+string
+max 64 chars
+Optional human-readable label for this sub-account.
+icon
+string
+max 32 chars
+Optional user-chosen icon/emoji for UI display.
+color
+string (color)
+max 32 chars
+Optional user-chosen color token for UI display. Tokens use lowercase letters, numbers, underscores, or hyphens.
+status
+enum
+must be defined value
+Current public lifecycle status of the sub-account.
+SUBACCOUNT_STATUS_ACTIVE
+SUBACCOUNT_STATUS_DISABLED
+smartAccountAddress
+string
+Smart Account EVM address backing this sub-account.
+ownerUsername
+string
+Owner (root account) public username, if set. Useful for shared views.
+ownerAvatarUrl
+string
+Owner (root account) avatar URL, if set.
+ownerRootSmartAccountAddress
+string
+Owner (root account) primary Smart Account address, when available. Allows
+clients to display a stable identity even when no username is set.
+subaccountPolicyId
+string (fixed64)
+Optional sub-account policy identifier (opaque ID). 0 means no
+explicit policy attached.
+requireMemberMfa
+boolean
+Owner-controlled security baseline for delegated interactive members on
+protected sub-account actions. This does not apply to read-only real-time
+subscriptions.
+smartAccountSaltNonce
+integer (int32)
+Smart-account derivation salt nonce assigned when this sub-account was
+created. Present only when the caller owns the sub-account and can use it
+for direct chain signing.
+updatedAt
+string (date-time)
+Time in UTC when this sub-account's configuration was last changed. For the
+same sub-account, later is fresher, equal is an idempotent replay, and
+earlier is stale. Equal timestamps with different configuration indicate
+an invariant failure.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+totalCreated
+integer (int32)
+Total number of sub-accounts that have ever been created for this root,
+including soft-deleted ones. Request CreateSubaccountChallenge to obtain
+the canonical next smart-account address and salt.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.SubaccountService/ListSubaccounts
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s383" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.SubaccountService/ListSubaccounts' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"subaccounts": [
+"color": "#7C3AED",
+"icon": "💰",
+"id": "1",
+"label": "Market Making",
+"ownerAvatarUrl": "https://placehold.co/128x128.png",
+"ownerRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"ownerUsername": "trader_alpha",
+"requireMemberMfa": false,
+"revision": "1",
+"role": "VIEWER",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"smartAccountSaltNonce": 1,
+"status": "SUBACCOUNT_STATUS_ACTIVE",
+"subaccountPolicyId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"totalCreated": 1
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.SubaccountService/ListSubaccounts' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "subaccounts": [
+    {
+      "color": "#7C3AED",
+      "icon": "💰",
+      "id": "1",
+      "label": "Market Making",
+      "ownerAvatarUrl": "https://placehold.co/128x128.png",
+      "ownerRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "ownerUsername": "trader_alpha",
+      "requireMemberMfa": false,
+      "revision": "1",
+      "role": "VIEWER",
+      "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "smartAccountSaltNonce": 1,
+      "status": "SUBACCOUNT_STATUS_ACTIVE",
+      "subaccountPolicyId": "1",
+      "updatedAt": "2025-01-01T00:00:00Z"
+    }
+  ],
+  "totalCreated": 1
+}

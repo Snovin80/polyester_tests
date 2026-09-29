@@ -1,0 +1,209 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Escape Hatch · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+PolyEngine
+svg]:size-3.5">
+/
+Escape Hatch
+Escape Hatch
+Copy page
+View as Markdown
+Open in
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+In development, coming soon
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The Escape Hatch and private balance-checkpoint system are in development. This page describes their intended operation. The proof design, checkpoint frequency, voting thresholds, and recovery procedures will be specified before release.
+The Escape Hatch provides an emergency withdrawal path from the Trading Gateway Contract. If the integrity of matching or ledger accounting is in question, validators can vote to halt trading and activate exit-only mode.
+In this mode, users withdraw eligible funds against the last verified recovery state. The withdrawal path operates through contracts on
+Polyester Chain
+, without requiring the normal matching engine to continue operating.
+Entering exit-only mode
+Validators run their own
+verifier nodes
+, review matching and ledger evidence, and verify balance checkpoints. A protocol-defined quorum authorizes the transition to exit-only mode.
+The Trading Gateway Contract stops admitting new trading activity and new transfers into Trading. Order matching halts, and the recovery process accounts for open orders, reservations, and pending movements. Polyester Chain remains operational so valid emergency withdrawals can be processed.
+Anyone can run a verifier and report a reproducible discrepancy. Activating exit-only mode requires the validator quorum, rather than a single operator's report.
+Private balance checkpoints
+PolyEngine
+periodically commits a cryptographic summary of private account balances to Polyester Chain. Zero-knowledge proofs let validators verify that a checkpoint satisfies the defined accounting and authorization rules without publishing individual balances or account trading histories.
+The design gives each account access to the private evidence needed to prove its own withdrawal entitlement. Recovery evidence must remain available independently of the trading service. A balance commitment alone is not enough to enable an exit.
+These checkpoints supplement PolyEngine's immutable ledger. Individual fills continue to settle off-chain.
+Withdrawing during recovery
+Exit-only mode fixes the accepted recovery checkpoint for emergency claims. An account proves ownership and its eligible balance against that state, then authorizes the Trading Gateway Contract to release the corresponding funds to its
+Funding Account
+The recovery state reconciles completed deposits, withdrawals, and other balance movements. Pending obligations and previously paid claims are accounted for before funds are released, so an old balance cannot be withdrawn twice. Activity after the last checkpoint needs reconciliation, so the latest interface balance is not automatically the emergency claim amount.
+Emergency claims are enabled only in exit-only mode. Proving one claim does not require exposing every account's balance. The resulting on-chain transfer can still reveal its amount and destination.
+External withdrawals continue through
+Zipper
+, with its
+route
+availability, validator approvals, and custody controls.
+Returning to normal operation
+Validators vote to resume normal mode after the incident is resolved and recovery state is verified. Completed exits and remaining claims must be reconciled before trading restarts, so withdrawn funds cannot reappear as spendable Trading balances.
+Both transitions follow the protocol's configured quorum rules. Public verification is open to anyone. Recovery control is distributed across the authorized validators.
+Related Topics
+Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+Admission
+See how PolyEngine checks your order and protects the balance it may use.
+Matching
+See how your eligible order receives priority and becomes one or more fills.
+Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+Previous
+Verifier Nodes
+Next
+Overview
+On this page
+Entering exit-only mode
+Private balance checkpoints
+Withdrawing during recovery
+Returning to normal operation
+Related Topics
+Share this page
+Escape Hatch
+Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+Share
+Copy Link

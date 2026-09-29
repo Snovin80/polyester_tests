@@ -1,0 +1,340 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/spot/markets/overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketOverviewService
+List Market Overviews
+List ticker-style market overview rows with optional sparklines. Supports symbol filtering, sorting, and pagination controls.
+Copy URL
+Method
+GET
+Path
+/v1/spot/markets/overview
+Visibility
+Public endpoint
+GET
+/v1/spot/markets/overview
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/overview?include_sparklines=false&limit=50' \
+--header 'Accept: */*'
+Responses
+"markets": [
+"bestAskQtyScaled": "100000",
+"bestAskTicks": "0.000000001",
+"bestBidQtyScaled": "100000",
+"bestBidTicks": "0.000000001",
+"change24hBps": 123,
+"high24hTicks": "0.000000001",
+"indexPriceTicks": "0.005",
+"lastPriceTicks": "0.005",
+"lastTradeTsNs": "1735689600000000000",
+"listedTsNs": "1735689600000000000",
+"low24hTicks": "0.000000001",
+"sparklines": [
+"closeTicks": [
+"0.000000001"
+],
+"interval": "1h"
+}
+],
+"symbol": "BTC-USDT",
+"volume24hBaseScaled": "123456",
+"volume24hQuoteScaled": "123456",
+"volume24hUsdScaled": "0.123456"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+Example
+includeSparklines
+boolean
+When true, include sparklines in each MarketOverview.
+Unset
+False
+True
+include_sparklines
+boolean
+When true, include sparklines in each market.
+Unset
+False
+True
+limit
+integer
+≤ 2000
+Maximum markets to return (server default 50, max 2000).
+orderBy
+enum
+must be defined value
+Sort key. When unset/UNSPECIFIED, defaults to descending 24h USD volume.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s332-orderBy" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select orderBy
+order_by
+enum
+must be defined value
+Sort key.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s332-order_by" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select order_by
+pageToken
+string
+max 512 chars
+Opaque cursor from the previous response.
+sort
+enum
+must be defined value
+Sort direction.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s332-sort" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select sort
+sparklineIntervals
+array
+Which sparklines to include. If empty and include_sparklines is true,
+server defaults to 24h.
+sparkline_intervals
+string
+Sparkline intervals; repeat query param.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s332-sparkline_intervals" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select sparkline_intervals
+symbolId
+array
+max 2000 items, unique
+Filter by stable numeric pair IDs from GetSpotConfig. When empty, returns
+all enabled markets.
+symbols
+string
+Filter by specific symbols; repeat query param (e.g., ?symbols=BTC-USDT&symbols=ETH-USDT).
+Response
+Form
+JSON
+markets
+object[]
+Market overview rows for the requested page.
+16 fields
+bestAskQtyScaled
+string
+/^[0-9]…9]+)?$/
+Best ask quantity scaled by the pair's base_quantity_scale from GetSpotConfig.
+Example
+100000
+bestAskTicks
+string
+/^[0-9]…9]+)?$/
+Current best ask price in quote units scaled by 1e9.
+Example
+0.000000001
+bestBidQtyScaled
+string
+/^[0-9]…9]+)?$/
+Best bid quantity scaled by the pair's base_quantity_scale from GetSpotConfig.
+Example
+100000
+bestBidTicks
+string
+/^[0-9]…9]+)?$/
+Current best bid price in quote units scaled by 1e9.
+Example
+0.000000001
+change24hBps
+integer (int32)
+Rolling 24h change expressed in basis points (bp). Example: +123 = +1.23%.
+Example
+123
+high24hTicks
+string
+/^[0-9]…9]+)?$/
+Rolling 24h stats. Highest traded price in the 24h window, in quote units scaled by 1e9.
+Example
+0.000000001
+indexPriceTicks
+string
+/^[0-9]…9]+)?$/
+Current multi-venue index price in quote units scaled by 1e9. Zero when no fresh, valid index price is available.
+Example
+0.005
+lastPriceTicks
+string
+/^[0-9]…9]+)?$/
+Last traded price in quote units scaled by 1e9.
+Example
+0.005
+lastTradeTsNs
+string
+/^[0-9]+$/
+Last trade timestamp in nanoseconds since epoch.
+Example
+1735689600000000000
+listedTsNs
+string
+/^[0-9]+$/
+Listing timestamp in nanoseconds since epoch.
+Example
+1735689600000000000
+low24hTicks
+string
+/^[0-9]…9]+)?$/
+Lowest traded price in the 24h window, in quote units scaled by 1e9.
+Example
+0.000000001
+sparklines
+object[]
+Optional sparklines (requested explicitly).
+2 fields
+closeTicks
+string[]
+Newest-first close prices in quote units scaled by 1e9.
+Example
+interval
+enum
+Time range and sampling resolution represented by these close prices.
+1h
+24h
+1w
+1mo
+Example
+1h
+symbol
+string
+Trading pair symbol, e.g. BTC-USDT.
+Example
+BTC-USDT
+volume24hBaseScaled
+string
+/^[0-9]…9]+)?$/
+24h base volume; omitted if the scaled amount exceeds int64.
+Example
+123456
+volume24hQuoteScaled
+string
+/^[0-9]…9]+)?$/
+24h executed quote volume; omitted if the scaled amount exceeds int64.
+Example
+123456
+volume24hUsdScaled
+string
+/^[0-9]…9]+)?$/
+Rolling 24h USD volume, scaled by 1e6 (one unit is 0.000001 USD). Applies the current quote/USD conversion to the rolling quote volume. When conversion is unavailable, USDT and USDC are valued at USD parity. Omitted for other quote assets when a current conversion is unavailable.
+Example
+0.123456
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/spot/markets/overview
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s396" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/overview?include_sparklines=false&limit=50' \
+--header 'Accept: */*'
+Responses
+"markets": [
+"bestAskQtyScaled": "100000",
+"bestAskTicks": "0.000000001",
+"bestBidQtyScaled": "100000",
+"bestBidTicks": "0.000000001",
+"change24hBps": 123,
+"high24hTicks": "0.000000001",
+"indexPriceTicks": "0.005",
+"lastPriceTicks": "0.005",
+"lastTradeTsNs": "1735689600000000000",
+"listedTsNs": "1735689600000000000",
+"low24hTicks": "0.000000001",
+"sparklines": [
+"closeTicks": [
+"0.000000001"
+],
+"interval": "1h"
+}
+],
+"symbol": "BTC-USDT",
+"volume24hBaseScaled": "123456",
+"volume24hQuoteScaled": "123456",
+"volume24hUsdScaled": "0.123456"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/spot/markets/overview?include_sparklines=false&limit=50' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "markets": [
+    {
+      "bestAskQtyScaled": "100000",
+      "bestAskTicks": "0.000000001",
+      "bestBidQtyScaled": "100000",
+      "bestBidTicks": "0.000000001",
+      "change24hBps": 123,
+      "high24hTicks": "0.000000001",
+      "indexPriceTicks": "0.005",
+      "lastPriceTicks": "0.005",
+      "lastTradeTsNs": "1735689600000000000",
+      "listedTsNs": "1735689600000000000",
+      "low24hTicks": "0.000000001",
+      "sparklines": [
+        {
+          "closeTicks": [
+            "0.000000001"
+          ],
+          "interval": "1h"
+        }
+      ],
+      "symbol": "BTC-USDT",
+      "volume24hBaseScaled": "123456",
+      "volume24hQuoteScaled": "123456",
+      "volume24hUsdScaled": "0.123456"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}

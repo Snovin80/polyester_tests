@@ -1,0 +1,562 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/profile
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Profile · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Profile
+Profile
+Copy page
+View as Markdown
+Open in
+client.auth.profile
+is the caller's public profile surface: read the current profile, update
+mutable fields, review username history, and stream public identity updates. Every method is
+authenticated. These calls need a wallet session. An
+API key
+gets
+AuthenticationError
+Methods
+Method
+Summary
+get
+Read the caller's public profile.
+update
+Patch mutable profile fields.
+getUsernameHistory
+List recent username changes, newest first.
+generateUsernameOptions
+Offer generated usernames to claim.
+claimGeneratedUsername
+Claim one generated username.
+subscribeIdentity
+Stream public identity updates.
+get(options?)
+Fetches the caller's
+Profile
+VIP tier.
+const
+profile
+=
+await
+client
+auth
+profile
+get
+();
+console
+log
+(
+profile
+username
+,
+profile
+vipTier
+);
+if
+(
+profile
+nextUsernameChangeAt
+) {
+console
+log
+(
+"username locked until"
+,
+new
+Date
+(
+profile
+nextUsernameChangeAt
+));
+}
+Profile
+includes
+username
+,
+bio
+,
+website
+,
+twitter
+/
+twitterVerified
+,
+discord
+/
+discordVerified
+,
+avatarUrl
+,
+vipTier
+,
+usernameUnlocked
+, and the epoch-millisecond timestamps
+createdAt
+and
+nextUsernameChangeAt
+(the latter is set only while a username change is on
+cooldown).
+currentTermsAccepted
+is a boolean indicating whether the root account has accepted
+the current terms. Record consent with
+client.auth.acceptTerms()
+after the user agrees; profile updates do not accept terms.
+update(input, options?)
+Updates only the fields you pass; omitted fields are left unchanged. Returns the updated
+Profile
+An empty string clears an optional text field (for example,
+bio: ""
+removes the bio).
+// Change the bio and website
+await
+client
+auth
+profile
+update
+({
+bio:
+"Trading spot on Polyester."
+,
+website:
+"https://example.com"
+,
+});
+// Clear the Twitter handle
+await
+client
+auth
+profile
+update
+({ twitter:
+""
+});
+UpdateProfileInput
+accepts the mutable fields
+username
+,
+bio
+,
+website
+,
+twitter
+, and
+avatarUrl
+, all optional.
+generateUsernameOptions(options?)
+Returns generated
+usernames
+, a short-lived
+offerToken
+, and optional epoch-millisecond
+expiresAt
+const
+offer
+=
+await
+client
+auth
+profile
+generateUsernameOptions
+();
+console
+log
+(
+offer
+usernames
+,
+offer
+expiresAt
+);
+claimGeneratedUsername(input, options?)
+Claims one offer option by its zero-based
+optionIndex
+and returns the updated
+Profile
+await
+client
+auth
+profile
+claimGeneratedUsername
+({
+offerToken:
+offer
+offerToken
+,
+optionIndex:
+0
+,
+});
+getUsernameHistory(options?)
+Returns the caller's recent username changes as
+UsernameHistoryEntry[]
+, newest first, capped at 20
+entries.
+const
+history
+=
+await
+client
+auth
+profile
+getUsernameHistory
+();
+for
+(
+const
+entry
+of
+history
+) {
+console
+log
+(
+entry
+username
+,
+entry
+setAt
+?
+new
+Date
+(
+entry
+setAt
+)
+"unknown"
+);
+}
+interface
+UsernameHistoryEntry
+username
+string
+;
+setAt
+?:
+number
+;
+// epoch ms
+}
+subscribeIdentity(input)
+Streams public identity updates and returns an idempotent unsubscribe function. Pass
+onEvent
+(required) plus optional
+onOpen
+,
+onClose
+, and
+onError
+handlers. This is a public channel, so
+it takes no
+accountId
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+auth
+profile
+subscribeIdentity
+({
+onEvent
+identity
+)
+=>
+console
+log
+(
+identity
+accountId
+,
+identity
+username
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+Each event is an
+AccountIdentity
+interface
+AccountIdentity
+accountId
+string
+;
+username
+?:
+string
+;
+avatarUrl
+?:
+string
+;
+rootSmartAccountAddress
+string
+;
+}
+Related
+Auth
+for login,
+me()
+, and the browser session flow.
+VIP
+for the public tier catalog and caller-root status.
+Social verification
+for verifying Twitter and Discord handles.
+Accounts
+for resolving other users by username.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Orders
+Next
+Public trades
+On this page
+Methods
+get(options?)
+update(input, options?)
+generateUsernameOptions(options?)
+claimGeneratedUsername(input, options?)
+getUsernameHistory(options?)
+subscribeIdentity(input)
+Related
+Related Topics
+Share this page
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const profile = await client.auth.profile.get();
+console.log(profile.username, profile.vipTier);
+if (profile.nextUsernameChangeAt) {
+	console.log("username locked until", new Date(profile.nextUsernameChangeAt));
+}
+
+---
+
+// Change the bio and website
+await client.auth.profile.update({
+	bio: "Trading spot on Polyester.",
+	website: "https://example.com",
+});
+
+// Clear the Twitter handle
+await client.auth.profile.update({ twitter: "" });
+
+---
+
+const offer = await client.auth.profile.generateUsernameOptions();
+console.log(offer.usernames, offer.expiresAt);
+
+---
+
+await client.auth.profile.claimGeneratedUsername({
+	offerToken: offer.offerToken,
+	optionIndex: 0,
+});
+
+---
+
+const history = await client.auth.profile.getUsernameHistory();
+for (const entry of history) {
+	console.log(entry.username, entry.setAt ? new Date(entry.setAt) : "unknown");
+}
+
+---
+
+interface UsernameHistoryEntry {
+	username: string;
+	setAt?: number; // epoch ms
+}
+
+---
+
+const unsubscribe = client.auth.profile.subscribeIdentity({
+	onEvent: (identity) => console.log(identity.accountId, identity.username),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+interface AccountIdentity {
+	accountId: string;
+	username?: string;
+	avatarUrl?: string;
+	rootSmartAccountAddress: string;
+}

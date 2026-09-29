@@ -1,0 +1,29 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/heatmap.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Heatmap
+L2 order book heatmap reads.
+`client.Heatmap` reads historical L2 heatmap buckets and streams live buckets. It is an analytics surface, not an authoritative local order book.
+```go
+symbol := "BTC-USDT"
+history, err := client.Heatmap.Get(
+ctx, &symbol, nil,
+"1s", 50, 100, "close",
+nil, nil, nil,
+)
+if err != nil { log.Fatal(err) }
+fmt.Println(history.Raw)
+```
+Pass `symbol` or `symbolID`. `fromTsSec` and `start`/`end` select the window. Interval, depth, and quantity-mode labels are validated.
+```go
+sub, err := client.Heatmap.SubscribeLive(ctx, &symbol, nil, "1s")
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for bucket := range sub.Messages() {
+fmt.Println(bucket.Raw)
+break
+}
+```
+The stream is public. Symbol-name resolution depends on catalog hydration; call `WaitForCatalogs` first or pass `symbolID`.
+For executable levels and sequence recovery use [Order book](https://testnet.polyester.com/docs/sdk/go/reference/order-book).

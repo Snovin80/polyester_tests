@@ -1,0 +1,118 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds/deposit-assets.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Use the **[Deposit page](https://testnet.polyester.com/account/deposit)** to bring a supported Asset from an external Network into the selected Polyester account. Choose the receiving account, Asset, and Network, then follow the current route instructions shown by Polyester.
+Zipper handles the Deposit Flow automatically. You send the external Asset once, and Polyester tracks the transfer until the matching Unified Asset balance is ready in Funding or Unified Trading.
+## Make a deposit
+Open Deposit from the Main Account or Subaccount that should receive the balance. Switching the active account changes the deposit details and history you see. A new deposit address may take a few seconds to appear while Polyester prepares it for that account and Network.
+1. Choose the receiving account
+Select the Main Account or Subaccount that should own the deposited balance, then open **[Deposit](https://testnet.polyester.com/account/deposit)**. ![Deposit dialog with Select Asset and supported chains](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/eba31397e882b01a96d278c45a10e51e99626f785e30043b5d8f18d56fa81feb/source.webp)
+2. Choose the Asset and Network
+Select the [Asset](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) you want to deposit and the Network from which you will send it. Polyester will show the route currently available for that combination.
+![Deposit dialog with Select Chain, fees, and arrival times](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/c08d8a61271cd7823ab9ac2d7176f572bd5055404a64a0deb5e1baf213bbdc01/source.webp) Selecting USDT as the token and Ethereum as the network
+3. Review and send
+Review the address, Asset contract, minimum, confirmations, estimated time, and any fee shown. Include the memo or destination tag when the route requires one. Copy the complete address or scan its QR code, then approve the transfer in the sending wallet.
+![Deposit address with QR code, minimum, fee, and estimated time](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/ad6836bc980232fead78e2c1b1511d3a83239f2907d556a8f20f92cebad31fc3/source.webp) Using MetaMask to send 121.24 USDT to the deposit address
+4. Watch the in-progress deposit
+After you send, Polyester shows an indication in the top bar and a toast. Open either one to follow Deposit Seen while it observes the transfer and source-chain confirmations.
+If you miss both, open **[Account/Deposit](https://testnet.polyester.com/account/deposit)** to see the deposit.
+![In-progress deposit with Deposit Seen and confirmation progress](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/ca1024f5c15ed1f2780a72bb079310f4bd015c1ac8a9a69db6828b1ed03af8a4/source.webp) Watching an in-progress USDT deposit after it is seen on chain
+5. Confirm the credited balance
+When Credit Balance completes, check the credited amount and the account where the Unified Asset became available.
+Interactive
+### USDT Deposited via Ethereum
+Completed
+![USDT](https://testnet.polyester.com/icons/tokens/usdt.svg)
+![ethereum logo](https://testnet.polyester.com/icons/chains/ethereum.svg)
+121.24 USDT
+Started 20s ago
+Overall progress: 100% Completed just now
+#### Steps
+- Deposit Seen [0xc3e9…049e](https://testnet.polyesterscan.com/tx/0xc3e91e5e9e0f51cc1692e655a1adca2db41af3ff4c903373149e110ab6df049e)
+- [Verified Deposit 0x72d7…ef7e](https://testnet.polyesterscan.com/tx/0x72d7a9c73af9f00b5f29d18cb7714b6f6cdf9c868c4ecc823f6a660e4385ef7e)
+- Validated Deposit [0xa827…dcaf](https://testnet.polyesterscan.com/tx/0xa82726cbfb92067e216a5cca528b61aba2f9c8d7dfb3715958874694fc0cdcaf)
+- [Minted and Transferred 0xc882…321f](https://testnet.polyesterscan.com/tx/0xc882833acf09d2e99858551b0811e50381253397556d518add3eb58964e8321f)
+- [Credited Balance 115699…5723](https://testnet.polyesterscan.com/flow/replay%3Aflow_JjxcnESb9J6%3A5)
+Confirming 121.24 USDT credited after the deposit completes
+> Open Deposit before every transfer and use the instructions shown for the selected account, Asset, and Network. A saved address or an older screenshot may no longer match the route you intend to use.
+## What happens after you send
+The source transaction begins the Deposit Flow. Polyester then moves it through five stages:
+Interactive
+1
+Deposit Seen
+4m ago
+2
+Verified Deposit
+3m ago
+3
+Validated Deposit
+2m ago
+4
+Minted and Transferred
+2m ago
+5
+Credited Balance
+45s ago
+Viewing a completed 121.24 USDT Deposit Flow on Polyester Scan
+1. Deposit Seen
+Polyester detects the source transfer and starts the Deposit Flow. The deposit record then tracks confirmations against the live Network requirement for that route.
+2. Verified Deposit
+Zipper checks that the source transaction matches the selected Asset, Network, amount, and receiving account. It then opens a deposit request for that transfer.
+3. Validated Deposit
+Independent Zipper validators review the same evidence and the current route policy. The flow continues only after they approve the request.
+4. Minted and Transferred
+Zipper mints the route-specific Zipped Asset on Polyester Chain. It sends that Asset to Funding as on-chain backing.
+5. Credited Balance
+Polyester credits the matching Unified Asset to the selected account. The balance appears in Funding or Unified Trading based on Default Deposit Destination.
+You can see more details on [Polyester Scan](https://polyesterscan.com/flows).
+![Completed 121.24 USDT Deposit Flow on Polyester Scan](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/cdaad3aefe5e7a9e7416c7b725a92c890bffdb154d867c8ed0642a1303298163/source.webp) Viewing a completed 121.24 USDT Deposit Flow on Polyester Scan
+You never need to wrap the Asset yourself or hold the Zipped Asset in an external wallet. The Deposit Flow handles those steps between the source Network and your Polyester account.
+Confirmation requirements can change with the Network, transfer amount, and current conditions. Follow the live requirement in the deposit record instead of relying on a previous transfer.
+## Track each deposit
+Every transfer has its own deposit record, even when several deposits use the same active address. Follow each record until it reaches a completed state rather than treating one completed credit as confirmation that every transfer arrived.
+Open **[Account/Deposit](https://testnet.polyester.com/account/deposit)** to view the deposits data table.
+![Deposit history with completed and in-progress deposit records](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/c608895ef4a03d67e6ccea1a875f1757440d5a9e0e8c87b82db802103a6cb993/source.webp) In view (Account/Deposit) data table
+After completion, compare the credited amount with the deposit record and check its destination. If the balance appears in Unified Trading, you do not need to transfer it there again.
+## Choose where new deposits go
+Default Deposit Destination controls where the Unified Asset becomes available after a Deposit Flow completes. The setting applies separately to each Main Account and Subaccount.
+- **[Funding Account](https://testnet.polyester.com/docs/user-docs/funds/funding-account).** Keep new balances ready for transfers and withdrawals, or move them to Trading later.
+- **[Unified Trading Account](https://testnet.polyester.com/docs/user-docs/funds/trading-account).** Make new balances available for spot trading and for use as eligible collateral when borrowing.
+Open **[Settings/Security](https://testnet.polyester.com/account/settings/security)** for the active account. Under **Fund Movement**, set **Default Deposit Destination** to **Funding** or **Unified Trading**. This is an authorized on-chain account setting, not a browser preference.
+Interactive
+## Fund Movement
+Control deposit routing and restrict where withdrawals and transfers can go.
+Default Deposit Destination
+Automatically credit to your selected account when you deposit
+Funding Unified Trading
+Selecting Funding as the Default Deposit Destination
+The setting changes where the Unified Asset is credited. It does not change the external Asset, source Network, Zipped Asset backing, or Polyester account that owns the balance.
+If automatic routing to Unified Trading fails, Polyester leaves the completed credit in Funding. Check the deposit record and both balance areas before submitting a separate transfer.
+## Fees and timing
+A deposit can involve two separate costs:
+- **Network transaction cost.** The sending wallet pays the cost of broadcasting the transfer on the source Network.
+- **[Polyester route fee](https://testnet.polyester.com/docs/user-docs/fees-and-vip/deposit-and-withdrawal-fees).** The Deposit page shows any fee that applies to the selected route and the expected credited amount.
+The estimated completion time is guidance, not a guarantee. Actual timing depends on the source Network, confirmation requirement, route health, Zipper verification, and Polyester processing.
+## FAQ
+### Are my deposited assets held in my MetaMask or other connected wallet?
+No. Your connected wallet lets you sign in and authorize a transaction, but it does not hold the assets you deposit in Polyester. Your original assets are held through Zipper’s custody system, while the corresponding balances appear in your Funding Account or Unified Trading Account. You manage those balances through Polyester.
+### Can I deposit from another exchange as well as from a wallet?
+Yes. You can send supported assets from another exchange to your Polyester deposit address. Make sure the withdrawal network on the sending exchange matches the deposit network you selected in Polyester. For example, if you select ETH on Base in Polyester, withdraw ETH over the Base network from the other exchange. Copy the address from Polyester’s Deposit screen and include any memo or destination tag shown.
+### How do I deposit funds, and where will they appear?
+Open Deposit, choose the asset and network, and copy your unique deposit address. You must send your funds to the address shown on this screen, using the selected network. Do not use your non-custodial wallet address or your Polyester smart wallet address as the deposit destination. Sending funds to either of those addresses does not move them into Zipper or fund your exchange account. Once your deposit is processed, the funds will appear in your Funding Account or Unified Trading Account, depending on your Default Deposit Destination setting.
+### Does every Deposit have to go through Funding first?
+No. Completed deposits can be credited to either your Funding Account or Unified Trading Account. For your Main Account, choose the default destination under Deposit Routing on the [Security settings page](https://testnet.polyester.com/account/settings/security). For a Subaccount, open Subaccounts, select the Subaccount, and go to its Security tab to find Deposit Routing.
+### Can I reuse a deposit address I saved earlier?
+Yes. Your deposit address is assigned to you and does not rotate for that specific asset and network. We still recommend visiting the Deposit page regularly to confirm that your saved details are correct.
+### How long does a deposit take?
+Deposit times depend on the blockchain you are depositing from and its current network conditions. Your deposit will be credited after the required confirmations have been completed. An estimated deposit time is shown during the deposit flow.
+### Why is my deposit still pending after the source network shows it as confirmed?
+The source network can show a transaction as confirmed before it meets Polyester’s confirmation requirements. Zipper must then verify and process the deposit before the balance is credited. Confirmation requirements vary with the network, transfer amount, and current conditions. You can track your deposit’s progress in the deposit history table on the Deposit page, or view the full flow in Polyester Scan.
+### Why can the amount credited differ from the amount I sent?
+Any applicable deposit fee is deducted before the deposit is credited to your account. It is charged in the asset you deposit, separately from the network fee paid by the sending wallet. Check the deposit history table on the Deposit page for the deposit amount, fee, and final credited amount.
+### What should I do if I deposit the wrong asset, use the wrong network, or miss a required memo?
+Contact support through the chat icon in Polyester. Include your transaction ID, the asset and network used, the amount, the receiving address, and any memo or destination tag. Do not send another transfer to try to fix the first one. The team can investigate, but recovery is not guaranteed.
+### Can I deposit on one network and withdraw on another?
+Yes, and this makes Polyester an effective bridge for moving assets between supported networks. You can deposit an asset through one supported network and withdraw it through another without making a trade. For example, you can deposit USDC on Ethereum and withdraw USDC on Solana when both networks are available and funded.

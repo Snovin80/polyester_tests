@@ -1,0 +1,28 @@
+Источник: https://testnet.polyester.com/docs/user-docs/zipper/validators.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Validators
+See how Zipper validators independently review asset movements and how participation expands as the protocol matures.
+Zipper validators independently check the evidence behind supported deposits and withdrawals. Their approvals establish that a request meets the protocol's rules before it advances through the [Asset Lifecycle](https://testnet.polyester.com/docs/user-docs/zipper/asset-lifecycle).
+Each validator observes supported Networks through its own RPC infrastructure. The approval process brings together independently checked results, reducing reliance on a single service's view of a transfer.
+## What validators check
+| Request           | Checks                                                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Deposit           | Source transaction, Network, Asset, amount, receiving account, required confirmations, screening result, and whether the event has already been processed |
+| Withdrawal        | Authorized request, destination, Asset, amount, fee, account and screening controls, and available route inventory                                        |
+| Request lifecycle | The evidence belongs to the same request and supports the proposed state transition                                                                       |
+A request needs a two-thirds (2/3) validator quorum before it can proceed. One validator's approval is not sufficient to mint a Zipped Asset or authorize a withdrawal.
+## Validation and custody
+Validator approval is one part of the withdrawal process. An approved transaction must also satisfy the vault's signing policies and the protocol's accounting controls.
+Validators do not receive the vault's raw private keys. [Zipper Security](https://testnet.polyester.com/docs/user-docs/zipper/security) explains how validation, screening, custody signing, and duplicate prevention work together.
+## Progressive decentralization
+> **Testnet and mainnet participation**
+>
+> Zipper testnet currently has 17 relayers and 4 validators. Mainnet is planned to launch with 12 or more validators, with the validator set expanding as the network grows and matures.
+The validator total shown on a bridge request refers to its approval set. Relayers are counted separately.
+Adding validators strengthens decentralization when it also diversifies who controls them and how they operate. Expansion follows the protocol's membership rules while maintaining independent verification, reliable operation, and the required approval quorum.
+Validator participation expands progressively. This differs from public [PolyEngine verification](https://testnet.polyester.com/docs/user-docs/polyengine/verifiers), which anyone can run without admission to a voting set.
+## Separate validator responsibilities
+Zipper validators approve cross-chain requests. [Polyester Chain validators](https://testnet.polyester.com/docs/user-docs/polyester-chain/chain-security) secure blocks and public contract state. These are separate responsibilities with separate approval rules.
+The [Escape Hatch](https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch) uses an authorized validator set to evaluate verifier evidence and vote on Trading recovery modes. A Zipper approval alone does not activate exit-only mode or restore normal trading.

@@ -1,0 +1,41 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/realtime.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+`client.realtime` is the shared Centrifugo WebSocket client. Realtime support is always included; the `realtime` Cargo feature is an empty compatibility flag. Prefer typed service helpers (`client.orders.subscribe`, `client.balances.subscribe`, …). They return `TypedSubscription
+`.
+Realtime is binary-only: the transport negotiates `centrifuge-protobuf` and uses length-delimited Protobuf control frames and publication payloads. JSON wire mode applies only to ConnectRPC debugging, never to realtime. Incoming WebSocket messages, frames, and protobuf record/field lengths are capped at 8 MiB before publication decoding.
+Managed order-book and market-overview subscriptions return dedicated types that expose **`updates()`** (an `mpsc::Receiver`) instead of `recv()` on `TypedSubscription`. They also expose `set_on_error(...)` and `err()`; use the callback so a failed managed book cannot become a silent, frozen input to quoting logic.
+## Subscription contract
+| API                    | Behavior                                         |
+| ---------------------- | ------------------------------------------------ |
+| `recv_result().await`  | Next publication, clean close, or terminal error |
+| `recv().await`         | Compatibility API; inspect `err()` after `None`  |
+| `set_on_error(...)`    | Callback for background transport/feed errors    |
+| `err()` / `take_err()` | Latest terminal background error                 |
+| `is_alive()`           | Background task still running                    |
+| `close()`              | Stop the subscription                            |
+```rust
+let mut sub = client
+sub.set_on_error(|error| eprintln!("realtime interruption: {error}"));
+while let Some(order) = sub.recv_result().await? {
+println!("{} {}", order.status, order.order_id);
+}
+```
+## Handshake before return
+Subscribe helpers wait for the Centrifugo connect/subscribe handshake (including private token fetch) before returning. Initial auth failures return `Err` immediately. Reconnects after a successful handshake use capped exponential backoff with per-subscription jitter. A successful resubscription resets the backoff.
+## Private channels need Account ID
+Private channels require API-key credentials and an Account ID (`default_account_id` or an explicit `account_id` argument).
+## Fail-closed overflow
+> **No silent drops**
+>
+> Bounded queues. A slow consumer fails the subscription with `Error::QueueOverflow` instead of dropping updates.
+## Snapshot-then-stream
+Order book and market overview managed subscriptions snapshot via REST, then stream with gap recovery. Their constructors wait for the WebSocket handshake and initial snapshot before returning. Prefer those helpers over wiring raw channels yourself.
+## Channel naming
+Hyphenated private channel segments (for example `api-keys`) are valid; the SDK signs with RFC 3986-preserving query encoding.
+## Related
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)
+- [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model)

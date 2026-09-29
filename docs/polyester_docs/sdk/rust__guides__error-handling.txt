@@ -1,0 +1,497 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/error-handling
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Error handling · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Error handling
+Error handling
+Copy page
+View as Markdown
+Open in
+Match on
+polyester::Error
+when you need variant-specific fields. Full variant list:
+Errors reference
+For retry loops, prefer the classifiers over string matching or hand-rolled variant lists:
+err.is_retryable()
+- transport, rate-limit, and server failures that may succeed after backoff
+err.retry_after()
+- honor a server-requested delay when present
+err.mutation_outcome_unknown()
+- the mutation may already have committed; reconcile before
+retrying and reuse the original request identity
+is_retryable()
+is not proof that a mutation was unapplied. Only
+mutation_outcome_unknown()
+obliges reconciliation and key reuse. These classifiers are
+independent:
+Error::ResponseContract
+is non-retryable but has an unknown mutation outcome because
+the RPC succeeded and only the returned payload violated the SDK contract.
+use
+polyester
+models
+CreateOrderParams
+,
+CreateOrderType
+,
+CreateSide
+};
+use
+polyester
+Error
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+params
+=
+CreateOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+side
+CreateSide
+Buy
+,
+order_type
+CreateOrderType
+Limit
+,
+quantity
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.01"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+),
+max_quote_debit_scaled
+None
+,
+price
+None
+,
+time_in_force
+None
+,
+client_order_id
+Some
+(
+"mm-bot-001"
+into
+()),
+subaccount_id
+None
+,
+post_only
+None
+,
+market_client_ref_price
+None
+,
+fee_asset
+None
+,
+self_trade_prevention
+None
+,
+market_max_slippage
+None
+,
+attached_risk
+None
+,
+};
+match
+client
+orders
+create
+(
+params
+clone
+())
+Ok
+(
+r
+)
+=>
+println!
+(
+"{}"
+,
+r
+order_id),
+Err
+(
+err
+)
+if
+err
+mutation_outcome_unknown
+()
+=>
+// Reconcile by client_order_id before deciding whether to retry.
+// Retained reuse conflicts; it does not replay the earlier result.
+return
+Err
+(
+err
+);
+}
+Err
+(
+err
+)
+if
+err
+is_retryable
+()
+=>
+if
+let
+Some
+(
+seconds
+)
+=
+err
+retry_after
+() {
+tokio
+time
+sleep
+(
+std
+time
+Duration
+from_secs_f64
+(
+seconds
+))
+;
+}
+// Reconcile this create by client_order_id before resubmitting.
+return
+Err
+(
+err
+);
+}
+Err
+(
+Error
+QueueOverflow
+(
+_
+))
+=>
+// subscription only, resubscribe after catching up
+}
+Err
+(
+Error
+Auth
+(
+message
+))
+=>
+// Unary Unauthenticated and PermissionDenied both map here.
+eprintln!
+(
+"fix credentials or API-key policy: {message}"
+);
+}
+Err
+(
+Error
+Validation
+(
+msg
+))
+=>
+// fix input (e.g. invalid client_order_id charset/length)
+eprintln!
+(
+"{msg}"
+);
+}
+Err
+(
+err
+)
+=>
+return
+Err
+(
+err
+),
+}
+Retry rules
+Retry when
+is_retryable()
+is true, with exponential backoff.
+Local signing-capacity exhaustion is also
+Error::RateLimit
+blocking Tokio worker threads; respect
+retry_after()
+if the bounded wait is exhausted.
+When
+mutation_outcome_unknown()
+is true, reconcile server state first, then reuse the same
+client_order_id
+,
+request_id
+, or
+client_trigger_id
+Do not blindly retry
+Error::ResponseContract
+; reconcile and inspect/escalate the malformed
+successful response before deciding on any new action.
+Reconcile every batch item before retrying;
+request_id
+is not a whole-batch atomicity guarantee.
+Do
+not
+generate a fresh idempotency key inside the retry loop.
+Realtime
+overflow
+is fail-closed: treat it as fatal for that subscription.
+Unary order API
+Unauthenticated
+and
+PermissionDenied
+responses map to
+Error::Auth
+; fix the
+credentials or API-key policy before retrying.
+Error::PermissionDenied
+is reserved for an
+HTTP 403 from private realtime-token acquisition, where
+code
+,
+context
+, and
+endpoint
+identify the denied stream permission.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Do not replace an unresolved client order ID
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Creating a new
+client_order_id
+can double-place an order if the first attempt already applied.
+Keep the original ID for reconciliation; a duplicate conflict does not replay the earlier outcome.
+Validation & precision
+Local validation failures (
+Error::Validation
+) include catalog scale misses, invalid
+client_order_id
+/
+request_id
+charset or length, and unsupported order controls. Fix the input;
+do not retry unchanged.
+Related
+Requests & idempotency
+Errors reference
+Trading guide
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Server-side usage
+Next
+Production trading operations
+On this page
+Retry rules
+Validation & precision
+Related
+Related Topics
+Share this page
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide};
+use polyester::{Error, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let params = CreateOrderParams {
+    symbol: "BTC-USDT".into(),
+    side: CreateSide::Buy,
+    order_type: CreateOrderType::Limit,
+    quantity: Some(Quantity::from_decimal_str("0.01", quantity_scale, Some("BTC-USDT".into()), None)?),
+    max_quote_debit_scaled: None,
+    price: None,
+    time_in_force: None,
+    client_order_id: Some("mm-bot-001".into()),
+    subaccount_id: None,
+    post_only: None,
+    market_client_ref_price: None,
+    fee_asset: None,
+    self_trade_prevention: None,
+    market_max_slippage: None,
+    attached_risk: None,
+};
+match client.orders.create(params.clone()).await {
+    Ok(r) => println!("{}", r.order_id),
+    Err(err) if err.mutation_outcome_unknown() => {
+        // Reconcile by client_order_id before deciding whether to retry.
+        // Retained reuse conflicts; it does not replay the earlier result.
+        return Err(err);
+    }
+    Err(err) if err.is_retryable() => {
+        if let Some(seconds) = err.retry_after() {
+            tokio::time::sleep(std::time::Duration::from_secs_f64(seconds)).await;
+        }
+        // Reconcile this create by client_order_id before resubmitting.
+        return Err(err);
+    }
+    Err(Error::QueueOverflow(_)) => {
+        // subscription only, resubscribe after catching up
+    }
+    Err(Error::Auth(message)) => {
+        // Unary Unauthenticated and PermissionDenied both map here.
+        eprintln!("fix credentials or API-key policy: {message}");
+    }
+    Err(Error::Validation(msg)) => {
+        // fix input (e.g. invalid client_order_id charset/length)
+        eprintln!("{msg}");
+    }
+    Err(err) => return Err(err),
+}

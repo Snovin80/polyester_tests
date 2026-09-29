@@ -1,0 +1,894 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.AddressBookService/GetAddressBookView
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.AddressBookService
+GetAddressBookView
+Copy URL
+Method
+POST
+Path
+auth.v1.AddressBookService/GetAddressBookView
+Service
+auth.v1.AddressBookService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+auth.v1.AddressBookService/GetAddressBookView
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/GetAddressBookView' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"limit": 100,
+"minimumViewRevision": "1",
+"subaccountId": "6789012345678"
+}'
+Responses
+"books": [
+"callerRole": "VIEWER",
+"label": "Main Account",
+"ownerUsername": "trader_alpha",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222"
+}
+],
+"entries": {
+"external": [
+"address": "0x3333333333333333333333333333333333333333",
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"label": "Treasury Wallet",
+"note": "Primary treasury destination.",
+"polychainChainId": 1,
+"revision": "1",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"tagIds": [
+"1"
+],
+"updatedAt": "2025-01-01T00:00:00Z",
+"whitelistStatus": "DESTINATION_NOT_WHITELISTED"
+}
+],
+"internal": [
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"label": "Market Maker",
+"note": "Primary treasury destination.",
+"revision": "1",
+"rootAccountId": "7563897446546",
+"rootUsername": "trader_alpha",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountLabel": "Market Making",
+"tagIds": [
+"1"
+],
+"targetAccountId": "7563897446546",
+"targetScopeType": "SCOPE_ROOT",
+"updatedAt": "2025-01-01T00:00:00Z",
+"whitelistStatus": "DESTINATION_NOT_WHITELISTED"
+}
+]
+},
+"recentDestinations": {
+"external": [
+"address": "0x3333333333333333333333333333333333333333",
+"addressBookEntryId": "1",
+"lastDirection": "DEPOSIT_FROM",
+"lastSeenAt": "2025-01-01T00:00:00Z",
+"polychainChainId": 1,
+"saved": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"useCount": "1"
+}
+],
+"internal": [
+"addressBookEntryId": "1",
+"lastDirection": "DEPOSIT_FROM",
+"lastSeenAt": "2025-01-01T00:00:00Z",
+"rootAccountId": "7563897446546",
+"rootUsername": "trader_alpha",
+"saved": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountLabel": "Market Making",
+"targetAccountId": "7563897446546",
+"targetScopeType": "SCOPE_ROOT",
+"useCount": "1"
+}
+]
+},
+"recentDestinationsTruncated": false,
+"tags": [
+"color": "#7C3AED",
+"name": "Treasury",
+"tagId": "1"
+}
+],
+"viewRevision": "1",
+"withdrawWhitelist": {
+"activeEntries": [
+"canonicalAddress": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1,
+"rawAddressHex": "3333333333333333333333333333333333333333",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"externalWhitelistRequired": false,
+"internalWhitelistRequired": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+}
+}
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.GetAddressBookViewRequest
+Response
+auth.v1.GetAddressBookViewResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+> 0
+Optional subaccount scope. Omit to use the root account address book view.
+limit
+integer (int32)
+≤ 200
+Maximum number of recent destinations to return. Defaults to 200 when
+omitted; maximum is 200.
+minimumViewRevision
+string (uint64)
+Minimum revision observed in AddressBookViewInvalidated. When set, the
+server waits for its local projection to reach this revision instead of
+returning an older view.
+Response
+Form
+JSON
+books
+object[]
+Address books visible to the caller.
+5 fields
+scope
+object
+Account or subaccount represented by this address book.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+callerRole
+enum
+must be defined value
+Caller role for this address book.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+label
+string
+max 64 chars
+Display label for the address book. Usually present for subaccounts.
+ownerUsername
+string
+max 64 chars
+Username of the root owner when available.
+smartAccountAddress
+string
+max 128 chars
+Smart account address associated with this account or subaccount.
+entries
+object
+Saved address-book entries grouped by destination type.
+2 fields
+external
+object[]
+Saved external withdrawal destinations.
+11 fields
+addressBookEntryId
+string (fixed64)
+> 0
+Stable public id of the saved external destination.
+scope
+object
+Address book that owns this entry.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+label
+string
+max 128 chars
+User-defined display label.
+note
+string
+max 512 chars
+Optional user-defined note.
+tagIds
+string[] (fixed64)
+max 10 items
+Tag ids attached to this entry. See GetAddressBookViewResponse.tags for tag details.
+whitelistStatus
+enum
+must be defined value
+Current active whitelist status for this destination.
+DESTINATION_NOT_WHITELISTED
+DESTINATION_WHITELIST_ACTIVE
+DESTINATION_WHITELIST_UNRESOLVED
+polychainChainId
+integer (int32)
+> 0
+External network identifier for the destination address.
+address
+string
+Destination address on the selected external network.
+createdAt
+string (date-time)
+Time this entry was created, as a UTC timestamp.
+updatedAt
+string (date-time)
+Time this entry was last updated, as a UTC timestamp.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+internal
+object[]
+Saved internal transfer destinations.
+15 fields
+addressBookEntryId
+string (fixed64)
+> 0
+Stable public id of the saved internal destination.
+scope
+object
+Address book that owns this entry.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+label
+string
+max 128 chars
+User-defined display label.
+note
+string
+max 512 chars
+Optional user-defined note.
+tagIds
+string[] (fixed64)
+max 10 items
+Tag ids attached to this entry. See GetAddressBookViewResponse.tags for tag details.
+whitelistStatus
+enum
+must be defined value
+Current active whitelist status for this destination.
+DESTINATION_NOT_WHITELISTED
+DESTINATION_WHITELIST_ACTIVE
+DESTINATION_WHITELIST_UNRESOLVED
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns the target internal account.
+targetAccountId
+string (fixed64)
+> 0
+Target account or subaccount public id.
+targetScopeType
+enum
+must be defined value
+Whether target_account_id identifies a root account or a subaccount.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+smartAccountAddress
+string
+Smart account address for the internal transfer destination.
+rootUsername
+string
+max 64 chars
+Username for the destination root account, when available.
+subaccountLabel
+string
+max 64 chars
+Label for the destination subaccount, when the destination is a subaccount.
+createdAt
+string (date-time)
+Time this entry was created, as a UTC timestamp.
+updatedAt
+string (date-time)
+Time this entry was last updated, as a UTC timestamp.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+recentDestinations
+object
+Recent destinations not saved in the address book, grouped by destination type.
+2 fields
+external
+object[]
+Recent external withdrawal destinations that are not saved in the address book.
+8 fields
+scope
+object
+Address book where this destination was observed.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+lastDirection
+enum
+must be defined value
+Direction of the most recent interaction.
+DEPOSIT_FROM
+WITHDRAW_TO
+INTERNAL_TRANSFER_FROM
+INTERNAL_TRANSFER_TO
+saved
+boolean
+Whether this destination is already saved in the address book.
+addressBookEntryId
+string (fixed64)
+> 0
+Saved address book entry id when saved is true.
+useCount
+string (uint64)
+Number of transfers observed for this destination.
+lastSeenAt
+string (date-time)
+Time this destination was last used, as a UTC timestamp.
+polychainChainId
+integer (int32)
+> 0
+External network identifier for the destination address.
+address
+string
+Destination address on the selected external network.
+internal
+object[]
+Recent internal transfer destinations that are not saved in the address book.
+12 fields
+scope
+object
+Address book where this destination was observed.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+lastDirection
+enum
+must be defined value
+Direction of the most recent interaction.
+DEPOSIT_FROM
+WITHDRAW_TO
+INTERNAL_TRANSFER_FROM
+INTERNAL_TRANSFER_TO
+saved
+boolean
+Whether this destination is already saved in the address book.
+addressBookEntryId
+string (fixed64)
+> 0
+Saved address book entry id when saved is true.
+useCount
+string (uint64)
+Number of transfers observed for this destination.
+lastSeenAt
+string (date-time)
+Time this destination was last used, as a UTC timestamp.
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns the target internal account.
+targetAccountId
+string (fixed64)
+> 0
+Target account or subaccount public id.
+targetScopeType
+enum
+must be defined value
+Whether target_account_id identifies a root account or a subaccount.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+smartAccountAddress
+string
+Smart account address for the internal transfer destination.
+rootUsername
+string
+max 64 chars
+Username for the destination root account, when available.
+subaccountLabel
+string
+max 64 chars
+Label for the destination subaccount, when the destination is a subaccount.
+tags
+object[]
+Tags referenced by entries.tag_ids.
+3 fields
+tagId
+string (fixed64)
+> 0
+Stable public id of the tag.
+name
+string
+1-48 chars
+Human-readable tag name.
+color
+string (color)
+max 32 chars
+Optional UI color token for this tag.
+withdrawWhitelist
+object
+External withdrawal whitelist status for the selected address book.
+4 fields
+scope
+object
+Address book for this withdraw whitelist view.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+externalWhitelistRequired
+boolean
+Whether external withdrawals are restricted to whitelisted destinations.
+activeEntries
+object[]
+Active external withdraw whitelist entries for this address book.
+4 fields
+canonicalAddress
+string
+max 256 chars
+Destination address on the selected external network.
+rawAddressHex
+string
+max 1024 chars
+Encoded destination payload as lowercase hex, when available.
+updatedAt
+string (date-time)
+Time this whitelist entry was last updated, as a UTC timestamp.
+polychainChainId
+integer (int32)
+> 0
+External network identifier for this whitelist entry.
+internalWhitelistRequired
+boolean
+Whether internal transfers are restricted to whitelisted destinations.
+recentDestinationsTruncated
+boolean
+True when more recent destinations exist than were returned. This bounded
+aggregate view does not provide continuation.
+viewRevision
+string (uint64)
+Revision of the complete scope projection returned by this response.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.AddressBookService/GetAddressBookView
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s515" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/GetAddressBookView' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"limit": 100,
+"minimumViewRevision": "1",
+"subaccountId": "6789012345678"
+}'
+Responses
+"books": [
+"callerRole": "VIEWER",
+"label": "Main Account",
+"ownerUsername": "trader_alpha",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222"
+}
+],
+"entries": {
+"external": [
+"address": "0x3333333333333333333333333333333333333333",
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"label": "Treasury Wallet",
+"note": "Primary treasury destination.",
+"polychainChainId": 1,
+"revision": "1",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"tagIds": [
+"1"
+],
+"updatedAt": "2025-01-01T00:00:00Z",
+"whitelistStatus": "DESTINATION_NOT_WHITELISTED"
+}
+],
+"internal": [
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"label": "Market Maker",
+"note": "Primary treasury destination.",
+"revision": "1",
+"rootAccountId": "7563897446546",
+"rootUsername": "trader_alpha",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountLabel": "Market Making",
+"tagIds": [
+"1"
+],
+"targetAccountId": "7563897446546",
+"targetScopeType": "SCOPE_ROOT",
+"updatedAt": "2025-01-01T00:00:00Z",
+"whitelistStatus": "DESTINATION_NOT_WHITELISTED"
+}
+]
+},
+"recentDestinations": {
+"external": [
+"address": "0x3333333333333333333333333333333333333333",
+"addressBookEntryId": "1",
+"lastDirection": "DEPOSIT_FROM",
+"lastSeenAt": "2025-01-01T00:00:00Z",
+"polychainChainId": 1,
+"saved": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"useCount": "1"
+}
+],
+"internal": [
+"addressBookEntryId": "1",
+"lastDirection": "DEPOSIT_FROM",
+"lastSeenAt": "2025-01-01T00:00:00Z",
+"rootAccountId": "7563897446546",
+"rootUsername": "trader_alpha",
+"saved": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountLabel": "Market Making",
+"targetAccountId": "7563897446546",
+"targetScopeType": "SCOPE_ROOT",
+"useCount": "1"
+}
+]
+},
+"recentDestinationsTruncated": false,
+"tags": [
+"color": "#7C3AED",
+"name": "Treasury",
+"tagId": "1"
+}
+],
+"viewRevision": "1",
+"withdrawWhitelist": {
+"activeEntries": [
+"canonicalAddress": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1,
+"rawAddressHex": "3333333333333333333333333333333333333333",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"externalWhitelistRequired": false,
+"internalWhitelistRequired": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+}
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/GetAddressBookView' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "limit": 100,
+  "minimumViewRevision": "1",
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "books": [
+    {
+      "callerRole": "VIEWER",
+      "label": "Main Account",
+      "ownerUsername": "trader_alpha",
+      "scope": {
+        "rootAccountId": "7563897446546",
+        "scopeType": "SCOPE_ROOT",
+        "subaccountId": "6789012345678"
+      },
+      "smartAccountAddress": "0x2222222222222222222222222222222222222222"
+    }
+  ],
+  "entries": {
+    "external": [
+      {
+        "address": "0x3333333333333333333333333333333333333333",
+        "addressBookEntryId": "1",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "label": "Treasury Wallet",
+        "note": "Primary treasury destination.",
+        "polychainChainId": 1,
+        "revision": "1",
+        "scope": {
+          "rootAccountId": "7563897446546",
+          "scopeType": "SCOPE_ROOT",
+          "subaccountId": "6789012345678"
+        },
+        "tagIds": [
+          "1"
+        ],
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "whitelistStatus": "DESTINATION_NOT_WHITELISTED"
+      }
+    ],
+    "internal": [
+      {
+        "addressBookEntryId": "1",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "label": "Market Maker",
+        "note": "Primary treasury destination.",
+        "revision": "1",
+        "rootAccountId": "7563897446546",
+        "rootUsername": "trader_alpha",
+        "scope": {
+          "rootAccountId": "7563897446546",
+          "scopeType": "SCOPE_ROOT",
+          "subaccountId": "6789012345678"
+        },
+        "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+        "subaccountLabel": "Market Making",
+        "tagIds": [
+          "1"
+        ],
+        "targetAccountId": "7563897446546",
+        "targetScopeType": "SCOPE_ROOT",
+        "updatedAt": "2025-01-01T00:00:00Z",
+        "whitelistStatus": "DESTINATION_NOT_WHITELISTED"
+      }
+    ]
+  },
+  "recentDestinations": {
+    "external": [
+      {
+        "address": "0x3333333333333333333333333333333333333333",
+        "addressBookEntryId": "1",
+        "lastDirection": "DEPOSIT_FROM",
+        "lastSeenAt": "2025-01-01T00:00:00Z",
+        "polychainChainId": 1,
+        "saved": false,
+        "scope": {
+          "rootAccountId": "7563897446546",
+          "scopeType": "SCOPE_ROOT",
+          "subaccountId": "6789012345678"
+        },
+        "useCount": "1"
+      }
+    ],
+    "internal": [
+      {
+        "addressBookEntryId": "1",
+        "lastDirection": "DEPOSIT_FROM",
+        "lastSeenAt": "2025-01-01T00:00:00Z",
+        "rootAccountId": "7563897446546",
+        "rootUsername": "trader_alpha",
+        "saved": false,
+        "scope": {
+          "rootAccountId": "7563897446546",
+          "scopeType": "SCOPE_ROOT",
+          "subaccountId": "6789012345678"
+        },
+        "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+        "subaccountLabel": "Market Making",
+        "targetAccountId": "7563897446546",
+        "targetScopeType": "SCOPE_ROOT",
+        "useCount": "1"
+      }
+    ]
+  },
+  "recentDestinationsTruncated": false,
+  "tags": [
+    {
+      "color": "#7C3AED",
+      "name": "Treasury",
+      "tagId": "1"
+    }
+  ],
+  "viewRevision": "1",
+  "withdrawWhitelist": {
+    "activeEntries": [
+      {
+        "canonicalAddress": "0x3333333333333333333333333333333333333333",
+        "polychainChainId": 1,
+        "rawAddressHex": "3333333333333333333333333333333333333333",
+        "updatedAt": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "externalWhitelistRequired": false,
+    "internalWhitelistRequired": false,
+    "scope": {
+      "rootAccountId": "7563897446546",
+      "scopeType": "SCOPE_ROOT",
+      "subaccountId": "6789012345678"
+    }
+  }
+}

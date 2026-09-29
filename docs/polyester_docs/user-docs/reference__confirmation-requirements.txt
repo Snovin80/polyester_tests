@@ -1,0 +1,225 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/confirmation-requirements
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Confirmation Requirements · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Reference
+Confirmation Requirements
+Copy page
+View as Markdown
+Open in
+Polyester waits for the required number of chain confirmations before continuing a deposit or withdrawal.
+Chain
+Confirmations required
+Estimated confirmation time
+Arbitrum Sepolia
+1 block
+~1 minute
+Avalanche C Fuji
+1 block
+~1 minute
+Base Sepolia
+1 block
+~1 minute
+Bitcoin Cash Testnet
+1 block
+~2 minutes
+Bitcoin Testnet
+1 block
+~2 minutes
+BNB Smart Chain Testnet
+1 block
+50 seconds
+Dogecoin Testnet
+5 blocks
+50 seconds
+Ethereum Classic Testnet
+1 block
+~1 minute
+Ethereum Sepolia
+1 block
+~1 minute
+HyperEVM Testnet
+1 block
+~1 minute
+Litecoin Testnet
+1 block
+50 seconds
+Polygon Amoy
+1 block
+~1 minute
+Ripple Testnet
+1 block
+30 seconds
+Robinhood Testnet
+1 block
+~1 minute
+Solana Devnet
+1 block
+~1 minute
+Tron Nile
+1 block
+~1 minute
+Times are estimates and can change with chain conditions.
+Related Topics
+Testnet Faucets
+Claim testnet Assets from faucets that do not require a mainnet balance.
+Faucet Backups
+Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+Polyester Contracts
+Open official Polyester Chain contract deployments in Polyester Scan.
+Audits
+Open published security reviews for Polyester and Zipper.
+Official Links
+Open official Polyester products, documentation, support, community, and developer resources.
+Glossary
+Search definitions for Polyester product and trading terms.
+LLMs.txt
+Open Polyester documentation as a plain-text resource for language models and other tools.
+Previous
+Contracts & Tools
+Next
+Testnet Faucets
+On this page
+Related Topics
+Share this page
+Confirmation Requirements
+See the confirmation requirements and estimated deposit times for supported chains.
+Share
+Copy Link

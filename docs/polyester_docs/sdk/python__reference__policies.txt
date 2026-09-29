@@ -1,0 +1,221 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/policies
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Policies · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Policies
+Policies
+Copy page
+View as Markdown
+Open in
+The Python SDK intentionally exposes policy
+streams only
+delete methods require JWT/session administration and are not part of this API-key SDK.
+Async method
+Sync method
+Event type
+subscribe_subaccount_policies
+subscribe_sync
+SubaccountPolicy
+subscribe_api_policies
+subscribe_api_policies_sync
+ApiPolicy
+api_policies
+=
+await
+client.policies.subscribe_api_policies(
+account_id
+=
+client.default_account_id,
+)
+async
+with
+api_policies:
+async
+for
+policy
+in
+api_policies:
+print
+(policy.id, policy.revision)
+break
+Both are private channels and require API-key credentials, Account ID, and the corresponding policy
+read permission. Subscription return means the private token and Centrifugo handshake succeeded.
+Policy events may include
+MFA
+requirement flags. They describe venue policy; this SDK cannot
+perform an MFA challenge. Manage assignments and mutations in the Polyester app/TypeScript
+session client.
+Related:
+Authentication
+,
+Streaming
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Orders
+Next
+Polychart
+On this page
+Related Topics
+Share this page
+Policies
+Realtime API-key and subaccount-policy updates.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+api_policies = await client.policies.subscribe_api_policies(
+    account_id=client.default_account_id,
+)
+async with api_policies:
+    async for policy in api_policies:
+        print(policy.id, policy.revision)
+        break

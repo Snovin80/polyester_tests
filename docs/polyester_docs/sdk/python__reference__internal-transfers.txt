@@ -1,0 +1,266 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/internal-transfers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Internal transfers · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Internal transfers
+Internal transfers
+Copy page
+View as Markdown
+Open in
+client.internal_transfers
+moves funds between Polyester accounts without touching a chain:
+from your source scope to another root account, a
+subaccount
+, or a smart-account address.
+Transfers are idempotent on
+idempotency_key
+existing transfer instead of creating a second one.
+Methods
+Method
+Summary
+create
+Create (or return) an idempotent internal transfer.
+Create
+Provide exactly one destination:
+destination_account_id
+,
+destination_subaccount_id
+, or
+destination_smart_account_address
+result
+=
+await
+client.internal_transfers.create(
+asset_id
+=
+2
+,
+quantity
+=
+"125.50"
+,
+idempotency_key
+=
+"xfer-stable-1"
+,
+destination_subaccount_id
+=
+"123"
+,
+)
+print
+(result.transfer_id, result.request_id, result.quantity)
+Field
+Required
+Notes
+asset_id
+yes
+Ledger asset id
+quantity
+yes
+Decimal string or
+AssetAmount
+idempotency_key
+yes
+Reuse on retry
+destination (one of three)
+yes
+Account / subaccount / smart-account address
+account
+/
+sub_account_id
+no
+Source scope override
+quantity_scale
+no
+Default ledger scale
+18
+The request wire field is always
+amount_e18
+quantity_scale
+declares the input scale and the
+SDK rescales exactly to scale 18, with checked overflow and no rounding. For example,
+AssetAmount.from_scaled(125, scale=2)
+is encoded as
+1_250_000_000_000_000_000
+(
+1.25e18
+). Inexact downscales are rejected.
+Related
+Deposits & withdrawals guide
+Balances
+Withdrawals
+Requests & idempotency
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Heatmap
+Next
+Layout
+On this page
+Methods
+Create
+Related
+Related Topics
+Share this page
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+result = await client.internal_transfers.create(
+    asset_id=2,
+    quantity="125.50",
+    idempotency_key="xfer-stable-1",
+    destination_subaccount_id="123",
+)
+print(result.transfer_id, result.request_id, result.quantity)

@@ -1,0 +1,461 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/market-data
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market data · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Market data
+Market data
+Copy page
+View as Markdown
+Open in
+Every service on this page is public. An unauthenticated client can call them.
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+HydrateCatalogs
+true
+,
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+client
+Close
+()
+if
+err
+client
+WaitForCatalogs
+(
+ctx
+);
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+Streams use
+Messages()
+on typed subscriptions. Managed order-book / overview books use
+Updates()
+Symbols
+Prefer
+"BTC-USDT"
+WaitForCatalogs
+, or pass
+symbolID
+Market overview
+import
+"
+github.com/Fabric-Labs/polyester-sdk-go/services
+"
+overview
+,
+err
+client
+MarketOverview
+List
+(
+ctx
+,
+nil
+,
+50
+,
+""
+,
+false
+)
+sub
+,
+err
+client
+MarketOverview
+CreateSubscription
+(
+ctx
+,
+services
+MarketOverviewCreateSubscriptionOptions
+Limit
+50
+,
+})
+for
+rows
+range
+sub
+Updates
+() {
+_
+=
+rows
+;
+break
+}
+Candles
+Alias:
+client.Candles
+→
+client.MarketData
+symbol
+"BTC-USDT"
+result
+,
+err
+client
+Candles
+GetCandles
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1h"
+,
+200
+,
+nil
+,
+nil
+,
+false
+)
+sub
+,
+err
+client
+Candles
+SubscribeCandles
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1m"
+)
+for
+c
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+c
+Close
+);
+break
+}
+Row candle results are newest-first, with an included open candle prepended; use index
+0
+for
+latest and reverse/sort by
+TsSec
+for indicators. Candle columns are oldest-first.
+Order book
+book
+,
+err
+client
+Orderbook
+Get
+(
+ctx
+,
+"BTC-USDT"
+,
+20
+)
+sub
+,
+err
+client
+Orderbook
+CreateSubscription
+(
+ctx
+,
+services
+CreateSubscriptionOptions
+Symbol
+"BTC-USDT"
+,
+Depth
+50
+,
+})
+for
+b
+range
+sub
+Updates
+() {
+fmt
+Println
+(
+b
+BookSeq
+);
+break
+}
+Public trades
+symbol
+"BTC-USDT"
+tape
+,
+err
+client
+MarketData
+GetTrades
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+20
+,
+nil
+)
+sub
+,
+err
+client
+MarketData
+SubscribeTrades
+(
+ctx
+,
+&
+symbol
+,
+nil
+)
+for
+t
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+t
+Price
+);
+break
+}
+Private fills are
+client.Trades
+, not the public tape.
+Heatmap & chain analytics
+client.Heatmap
+and
+client.ChainAnalytics
+for L2 heatmap and chain analytics reads.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Streaming model
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Centrifugo WebSocket + Protobuf. Details:
+Streaming
+Related
+Order book
+·
+Candles
+·
+Public trades
+·
+Market overview
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Previous
+Authentication
+Next
+Trading
+On this page
+Symbols
+Market overview
+Candles
+Order book
+Public trades
+Heatmap & chain analytics
+Related
+Related Topics
+Share this page
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+client, err := polyester.New(polyester.Config{
+    Environment:     &polyester.TestnetEnvironment,
+    HydrateCatalogs: true,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+
+---
+
+import "github.com/Fabric-Labs/polyester-sdk-go/services"
+
+overview, err := client.MarketOverview.List(ctx, nil, 50, "", false)
+sub, err := client.MarketOverview.CreateSubscription(ctx, services.MarketOverviewCreateSubscriptionOptions{
+    Limit: 50,
+})
+for rows := range sub.Updates() { _ = rows; break }
+
+---
+
+symbol := "BTC-USDT"
+result, err := client.Candles.GetCandles(ctx, &symbol, nil, "1h", 200, nil, nil, false)
+sub, err := client.Candles.SubscribeCandles(ctx, &symbol, nil, "1m")
+for c := range sub.Messages() { fmt.Println(c.Close); break }
+
+---
+
+book, err := client.Orderbook.Get(ctx, "BTC-USDT", 20)
+sub, err := client.Orderbook.CreateSubscription(ctx, services.CreateSubscriptionOptions{
+    Symbol: "BTC-USDT",
+    Depth:  50,
+})
+for b := range sub.Updates() { fmt.Println(b.BookSeq); break }
+
+---
+
+symbol := "BTC-USDT"
+tape, err := client.MarketData.GetTrades(ctx, &symbol, nil, 20, nil)
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+for t := range sub.Messages() { fmt.Println(t.Price); break }

@@ -1,0 +1,299 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/get-started/installation
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Installation · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Get started
+svg]:size-3.5">
+/
+Installation
+Installation
+Copy page
+View as Markdown
+Open in
+Install the package
+GOPRIVATE
+=
+'github.com/Fabric-Labs/*'
+GONOSUMDB=
+'github.com/Fabric-Labs/*'
+go
+get
+github.com/Fabric-Labs/polyester-sdk-go@v0.1.0a54
+Requires a recent Go toolchain (see
+go.mod
+in the repository). Realtime and on-chain Funding helpers are always included.
+The source repository is currently private. Your GitHub account needs access, and Git must be
+authenticated (credential helper, SSH rewrite, or CI token).
+GOPRIVATE
+/
+GONOSUMDB
+prevent
+the Go proxy and checksum database from treating the private module as public.
+Source (access required):
+Fabric-Labs/polyester-sdk-go
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Alpha
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The SDK is pre-1.0. Pin a git tag in production (example above), not
+Version
+v0.1.0a54
+is the current API-key-only release. It supports signed unary calls, binary
+realtime subscriptions with handshake-before-return, and opaque pagination tokens for complete
+trigger list/event scans. Breaking public API changes are called out in the repository changelog.
+Testnet endpoints
+Pass
+Environment: &polyester.TestnetEnvironment
+to target Polyester
+testnet
+Setting
+Value
+API
+https://api-testnet.polyester.com
+WebSocket
+wss://api-testnet.polyester.com
+Override with
+Config.APIURL
+/
+Config.WSURL
+FromEnv
+reads
+POLYESTER_ENV=testnet
+and
+optional
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+overrides.
+Verify the install
+Public market data needs no credentials:
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+client
+Close
+()
+ctx
+context
+Background
+()
+overview
+,
+err
+client
+MarketOverview
+List
+(
+ctx
+,
+nil
+,
+5
+,
+""
+,
+false
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+market
+range
+overview
+Markets
+fmt
+Println
+(
+market
+Symbol
+,
+market
+LastPrice
+Ticks
+())
+}
+If that prints a few markets, you are connected. Next:
+Quickstart
+Contributor live harness (strict)
+make
+test
+# unit only (CI)
+make
+test-integration
+# live (reads .env)
+# or: go test -tags=integration -v ./tests/integration/...
+Credentialed live tests need
+POLYESTER_API_KEY_ID
+/
+POLYESTER_API_PRIVATE_KEY
+(optional
+POLYESTER_ACCOUNT_ID
+). Optional gates:
+POLYESTER_TEST_MUTATION=1
+,
+POLYESTER_TEST_FUNDED=1
+Set
+POLYESTER_TEST_STRICT_LIVE=1
+for release certification so soft-skips fail instead of
+appearing green.
+Related Topics
+Overview
+Build typed Polyester integrations with the official Go API-key SDK.
+Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+Previous
+Overview
+Next
+Quickstart
+On this page
+Install the package
+Testnet endpoints
+Verify the install
+Contributor live harness (strict)
+Related Topics
+Share this page
+Installation
+Install the Go SDK and verify connectivity to Polyester testnet.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+GOPRIVATE='github.com/Fabric-Labs/*' 
+GONOSUMDB='github.com/Fabric-Labs/*' 
+go get github.com/Fabric-Labs/polyester-sdk-go@v0.1.0a54
+
+---
+
+client, err := polyester.New(polyester.Config{
+    Environment: &polyester.TestnetEnvironment,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+ctx := context.Background()
+
+---
+
+overview, err := client.MarketOverview.List(ctx, nil, 5, "", false)
+if err != nil { log.Fatal(err) }
+for _, market := range overview.Markets {
+    fmt.Println(market.Symbol, market.LastPrice.Ticks())
+}
+
+---
+
+make test                               # unit only (CI)
+make test-integration                   # live (reads .env)
+# or: go test -tags=integration -v ./tests/integration/...

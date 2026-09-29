@@ -1,0 +1,27 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/fee-assets.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Fee Assets
+Choose whether a BUY fee is charged in quote or deducted from received base, and decode fee amounts with the correct scale.
+The fee asset defines which asset is charged for an order fill. It is independent from order side, execution type, and sizing, although those choices determine which combinations are valid.
+## FeeAsset values
+| Value                   | Behavior                                                      |
+| ----------------------- | ------------------------------------------------------------- |
+| `FEE_ASSET_UNSPECIFIED` | Uses the default quote-denominated behavior                   |
+| `QUOTE`                 | Charges the fee in quote                                      |
+| `BASE`                  | Deducts the fee from base received; valid only for BUY orders |
+SELL fees are always quote-denominated. A SELL request with `BASE` is rejected rather than rewritten.
+## BUY behavior
+For an exact-base BUY with `QUOTE`, the submitted base quantity remains the gross and net base quantity before any other adjustments. The account must fund trade notional plus the quote fee.
+For an exact-base BUY with `BASE`, the gross base quantity is submitted for execution and the fee reduces the net base amount received.
+For a quote-budget BUY with `QUOTE`, the fee counts toward the maximum quote debit. For a quote-budget BUY with `BASE`, the quote ceiling limits trade debit while the base fee reduces net base received. See [Order Sizing](https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing).
+## Decode fee values
+Use the companion `fee_asset` field whenever a response contains `fee_scaled`:
+| Fee asset                          | Scale                       |
+| ---------------------------------- | --------------------------- |
+| `QUOTE` or `FEE_ASSET_UNSPECIFIED` | Pair `quote_quantity_scale` |
+| `BASE`                             | Pair `base_quantity_scale`  |
+Do not decode fee fields from the order side alone. Preserve the explicit denomination returned by the server.
+## Error handling
+An unsupported combination returns the stable order error `ERROR_CODE_FEE_ASSET_NOT_ALLOWED`. Do not silently convert an invalid `BASE` request to `QUOTE`.

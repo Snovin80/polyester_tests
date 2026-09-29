@@ -1,0 +1,395 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/orders/modify
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrdersService
+Modify Order
+Modify a single open order by order ID or client order ID. Supports amend-or-replace behavior policies, price and quantity updates, and attached risk updates.
+Copy URL
+Method
+POST
+Path
+/v1/orders/modify
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+/v1/orders/modify
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/modify' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"behavior": "AMEND_OR_REPLACE",
+"newAttachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+}
+},
+"newClientOrderId": "cli-ord-20250101-001",
+"newPrice": "0.005",
+"newQtyScaled": 100000,
+"orderId": "5USXJZmk",
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT"
+}'
+Responses
+"actionTaken": "AMENDED",
+"code": "INVALID_ORDER_STATE",
+"finalOrderId": "5USXJZmk",
+"oldOrderId": "5USXJZmk",
+"stopLossTriggerId": "4U4q9P7z",
+"takeProfitTriggerId": "2ZodcFeg",
+"trailingStopTriggerId": "24cncW7T",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+behavior
+enum
+Modify behavior policy. MODIFY_BEHAVIOR_UNSPECIFIED is treated as AMEND_OR_REPLACE.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s345" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+AMEND_OR_REPLACE
+clientOrderId
+string
+Client order ID to resolve within the caller account.
+newAttachedRisk
+object
+Replacement attached-risk policy for the order.
+4 fields
+oco
+boolean
+required
+If true, take-profit and the configured stop leg (stop-loss or trailing-stop) form an OCO pair: when one fires, the other is canceled. Default is false (no mutual cancellation).
+Unset
+False
+True
+stopLoss
+object
+Optional stop-loss configuration.
+2 fields
+child
+object
+Child execution when the threshold is crossed.
+2 fields
+limitGtc
+object
+Resting GTC limit child.
+1 field
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+Edit in JSON
+triggerPrice
+string
+required
+/^[0-9]…9]+)?$/
+Trigger price in quote units scaled by 1e9.
+takeProfit
+object
+Optional take-profit configuration.
+2 fields
+child
+object
+Child execution when the threshold is crossed.
+2 fields
+limitGtc
+object
+Resting GTC limit child.
+1 field
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+Edit in JSON
+triggerPrice
+string
+required
+/^[0-9]…9]+)?$/
+Trigger price in quote units scaled by 1e9.
+trailingStop
+object
+Optional trailing stop configuration.
+5 fields
+activationPrice
+string
+/^[0-9]…9]+)?$/
+Optional activation price: trailing only starts after this price is reached. If omitted, trailing starts immediately after the parent order fills. Expressed in quote units scaled by 1e9.
+maxSlippageBps
+integer (int32)
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+trailingDistanceBps
+integer (int32)
+Trailing distance in basis points (1 bp = 0.01%).
+trailingDistanceTicks
+string
+/^[0-9]…9]+)?$/
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+newClientOrderId
+string
+required
+Optional new client order id when replace path is taken.
+newPrice
+string
+/^[0-9]…9]+)?$/
+Patch fields (presence-based). New limit price in quote units scaled by 1e9. Required for price changes.
+newQtyScaled
+integer (int64)
+required
+Target total quantity after modify/replace, scaled by the pair's base_quantity_scale from GetSpotConfig.
+orderId
+string
+/^[1-9A…m-z]+$/
+Order ID as fixed64.
+requestId
+string
+Idempotency key (required).
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Target sub-account numeric ID. When omitted, uses caller's root account.
+symbol
+string
+required
+Trading pair symbol, e.g. BTC-USDT.
+Response
+Form
+JSON
+actionTaken
+enum
+Action applied; unspecified when rejected.
+AMENDED
+REPLACED
+Example
+AMENDED
+code
+string
+Error code if rejected.
+Example
+INVALID_ORDER_STATE
+finalOrderId
+string
+/^[1-9A…m-z]+$/
+Final active order ID; same as old_order_id for amendments.
+Example
+5USXJZmk
+oldOrderId
+string
+/^[1-9A…m-z]+$/
+Original order ID that was amended or replaced.
+Example
+5USXJZmk
+stopLossTriggerId
+string
+/^[1-9A…m-z]+$/
+Trigger ID for attached stop-loss after modification, when configured.
+Example
+4U4q9P7z
+takeProfitTriggerId
+string
+/^[1-9A…m-z]+$/
+Trigger ID for attached take-profit after modification, when configured.
+Example
+2ZodcFeg
+trailingStopTriggerId
+string
+/^[1-9A…m-z]+$/
+Trigger ID for attached trailing stop after modification, when configured.
+Example
+24cncW7T
+ts
+string
+Server timestamp.
+Example
+2025-01-01T00:00:00Z
+tsNs
+string
+/^[0-9]+$/
+Server timestamp as epoch nanoseconds (for bots).
+Example
+1735689600000000000
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/orders/modify
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s432" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/modify' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"behavior": "AMEND_OR_REPLACE",
+"newAttachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+}
+},
+"newClientOrderId": "cli-ord-20250101-001",
+"newPrice": "0.005",
+"newQtyScaled": 100000,
+"orderId": "5USXJZmk",
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT"
+}'
+Responses
+"actionTaken": "AMENDED",
+"code": "INVALID_ORDER_STATE",
+"finalOrderId": "5USXJZmk",
+"oldOrderId": "5USXJZmk",
+"stopLossTriggerId": "4U4q9P7z",
+"takeProfitTriggerId": "2ZodcFeg",
+"trailingStopTriggerId": "24cncW7T",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/orders/modify' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "behavior": "AMEND_OR_REPLACE",
+  "newAttachedRisk": {
+    "oco": false,
+    "stopLoss": {
+      "child": {
+        "marketIoc": {}
+      },
+      "triggerPrice": "0.005"
+    },
+    "takeProfit": {
+      "child": {
+        "marketIoc": {}
+      },
+      "triggerPrice": "0.005"
+    }
+  },
+  "newClientOrderId": "cli-ord-20250101-001",
+  "newPrice": "0.005",
+  "newQtyScaled": 100000,
+  "orderId": "5USXJZmk",
+  "requestId": "request_01J0EXAMPLE",
+  "subaccountId": "45LUmqjT",
+  "symbol": "BTC-USDT"
+}'
+
+---
+
+{
+  "actionTaken": "AMENDED",
+  "code": "INVALID_ORDER_STATE",
+  "finalOrderId": "5USXJZmk",
+  "oldOrderId": "5USXJZmk",
+  "stopLossTriggerId": "4U4q9P7z",
+  "takeProfitTriggerId": "2ZodcFeg",
+  "trailingStopTriggerId": "24cncW7T",
+  "ts": "2025-01-01T00:00:00Z",
+  "tsNs": "1735689600000000000"
+}

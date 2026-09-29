@@ -1,0 +1,635 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trades · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Trades
+Trades
+Copy page
+View as Markdown
+Open in
+client.trades
+reads and streams your fills: one record per execution against one of your orders.
+Every method is authenticated and account-scoped, so each input accepts an optional
+account
+field
+(
+"main"
+,
+"active"
+, or
+). See
+Account scoping
+for how the default resolves.
+Prices, quantities, and fees come back as decimal strings, already scaled to the pair. Fills on
+symbols missing from the catalog cannot be scaled, so they are rejected rather than returned with
+raw values.
+Methods
+Method
+Summary
+list
+List your fills with symbol, side, and time filters.
+subscribe
+Stream your fills over a private channel.
+list(input?, options?)
+Returns
+symbolId
+,
+side
+, and a
+startTsNs
+/
+endTsNs
+time range, then page with
+limit
+and
+pageToken
+per-symbol match, pass
+afterMatchId
+with
+symbolId
+const
+trades
+,
+transfers
+,
+nextPageToken
+}
+=
+await
+client
+trades
+list
+({
+symbolId:
+"101"
+,
+side:
+"sell"
+,
+limit:
+100
+,
+});
+for
+(
+const
+trade
+of
+trades
+) {
+console
+log
+(
+trade
+sideLabel
+,
+trade
+price
+,
+trade
+qty
+,
+trade
+fee
+);
+}
+Page through the full history with the returned token:
+let
+pageToken
+=
+""
+;
+do
+const
+page
+=
+await
+client
+trades
+list
+({ symbolId:
+"101"
+,
+pageToken
+});
+console
+log
+(
+page
+trades
+length
+);
+pageToken
+=
+page
+nextPageToken
+;
+}
+while
+(
+pageToken
+!==
+""
+);
+const
+replay
+=
+await
+client
+trades
+list
+({
+symbolId:
+"101"
+,
+afterMatchId:
+lastObservedMatchId
+,
+});
+afterMatchId
+is a non-empty uint64 decimal string and requires a positive numeric
+symbolId
+string at compile time and runtime. Subscribe before replaying, then deduplicate overlap by
+symbolId
+,
+matchId
+, and
+orderId
+Scope executions to one physical
+orderId
+, or to a logical
+lineageId
+with optional
+throughGeneration
+; do not send both.
+includeTransfers: true
+requests settlement transfers for
+the matches in that page. Deduplicate returned transfers by
+txId
+across pages. Trade records can
+also include
+lineage: { id, generation }
+, which identifies their logical order and physical
+replacement generation.
+GetUserTradesInput
+Field
+Type
+Required
+Notes
+symbolId
+string
+conditional
+Positive numeric pair id as a string, for example
+"101"
+afterMatchId
+side
+"buy" | "sell"
+no
+startTsNs
+decimal string
+no
+Start of the range, epoch nanoseconds.
+endTsNs
+decimal string
+no
+End of the range, epoch nanoseconds.
+limit
+number
+no
+Maximum trades to return.
+pageToken
+string
+no
+Token from a previous page's
+nextPageToken
+afterMatchId
+decimal string
+no
+Replay fills after this per-symbol match ID. Requires
+symbolId
+orderId
+string
+no
+Restrict fills to one physical order. Mutually exclusive with
+lineageId
+lineageId
+string
+no
+Restrict fills to a logical order across replacements.
+throughGeneration
+number
+no
+Include lineage executions through this one-based generation.
+includeTransfers
+boolean
+no
+Include settlement transfers for matches on this page.
+account
+AccountScope
+no
+Scope override.
+subscribe(input)
+Streams your fills over a private channel as they happen. Takes an
+accountId
+plus the standard
+handler fields, and returns an idempotent unsubscribe function. See the
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+trades
+subscribe
+({
+accountId
+,
+onEvent
+trade
+)
+=>
+console
+log
+(
+trade
+orderId
+,
+trade
+price
+,
+trade
+qty
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+The
+Trade
+shape
+list
+and
+subscribe
+share one parsed shape. Prices, quantities, and fees are decimal strings;
+ids are strings.
+interface
+Trade
+orderId
+string
+;
+lineage
+?:
+id
+string
+;
+generation
+number
+};
+symbolId
+number
+;
+sideLabel
+"buy"
+|
+"sell"
+|
+"unspecified"
+;
+liquidityLabel
+"maker"
+|
+"taker"
+;
+feeAsset
+"quote"
+|
+"base"
+|
+"unspecified"
+;
+qty
+string
+;
+// decimal string, base asset
+price
+string
+;
+// decimal string
+fee
+string
+;
+// decimal string, in the fee asset
+referralShare
+?:
+string
+;
+// decimal string, only when the fill earned one
+feeIsRebate
+boolean
+;
+tsNs
+string
+;
+// epoch nanoseconds, as a string
+tsIso
+string
+;
+// ISO 8601 timestamp
+tsMs
+number
+;
+// epoch milliseconds
+matchId
+string
+;
+}
+feeAsset
+names whichever asset actually paid, and
+fee
+is scaled to it.
+feeIsRebate
+flips the
+sign of what
+fee
+means: when it is
+true
+the amount was paid
+to
+you rather than charged, so
+never sum fees without checking it.
+referralShare
+is present only on fills that earned one.
+liquidityLabel
+tells you whether the fill was
+"maker"
+or
+"taker"
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+No trade or subaccount id
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A fill identifies itself by
+orderId
+and
+matchId
+and no
+subaccount
+id, so the SDK does not invent either one. Scope fills by passing
+account
+on the
+request instead.
+Related
+Trading guide
+for the task-oriented walkthrough.
+Orders
+for the orders these fills execute against.
+Triggers
+for standalone automations that place orders.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Subaccounts
+Next
+Transfers
+On this page
+Methods
+list(input?, options?)
+GetUserTradesInput
+subscribe(input)
+The Trade shape
+Related
+Related Topics
+Share this page
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { trades, transfers, nextPageToken } = await client.trades.list({
+	symbolId: "101",
+	side: "sell",
+	limit: 100,
+});
+
+for (const trade of trades) {
+	console.log(trade.sideLabel, trade.price, trade.qty, trade.fee);
+}
+
+---
+
+let pageToken = "";
+do {
+	const page = await client.trades.list({ symbolId: "101", pageToken });
+	console.log(page.trades.length);
+	pageToken = page.nextPageToken;
+} while (pageToken !== "");
+
+---
+
+const replay = await client.trades.list({
+	symbolId: "101",
+	afterMatchId: lastObservedMatchId,
+});
+
+---
+
+const unsubscribe = client.trades.subscribe({
+	accountId,
+	onEvent: (trade) => console.log(trade.orderId, trade.price, trade.qty),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+interface Trade {
+	orderId: string;
+	lineage?: { id: string; generation: number };
+	symbolId: number;
+	sideLabel: "buy" | "sell" | "unspecified";
+	liquidityLabel: "maker" | "taker";
+	feeAsset: "quote" | "base" | "unspecified";
+	qty: string; // decimal string, base asset
+	price: string; // decimal string
+	fee: string; // decimal string, in the fee asset
+	referralShare?: string; // decimal string, only when the fill earned one
+	feeIsRebate: boolean;
+	tsNs: string; // epoch nanoseconds, as a string
+	tsIso: string; // ISO 8601 timestamp
+	tsMs: number; // epoch milliseconds
+	matchId: string;
+}

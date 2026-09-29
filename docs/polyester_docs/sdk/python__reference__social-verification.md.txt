@@ -1,0 +1,19 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/social-verification.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Social verification
+Social verification APIs (reference-only).
+`client.social_verification` contains protocol wrappers for:
+| Method                            | Purpose                        |
+| --------------------------------- | ------------------------------ |
+| `start(provider, method, handle)` | Begin verification             |
+| `mark_ready(provider)`            | Signal that the proof is ready |
+| `get(provider)`                   | Read verification state        |
+```python
+state = await client.social_verification.get(provider="twitter")
+print(state.raw)
+```
+These routes are interactive identity/session flows and are not supported for normal API-key API-key trading credentials. On environments that enforce the intended policy they return an auth error; use the Polyester app or TypeScript session client.
+The wrappers remain for protocol coverage and return forward-compatible `ApiData`. Do not build a trading startup dependency on them, and do not interpret an unavailable route as a trading-auth failure.
+Related: [Limitations](https://testnet.polyester.com/docs/sdk/python/concepts/limitations-and-non-features), [Auth](https://testnet.polyester.com/docs/sdk/python/reference/auth).

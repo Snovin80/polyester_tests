@@ -1,0 +1,196 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/concepts/environments
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Environments · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Environments
+Environments
+Copy page
+View as Markdown
+Open in
+The Rust SDK ships a public testnet preset,
+polyester::POLYESTER_TESTNET_ENVIRONMENT
+Setting
+Testnet
+API URL
+https://api-testnet.polyester.com
+WebSocket URL
+wss://api-testnet.polyester.com
+RPC URL
+https://rpc.polyester.live
+Chain ID
+888169
+Name
+polyester-testnet
+Pass it on
+Config.environment
+so the API, WebSocket, RPC, and contract pins stay together:
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+Default
+default
+()
+})
+?
+;
+Config.api_url
+/
+Config.ws_url
+remain as transport overrides. For custom or VPC endpoints, build
+an environment with
+create_polyester_environment
+or
+PolyesterEnvironment::with_urls
+Scripts using
+Client::from_env()
+set
+POLYESTER_ENV=testnet
+, and may set
+POLYESTER_API_URL
+and
+POLYESTER_WS_URL
+to override endpoints.
+Use the same preset's contract addresses, RPC, and account-abstraction endpoints with the on-chain
+Funding helpers. See
+Chain helpers
+and
+Funds & Transfers
+Do not hard-code production URLs until your account team confirms the production API host.
+Related
+Chain helpers
+Client configuration
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Requests & idempotency
+Rust call conventions, cancellation, and idempotency keys for orders and triggers.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Architecture
+Next
+Authentication model
+On this page
+Related
+Related Topics
+Share this page
+Environments
+Testnet endpoints, the environment preset, and URL overrides for the Rust client.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    ..Default::default()
+})?;

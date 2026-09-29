@@ -1,0 +1,249 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/polychart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Polychart · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Polychart
+Polychart
+Copy page
+View as Markdown
+Open in
+client.polychart
+wraps collaborative chart-layer RPCs: market/inbox reads, snapshots, subscribe
+tokens, share links, publish/unpublish, revisioned layer/drawing mutations, and layer
+subscriptions.
+Methods
+Group
+Methods
+Discovery
+get_market_layers
+,
+list_inbox_market_layers
+,
+get_layer_snapshot
+,
+get_layer_subscribe_tokens
+Share links
+resolve_layer_share_token
+,
+create_layer_share_link
+,
+revoke_layer_share_link
+Publishing
+list_owner_published_layers
+,
+publish_layer
+,
+unpublish_layer
+Layer data
+upsert_layer
+,
+delete_layer
+,
+upsert_drawing
+,
+delete_drawing
+Subscriptions
+set_layer_subscriptions
+layers
+=
+await
+client.polychart.get_market_layers(
+engine_symbol_id
+=
+1
+)
+snapshot
+=
+await
+client.polychart.get_layer_snapshot(
+layer
+=
+"engine_symbol_id"
+1
+,
+"layer_id"
+"..."
+},
+)
+Methods accept keyword arguments plus raw dict-shaped Protobuf data for layer/drawing identities
+and return
+ApiData
+expected_revision
+must use the latest revision from a read.
+AUTH_REVISION_CONFLICT
+is a state conflict, re-read and reconcile rather than blindly retrying.
+Most results are
+ApiData
+forward-compatible trees.
+This collaboration surface is not required for trading and is not a supported production
+API-key workflow. It may require JWT/session auth or be unmounted on a deployment. Use the
+TypeScript app/session client for interactive chart collaboration.
+Keep chart failures isolated from order placement, cancellation, and risk loops.
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Policies
+Next
+Profile
+On this page
+Methods
+Related Topics
+Share this page
+Polychart
+Polychart collaboration APIs (reference-only).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+layers = await client.polychart.get_market_layers(engine_symbol_id=1)
+snapshot = await client.polychart.get_layer_snapshot(
+    layer={"engine_symbol_id": 1, "layer_id": "..."},
+)

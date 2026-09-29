@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/get-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Build typed Polyester integrations with the official Go API-key SDK.
+The official Go SDK is an **API-key** client for Polyester ConnectRPC APIs and Centrifugo WebSocket Protobuf streams. It is built for trading bots, automated execution, and backend automation, not browser wallet login.
+Go is **synchronous**. Pass `context.Context` on every call. Cancel the context to stop waits and stream receives.
+## What you can build
+- **Market data:** overview, candles, order books, public trades, heatmap, chain analytics
+- **Trading:** spot orders (including batch / cancel-all), attached risk, standalone triggers
+- **Accounts:** balances (funding vs trading), subaccounts, policies, API keys, profile
+- **Funding:** deposit addresses, trading withdraws, internal transfers, lifecycle, Zipper config
+- **On-chain helpers:** Funding → Trading and Funding → external via the `chain` module
+- **Realtime:** public and private streams with fail-closed overflow behavior
+## Intentionally not in this SDK
+Wallet login, session MFA enrollment/challenges, and account resolve/lookup require interactive JWT/session flows. Use the [TypeScript SDK](https://testnet.polyester.com/docs/sdk/typescript/get-started/overview) for those. SBE and FIX are separate transports, see the [connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix).
+Details: [Limitations & non-features](https://testnet.polyester.com/docs/sdk/go/concepts/limitations-and-non-features).
+## Resources
+- [Go SDK repository](https://github.com/Fabric-Labs/polyester-sdk-go)
+- [Runnable examples](https://github.com/Fabric-Labs/polyester-examples-go)
+- [SDK capability matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix)
+- [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys)
+- [Public Protobuf contracts](https://github.com/Fabric-Labs/polyester-proto)
+Next: [Installation](https://testnet.polyester.com/docs/sdk/go/get-started/installation).

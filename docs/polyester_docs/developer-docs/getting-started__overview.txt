@@ -1,0 +1,109 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/getting-started/overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Developer documentation · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Start Here
+Developer documentation
+Copy page
+View as Markdown
+Open in
+Polyester developer documentation covers API connectivity, authentication, trading, funds and
+transfers, realtime data, and official SDKs.
+Choose your path
+REST & JSON
+ConnectRPC & Protobuf
+SBE order entry
+Institutional FIX
+REST getting started
+WebSocket JSON
+ConnectRPC getting started
+Scaled integers
+WebSocket Protobuf
+TypeScript SDK
+Python SDK
+Go SDK
+Rust SDK
+SBE WebSocket getting started
+WebSocket Protobuf
+FIX Classic getting started
+FIX-SBE getting started
+API foundations
+Connectivity matrix
+SDK capability matrix
+Funds & Transfers
+Public IDs
+Client order IDs and idempotency
+WebSocket session model
+Ed25519 API keys
+API-key replay protection
+Multi-factor authentication
+Withdrawals and transfer security
+Related Topics
+Connectivity matrix
+Compare Polyester interfaces by workload, traffic pattern, encoding, and client path.
+SDK capability matrix
+Compare official Polyester SDK capability coverage across TypeScript, Python, Go, and Rust.
+Next
+Connectivity matrix
+On this page
+Choose your path
+API foundations
+Related Topics
+Share this page
+Developer documentation
+Start integrating with Polyester APIs, SDKs, realtime streams, and trading interfaces.
+Share
+Copy Link

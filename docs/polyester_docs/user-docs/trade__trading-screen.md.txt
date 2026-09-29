@@ -1,0 +1,72 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/trading-screen.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Trading Screen
+Use and customize Polyester's connected workspace for market analysis, order entry, and account activity.
+The Polyester Trading Screen brings live market data, order entry, private account activity, and balances into one customizable workspace. Choose your chart, personalize its appearance, and arrange every panel around the way you trade.
+Open the **[Trading Screen](https://testnet.polyester.com/markets/spot)** to choose a market and arrange the workspace around the information you use most.
+![Trading Screen](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/9710769a1783609e3865aa89bc2d9286b1c764fc6efbb3fe2084f5cfb38f13f2/source.webp) Trading Screen USDT/BTC pair
+## Public market data and private account data
+The Trading Screen keeps public market information and private account activity together without combining their visibility.
+| Screen area                                        | Visibility           | What it shows                                                          |
+| -------------------------------------------------- | -------------------- | ---------------------------------------------------------------------- |
+| Charts, Depth Chart, Order Book, and Market Trades | Public market data   | Price history, aggregated liquidity, and completed market-level trades |
+| Open Orders, Order History, Triggers, and Funds    | Private account data | Your attributed orders, fills, balances, reservations, and history     |
+The Order Form connects both contexts. It uses the selected Pair's market rules and the active account's available balance and permissions.
+Market Trades is not your personal trade history. It shows completed public executions without identifying the accounts behind them. Use Order History and fill details for activity attributed to your account.
+## Personalize
+Personalize is one of the core features of Polyester. We keep adding layout, chart, and panel options, and more will come. Feel free to send [feedback or a feature request](https://testnet.polyester.com/docs/user-docs/help-and-support/feature-requests).
+Pick a layout, choose a chart, and arrange the panels around the way you trade.
+### Standard and Advanced layouts
+Use **Trading Layout** in the market header to switch between **Standard** and **Advanced**.
+![Trading Layout set to Standard, with Advanced in the menu](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/b725bdaf8396c8a7ac066de7a3e51c7ea00f859b7ff82b380a1391332e00e3a1/source.webp) Choose Standard or Advanced from Trading Layout
+## Standard
+Standard keeps chart, Order Book, Order Form, and orders in a **fixed arrangement**. You always know where each panel is. **Resize panels** and switch tabs without dragging widgets around.
+![Standard Trading Screen with tabbed Order Book, chart, and order form](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/724d93e120722c021149e0aa236b0d431f4840783e661802ab40e2b978a9eff9/source.webp)
+**Standard layout features**
+- **Fixed arrangement**: panels stay in place so you always know where each one is
+- **Resizable panels**: drag a panel edge to change its width or height
+- **Prefilled tabs**: Standard already groups these widgets so you switch tabs instead of dragging:
+- **Chart** and **Depth**: switch **[Polyester Chart](https://testnet.polyester.com/docs/user-docs/trade/widgets/polyester-chart)** or **[TradingView](https://testnet.polyester.com/docs/user-docs/trade/widgets/tradingview-chart)** with **[Depth Chart](https://testnet.polyester.com/docs/user-docs/trade/widgets/depth-chart)**
+- **Order Book** and **Trades**: switch **[Order Book](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book)** and **[Trades](https://testnet.polyester.com/docs/user-docs/trade/widgets/market-trades)** in one panel. Order Book also has Tabbed, Stacked, and Side by side
+- **Limit** and **Market**: use the **[Order Form](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-form)** tabs for Limit, Market, and More
+- **Open Orders**, **Triggers**, and **Order History**: switch **[Open Orders](https://testnet.polyester.com/docs/user-docs/trade/widgets/open-orders)**, **[Triggers](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-triggers)**, and **[Order History](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history)**
+- **[Funds](https://testnet.polyester.com/docs/user-docs/trade/widgets/funds)**: stays on the same screen as the form
+## Advanced
+Advanced lets each widget become a panel you can **drag**, **resize**, **float**, or **expand**. Group widgets as tabs, then move a tab from one group to another when you want more control than Standard.
+![Advanced Trading Screen with movable widget groups](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/8440fef715fd086911e6186249a7342bdca0e7c51b62cbe817a18a6ad48d684e/source.webp)
+**Advanced layout Features**
+- **Draggable**: drag a panel or tab to a new place
+- **Resizable**: drag edges to change width and height
+- **Floating widgets**: use **Float panel** to pull a group out of the grid
+- **Maximize View**: expand a group to fill the workspace, then restore it
+- **Move one tab to another**: drag a tab into a different group to combine or split panels
+- **Widgets**: Collection of widgets that can be added to the screen
+### Trading chart
+Choose **Polyester Chart**, the native chart built in-house, or **TradingView Chart**. Both display Polyester market data, so you can use the charting experience that best fits the way you analyze a market.
+- **Polyester Chart**: use Polyester's native chart for candles, volume, indicators, and drawings
+- **TradingView Chart**: use TradingView Advanced Charts with its indicators, drawing tools, and chart controls
+Customize the chart's theme and appearance, then keep the chart beside the market data and order controls you use with it. You can also place both charts in one tab group and switch between them without rebuilding the rest of your workspace.
+### Customize your workspace
+On **Advanced**, customize the display from **Preset Layouts** in the header. Switch a starting arrangement, then save your own layout.
+#### Creating a new preset
+1. Choose a preset layout
+- **Default Trading.** A balanced view of charts, liquidity, order entry, activity, and Funds
+- **Compact View.** More information in a tighter arrangement
+- **Chart Focused.** More room for chart analysis
+- **Orderbook Focused.** More room for visible liquidity and order entry
+![Preset Layouts menu with Chart Focused selected](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/b58bfbbafca6096e4b35d839de9523949fc0cfd988bf859c2d45526fbe4c8e5a/source.webp) Choose a preset layout
+2. Open the widgets you need
+Click in a tab header to add a widget to that group. Or click at the top of the workspace, then drag the widget where you need it.
+![Search widgets picker in thumbnail and list view](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/534f1589e9ee51e3e911556fb74adf2f644b99eb648f8c2815b319cdc156b2c3/source.webp)
+3. Resize and arrange the panels
+Drag panels into place, then adjust their width and height around the information you use most.
+4. Name and save your layout
+Click **Save** next to the layout name, then enter a name in **Save Layout**.
+![Save control next to Unsaved Layout](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/300c7eb24932b3d398ccafcb447a60385e0bb1dcaff1ba4029db241b7f83fda5/source.webp) Click Save
+![Save Layout dialog with a layout name](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/bf01290a4574a7f19b6928114d05b1bacaba692ff5a0e49cd471e32e4a594259/source.webp) Name and save the layout
+#### Remember
+- Layout changes affect **presentation** only. They do not place, modify, cancel, or settle an **order**.
+- Saved layouts stay in the **current browser**. They do not follow your account to another device.
+- Clearing **site data** can remove saved layouts.

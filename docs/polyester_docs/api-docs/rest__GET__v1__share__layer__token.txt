@@ -1,0 +1,347 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/share/layer/token
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+PolychartService
+Resolve Layer Share Token
+Resolve a share token to a view-only drawing-layer snapshot.
+Copy URL
+Method
+GET
+Path
+/v1/share/layer/{token}
+Visibility
+Public endpoint
+GET
+/v1/share/layer/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/share/layer/share_01J5EXAMPLE000000000' \
+--header 'Accept: */*'
+Responses
+"centrifugoSubToken": "eyJhbGciOiJFZERTQSJ9.centrifugo.signature",
+"drawings": [
+"bboxPriceMax": 61000.25,
+"bboxPriceMin": 61000.25,
+"bboxTimeMaxMs": "1",
+"bboxTimeMinMs": "1",
+"clientUpdatedAtMs": "1",
+"deletedAtMs": "1",
+"drawingId": "1",
+"engineSymbolId": 1,
+"layer": {
+"layerId": "1",
+"ownerId": "1"
+},
+"ownerId": "1",
+"payload": "AA==",
+"type": 1,
+"updatedAtMs": "1",
+"version": 1
+}
+],
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+}
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+token
+string
+required
+min 1 chars
+Opaque share token from a layer share link.
+Response
+Form
+JSON
+layer
+object
+Shared layer metadata.
+11 fields
+ownerId
+string (fixed64)
+Account that owns the layer.
+Example
+1
+layerId
+string (fixed64)
+Layer identifier unique within the owner account.
+Example
+1
+engineSymbolId
+integer (int32)
+Engine symbol identifier for the market this layer belongs to.
+Example
+1
+name
+string
+Human-readable layer name.
+Example
+BTC Support and Resistance
+sortHint
+integer (int32)
+Owner-defined ordering hint for the layer list.
+Example
+1
+colorRgba
+integer (int32)
+Owner-level style defaults.
+Packed layer color in 0xAARRGGBB format.
+Example
+1
+useLayerColor
+boolean
+True when drawings should use the layer color by default.
+Example
+false
+isLocked
+boolean
+True when clients should prevent editing drawings in this layer.
+Example
+false
+isVisible
+boolean
+True when the layer is visible by default.
+Example
+false
+revision
+string (fixed64)
+Monotonic per layer; increments on any committed change to the layer or its drawings.
+Example
+1
+updatedAtMs
+string (fixed64)
+Server-assigned commit timestamp in milliseconds since epoch (UTC).
+Example
+1
+drawings
+object[]
+Drawings currently in the shared layer.
+14 fields
+ownerId
+string (fixed64)
+Account that owns the drawing.
+Example
+1
+drawingId
+string (fixed64)
+Drawing identifier unique within the owner account.
+Example
+1
+layer
+object
+Parent layer for the drawing.
+2 fields
+ownerId
+string (fixed64)
+Account that owns the layer.
+Example
+1
+layerId
+string (fixed64)
+Layer identifier unique within the owner account.
+Example
+1
+engineSymbolId
+integer (int32)
+Engine symbol identifier for the drawing market.
+Example
+1
+type
+integer (int32)
+Client-defined drawing type identifier.
+Example
+1
+version
+integer (int32)
+Client-defined payload schema version.
+Example
+1
+payload
+string (byte)
+Serialized drawing payload bytes.
+Example
+AA==
+bboxTimeMinMs
+string (fixed64)
+Minimum drawing time bound in milliseconds since epoch (UTC); 0 means unset.
+Example
+1
+bboxTimeMaxMs
+string (fixed64)
+Maximum drawing time bound in milliseconds since epoch (UTC); 0 means unset.
+Example
+1
+bboxPriceMin
+number
+Minimum drawing price bound; 0 means unset.
+Example
+61000.25
+bboxPriceMax
+number
+Maximum drawing price bound; 0 means unset.
+Example
+61000.25
+updatedAtMs
+string (fixed64)
+Server-assigned commit timestamp in milliseconds since epoch (UTC).
+Example
+1
+deletedAtMs
+string (fixed64)
+Server-assigned deletion timestamp in milliseconds since epoch (UTC); 0 means not deleted.
+Example
+1
+clientUpdatedAtMs
+string (fixed64)
+Client-assigned commit timestamp in milliseconds since epoch (UTC), used for last-write-wins merge.
+Example
+1
+centrifugoSubToken
+string
+Optional short-lived realtime subscribe token scoped to this layer.
+Example
+eyJhbGciOiJFZERTQSJ9.centrifugo.signature
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/share/layer/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s362" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/share/layer/share_01J5EXAMPLE000000000' \
+--header 'Accept: */*'
+Responses
+"centrifugoSubToken": "eyJhbGciOiJFZERTQSJ9.centrifugo.signature",
+"drawings": [
+"bboxPriceMax": 61000.25,
+"bboxPriceMin": 61000.25,
+"bboxTimeMaxMs": "1",
+"bboxTimeMinMs": "1",
+"clientUpdatedAtMs": "1",
+"deletedAtMs": "1",
+"drawingId": "1",
+"engineSymbolId": 1,
+"layer": {
+"layerId": "1",
+"ownerId": "1"
+},
+"ownerId": "1",
+"payload": "AA==",
+"type": 1,
+"updatedAtMs": "1",
+"version": 1
+}
+],
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/share/layer/share_01J5EXAMPLE000000000' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "centrifugoSubToken": "eyJhbGciOiJFZERTQSJ9.centrifugo.signature",
+  "drawings": [
+    {
+      "bboxPriceMax": 61000.25,
+      "bboxPriceMin": 61000.25,
+      "bboxTimeMaxMs": "1",
+      "bboxTimeMinMs": "1",
+      "clientUpdatedAtMs": "1",
+      "deletedAtMs": "1",
+      "drawingId": "1",
+      "engineSymbolId": 1,
+      "layer": {
+        "layerId": "1",
+        "ownerId": "1"
+      },
+      "ownerId": "1",
+      "payload": "AA==",
+      "type": 1,
+      "updatedAtMs": "1",
+      "version": 1
+    }
+  ],
+  "layer": {
+    "colorRgba": 1,
+    "engineSymbolId": 1,
+    "isLocked": false,
+    "isVisible": false,
+    "layerId": "1",
+    "name": "BTC Support and Resistance",
+    "ownerId": "1",
+    "revision": "1",
+    "sortHint": 1,
+    "updatedAtMs": "1",
+    "useLayerColor": false
+  }
+}

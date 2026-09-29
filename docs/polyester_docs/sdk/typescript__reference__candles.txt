@@ -1,0 +1,607 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/candles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Candles · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Candles
+Candles
+Copy page
+View as Markdown
+Open in
+client.candles
+reads and streams public spot OHLCV data. It uses the public transport, so no
+authentication is required. Every method takes a numeric
+symbolId
+and a
+timeframe
+Supported timeframes:
+1s
+,
+1m
+,
+5m
+,
+15m
+,
+30m
+,
+1h
+,
+4h
+,
+12h
+,
+1d
+,
+1w
+,
+1mo
+Open, high, low, close, base
+volume
+, and quote-asset
+quoteVolume
+are decimal strings. Candle
+times are epoch
+seconds
+(
+time
+in row and columnar output,
+tsSec
+in the int variants).
+Methods
+Method
+Summary
+list
+Fetch candles as row objects.
+listColumnar
+Fetch candles as parallel arrays, oldest-first, for charting.
+listColumnarInts
+Same columnar series keyed by numeric
+tsSec
+instead of
+time
+subscribe
+Stream row candles for a symbol and timeframe.
+subscribeInts
+Stream row candles parsed through the int schema.
+list(input, options?)
+Returns a
+Candle[]
+of row objects.
+symbolId
+and
+timeframe
+are required; the rest narrow the
+range.
+const
+candles
+=
+await
+client
+candles
+list
+({
+symbolId:
+1
+,
+timeframe:
+"1h"
+,
+limit:
+200
+,
+});
+const
+latest
+=
+candles
+0
+];
+console
+log
+(
+latest
+time
+,
+latest
+open
+,
+latest
+close
+,
+latest
+volume
+,
+latest
+quoteVolume
+);
+GetCandlesInput
+Field
+Type
+Required
+Notes
+symbolId
+number
+yes
+Positive uint32 engine symbol id (1 through 4,294,967,295).
+timeframe
+Timeframe
+yes
+One of the supported timeframes.
+limit
+number
+no
+Integer from 1 through 10,000.
+startTsSec
+number | string
+no
+Range start, epoch seconds.
+endTsSec
+number | string
+no
+Range end, epoch seconds.
+listColumnar(input, options?)
+Returns a
+CandleColumnar
+shape most charting libraries want.
+const
+series
+=
+await
+client
+candles
+listColumnar
+({ symbolId:
+1
+, timeframe:
+"5m"
+, limit:
+500
+});
+// series.time[i], series.open[i], series.high[i], series.low[i], series.close[i], series.volume[i]
+// series.quoteVolume[i]
+listColumnarInts(input, options?)
+The same columnar series, but keyed by numeric bucket-start seconds (
+tsSec
+) instead of
+time
+const
+series
+=
+await
+client
+candles
+listColumnarInts
+({ symbolId:
+1
+, timeframe:
+"1d"
+});
+console
+log
+(
+series
+tsSec
+at
+(
+-
+1
+),
+series
+close
+at
+(
+-
+1
+));
+subscribe(input)
+Streams live row candles for one symbol and timeframe. Returns an idempotent unsubscribe function.
+const
+unsubscribe
+=
+client
+candles
+subscribe
+({
+symbolId:
+1
+,
+timeframe:
+"1m"
+,
+onEvent
+candle
+)
+=>
+console
+log
+(
+candle
+time
+,
+candle
+close
+,
+candle
+isClosed
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+onEvent
+is required.
+onOpen
+,
+onClose
+, and
+onError
+are optional. See the
+realtime client reference
+for the handler contract.
+subscribeInts(input)
+The same live candle channel and input as
+subscribe
+, parsed through the int-form row schema.
+const
+unsubscribe
+=
+client
+candles
+subscribeInts
+({
+symbolId:
+1
+,
+timeframe:
+"1m"
+,
+onEvent
+candle
+)
+=>
+console
+log
+(
+candle
+time
+,
+candle
+close
+),
+});
+The
+Candle
+shape
+Row methods and both streams share this shape.
+import
+type
+Timeframe
+}
+from
+"@polyester/sdk"
+;
+interface
+Candle
+symbolId
+number
+;
+timeframe
+Timeframe
+|
+"unspecified"
+;
+time
+number
+;
+// bucket start, epoch seconds
+open
+string
+;
+// decimal string
+high
+string
+;
+low
+string
+;
+close
+string
+;
+volume
+string
+;
+// base-asset volume
+quoteVolume
+string
+;
+// exact quote-asset volume
+isClosed
+boolean
+;
+// false while the bucket is still forming
+}
+The columnar variants replace the scalar fields with arrays (
+time
+/
+tsSec
+,
+open
+,
+high
+,
+low
+,
+close
+,
+volume
+,
+quoteVolume
+) plus an optional
+reference
+series of the same shape.
+quoteVolume
+is the sum of execution price times execution quantity, rather than the candle close
+multiplied by base volume.
+Related
+Market data guide
+for the task-oriented walkthrough.
+Streaming guide
+for the subscription model.
+Market overview
+for per-market stats.
+Order book
+for depth.
+Public trades
+for prints.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Balances
+Next
+Catalog
+On this page
+Methods
+list(input, options?)
+GetCandlesInput
+listColumnar(input, options?)
+listColumnarInts(input, options?)
+subscribe(input)
+subscribeInts(input)
+The Candle shape
+Related
+Related Topics
+Share this page
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const candles = await client.candles.list({
+	symbolId: 1,
+	timeframe: "1h",
+	limit: 200,
+});
+
+const latest = candles[0];
+console.log(latest.time, latest.open, latest.close, latest.volume, latest.quoteVolume);
+
+---
+
+const series = await client.candles.listColumnar({ symbolId: 1, timeframe: "5m", limit: 500 });
+// series.time[i], series.open[i], series.high[i], series.low[i], series.close[i], series.volume[i]
+// series.quoteVolume[i]
+
+---
+
+const series = await client.candles.listColumnarInts({ symbolId: 1, timeframe: "1d" });
+console.log(series.tsSec.at(-1), series.close.at(-1));
+
+---
+
+const unsubscribe = client.candles.subscribe({
+	symbolId: 1,
+	timeframe: "1m",
+	onEvent: (candle) => console.log(candle.time, candle.close, candle.isClosed),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+const unsubscribe = client.candles.subscribeInts({
+	symbolId: 1,
+	timeframe: "1m",
+	onEvent: (candle) => console.log(candle.time, candle.close),
+});
+
+---
+
+import type { Timeframe } from "@polyester/sdk";
+
+interface Candle {
+	symbolId: number;
+	timeframe: Timeframe | "unspecified";
+	time: number; // bucket start, epoch seconds
+	open: string; // decimal string
+	high: string;
+	low: string;
+	close: string;
+	volume: string; // base-asset volume
+	quoteVolume: string; // exact quote-asset volume
+	isClosed: boolean; // false while the bucket is still forming
+}

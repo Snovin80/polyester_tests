@@ -1,0 +1,946 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/trading
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Trading
+Trading
+Copy page
+View as Markdown
+Open in
+Use an API-key
+Client
+trading
+balance.
+client
+wait_for_catalogs
+()
+;
+Place and cancel
+use
+polyester
+models
+CreateOrderParams
+,
+CreateOrderType
+,
+CreateSide
+,
+CreateTimeInForce
+};
+use
+polyester
+Price
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+result
+=
+client
+orders
+create
+(
+CreateOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+side
+CreateSide
+Buy
+,
+order_type
+CreateOrderType
+Limit
+,
+quantity
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.25"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+),
+max_quote_debit_scaled
+None
+,
+price
+Some
+(
+Price
+from_decimal_str
+(
+"64250.5"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+time_in_force
+Some
+(
+CreateTimeInForce
+Gtc
+),
+client_order_id
+Some
+(
+"mm-bot-001"
+into
+()),
+subaccount_id
+None
+,
+post_only
+Some
+(
+true
+),
+// limit GTC only
+market_client_ref_price
+None
+,
+fee_asset
+None
+,
+self_trade_prevention
+None
+,
+market_max_slippage
+None
+,
+attached_risk
+None
+,
+})
+;
+// Create synthesizes status: "accepted" (admission ack). Lifecycle states come
+// from list_open / get / subscribe, not create.
+println!
+(
+"{} {}"
+,
+result
+status,
+result
+order_id);
+client
+orders
+cancel_by_client_order_id
+(
+"mm-bot-001"
+,
+Some
+(
+"BTC-USDT"
+),
+None
+)
+;
+Size and preview deliberately
+Create with exactly one sizing mode: base
+quantity
+, or
+max_quote_debit_scaled
+, a hard all-in
+quote budget for BUY market and limit IOC orders.
+fee_asset
+is
+FeeAsset::Quote
+(default) or
+BUY-only
+FeeAsset::Base
+, replacing
+fee_source
+/
+received
+resolved_base_qty
+and
+submitted_max_quote_debit_scaled
+client.orders.preview(PreviewOrderParams { ... })
+for an admissibility check: whether the
+intent is currently admissible, any typed rejection, resolved base size, and a protected price
+bound when price protection applied. Preview does not return fee or quote-debit estimates. Create
+always re-evaluates the intent.
+Modify, cancel all, and dead-man timer
+use
+polyester
+models
+CancelAllOpts
+,
+ModifyOrderParams
+};
+use
+polyester
+Price
+;
+let
+order_id
+=
+"order-id-from-create"
+to_owned
+();
+client
+orders
+modify
+(
+ModifyOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+order_id
+Some
+(
+order_id
+),
+client_order_id
+None
+,
+request_id
+Some
+(
+"mod-1"
+into
+()),
+new_price
+Some
+(
+Price
+from_decimal_str
+(
+"64100"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+new_qty
+None
+,
+new_attached_risk
+None
+,
+behavior
+None
+,
+new_client_order_id
+None
+,
+subaccount_id
+None
+,
+})
+;
+let
+preview
+=
+client
+orders
+cancel_all_with
+(
+CancelAllOpts
+symbol
+Some
+(
+"BTC-USDT"
+into
+()),
+dry_run
+true
+,
+request_id
+Some
+(
+"cancel-all-preview-1"
+into
+()),
+Default
+default
+()
+})
+;
+client
+orders
+cancel_all_after
+(
+15
+,
+Some
+(
+"BTC-USDT"
+),
+None
+,
+Some
+(
+"cancel-after-arm-1"
+into
+()),
+)
+;
+Cancellation is an admission acknowledgement. Confirm the order has disappeared from
+list_open
+before releasing local state; if it remains visible after a bounded reconciliation window, retry
+the same cancel.
+Batch size contracts:
+the API declares
+batch_create
+max
+20
+and
+batch_replace
+/
+batch_cancel
+max
+50
+batch_replace
+for same-symbol quote refresh and
+poll
+get_batch_replace_status
+with the admission
+batch_request_id
+(retry briefly on not-found).
+Admission makes predecessor order and client IDs stale: immediately use each
+replacement_order_id
+and new client order ID from the receipt. A predecessor
+get
+returning
+not_found
+/
+ORDER_UNKNOWN
+is expected. Poll phases
+admitted
+,
+working
+,
+rejected
+, and
+terminal
+; retry a transient 404 immediately after admission. For quote-refresh bots,
+status.is_settled()
+or
+is_batch_replace_settled(&status)
+treats
+working
+,
+rejected
+, and
+terminal
+as reconciled, not execution-final;
+working
+means the successor is live. Reuse the
+same
+request_id
+for an ambiguous retry and never replace against a stale predecessor. The SDK
+does not preflight those counts. A batch timeout is not proof of no commit; reconcile before retry.
+After fills, prefer
+wait_for_order_trades_complete
+because
+cum_qty
+can lead trade projection.
+The helper waits for a terminal order and applies one overall deadline.
+Client order IDs accept 1 to 36 ASCII letters, digits,
+,
+_
+,
+,
+/
+, and
+-
+use the same character set and accept 1 to 64 characters. Invalid values fail locally with
+Error::Validation
+Modify and replace operations require enough available balance for the replacement order. Leave
+headroom when most of the trading balance is reserved, and reconcile the original order after an
+ambiguous response before deciding whether to retry or cancel and recreate it. Do not assume a
+replacement reserves only the incremental collateral difference.
+For long-running automated trading, renew
+cancel_all_after
+continuously:
+Arm it only after startup reconciliation has confirmed open orders.
+Refresh well before
+effective_timeout_sec
+(for example every 5 seconds on a 15-second timer).
+Give each deliberate refresh a new
+request_id
+, but reuse that ID when retrying the same
+ambiguous refresh.
+Verify
+status
+,
+effective_timeout_sec
+, and
+expires_at_ts_ns
+on every response.
+Stop quoting and reconcile if a refresh fails or its deadline is uncertain.
+The timer is a last-resort venue control, not a replacement for explicit shutdown cancellation.
+Stream
+let
+mut
+sub
+=
+client
+orders
+subscribe
+(
+client
+default_account_id
+as_deref
+())
+;
+while
+let
+Some
+(
+order
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{}"
+,
+order
+status);
+break
+;
+}
+Triggers
+use
+polyester
+models
+CreateOrderType
+,
+CreateSide
+,
+CreateTimeInForce
+,
+CreateTriggerParams
+,
+CreateTriggerType
+,
+ModifyTriggerParams
+,
+};
+use
+polyester
+Price
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+created
+=
+client
+triggers
+create
+(
+CreateTriggerParams
+symbol
+"BTC-USDT"
+into
+(),
+trigger_type
+CreateTriggerType
+StopLoss
+,
+side
+CreateSide
+Sell
+,
+order_type
+CreateOrderType
+Market
+,
+qty
+Quantity
+from_decimal_str
+(
+"0.1"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+,
+trigger_price
+Some
+(
+Price
+from_decimal_str
+(
+"60000"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+limit_price
+None
+,
+trigger_price_source
+None
+,
+// unsupported values fail instead of being discarded
+time_in_force
+Some
+(
+CreateTimeInForce
+Ioc
+),
+subaccount_id
+None
+,
+client_trigger_id
+"sl-1"
+into
+(),
+post_only
+false
+,
+activation_price
+None
+,
+trailing_distance_ticks
+None
+,
+trailing_distance_bps
+None
+,
+max_slippage_ticks
+None
+,
+max_slippage_bps
+None
+,
+twap_duration_ms
+None
+,
+twap_slice_interval_ms
+None
+,
+ladder_price_min
+None
+,
+ladder_price_max
+None
+,
+ladder_levels
+None
+,
+ladder_distribution
+None
+,
+fee_asset
+None
+,
+self_trade_prevention_mode
+None
+,
+})
+;
+// Create returns status: "accepted" (admission).
+client
+triggers
+modify
+(
+ModifyTriggerParams
+trigger_id
+created
+trigger_id,
+subaccount_id
+None
+,
+trigger_price
+Some
+(
+Price
+from_decimal_str
+(
+"59500"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+limit_price
+None
+,
+activation_price
+None
+,
+trailing_distance_ticks
+None
+,
+trailing_distance_bps
+None
+,
+max_slippage_ticks
+None
+,
+max_slippage_bps
+None
+,
+})
+;
+Status filters:
+created
+,
+armed
+,
+running
+,
+completed
+,
+cancelled
+,
+failed
+,
+paused
+Retry safely
+Persist
+client_order_id
+for reconciliation, and reuse replayable
+request_id
+/
+client_trigger_id
+values for the same logical mutation. Reusing a retained client order ID returns
+a duplicate conflict rather than the original create result. When
+mutation_outcome_unknown()
+is
+true, reconcile first. In particular,
+Error::ResponseContract
+is non-retryable even though the mutation outcome is unknown.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Examples
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+polyester-examples-rust
+Reference:
+Orders
+,
+Triggers
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Market data
+Next
+Streaming
+On this page
+Place and cancel
+Size and preview deliberately
+Modify, cancel all, and dead-man timer
+Stream
+Triggers
+Retry safely
+Related Topics
+Share this page
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+client.wait_for_catalogs().await?;
+
+---
+
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide, CreateTimeInForce};
+use polyester::{Price, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+
+let result = client.orders.create(CreateOrderParams {
+    symbol: "BTC-USDT".into(),
+    side: CreateSide::Buy,
+    order_type: CreateOrderType::Limit,
+    quantity: Some(Quantity::from_decimal_str("0.25", quantity_scale, Some("BTC-USDT".into()), None)?),
+    max_quote_debit_scaled: None,
+    price: Some(Price::from_decimal_str("64250.5", Some("BTC-USDT".into()))?),
+    time_in_force: Some(CreateTimeInForce::Gtc),
+    client_order_id: Some("mm-bot-001".into()),
+    subaccount_id: None,
+    post_only: Some(true), // limit GTC only
+    market_client_ref_price: None,
+    fee_asset: None,
+    self_trade_prevention: None,
+    market_max_slippage: None,
+    attached_risk: None,
+}).await?;
+// Create synthesizes status: "accepted" (admission ack). Lifecycle states come
+// from list_open / get / subscribe, not create.
+println!("{} {}", result.status, result.order_id);
+
+client.orders.cancel_by_client_order_id("mm-bot-001", Some("BTC-USDT"), None).await?;
+
+---
+
+use polyester::models::{CancelAllOpts, ModifyOrderParams};
+use polyester::Price;
+
+let order_id = "order-id-from-create".to_owned();
+client.orders.modify(ModifyOrderParams {
+    symbol: "BTC-USDT".into(),
+    order_id: Some(order_id),
+    client_order_id: None,
+    request_id: Some("mod-1".into()),
+    new_price: Some(Price::from_decimal_str("64100", Some("BTC-USDT".into()))?),
+    new_qty: None,
+    new_attached_risk: None,
+    behavior: None,
+    new_client_order_id: None,
+    subaccount_id: None,
+}).await?;
+
+let preview = client.orders.cancel_all_with(CancelAllOpts {
+    symbol: Some("BTC-USDT".into()),
+    dry_run: true,
+    request_id: Some("cancel-all-preview-1".into()),
+    ..Default::default()
+}).await?;
+client.orders.cancel_all_after(
+    15,
+    Some("BTC-USDT"),
+    None,
+    Some("cancel-after-arm-1".into()),
+).await?;
+
+---
+
+let mut sub = client
+    .orders
+    .subscribe(client.default_account_id.as_deref())
+    .await?;
+while let Some(order) = sub.recv_result().await? {
+    println!("{}", order.status);
+    break;
+}
+
+---
+
+use polyester::models::{
+    CreateOrderType, CreateSide, CreateTimeInForce, CreateTriggerParams, CreateTriggerType,
+    ModifyTriggerParams,
+};
+use polyester::{Price, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+
+let created = client.triggers.create(CreateTriggerParams {
+    symbol: "BTC-USDT".into(),
+    trigger_type: CreateTriggerType::StopLoss,
+    side: CreateSide::Sell,
+    order_type: CreateOrderType::Market,
+    qty: Quantity::from_decimal_str("0.1", quantity_scale, Some("BTC-USDT".into()), None)?,
+    trigger_price: Some(Price::from_decimal_str("60000", Some("BTC-USDT".into()))?),
+    limit_price: None,
+    trigger_price_source: None, // unsupported values fail instead of being discarded
+    time_in_force: Some(CreateTimeInForce::Ioc),
+    subaccount_id: None,
+    client_trigger_id: "sl-1".into(),
+    post_only: false,
+    activation_price: None,
+    trailing_distance_ticks: None,
+    trailing_distance_bps: None,
+    max_slippage_ticks: None,
+    max_slippage_bps: None,
+    twap_duration_ms: None,
+    twap_slice_interval_ms: None,
+    ladder_price_min: None,
+    ladder_price_max: None,
+    ladder_levels: None,
+    ladder_distribution: None,
+    fee_asset: None,
+    self_trade_prevention_mode: None,
+}).await?;
+// Create returns status: "accepted" (admission).
+
+client.triggers.modify(ModifyTriggerParams {
+    trigger_id: created.trigger_id,
+    subaccount_id: None,
+    trigger_price: Some(Price::from_decimal_str("59500", Some("BTC-USDT".into()))?),
+    limit_price: None,
+    activation_price: None,
+    trailing_distance_ticks: None,
+    trailing_distance_bps: None,
+    max_slippage_ticks: None,
+    max_slippage_bps: None,
+}).await?;

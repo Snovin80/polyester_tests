@@ -1,0 +1,73 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/rate-limits.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+`client.tradingRateLimits` is the trading quota surface: the published policy, and the rules a given account is held to.
+Each trading account (root or subaccount) gets two weighted pools, one for placement and one for cancellation. Every API key and transport on that account draws from the same two, and each pool spans every symbol, so a BTC order and an ETH order compete for the same placement capacity. Draining placement leaves cancellation untouched, which is what lets you keep pulling orders after placement is throttled.
+Neither method reports live consumption; they describe the policy, not what is left in the pool. Remaining quota only surfaces on rejection, where `RateLimitError` carries the counters and a retry wait when the backend reports them. See [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors). How pools refill, what weight each operation costs, and the default per-tier tables are on [Rate limits](https://testnet.polyester.com/docs/developer-docs/shared-concepts/rate-limits).
+Quota weights, periods, and bursts are decimal strings so they can exceed JavaScript's safe integer range. Timestamps are epoch milliseconds.
+## Methods
+| Method             | Summary                                                                           |
+| ------------------ | --------------------------------------------------------------------------------- |
+| `getConfig`        | Public. Every placement and cancellation rule in the catalog, VIP0 through VIP10. |
+| `getTradingLimits` | Authenticated. The two rules enforced on an account, plus any API-key overlay.    |
+### `getConfig(options?)`
+Returns the whole catalog as a `RateLimitConfig`: 22 rows, one place rule and one cancel rule per VIP tier, ordered by policy class then VIP tier ascending. Not paginated, and no credentials are required.
+```ts
+const config = await client.tradingRateLimits.getConfig();
+console.log(config.policyVersion, new Date(config.effectiveFrom));
+for (const rule of config.rules) {
+console.log(rule.policyClass, rule.vipTier, rule.quotaWeight, rule.periodMs, rule.burstWeight);
+}
+```
+Pick the row whose `vipTier` matches the account you care about. `quotaWeight` is the capacity that pool gets each `periodMs`, spent by admitted operations at the weight assigned to each, and `burstWeight` caps how much of it can go at once.
+#### `RateLimitConfig`
+```ts
+interface RateLimitConfig {
+policyVersion: string;
+effectiveFrom: number; // epoch ms
+rules: TradingRateLimitRule[];
+}
+```
+### `getTradingLimits(input?, options?)`
+Fetches `TradingRateLimits` for the resolved account. `rules` is the account-scoped pair, placement first, then cancellation. Input is optional; pass `account` to override the default (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances).
+`apiKeyRules` is always an array, and is empty unless you authenticated with an API key. When it is non-empty it is also placement then cancellation, and both the account rules and the key rules are enforced.
+```ts
+const limits = await client.tradingRateLimits.getTradingLimits();
+for (const rule of limits.rules) {
+console.log("account", rule.policyClass, rule.quotaWeight, rule.burstWeight);
+}
+for (const rule of limits.apiKeyRules) {
+console.log("api key", rule.policyClass, rule.quotaWeight, rule.burstWeight);
+}
+const main = await client.tradingRateLimits.getTradingLimits({ account: "main" });
+```
+Replaying an already admitted trading request with a replayable `requestId` does not charge the pool again. After a `RateLimitError`, keep that request ID stable. For a single-order create, preserve `clientOrderId` for reconciliation; retained reuse returns a duplicate conflict instead of the earlier result. See [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling).
+#### `TradingRateLimits`
+```ts
+interface TradingRateLimits {
+policyVersion: string;
+effectiveFrom: number;
+rules: TradingRateLimitRule[];
+apiKeyRules: TradingRateLimitRule[]; // empty unless an API-key overlay applies
+}
+```
+#### `TradingRateLimitRule`
+```ts
+type TradingRateLimitClass = "unspecified" | "trading_place" | "trading_cancel";
+interface TradingRateLimitRule {
+policyClass: TradingRateLimitClass;
+vipTier: number; // VIP tier this row belongs to, integer >= 0
+quotaWeight: string; // weighted capacity during each period
+periodMs: string; // policy period, milliseconds
+burstWeight: string; // max weighted capacity in one burst
+}
+```
+`trading_place` is create, modify, resume, and batch place/replace (per admitted item). `trading_cancel` is single cancel, pause, `cancelAllAfter`, batch cancel (per item), and `cancelAll`. `"unspecified"` should not appear on a well-formed catalog row.
+## Related
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for `RateLimitError` and `RateLimitDetail`.
+- [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling) for the retry pattern.
+- [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip) for the tier these rules key off.
+- [Rate limits](https://testnet.polyester.com/docs/developer-docs/shared-concepts/rate-limits) for pool costs and refill.

@@ -1,0 +1,29 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/auth.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Auth
+Auth service helpers including nested profile access.
+`client.Auth` is the API-key identity surface. It exposes `Me` and the nested `client.Auth.Profile` realtime service.
+```go
+me, err := client.Auth.Me(ctx)
+if err != nil {
+log.Fatal(err)
+}
+fmt.Println(me.AccountID, me.APIKeyID, me.Username)
+fmt.Println(me.RootSmartAccountAddress)
+```
+`models.MeResult` also has optional raw `Session` data. API-key callers should not depend on a browser session being present. The Account ID is sufficient identity for API-key auth. `Username` may be empty; do not reject the identity or substitute `"-"` as though it were required.
+`Me().APIKeyID` is the public/base58 identity returned by `auth.me`. It can differ from the `ak_...` credential handle configured as `POLYESTER_API_KEY_ID`; do not compare the two strings as though they were the same identifier representation.
+## Profile identity stream
+The Go SDK deliberately omits profile get/update/history methods. The API-key-safe operation is:
+```go
+sub, err := client.Auth.Profile.SubscribeIdentity(ctx)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for identity := range sub.Messages() {
+fmt.Println(identity.AccountID, identity.Username, identity.AvatarURL)
+break
+}
+```
+Wallet login, JWT refresh, MFA enrollment, and account resolve are **not** wrapped. See [Authentication](https://testnet.polyester.com/docs/sdk/go/guides/authentication) and [Limitations](https://testnet.polyester.com/docs/sdk/go/concepts/limitations-and-non-features).

@@ -1,0 +1,98 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+`client.trades` reads and streams your fills: one record per execution against one of your orders. Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Prices, quantities, and fees come back as decimal strings, already scaled to the pair. Fills on symbols missing from the catalog cannot be scaled, so they are rejected rather than returned with raw values.
+## Methods
+| Method      | Summary                                              |
+| ----------- | ---------------------------------------------------- |
+| `list`      | List your fills with symbol, side, and time filters. |
+| `subscribe` | Stream your fills over a private channel.            |
+### `list(input?, options?)`
+Returns `{ trades, transfers, nextPageToken }`. Filter by `symbolId`, `side`, and a `startTsNs` / `endTsNs` time range, then page with `limit` and `pageToken`. To replay durable fills after one per-symbol match, pass `afterMatchId` with `symbolId`.
+```ts
+const { trades, transfers, nextPageToken } = await client.trades.list({
+symbolId: "101",
+side: "sell",
+limit: 100,
+});
+for (const trade of trades) {
+console.log(trade.sideLabel, trade.price, trade.qty, trade.fee);
+}
+```
+Page through the full history with the returned token:
+```ts
+let pageToken = "";
+do {
+const page = await client.trades.list({ symbolId: "101", pageToken });
+console.log(page.trades.length);
+pageToken = page.nextPageToken;
+} while (pageToken !== "");
+```
+```ts
+const replay = await client.trades.list({
+symbolId: "101",
+afterMatchId: lastObservedMatchId,
+});
+```
+`afterMatchId` is a non-empty uint64 decimal string and requires a positive numeric `symbolId` string at compile time and runtime. Subscribe before replaying, then deduplicate overlap by `symbolId`, `matchId`, and `orderId`.
+Scope executions to one physical `orderId`, or to a logical `lineageId` with optional `throughGeneration`; do not send both. `includeTransfers: true` requests settlement transfers for the matches in that page. Deduplicate returned transfers by `txId` across pages. Trade records can also include `lineage: { id, generation }`, which identifies their logical order and physical replacement generation.
+#### `GetUserTradesInput`
+| Field               | Type              | Required    | Notes                                                                                    |
+| ------------------- | ----------------- | ----------- | ---------------------------------------------------------------------------------------- |
+| `symbolId`          | `string`          | conditional | Positive numeric pair id as a string, for example `"101"`. Required with `afterMatchId`. |
+| `side`              | `"buy" \| "sell"` | no          |                                                                                          |
+| `startTsNs`         | decimal string    | no          | Start of the range, epoch nanoseconds.                                                   |
+| `endTsNs`           | decimal string    | no          | End of the range, epoch nanoseconds.                                                     |
+| `limit`             | `number`          | no          | Maximum trades to return.                                                                |
+| `pageToken`         | `string`          | no          | Token from a previous page's `nextPageToken`.                                            |
+| `afterMatchId`      | decimal string    | no          | Replay fills after this per-symbol match ID. Requires `symbolId`.                        |
+| `orderId`           | string            | no          | Restrict fills to one physical order. Mutually exclusive with `lineageId`.               |
+| `lineageId`         | string            | no          | Restrict fills to a logical order across replacements.                                   |
+| `throughGeneration` | `number`          | no          | Include lineage executions through this one-based generation.                            |
+| `includeTransfers`  | `boolean`         | no          | Include settlement transfers for matches on this page.                                   |
+| `account`           | `AccountScope`    | no          | Scope override.                                                                          |
+### `subscribe(input)`
+Streams your fills over a private channel as they happen. Takes an `accountId` plus the standard handler fields, and returns an idempotent unsubscribe function. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.trades.subscribe({
+accountId,
+onEvent: (trade) => console.log(trade.orderId, trade.price, trade.qty),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+## The `Trade` shape
+`list` and `subscribe` share one parsed shape. Prices, quantities, and fees are decimal strings; ids are strings.
+```ts
+interface Trade {
+orderId: string;
+lineage?: { id: string; generation: number };
+symbolId: number;
+sideLabel: "buy" | "sell" | "unspecified";
+liquidityLabel: "maker" | "taker";
+feeAsset: "quote" | "base" | "unspecified";
+qty: string; // decimal string, base asset
+price: string; // decimal string
+fee: string; // decimal string, in the fee asset
+referralShare?: string; // decimal string, only when the fill earned one
+feeIsRebate: boolean;
+tsNs: string; // epoch nanoseconds, as a string
+tsIso: string; // ISO 8601 timestamp
+tsMs: number; // epoch milliseconds
+matchId: string;
+}
+```
+`feeAsset` names whichever asset actually paid, and `fee` is scaled to it. `feeIsRebate` flips the sign of what `fee` means: when it is `true` the amount was paid **to** you rather than charged, so never sum fees without checking it. `referralShare` is present only on fills that earned one.
+`liquidityLabel` tells you whether the fill was `"maker"` or `"taker"`.
+> **No trade or subaccount id**
+>
+> A fill identifies itself by `orderId` and `matchId`. The upstream response carries no per-trade id and no subaccount id, so the SDK does not invent either one. Scope fills by passing `account` on the request instead.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/typescript/guides/trading) for the task-oriented walkthrough.
+- [Orders](https://testnet.polyester.com/docs/sdk/typescript/reference/orders) for the orders these fills execute against.
+- [Triggers](https://testnet.polyester.com/docs/sdk/typescript/reference/triggers) for standalone automations that place orders.

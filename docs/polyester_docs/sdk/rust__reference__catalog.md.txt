@@ -1,0 +1,42 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/catalog.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+`client.catalogs` is an `Arc
+`. With `Config.hydrate_catalogs: true` (default), a client constructed inside Tokio starts **background hydration** of spot config and deposit-withdraw config. If it is constructed before entering Tokio, `wait_for_catalogs().await?` starts the attempt on the current runtime.
+```rust
+client.wait_for_catalogs().await?;
+```
+> **Fail-closed readiness**
+>
+> `wait_for_catalogs` waits for or starts the hydration attempt (or returns immediately when hydration is disabled). **If hydration fails** (HTTP/transport error, malformed config, invalid scales/IDs, empty names, or duplicate/conflicting identities), it returns `Err`; it does **not** succeed after a failed attempt. Inspect `client.catalogs_last_error()` for the most recent failure. You can also call `client.hydrate_catalogs().await?` explicitly for a refresh. A rejected refresh does not partially replace the previous valid snapshot. Scale `0` is valid and distinct from `None`.
+## Manual hydrate / lookups
+```rust
+client.wait_for_catalogs().await?;
+let symbol_id = client.catalogs.symbol_id_for_symbol("BTC-USDT");
+let scale = client.catalogs.base_quantity_scale_for_symbol("BTC-USDT");
+let buckets = client.catalogs.orderbook_price_buckets_for_symbol("BTC-USDT");
+// Optional typed Zipper hydrate (no consumer serde_json dependency)
+if let Ok(config) = client.zipper.get_deposit_withdraw_config().await {
+client.catalogs.hydrate_zipper_config(&config)?;
+}
+```
+Manager APIs mirror Go/Python: hydrate spot/zipper, symbol id, base quantity scale, orderbook price buckets, ledger id / asset scales, zipper supply patch. Scales above `MAX_PROTOCOL_SCALE` (36) and IDs that do not fit `u32` are rejected.
+Subscribe helpers that accept a symbol string (for example `market_data.subscribe_trades`) require hydration so the symbol resolves to an id.
+| Method                                                       | Notes                         |
+| ------------------------------------------------------------ | ----------------------------- |
+| `hydrate_spot_config_json` / `hydrate_zipper_config`         | Replace snapshots (`Result`)  |
+| `symbol_id_for_symbol`                                       | `Option
+`                 |
+| `base_quantity_scale_for_symbol` / `…_symbol_id`             | `Option
+` (no invented 8) |
+| `orderbook_price_buckets_for_symbol`                         | price bucket strings          |
+| `ledger_id_for_asset` / `quantity_scale_for_zipped_asset_id` | Zipper-backed                 |
+| `patch_zipper_supply`                                        | Live supply patches           |
+There is no TypeScript-style `catalog.orders.validateSpotOrderDecimalInput` helper. Invalid precision typically fails as `Error::Validation` or `Error::Api`.
+## Related
+- [Catalog & precision](https://testnet.polyester.com/docs/sdk/rust/concepts/catalog-and-precision)
+- [Orders](https://testnet.polyester.com/docs/sdk/rust/reference/orders)
+- [Errors](https://testnet.polyester.com/docs/sdk/rust/reference/errors)

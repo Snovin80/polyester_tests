@@ -1,0 +1,163 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+`client.tradingWithdraws` creates durable, signed withdrawal intents out of the Trading venue. Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Each intent is a signed message, not a fire-and-forget call. The SDK embeds a deadline (about five minutes), a random nonce, and an idempotency key into the payload, then signs it. Because the payload is signed, an intent is durable: submit it once, and it settles even if your process restarts.
+## Signing
+Every withdrawal needs a signature over its canonical EIP-191 text message. You have two options, passed alongside the withdrawal input:
+- `walletSigner`: hand the SDK an EOA wallet signer and it builds the canonical message, asks the wallet to sign it with `personal_sign`, and submits the wallet-authorized intent.
+- `payloadSignature`: supply a signature you precomputed yourself (for example from an API-key signer or custody infrastructure). The SDK submits the backend-authorized intent as-is.
+Provide exactly one. If neither is present, the call throws a `ValidationError`.
+```ts
+import type { TradingWithdrawWalletSigner } from "@polyester/sdk";
+const walletSigner: TradingWithdrawWalletSigner = {
+signerWallet: owner.address,
+accountId: me.accountId,
+signMessage: (message) => owner.signMessage({ message }),
+};
+```
+> **Guard-signer co-signing**
+>
+> When your account has a guard signer configured, withdrawal intents are co-signed before they settle. See the [guard signer reference](https://testnet.polyester.com/docs/sdk/typescript/reference/guard-signer) for how the second signature is applied.
+## Methods
+| Method                   | Summary                                                              |
+| ------------------------ | -------------------------------------------------------------------- |
+| `validateDestination`    | Check a destination chain and address before you sign anything.      |
+| `createToFunding`        | Withdraw from Trading to Funding, staying on Polyester.              |
+| `createToExternalChain`  | Withdraw from Trading out to an external chain via the Zipper.       |
+| `prepareToFunding`       | Sign a Trading-to-Funding intent once, submit it when you are ready. |
+| `prepareToExternalChain` | Sign an external-chain intent once, submit it when you are ready.    |
+### `validateDestination(input, options?)`
+Preflights a destination before you build or sign an intent. It takes a `destinationChainId` and a `destinationAddress`, and answers whether that pair is a legitimate withdrawal target.
+```ts
+const check = await client.tradingWithdraws.validateDestination({
+destinationChainId: 1,
+destinationAddress: "0xabc...",
+});
+if (!check.valid) {
+console.error(check.code, check.message);
+return;
+}
+// Use the canonical form the backend resolved, not the string you typed.
+const destinationAddress = check.canonicalDestinationAddress;
+```
+The result is a discriminated union on `valid`:
+```ts
+type ValidateWithdrawDestinationResult =
+| {
+valid: true;
+code: "valid";
+message: string;
+canonicalDestinationAddress: string;
+}
+| {
+valid: false;
+code:
+| "invalid_address"
+| "unsupported_chain"
+| "polyester_smart_account"
+| "token_contract"
+| "denylisted_address"
+| "unspecified";
+message: string;
+canonicalDestinationAddress: string;
+};
+```
+| Code                      | Meaning                                                                 |
+| ------------------------- | ----------------------------------------------------------------------- |
+| `valid`                   | The address is a legitimate destination on that chain.                  |
+| `invalid_address`         | The address is malformed for that chain.                                |
+| `unsupported_chain`       | Withdrawals to that chain are not supported.                            |
+| `polyester_smart_account` | The address is a Polyester smart account; use an internal transfer.     |
+| `token_contract`          | The address is a token contract, so funds sent there would be stranded. |
+| `denylisted_address`      | The address is blocked for that chain family.                           |
+| `unspecified`             | The backend returned a code this SDK version does not have a label for. |
+> **Validation is a preflight, not a guarantee**
+>
+> Validation is advisory and point-in-time. A destination that passes here can still be rejected at submission, so keep handling the error from `createToExternalChain` rather than treating a `valid` result as an approval.
+### `createToFunding(input, options?)`
+Moves funds from the Trading venue to Funding. The destination stays on Polyester, so nothing leaves the platform. Resolves to a `CreateTradingWithdrawResult` carrying the `intentId`.
+```ts
+const result = await client.tradingWithdraws.createToFunding({
+assetId: 2,
+quantity: "500.00",
+idempotencyKey: crypto.randomUUID(),
+walletSigner,
+});
+console.log(result.intentId);
+```
+#### `CreateTradingWithdrawToFundingInput`
+| Field                | Type                          | Required   | Notes                                 |
+| -------------------- | ----------------------------- | ---------- | ------------------------------------- |
+| `assetId`            | `number`                      | yes        | Integer from 1 through 4,294,967,295. |
+| `quantity`           | decimal string                | yes        | Amount to withdraw. Strict precision. |
+| `idempotencyKey`     | `string`                      | yes        | Reuse it to retry safely.             |
+| `destinationAddress` | `string`                      | no         | Optional Funding destination address. |
+| `walletSigner`       | `TradingWithdrawWalletSigner` | one signer | SDK signs the EIP-191 message.        |
+| `payloadSignature`   | `Uint8Array`                  | one signer | A signature you precomputed.          |
+| `account`            | `AccountScope`                | no         | Scope override.                       |
+### `createToExternalChain(input, options?)`
+Withdraws from the Trading venue out to an external chain. The funds leave Polyester via the [Zipper](https://testnet.polyester.com/docs/sdk/typescript/reference/zipper). The amount is gross (fees are taken from it), and you specify the destination network and address.
+```ts
+const result = await client.tradingWithdraws.createToExternalChain({
+assetId: 2,
+quantity: "500.00", // gross amount
+destinationChainId: 1,
+destinationAddress: "0xabc...",
+idempotencyKey: crypto.randomUUID(),
+walletSigner,
+});
+console.log(result.intentId);
+```
+#### `CreateTradingWithdrawToExternalChainInput`
+| Field                | Type                          | Required   | Notes                                       |
+| -------------------- | ----------------------------- | ---------- | ------------------------------------------- |
+| `assetId`            | `number`                      | yes        | Integer from 1 through 4,294,967,295.       |
+| `quantity`           | decimal string                | yes        | Gross amount to withdraw. Strict precision. |
+| `destinationChainId` | `number`                      | yes        | Destination network chain id.               |
+| `destinationAddress` | `string`                      | yes        | Destination address on that network.        |
+| `idempotencyKey`     | `string`                      | yes        | Reuse it to retry safely.                   |
+| `walletSigner`       | `TradingWithdrawWalletSigner` | one signer | SDK signs the EIP-191 message.              |
+| `payloadSignature`   | `Uint8Array`                  | one signer | A signature you precomputed.                |
+| `account`            | `AccountScope`                | no         | Scope override.                             |
+### `prepareToFunding(input)` and `prepareToExternalChain(input)`
+Both `create` methods are a prepare-then-submit pair collapsed into one call. Use the `prepare` variants when submission can be interrupted, most often by an MFA step-up: they build and sign the payload once and hand back a `PreparedTradingWithdraw` whose `submit` resends that exact payload and signature. Only transport options change between attempts, so the wallet is never asked to sign twice for the same withdrawal.
+```ts
+const prepared = await client.tradingWithdraws.prepareToFunding({
+assetId: 2,
+quantity: "500.00",
+idempotencyKey: crypto.randomUUID(),
+walletSigner,
+});
+try {
+await prepared.submit();
+} catch (error) {
+// Satisfy the step-up, then resubmit the same signed payload.
+await prepared.submit({ stepUpToken });
+}
+```
+They take the same inputs as their `create` counterparts.
+```ts
+import type { CreateTradingWithdrawResult, PolyesterMutationOptions } from "@polyester/sdk";
+interface PreparedTradingWithdraw {
+submit: (options?: PolyesterMutationOptions) => Promise
+;
+}
+```
+### `CreateTradingWithdrawResult`
+Every submission path returns the same shape:
+```ts
+interface CreateTradingWithdrawResult {
+intentId: string;
+}
+```
+Track the intent from there through the lifecycle stream. A trading withdrawal that fails after admission surfaces its cause as a lifecycle reason: `trading_withdraw_policy_denied`, `trading_withdraw_contract_reverted`, or `trading_withdraw_execution_failed`.
+## Related
+- [Zipper](https://testnet.polyester.com/docs/sdk/typescript/reference/zipper) for the cross-chain bridge that carries an external-chain withdrawal.
+- [Lifecycle](https://testnet.polyester.com/docs/sdk/typescript/reference/lifecycle) to follow an intent from signed to settled.
+- [Guard signer](https://testnet.polyester.com/docs/sdk/typescript/reference/guard-signer) for co-signing.
+- [Deposits and withdrawals guide](https://testnet.polyester.com/docs/sdk/typescript/guides/deposits-and-withdrawals) for the end-to-end walkthrough.
+- [Requests and idempotency](https://testnet.polyester.com/docs/sdk/typescript/concepts/requests-and-idempotency) for retry semantics and idempotency keys.

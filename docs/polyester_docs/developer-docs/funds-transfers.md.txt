@@ -1,0 +1,92 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/funds-transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Choose the correct API, on-chain, or delegated path for deposits, withdrawals, and transfers.
+Polyester separates **Funding** balances from **Trading** balances. The correct integration path depends on where the assets are now, where they need to go, and who is authorized to submit the operation.
+> **Interface and authority are separate choices**
+>
+> REST and ConnectRPC are transports for backend APIs. A direct chain transaction or delegated Funding action uses on-chain authority instead. WebSocket channels report updates; they do not initiate transfers.
+## Choose by source
+## External chain
+1. Create or retrieve the account's deposit address through `DepositAddressService`.
+2. Send the asset to that address on the source chain.
+3. Follow the resulting deposit lifecycle until the balance is settled.
+Deposit-address creation is available through REST at `POST /v1/chain/deposit-addresses` and through ConnectRPC. The external-chain transaction remains a user or wallet action. Depending on the account's configured route, the credited assets can remain in Funding or continue to Trading.
+## Funding
+- **Funding → Trading:** submit the TradingGateway deposit on-chain.
+- **Funding → Funding:** submit a FundingAccount transfer on-chain, or use an enabled delegated route.
+- **Funding → external chain:** call `FundingAccount.withdrawToChain` on-chain. FundingAccount invokes Zipper within that transaction. An enabled delegated route can submit the same supported action.
+Funding is chain-visible. Polyester's general REST and ConnectRPC APIs do not replace the account's on-chain authorization for these mutations.
+## Trading
+- **Trading → Funding:** use the Trading withdraw API with action `TO_FUNDING`.
+- **Trading → external chain:** use the Trading withdraw API with action `TO_EXTERNAL_CHAIN`.
+- **Trading → Trading:** use `InternalTransferService` for an off-chain internal transfer.
+Trading withdrawals support API-key authorization for server-side integrations and wallet authorization for interactive sessions. Internal transfers and withdrawals require stable idempotency keys.
+## Validate a Funding withdrawal destination
+Use `POST /v1/chain/withdraws:validate-destination` or the ConnectRPC `ValidateWithdrawDestination` method to validate an external destination before constructing a Funding withdrawal transaction. This authenticated request checks the selected network, canonical address format, Polyester account and contract addresses, and destination safety restrictions. It does not create or submit a withdrawal.
+```json
+"destinationChainId": "1",
+"destinationAddress": "0x1111111111111111111111111111111111111111"
+}
+```
+The response returns `VALID`, `INVALID_ADDRESS`, `UNSUPPORTED_CHAIN`, `POLYESTER_SMART_ACCOUNT`, `TOKEN_CONTRACT`, or `DENYLISTED_ADDRESS`. The accompanying message explains how to correct the destination without exposing internal denylist notes. A denylisted address applies across every network that shares the same address family, such as all EVM networks.
+> **Validation does not authorize the withdrawal**
+>
+> The Funding account's on-chain checks remain authoritative. Run validation immediately before submission because destination safety status can change after the response.
+## Choose an interface and authority path
+## REST
+Use REST when you want HTTP and JSON tooling. Public REST paths cover:
+- creating and listing deposit addresses
+- validating external destinations for Funding withdrawals
+- API-key withdrawals from Trading to Funding or an external chain
+- Trading-to-Trading internal transfers
+- reading balances, transfer history, configuration, and lifecycle state
+Wallet-authorized Trading withdrawals are available at `POST /v1/chain/trading-withdraws:wallet`; they require the same session, fresh step-up proof, and wallet signature as the ConnectRPC method.
+REST money-movement amounts are exact decimal strings. For example, a Trading-to-Trading request uses:
+```json
+"destinationSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"assetId": 1,
+"amount": "0.5",
+"idempotencyKey": "transfer-2026-07-16-0001"
+}
+```
+The response also exposes `amount` as a decimal string.
+See [REST getting started](https://testnet.polyester.com/docs/developer-docs/rest/getting-started).
+## ConnectRPC
+Use ConnectRPC for typed unary methods and official SDK integrations. It covers deposit addresses, Funding withdraw destination validation, Trading-to-Trading internal transfers, Trading withdrawals, and funds-related reads. Canonical money amounts remain U128 `amount_e18` fields on this transport.
+See [ConnectRPC & Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/getting-started).
+## Realtime
+Use realtime channels to monitor lifecycle, balance, and transfer updates after submission. Realtime does not initiate deposits, withdrawals, or transfers.
+Use [WebSocket JSON](https://testnet.polyester.com/docs/developer-docs/rest/websocket-json) where the required channel has a JSON variant, or [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf) for typed channels and official SDK clients.
+## Direct on-chain
+Use a wallet or smart-account transaction for:
+- moving assets from Funding to Trading
+- transferring assets between Funding accounts
+- withdrawing from Funding
+- managing external and internal whitelist state
+- enabling or revoking delegated Funding access
+The live on-chain fee and contract validation are authoritative. An API estimate or saved destination does not override them.
+For TypeScript integrations, see [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/typescript/guides/deposits-and-withdrawals) for the smart-account transaction helpers.
+## Delegated Funding
+A Funding account can grant delegated access on-chain when Polyester has enabled it for the account and integration. The delegated integration can then submit supported Funding withdrawals and Funding-to-Funding transfers.
+Delegated Funding does not authorize Trading operations, whitelist changes, or unrestricted account actions.
+> **Delegation does not create a universal API**
+>
+> The public REST and ConnectRPC interfaces currently provide Trading withdrawals and Trading-to-Trading transfers. Delegated Funding is not a general REST or ConnectRPC mutation surface.
+> **Trading interfaces do not move funds**
+>
+> SBE WebSocket, FIX Classic, and FIX-SBE are trading connectivity paths. They do not replace the funds-and-transfers APIs or on-chain actions described here.
+## After submission
+1. Retry backend APIs safely
+For a backend API retry, keep the signed business payload, account scope, destination, amount, nonce, deadline, and idempotency value stable for one logical operation. For an API-key retry, create a fresh timestamp and HTTP request signature.
+2. Track the lifecycle
+Store the identifiers returned by the intake or chain transaction. Use lifecycle read methods and realtime channels to correlate later updates.
+3. Wait for settlement
+An accepted API request or successful on-chain submission does not necessarily mean the destination balance is settled. For a successful balance move, wait for ledger settlement. Failed, dropped, and refunded lifecycle states are terminal without settlement.
+## Security boundaries
+> **A saved destination is not authorization**
+>
+> Security requirements vary by path. External and internal whitelists remain chain-authoritative, and delegated Funding access does not replace their checks. See [Withdrawals and transfer security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security) for authentication, signatures, policies, whitelists, and step-up requirements.
+See [Withdraw from Trading](https://testnet.polyester.com/docs/developer-docs/funds-transfers/withdraw-from-trading) for the Trading withdrawal payloads.

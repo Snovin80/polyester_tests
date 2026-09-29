@@ -1,0 +1,23 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/policies.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Policies
+Realtime API-key and subaccount-policy updates.
+The Python SDK intentionally exposes policy **streams only**. Unary policy list/get/create/update/ delete methods require JWT/session administration and are not part of this API-key SDK.
+| Async method                    | Sync method                   | Event type         |
+| ------------------------------- | ----------------------------- | ------------------ |
+| `subscribe_subaccount_policies` | `subscribe_sync`              | `SubaccountPolicy` |
+| `subscribe_api_policies`        | `subscribe_api_policies_sync` | `ApiPolicy`        |
+```python
+api_policies = await client.policies.subscribe_api_policies(
+account_id=client.default_account_id,
+)
+async with api_policies:
+async for policy in api_policies:
+print(policy.id, policy.revision)
+break
+```
+Both are private channels and require API-key credentials, Account ID, and the corresponding policy read permission. Subscription return means the private token and Centrifugo handshake succeeded.
+Policy events may include MFA requirement flags. They describe venue policy; this SDK cannot perform an MFA challenge. Manage assignments and mutations in the Polyester app/TypeScript session client.
+Related: [Authentication](https://testnet.polyester.com/docs/sdk/python/guides/authentication), [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming).

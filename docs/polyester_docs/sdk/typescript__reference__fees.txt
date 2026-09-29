@@ -1,0 +1,382 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/fees
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Fees · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Fees
+Fees
+Copy page
+View as Markdown
+Open in
+client.fees
+is the spot fee surface: the
+maker
+and
+taker
+percents a fill is charged at, for one
+account and market. They are effective rates: the account's VIP tier and any symbol-specific
+adjustment are already applied. These are the numbers to quote in a UI or estimate a cost
+from, not the catalog percents on
+VIP
+Every method is authenticated and account-scoped, so each input accepts an optional
+account
+field
+(
+"main"
+,
+"active"
+, or
+). See
+Account scoping
+for how the default resolves.
+Percents are decimal strings without a
+%
+sign (
+"0.02"
+is 0.02%). Maker can be negative (a
+rebate), in
+-100
+to
+100
+0
+to
+100
+Methods
+Method
+Summary
+getSpotRates
+Effective maker and taker spot rates, optionally filtered by market.
+getSpotRates(input?, options?)
+Fetches a
+SpotFeeRate[]
+for the resolved account, ordered by
+symbolId
+ascending. The list is
+a finite snapshot, not a page. Input is optional.
+Omit
+symbolIds
+, or pass
+, to load every currently listed, non-disabled spot market. Pass up
+to 100 unique
+symbolId
+values to restrict the response. IDs must be integers from 1 through
+4,294,967,295. The SDK drops duplicates before the request leaves your process.
+await
+client
+catalog
+ensureReady
+();
+const
+rates
+=
+await
+client
+fees
+getSpotRates
+();
+for
+(
+const
+rate
+of
+rates
+) {
+const
+symbol
+=
+client
+catalog
+market
+requirePairSymbolBySymbolId
+(
+rate
+symbolId
+);
+console
+log
+(
+symbol
+,
+rate
+makerFeeRatePercent
+,
+rate
+takerFeeRatePercent
+);
+}
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+const
+btc
+]
+=
+await
+client
+fees
+getSpotRates
+({
+symbolIds: [
+symbolId
+],
+account:
+"main"
+,
+});
+Use the catalog to turn
+"BTC-USDT"
+into a
+symbolId
+error.
+GetSpotFeeRatesInput
+Field
+Type
+Required
+Notes
+symbolIds
+number[]
+Market ids. Max 100 unique values. Default
+(every market).
+account
+AccountScope
+Scope override.
+SpotFeeRate
+vipTier
+is the tier the row was resolved at (0 through 10), so you can show which tier earned a
+rate without a second call to
+VIP
+interface
+SpotFeeRate
+symbolId
+number
+;
+makerFeeRatePercent
+string
+;
+// "0.02" is 0.02%; may be negative (rebate)
+takerFeeRatePercent
+string
+;
+// 0 to 100
+vipTier
+number
+;
+// 0 through 10
+}
+Related
+VIP
+to read the public tier catalog or the caller's
+root-account qualification.
+Trading
+to place orders that fill at these rates.
+Trading fees
+for the published schedule and
+fee-asset rules.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Errors
+Next
+Guard signer
+On this page
+Methods
+getSpotRates(input?, options?)
+GetSpotFeeRatesInput
+SpotFeeRate
+Related
+Related Topics
+Share this page
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.catalog.ensureReady();
+const rates = await client.fees.getSpotRates();
+
+for (const rate of rates) {
+	const symbol = client.catalog.market.requirePairSymbolBySymbolId(rate.symbolId);
+	console.log(symbol, rate.makerFeeRatePercent, rate.takerFeeRatePercent);
+}
+
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+
+const [btc] = await client.fees.getSpotRates({
+	symbolIds: [symbolId],
+	account: "main",
+});
+
+---
+
+interface SpotFeeRate {
+	symbolId: number;
+	makerFeeRatePercent: string; // "0.02" is 0.02%; may be negative (rebate)
+	takerFeeRatePercent: string; // 0 to 100
+	vipTier: number; // 0 through 10
+}

@@ -1,0 +1,239 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/matching
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Matching · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+PolyEngine
+svg]:size-3.5">
+/
+Matching
+Matching
+Copy page
+View as Markdown
+Open in
+Matching
+decides which eligible buy and sell orders trade, at what price, and for how much. It begins after
+Admission
+accepts your order and reserves the balance it may use.
+Each trading pair has its own order book. Deposits from different supported chains trade through the same
+unified asset
+, so the source chain does not create a separate market.
+Price comes first, then time
+PolyEngine
+gives priority in two steps:
+Best price first.
+Buyers receive the lowest eligible sell price, while sellers receive the highest eligible buy price.
+Earlier order first.
+When several orders share the same price, the order that arrived earlier receives priority.
+Your limit price is the worst price you accept, not necessarily the price you receive. A buy can fill at its limit price or lower, and a sell can fill at its limit price or higher.
+Maker and taker fills
+The order already resting on the book is the
+maker
+taker
+Maker or taker status belongs to the fill, not permanently to the order. A limit order can take liquidity immediately and later provide liquidity with its remaining amount.
+Post-only
+prevents that mixed result by rejecting a limit order that would immediately trade as a taker.
+See
+Trading Fees
+for fee and rebate rates.
+Partial fills and remaining amounts
+One order can trade against several orders or prices. Each match creates a separate fill, and Polyester combines those fills to show your total filled amount and average execution price.
+What happens to the unfilled amount depends on the instruction:
+Instruction
+What happens to the unfilled amount
+Good Til Canceled (GTC)
+It remains on the order book until it fills or you cancel it.
+Immediate Or Cancel (IOC)
+It is canceled after all immediately available matches complete.
+Fill Or Kill (FOK)
+The entire order fills immediately or no part of it fills.
+Market
+It trades immediately within price protection, then cancels any remainder.
+FOK checks the eligible liquidity across the complete order book, not only the rows currently visible in the Order Book widget.
+Prevent self-trading
+Self-trade prevention applies when two orders from the same Polyester Account ID would otherwise match:
+Expire Maker
+cancels the resting order.
+Expire Taker
+cancels the incoming order.
+Expire Both
+cancels both orders.
+When you do not choose a mode, Polyester uses
+Expire Maker
+Subaccounts
+have different account IDs, so orders from two Subaccounts can match normally even when they belong to the same
+Main Account
+Canceling a working order
+A working order remains active if you close your browser, sign out, or lose your connection. It continues following its price, priority, and time-in-force instructions until it fills, is canceled, or otherwise ends.
+A fill can complete while your cancellation is being processed. Any completed fill remains final, while only the amount still open is canceled.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Every fill moves to Settlement
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Matching creates the price, amount, maker and taker roles, and order references for each fill.
+Settlement
+then applies the asset, fee, rebate, and balance changes to your account.
+Related Topics
+Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+Admission
+See how PolyEngine checks your order and protects the balance it may use.
+Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+Escape Hatch
+Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+Previous
+Admission
+Next
+Settlement
+On this page
+Price comes first, then time
+Maker and taker fills
+Partial fills and remaining amounts
+Prevent self-trading
+Canceling a working order
+Related Topics
+Share this page
+Matching
+See how your eligible order receives priority and becomes one or more fills.
+Share
+Copy Link

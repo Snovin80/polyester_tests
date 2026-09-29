@@ -1,0 +1,256 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Address book · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+Address book
+Copy page
+View as Markdown
+Open in
+The Rust SDK exposes address-book
+reads and invalidation streaming
+JWT/session and are not included.
+Methods
+Method
+Summary
+list_books
+List address books.
+list_entries
+List saved entries.
+list_transfer_counterparties
+/
+list_transfer_destinations
+Read transfer allowlist views.
+list_internal_transfer_whitelist_entries
+Read internal-transfer entries.
+get_withdraw_whitelist_view
+/
+get_view
+Read withdrawal allowlist view.
+subscribe
+/
+subscribe_view_invalidations
+Stream view invalidations.
+use
+polyester
+proto
+auth
+v1
+ListAddressBookEntriesRequest
+;
+let
+page
+=
+client
+address_book
+list_entries
+(
+ListAddressBookEntriesRequest
+limit
+50
+,
+Default
+default
+()
+})
+;
+for
+entry
+in
+page
+entries {
+println!
+(
+"{} {} {}"
+,
+entry
+address_book_entry_id,
+entry
+label,
+entry
+kind);
+}
+Whitelists are enforced allowlists
+withdrawal. Re-fetch the relevant view after an invalidation; the event is not a full snapshot.
+All calls are authenticated. The invalidation stream additionally requires Account ID and the
+address-book read permission. The method returns only after the private token and Centrifugo
+handshake succeed. An HTTP 403 from a test fixture that lacks that permission is an expected
+policy/configuration denial, not an SDK streaming defect; grant address-book read access before
+reconnecting.
+Related
+Withdrawals
+Streaming
+Related Topics
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Production trading operations
+Next
+API keys
+On this page
+Methods
+Related
+Related Topics
+Share this page
+Address book
+Saved destinations and whitelist views.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::proto::auth::v1::ListAddressBookEntriesRequest;
+
+let page = client
+    .address_book
+    .list_entries(ListAddressBookEntriesRequest {
+        limit: 50,
+        ..Default::default()
+    })
+    .await?;
+for entry in page.entries {
+    println!("{} {} {}", entry.address_book_entry_id, entry.label, entry.kind);
+}

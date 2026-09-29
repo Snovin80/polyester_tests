@@ -1,0 +1,227 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/self-trade-prevention
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Self-Trade Prevention · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Platform Concepts
+svg]:size-3.5">
+/
+Self-Trade Prevention
+Self-Trade Prevention
+Copy page
+View as Markdown
+Open in
+Self-trade prevention (STP) stops an incoming order from executing against a resting order owned by
+the same trading account. The incoming order selects which order Polyester expires when their
+prices would otherwise match.
+STP is scoped to one trading account. A root account and each of its
+subaccounts
+are separate STP
+scopes, so orders from the root account can match orders from its subaccounts, and orders from
+different subaccounts can match each other. STP does not compare client order IDs,
+API keys
+, or
+strategy names. STP groups are not currently supported.
+Modes
+Value
+Behavior at a self-trade
+EXPIRE_MAKER
+Cancels the resting
+maker
+order; the incoming order can continue
+EXPIRE_TAKER
+Cancels the remaining incoming order; the resting maker remains
+EXPIRE_BOTH
+Cancels the resting maker and the remaining incoming order
+The mode on the incoming order controls the outcome. The resting order's original STP mode does not
+override it.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+The default is EXPIRE_MAKER
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+If
+self_trade_prevention_mode
+is omitted or set to
+SELF_TRADE_PREVENTION_MODE_UNSPECIFIED
+, Polyester applies
+EXPIRE_MAKER
+effective mode as
+EXPIRE_MAKER
+Matching behavior
+STP is evaluated when the incoming order reaches a same-account maker in price-time order.
+Executions against other accounts that occurred earlier remain valid and are not rolled back.
+EXPIRE_MAKER
+removes the maker's entire remaining quantity, not only the overlapping quantity.
+The incoming order can then continue through later eligible liquidity.
+EXPIRE_TAKER
+preserves the maker and cancels the incoming order's unfilled remainder.
+EXPIRE_BOTH
+removes the maker's entire remaining quantity and cancels the incoming order's
+unfilled remainder.
+No execution occurs between the two same-account orders.
+Set the mode
+OrderIntent.self_trade_prevention_mode
+carries the mode for single and batch order creation.
+REST and ConnectRPC ProtoJSON use
+selfTradePreventionMode
+"order"
+"symbol"
+"BTC-USDT"
+,
+"side"
+"BUY"
+,
+"baseQty"
+"0.01"
+,
+"selfTradePreventionMode"
+"EXPIRE_TAKER"
+,
+"limitGtc"
+"price"
+"50000.00"
+}
+}
+}
+For protobuf requests, set one of the defined
+orders.v1.SelfTradePreventionMode
+values. Generated SDKs expose the same three effective modes
+using language-specific names and casing.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Send an explicit mode
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Although omission safely defaults to
+EXPIRE_MAKER
+, sending the intended mode makes order intent,
+logs, and client-side reconciliation easier to audit.
+Post-only and fill-or-kill
+Post-only
+validation takes precedence over STP. A post-only order that would cross the book is
+rejected with
+ERROR_CODE_POST_ONLY_CROSS
+; STP does not cancel either order.
+For fill-or-kill (FOK), same-account makers are not executable liquidity:
+With
+EXPIRE_MAKER
+, Polyester ignores same-account makers when checking whether enough eligible
+liquidity exists. If the FOK order can fill completely from other accounts, the same-account
+makers it reaches expire and matching continues.
+With
+EXPIRE_TAKER
+or
+EXPIRE_BOTH
+, reaching a same-account maker prevents the FOK order from
+completing.
+An FOK order that cannot complete is rejected with
+ERROR_CODE_FOK_INSUFFICIENT_LIQUIDITY
+failed FOK attempt does not partially fill or cancel a resting maker.
+Trigger child orders
+Standalone trigger intents use the same enum in
+TriggerIntent.self_trade_prevention_mode
+reaches the order book. If the field is omitted, child orders default to
+EXPIRE_MAKER
+Observe the outcome
+STP can end an order after its create request was accepted. Use order reads and private realtime
+updates to observe the resulting cancellation or remaining working order. Persist the effective
+selfTradePreventionMode
+returned with each order so reconciliation reflects the instruction that
+Polyester applied.
+Related Topics
+Public IDs
+Understand what Polyester public IDs identify, why they are opaque, and how their representation differs per interface.
+Client order IDs and idempotency
+Use client order IDs to prevent duplicate placement, correlate client intents, and reconcile uncertain outcomes.
+Order Sizing
+Choose exact base-quantity or maximum quote-debit sizing and read the authoritative quantity accepted for execution.
+Fee Assets
+Choose whether a BUY fee is charged in quote or deducted from received base, and decode fee amounts with the correct scale.
+Preview Order
+Check whether an order is currently admissible without creating an order, reserving funds, or presenting an execution quote.
+Market Order Price Protection
+Understand market-order slippage overrides, pair defaults, client reference drift, execution boundaries, and stale-quote errors.
+Rate limits
+Weighted quotas, default limits, rejection metadata, and retry behavior.
+WebSocket session model
+Understand shared connection, authentication, subscription, and recovery behavior for Polyester realtime channels.
+Previous
+Market Order Price Protection
+Next
+Rate limits
+On this page
+Modes
+Matching behavior
+Set the mode
+Post-only and fill-or-kill
+Trigger child orders
+Observe the outcome
+Related Topics
+Share this page
+Self-Trade Prevention
+Prevent an incoming order from trading against a resting order from the same trading account.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"order": {
+		"symbol": "BTC-USDT",
+		"side": "BUY",
+		"baseQty": "0.01",
+		"selfTradePreventionMode": "EXPIRE_TAKER",
+		"limitGtc": {
+			"price": "50000.00"
+		}
+	}
+}

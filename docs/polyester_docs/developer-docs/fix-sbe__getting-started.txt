@@ -1,0 +1,113 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/fix-sbe/getting-started
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Getting started · FIX-SBE
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+FIX-SBE
+Getting started
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+FIX-SBE
+svg]:size-3.5">
+/
+Getting started
+Getting started
+Copy page
+View as Markdown
+Open in
+FIX-SBE combines institutional FIX session behavior with fixed-layout binary application messages.
+It is separate from tag-value FIX Classic and SBE WebSocket.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Use the assigned schema
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Generate codecs from the versioned FIX-SBE schema assigned to your session. Internal Polyester SBE
+schemas and the
+SBE WebSocket
+schema are
+different contracts.
+When to use FIX-SBE
+Use FIX-SBE when your integration can:
+operate persistent trading sessions
+implement sequence, heartbeat, resend, and recovery behavior
+generate and validate versioned SBE messages
+complete protocol conformance and certification
+Use
+FIX Classic
+when compatibility with
+tag-value FIX tooling is more important than binary application encoding.
+Integration flow
+1
+Review the session package
+Confirm the session protocol, schema identity and version, endpoint, authentication method, enabled
+business workflows, and operational limits.
+2
+Generate and validate codecs
+Generate codecs from the assigned schema. Validate schema identity, template identity, block length,
+and version before decoding application messages.
+3
+Implement session behavior
+Implement authentication, heartbeat, sequence persistence, resend, reconnect, and recovery according
+to the session profile.
+4
+Complete certification
+Run the assigned protocol, compatibility, and recovery cases before connecting the production
+session.
+Recovery boundaries
+Session recovery
+Application state
+Persist protocol sequence and follow the session profile's resend and reset policy. Validate schema
+version again after reconnecting.
+Session recovery does not necessarily provide a complete trading snapshot. Reconcile application
+state through the assigned FIX workflow or Polyester read APIs.
+See the
+Connectivity matrix
+to
+compare FIX-SBE with ConnectRPC and SBE WebSocket.
+On this page
+When to use FIX-SBE
+Integration flow
+Recovery boundaries
+Share this page
+Getting started
+Use Polyester's FIX session interface with binary SBE application messages.
+Share
+Copy Link

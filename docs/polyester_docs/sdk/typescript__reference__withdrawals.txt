@@ -1,0 +1,742 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/withdrawals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Withdrawals · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Withdrawals
+Withdrawals
+Copy page
+View as Markdown
+Open in
+client.tradingWithdraws
+creates durable, signed withdrawal intents out of the Trading venue.
+Every method is authenticated and account-scoped, so each input accepts an optional
+account
+field
+(
+"main"
+,
+"active"
+, or
+). See
+Account scoping
+for how the default resolves.
+Each intent is a signed message, not a fire-and-forget call. The SDK embeds a deadline (about five
+minutes), a random nonce, and an idempotency key into the payload, then signs it. Because the
+payload is signed, an intent is durable: submit it once, and it settles even if your process
+restarts.
+Signing
+Every withdrawal needs a signature over its canonical EIP-191 text message. You have two options, passed alongside
+the withdrawal input:
+walletSigner
+EOA
+wallet signer and it builds the canonical message, asks the
+wallet to sign it with
+personal_sign
+, and submits the wallet-authorized intent.
+payloadSignature
+signer or custody infrastructure). The SDK submits the backend-authorized intent as-is.
+Provide exactly one. If neither is present, the call throws a
+ValidationError
+import
+type
+TradingWithdrawWalletSigner
+}
+from
+"@polyester/sdk"
+;
+const
+walletSigner
+TradingWithdrawWalletSigner
+=
+signerWallet:
+owner
+address
+,
+accountId:
+me
+accountId
+,
+signMessage
+message
+)
+=>
+owner
+signMessage
+({
+message
+}),
+};
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Guard-signer co-signing
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+When your account has a guard signer configured, withdrawal intents are co-signed before they
+settle. See the
+guard signer reference
+for
+how the second signature is applied.
+Methods
+Method
+Summary
+validateDestination
+Check a destination chain and address before you sign anything.
+createToFunding
+Withdraw from Trading to Funding, staying on Polyester.
+createToExternalChain
+Withdraw from Trading out to an external chain via the
+Zipper
+prepareToFunding
+Sign a Trading-to-Funding intent once, submit it when you are ready.
+prepareToExternalChain
+Sign an external-chain intent once, submit it when you are ready.
+validateDestination(input, options?)
+Preflights a destination before you build or sign an intent. It takes a
+destinationChainId
+and a
+destinationAddress
+, and answers whether that pair is a legitimate withdrawal target.
+const
+check
+=
+await
+client
+tradingWithdraws
+validateDestination
+({
+destinationChainId:
+1
+,
+destinationAddress:
+"0xabc..."
+,
+});
+if
+(
+!
+check
+valid
+) {
+console
+error
+(
+check
+code
+,
+check
+message
+);
+return
+;
+}
+// Use the canonical form the backend resolved, not the string you typed.
+const
+destinationAddress
+=
+check
+canonicalDestinationAddress
+;
+The result is a discriminated union on
+valid
+type
+ValidateWithdrawDestinationResult
+=
+|
+valid
+true
+;
+code
+"valid"
+;
+message
+string
+;
+canonicalDestinationAddress
+string
+;
+}
+|
+valid
+false
+;
+code
+|
+"invalid_address"
+|
+"unsupported_chain"
+|
+"polyester_smart_account"
+|
+"token_contract"
+|
+"denylisted_address"
+|
+"unspecified"
+;
+message
+string
+;
+canonicalDestinationAddress
+string
+;
+};
+Code
+Meaning
+valid
+The address is a legitimate destination on that chain.
+invalid_address
+The address is malformed for that chain.
+unsupported_chain
+Withdrawals to that chain are not supported.
+polyester_smart_account
+The address is a Polyester
+smart account
+; use an internal transfer.
+token_contract
+The address is a token contract, so funds sent there would be stranded.
+denylisted_address
+The address is blocked for that chain family.
+unspecified
+The backend returned a code this SDK version does not have a label for.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Validation is a preflight, not a guarantee
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Validation is advisory and point-in-time. A destination that passes here can still be rejected at
+submission, so keep handling the error from
+createToExternalChain
+rather than treating a
+valid
+result as an approval.
+createToFunding(input, options?)
+Moves funds from the Trading venue to Funding. The destination stays on Polyester, so nothing leaves
+the platform. Resolves to a
+CreateTradingWithdrawResult
+carrying the
+intentId
+const
+result
+=
+await
+client
+tradingWithdraws
+createToFunding
+({
+assetId:
+2
+,
+quantity:
+"500.00"
+,
+idempotencyKey:
+crypto
+randomUUID
+(),
+walletSigner
+,
+});
+console
+log
+(
+result
+intentId
+);
+CreateTradingWithdrawToFundingInput
+Field
+Type
+Required
+Notes
+assetId
+number
+yes
+Integer from 1 through 4,294,967,295.
+quantity
+decimal string
+yes
+Amount to withdraw. Strict precision.
+idempotencyKey
+string
+yes
+Reuse it to retry safely.
+destinationAddress
+string
+no
+Optional Funding destination address.
+walletSigner
+TradingWithdrawWalletSigner
+one signer
+SDK signs the EIP-191 message.
+payloadSignature
+Uint8Array
+one signer
+A signature you precomputed.
+account
+AccountScope
+no
+Scope override.
+createToExternalChain(input, options?)
+Withdraws from the Trading venue out to an external chain. The funds leave Polyester via the
+Zipper
+and you specify the destination network and address.
+const
+result
+=
+await
+client
+tradingWithdraws
+createToExternalChain
+({
+assetId:
+2
+,
+quantity:
+"500.00"
+,
+// gross amount
+destinationChainId:
+1
+,
+destinationAddress:
+"0xabc..."
+,
+idempotencyKey:
+crypto
+randomUUID
+(),
+walletSigner
+,
+});
+console
+log
+(
+result
+intentId
+);
+CreateTradingWithdrawToExternalChainInput
+Field
+Type
+Required
+Notes
+assetId
+number
+yes
+Integer from 1 through 4,294,967,295.
+quantity
+decimal string
+yes
+Gross amount to withdraw. Strict precision.
+destinationChainId
+number
+yes
+Destination network chain id.
+destinationAddress
+string
+yes
+Destination address on that network.
+idempotencyKey
+string
+yes
+Reuse it to retry safely.
+walletSigner
+TradingWithdrawWalletSigner
+one signer
+SDK signs the EIP-191 message.
+payloadSignature
+Uint8Array
+one signer
+A signature you precomputed.
+account
+AccountScope
+no
+Scope override.
+prepareToFunding(input)
+and
+prepareToExternalChain(input)
+Both
+create
+methods are a prepare-then-submit pair collapsed into one call. Use the
+prepare
+variants when submission can be interrupted, most often by an
+MFA
+step-up: they build and sign the
+payload once and hand back a
+PreparedTradingWithdraw
+whose
+submit
+resends that exact payload and
+signature. Only transport options change between attempts, so the wallet is never asked to sign
+twice for the same withdrawal.
+const
+prepared
+=
+await
+client
+tradingWithdraws
+prepareToFunding
+({
+assetId:
+2
+,
+quantity:
+"500.00"
+,
+idempotencyKey:
+crypto
+randomUUID
+(),
+walletSigner
+,
+});
+try
+await
+prepared
+submit
+();
+}
+catch
+(
+error
+) {
+// Satisfy the step-up, then resubmit the same signed payload.
+await
+prepared
+submit
+({
+stepUpToken
+});
+}
+They take the same inputs as their
+create
+counterparts.
+import
+type
+CreateTradingWithdrawResult
+,
+PolyesterMutationOptions
+}
+from
+"@polyester/sdk"
+;
+interface
+PreparedTradingWithdraw
+submit
+(
+options
+?:
+PolyesterMutationOptions
+)
+=>
+Promise
+<
+CreateTradingWithdrawResult
+>;
+}
+CreateTradingWithdrawResult
+Every submission path returns the same shape:
+interface
+CreateTradingWithdrawResult
+intentId
+string
+;
+}
+Track the intent from there through the lifecycle stream. A trading withdrawal that fails after
+admission surfaces its cause as a lifecycle reason:
+trading_withdraw_policy_denied
+,
+trading_withdraw_contract_reverted
+, or
+trading_withdraw_execution_failed
+Related
+Zipper
+for the cross-chain bridge that carries an
+external-chain withdrawal.
+Lifecycle
+to follow an intent from signed to
+settled.
+Guard signer
+for co-signing.
+Deposits and withdrawals guide
+for the
+end-to-end walkthrough.
+Requests and idempotency
+for retry
+semantics and idempotency keys.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+VIP
+Next
+Zipper
+On this page
+Signing
+Methods
+validateDestination(input, options?)
+createToFunding(input, options?)
+CreateTradingWithdrawToFundingInput
+createToExternalChain(input, options?)
+CreateTradingWithdrawToExternalChainInput
+prepareToFunding(input) and prepareToExternalChain(input)
+CreateTradingWithdrawResult
+Related
+Related Topics
+Share this page
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import type { TradingWithdrawWalletSigner } from "@polyester/sdk";
+
+const walletSigner: TradingWithdrawWalletSigner = {
+	signerWallet: owner.address,
+	accountId: me.accountId,
+	signMessage: (message) => owner.signMessage({ message }),
+};
+
+---
+
+const check = await client.tradingWithdraws.validateDestination({
+	destinationChainId: 1,
+	destinationAddress: "0xabc...",
+});
+
+if (!check.valid) {
+	console.error(check.code, check.message);
+	return;
+}
+
+// Use the canonical form the backend resolved, not the string you typed.
+const destinationAddress = check.canonicalDestinationAddress;
+
+---
+
+type ValidateWithdrawDestinationResult =
+	| {
+			valid: true;
+			code: "valid";
+			message: string;
+			canonicalDestinationAddress: string;
+	  }
+	| {
+			valid: false;
+			code:
+				| "invalid_address"
+				| "unsupported_chain"
+				| "polyester_smart_account"
+				| "token_contract"
+				| "denylisted_address"
+				| "unspecified";
+			message: string;
+			canonicalDestinationAddress: string;
+	  };
+
+---
+
+const result = await client.tradingWithdraws.createToFunding({
+	assetId: 2,
+	quantity: "500.00",
+	idempotencyKey: crypto.randomUUID(),
+	walletSigner,
+});
+
+console.log(result.intentId);
+
+---
+
+const result = await client.tradingWithdraws.createToExternalChain({
+	assetId: 2,
+	quantity: "500.00", // gross amount
+	destinationChainId: 1,
+	destinationAddress: "0xabc...",
+	idempotencyKey: crypto.randomUUID(),
+	walletSigner,
+});
+
+console.log(result.intentId);
+
+---
+
+const prepared = await client.tradingWithdraws.prepareToFunding({
+	assetId: 2,
+	quantity: "500.00",
+	idempotencyKey: crypto.randomUUID(),
+	walletSigner,
+});
+
+try {
+	await prepared.submit();
+} catch (error) {
+	// Satisfy the step-up, then resubmit the same signed payload.
+	await prepared.submit({ stepUpToken });
+}
+
+---
+
+import type { CreateTradingWithdrawResult, PolyesterMutationOptions } from "@polyester/sdk";
+
+interface PreparedTradingWithdraw {
+	submit: (options?: PolyesterMutationOptions) => Promise<CreateTradingWithdrawResult>;
+}
+
+---
+
+interface CreateTradingWithdrawResult {
+	intentId: string;
+}

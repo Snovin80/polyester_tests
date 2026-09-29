@@ -1,0 +1,193 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/rpcs
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+RPC Nodes · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Chain
+svg]:size-3.5">
+/
+RPC Nodes
+RPC Nodes
+Copy page
+View as Markdown
+Open in
+Anyone can run a
+Polyester Chain
+RPC node on their own computer or server. Sync your node with Polyester Chain, then connect your wallet or application to its local RPC endpoint.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Installation details coming soon
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The official node download, supported platforms, Polyester Chain configuration, and exact installation commands will be linked here once confirmed. The workflow below explains the setup process; it is not yet a complete installation guide.
+Run your own node
+1
+Download the node client
+Download the Polyester Chain node release for your chosen operating system. Follow its installation instructions and verify the release using the supplied integrity information.
+2
+Configure your node
+Load the Polyester Chain configuration, including its chain identifiers, genesis file, and initial peer addresses. These connect your node to Polyester Chain. Choose a data directory with enough storage for the history you intend to retain.
+3
+Synchronize with Polyester Chain
+Start the node and let it connect to peers and synchronize. Before using its responses as current state, confirm it has caught up and continues following new blocks. Any supported snapshot or state-sync
+route
+must follow the release's verification instructions.
+4
+Connect to your local RPC endpoint
+Enable the node's EVM JSON-RPC interface and bind it to localhost for applications on the same machine. Point your compatible wallet, script, or application to that configured endpoint. Confirm the node is connected to Polyester Chain and its block height is advancing before submitting transactions.
+Keep the node running to follow new blocks, and apply Polyester Chain's published software upgrades. Storage and historical query availability depend on how much data your node retains.
+Related Topics
+Overview
+See how Polyester Chain supports your account, assets, and public on-chain activity.
+Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Gas Abstraction
+See how Polyester sponsors gas for your supported Polyester Chain actions.
+Validators
+See how Polyester Chain validators secure blocks and how other approval roles remain separate.
+Previous
+Validators
+Next
+Overview
+On this page
+Run your own node
+Related Topics
+Share this page
+RPC Nodes
+Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+Share
+Copy Link

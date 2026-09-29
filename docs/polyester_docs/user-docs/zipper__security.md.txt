@@ -1,0 +1,78 @@
+Источник: https://testnet.polyester.com/docs/user-docs/zipper/security.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Security
+See how Zipper protects deposits, withdrawals, custody, and Zipped Asset supply.
+Zipper uses several independent security layers to protect every deposit and withdrawal. Each request is tied to an exact route, independently validated, recorded through one lifecycle, and allowed to create only one financial result.
+Polyester works with **[Cubist](https://cubist.dev/)** to protect the signing keys used by Zipper's external-chain vaults. Cubist's CubeSigner keeps these keys inside hardware-isolated trusted execution environments, or **TEEs**, and applies policy checks before a vault can sign a transaction.
+## Security throughout the lifecycle
+Zipper protects an asset movement in seven stages:
+1. **Exact route.** The chain, asset contract, minimum, fee, and destination format must match a supported route.
+2. **Security screening.** A security scanner screens deposits and withdrawals for OFAC sanctions exposure, illicit activity, and wallet or transaction risk.
+3. **External finality.** A deposit reaches the required source-chain confirmations before minting, and Zipper follows a withdrawal through destination finality after release.
+4. **Independent validation.** Zipper validators check the transaction, amount, route, destination, policy, and vault liquidity through a two-thirds (2/3) quorum.
+5. **One request state.** The request ID connects validation, execution, fees, external transactions, and the final result.
+6. **Cubist TEE vault signing.** An approved withdrawal must pass CubeSigner's C2F policy and required MFA approvals before its transaction can be signed.
+7. **Supply and account updates.** Deposits mint only after approval. For withdrawals, the route-specific Zipped Asset is locked before the matching native backing leaves its vault. After the destination transaction reaches finality, Zipper burns the locked Zipped Asset.
+These layers keep one deposit from minting twice and one withdrawal from producing duplicate external payments.
+## Independent Zipper validator quorum
+Zipper testnet currently has 17 relayers and 4 validators. Mainnet is planned to launch with 12 or more validators, with broader operator participation as the network matures.
+Each validator monitors supported blockchains through its own local RPC infrastructure and reviews deposit and withdrawal evidence independently. Relayers are separate from the validator approval set.
+A request needs a two-thirds (2/3) validator quorum before it can continue. For deposits, validators confirm the source transaction, account attribution, asset, amount, confirmations, and screening result before a Zipped Asset can mint. For withdrawals, they review the policy, destination risk, amount, fee, and available vault liquidity.
+**Polyester Chain validators** produce and validate blocks for Polyester Chain. They secure chain consensus but do not independently approve a Zipper deposit or withdrawal.
+Keeping these roles separate means one system does not control observation, approval, custody signing, chain consensus, and account accounting by itself.
+The [Validators](https://testnet.polyester.com/docs/user-docs/zipper/validators) page explains how Zipper expands its initial quorum through progressively broader operator participation and infrastructure diversity.
+## How Cubist protects Zipper vaults
+Cubist is Polyester's security partner for Zipper vault key management. Its **CubeSigner** system combines a trusted execution environment with an HSM-backed hardware root of trust. Vault keys are generated, stored, and used for signing inside this protected boundary. Raw private keys are never exposed to Zipper validators, Polyester operators, or Zipper application services.
+The signing process works as follows:
+1. Zipper validates the withdrawal and creates an exact transaction intent containing the chain, asset, amount, and destination.
+2. The approved intent is sent to CubeSigner as a signing request. Zipper does not retrieve or handle the raw vault private key.
+3. Cubist's C2F policy checks the exact transaction against the security rules attached to that vault key, including required MFA and approval conditions.
+4. The key can sign only when the policy approves the request. The signing operation happens inside the protected TEE/HSM boundary.
+5. CubeSigner returns the signature, while the private key remains protected inside the vault infrastructure.
+This means access to a Polyester application server is not enough to move vault assets. A withdrawal still needs Zipper approval, an exact transaction intent, and Cubist's independent policy-enforced signature.
+Cubist's role is focused on secure key storage and transaction signing. Zipper continues to own route validation, request state, validator approval, destination commitment, finality, and the Zipped Asset burn connected to the withdrawal.
+## Deposit protection
+Before a deposit creates a Zipped Asset, Zipper confirms:
+- the exact chain and asset contract
+- the receiving address and Polyester account
+- the amount, minimum, and route fee
+- the source transaction and required confirmations
+- the security scanner's sanctions and transaction-risk screening result
+- that the source event has not already been used
+- that a two-thirds (2/3) validator quorum approved the request.
+Only an approved request can mint its route-specific Zipped Asset and credit the matching Unified Asset to your account.
+## OFAC and transaction-risk screening
+Every deposit and withdrawal is screened by a security scanner before processing. The scanner evaluates the source or destination for OFAC sanctions exposure, illicit activity, and other wallet or transaction risks.
+The screening result becomes part of Zipper's validation and policy decision. This applies to deposits arriving at your assigned address and withdrawals leaving a Zipper vault, adding an independent transaction-risk layer before assets are minted or released.
+## Withdrawal protection
+Withdrawal security begins with on-chain checks for the request parameters, fee, destination, and your available funds. Before a withdrawal leaves custody, Zipper confirms:
+- that your account can use the available balance
+- the destination chain, address, and destination tag when required
+- the principal, fee, and maximum fee you approved
+- your permissions, MFA, and withdrawal-whitelist settings
+- the security scanner's destination-risk screening result
+- the route's status and available vault liquidity
+- a two-thirds (2/3) Zipper validator quorum
+- the Cubist C2F policy and MFA approvals required for signing.
+The withdrawal amount and fee remain reserved while the request is processed. After approval, the executor verifies the recipient and amount. The route-specific Zipped Asset is locked before the native asset leaves the source-chain vault. The executor broadcasts the signed external transaction and follows it through destination finality. After finality, Zipper burns the locked Zipped Asset.
+## Your account controls
+Withdrawal and internal transfer controls depend on whether the active account is a Main Account or Subaccount and whether a person or API key submits the request.
+### Main Account
+A Main Account uses multi-factor authentication (MFA), the External Withdrawal Whitelist, and the Internal Transfer Whitelist to protect withdrawals and transfers. When a whitelist requirement is enabled, the destination must be allowed through the Main Account's Address Book.
+API keys do not complete MFA. Each API key can be allowed or denied access to External Withdrawals and Outgoing Internal Transfers. Giving a key that access allows it to submit the request, but it does not let the key bypass an enabled whitelist.
+### Subaccount
+The Subaccount policy sets the maximum access available within the Subaccount. A member's role and any API-key permissions can restrict that access further. A member or API key can submit a withdrawal or internal transfer only when the Subaccount policy and the requester's access permit it.
+Members and API keys must also follow the Subaccount's External Withdrawal and Internal Transfer Whitelists when those requirements are enabled. Interactive actions use MFA. API-key requests do not use MFA.
+## Custody and backing
+External backing remains inside policy-controlled Zipper custody. Application services coordinate requests but do not have unrestricted authority to move vault assets.
+Approved sweeps can organize assets between controlled custody addresses, and approved withdrawals can deliver them externally. Zipper does not lend, rehypothecate, or deploy the backing into other protocols.
+Every circulating Zipped Asset remains backed one-to-one by its corresponding native asset. Separate vaults, supplies, and redemption paths for every supported asset and source chain limit exposure between assets and networks.
+See **[Vaults](https://testnet.polyester.com/docs/user-docs/zipper/vaults)** for the full custody and source-chain supply model. The **[Audits page](https://testnet.polyester.com/docs/user-docs/reference/audits)** lists published security reports and their scope.
+## Public transparency
+Vault balances, Funding Account balances, deposits, withdrawals, Zipped Asset mints and burns, internal transfers, and circulating supplies are public and can be independently viewed through **[Polyester Scan](https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows)**.
+Deposit, withdrawal, and internal transfer Flows show the connected account, amount, source, destination, fee, status, and linked transactions.
+> **Public activity, private trading data**
+>
+> Polyester Scan shows public Polyester Chain activity and account-attributed Asset Flows. It does not expose your Trading balance, orders, fills, sessions, multi-factor authentication details, private credentials, or complete financial Ledger.

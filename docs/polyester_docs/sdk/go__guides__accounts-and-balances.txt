@@ -1,0 +1,321 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/accounts-and-balances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Accounts & balances · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Accounts & balances
+Accounts & balances
+Copy page
+View as Markdown
+Open in
+Funding vs trading
+Ledger balances have separate
+funding
+and
+trading
+buckets per asset.
+An external deposit can stop in
+funding
+or continue to
+trading
+, depending on its
+route
+Spot orders spend
+trading
+Move funding → trading on-chain (or via the Polyester UI), not through a ConnectRPC balance call
+Balance component fields are scaled integer strings. Format with
+codecs.FormatLedgerU128
+import
+"
+github.com/Fabric-Labs/polyester-sdk-go/codecs
+"
+balances
+,
+err
+client
+Balances
+List
+(
+ctx
+,
+nil
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+b
+range
+balances
+Balances
+funding
+,
+err
+codecs
+FormatLedgerU128
+(
+b
+Funding
+,
+codecs
+LedgerScale
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+trading
+,
+err
+codecs
+FormatLedgerU128
+(
+b
+Trading
+,
+codecs
+LedgerScale
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+available
+,
+err
+codecs
+FormatLedgerU128
+(
+b
+Available
+,
+codecs
+LedgerScale
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+fmt
+Println
+(
+b
+AssetID
+,
+funding
+,
+trading
+,
+available
+)
+}
+Also: balance/equity history, holds, and
+Balances.Subscribe
+(
+Messages()
+). See
+Balances
+Account scope
+Pass an
+AccountScope
+/
+subAccountID
+, or set
+DefaultSubAccountID
+/
+DefaultAccountID
+on
+Config
+Subaccounts & policies
+The Go SDK exposes
+subaccount
+reads
+plus private subaccount streams.
+client.Policies
+is
+subscribe-only. Create/update/delete and membership or policy administration require the
+Polyester app/TypeScript session client.
+A subaccount-scoped
+API key
+also needs its own attached API-key policy. Permit ledger reads for
+balance reads/streams and add the required trading actions for mutations. The API-key policy and
+subaccount policy are distinct and both constrain the request.
+Profile & API keys
+client.Auth
+and
+client.APIKeys
+cover identity and key metadata. Unary reads work with an API
+key; the private administration stream requires its API-key administration permission.
+Creating
+keys is
+JWT/session-only.
+Transfer history
+client.Transfers
+lists transfer history. Mutations:
+Deposits & withdrawals
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Private realtime
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use
+Messages()
+Recv()
+Streaming
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Previous
+Streaming
+Next
+Deposits & withdrawals
+On this page
+Funding vs trading
+Account scope
+Subaccounts & policies
+Profile & API keys
+Transfer history
+Related Topics
+Share this page
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import "github.com/Fabric-Labs/polyester-sdk-go/codecs"
+
+balances, err := client.Balances.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, b := range balances.Balances {
+    funding, err := codecs.FormatLedgerU128(b.Funding, codecs.LedgerScale)
+    if err != nil { log.Fatal(err) }
+    trading, err := codecs.FormatLedgerU128(b.Trading, codecs.LedgerScale)
+    if err != nil { log.Fatal(err) }
+    available, err := codecs.FormatLedgerU128(b.Available, codecs.LedgerScale)
+    if err != nil { log.Fatal(err) }
+    fmt.Println(b.AssetID, funding, trading, available)
+}

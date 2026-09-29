@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/contracts-and-tools.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Polyester Scan provides public contract pages and a focused set of tools for exploring Chain activity. You can inspect verified source code, read public contract data, filter transactions, export tables, and view Chain statistics.
+## Verified contracts
+The **[Verified Contracts directory](https://polyesterscan.com/verified-contracts)** lets you search by name or address and filter by compiler. Each row can show the contract address, name, compiler version, balance, activity, verification time, and license information.
+Verification means the submitted source code and compiler settings match the deployed bytecode. Polyester labels can also identify trusted protocol contracts, Zipper endpoints, smart accounts, and Zipped Assets.
+> **Verification and auditing are different**
+>
+> Verified source makes a contract's code easier to inspect. An audit is a separate security review with its own deployment, scope, and report.
+## Use a contract page
+Depending on the contract, its page can include:
+- **Code** for source files, compiler settings, ABI, bytecode, and constructor arguments
+- **Read Contract** for viewing public contract data without signing a transaction
+- **Write Contract** for calling a method through a connected account
+- **Read Proxy** or **Write Proxy** when the address uses a recognized proxy.
+![Verified Funding Account contract with source match, compiler, and proxy details](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/72646b4c2bc4ca3c4700e630976ed613fdaf9ed66fa38366c11a903052febd45/source.webp)
+![Contract source viewer for TransparentUpgradeableProxy.sol](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/a6078e865b271f527d4ceeae4c3599085232fc8c3fc87e0602106a7bc41d2294/source.webp)
+Proxy pages keep the proxy address and history visible while using the current implementation for available methods.
+A write creates a real Chain transaction and can move assets or change contract state. For normal Polyester activity, use the supported product page unless a protocol guide specifically directs you to call a contract.
+## Filter and export activity
+The **[Advanced Filter](https://polyesterscan.com/advanced-filter)** narrows indexed transaction activity by type, method, date, sender, recipient, amount, and asset. You can also choose which columns appear.
+**Download Page Data** is available on many populated tables, including transactions, blocks, flows, accounts, contracts, tokens, Unified Assets, chains, and filtered activity. The download includes the current page and active filters.
+## Chain and data tools
+| Tool                                                 | What it provides                                                                       |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [Statistics](https://polyesterscan.com/stats)        | Charts for accounts, transactions, blocks, tokens, gas, contracts, and user operations |
+| [Gas Tracker](https://polyesterscan.com/gas-tracker) | Current Chain utilization and fast, normal, and slow gas estimates                     |
+| API view                                             | The read endpoint and JSON response behind supported Scan detail pages                 |
+| Settings                                             | Timezone, number and date formats, address display, density, motion, and theme         |
+Gas Tracker estimates apply to Polyester Chain. They are separate from external-chain deposit or withdrawal fees and from trading fees.
+The API button on a supported page shows the exact read URL used by the current environment. Use the linked Developer Docs for larger integrations and paginated data access.
+## Public contract data
+Contract source, methods, logs, state changes, and transaction history are public Chain information. Connecting an account lets you sign supported write actions, but it does not expose your private Polyester Trading balance, orders, permissions, or sessions.

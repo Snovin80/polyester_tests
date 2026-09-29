@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/profile.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Profile
+Profile identity reads and subscribe helpers.
+Profile is nested at `client.Auth.Profile`. The API-key-safe surface is subscribe-only:
+```go
+updates, err := client.Auth.Profile.SubscribeIdentity(ctx)
+if err != nil { log.Fatal(err) }
+defer updates.Close()
+for identity := range updates.Messages() {
+fmt.Println(
+identity.AccountID,
+identity.Username,
+identity.AvatarURL,
+identity.RootSmartAccountAddress,
+)
+break
+}
+```
+The stream does not provide a guaranteed initial profile snapshot. Use `client.Auth.Me(ctx)` for the current API-key identity and the Polyester app to manage profile fields.
+`Get`, `Update`, and username-history operations are not included because they require a JWT/session. Configure `DefaultAccountID` explicitly; do not infer it from a stream event during startup.
+Related: [Auth](https://testnet.polyester.com/docs/sdk/go/reference/auth), [Realtime](https://testnet.polyester.com/docs/sdk/go/reference/realtime).

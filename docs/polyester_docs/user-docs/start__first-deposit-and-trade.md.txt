@@ -1,0 +1,49 @@
+Источник: https://testnet.polyester.com/docs/user-docs/start/first-deposit-and-trade.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# First Deposit & Trade
+Deposit an Asset, make it available in Trading, and place your first spot Order.
+Your first trade starts with an Asset you already hold. Deposit that Asset into Polyester, make the balance available in Trading, find a market that exchanges it for the Asset you want, and place an Order. After the Order fills, the Asset you received appears in your Unified Trading Account.
+## Before you deposit
+Confirm these first:
+- [Create an account](https://testnet.polyester.com/docs/user-docs/start/create-account) so Polyester can assign a deposit address
+- [Secure your account](https://testnet.polyester.com/docs/user-docs/start/secure-account) so the owner wallet and MFA are in place
+- Confirm the selected Main Account or Subaccount so the credited balance appears there
+- Hold a [supported Asset](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) on the network you'll send from
+## Deposit, trade, and check your new balance
+This journey works whether your completed Deposit credits Funding first or goes directly to Unified Trading.
+1. Deposit an Asset
+Open [Deposit](https://testnet.polyester.com/account/deposit), select the Asset, and choose the network where it currently exists. Copy the address directly from Polyester and send the Asset from your source wallet or exchange. Include the exact memo or destination tag when one is shown.
+> Each account gets one deposit address per supported chain, not per Asset. Supported EVM networks share that EVM address. The wrong network, address, or memo can prevent a Deposit from crediting. Verify before sending.
+![Deposit dialog with selected Asset, chain, QR code, and deposit address](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/cc50ff513b6ffbc494a201c5566782e23c21b2b6e217428710d9d237a96b4e3c/source.webp)
+Wait for the required source-chain confirmations. If the completed Deposit appears in Funding, open [Transfer](https://testnet.polyester.com/account/transfer) and move the amount you want to trade into Unified Trading. If it already appears as an available Trading balance, continue to the next step.
+> Your Default Deposit Destination can be Funding or Unified Trading. You can review this setting under **Deposit Routing** on [Security](https://testnet.polyester.com/account/settings/security).
+2. Find a market for the deposited Asset
+Open [Spot Markets](https://testnet.polyester.com/markets/spot) and search for the ticker you deposited. Choose a Pair that contains both the Asset you have and the Asset you want to receive.
+![Trading screen for BTC/USDT with chart, order book, and Buy order form](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/258eb4b246a33fba3f879599e22721f5de5a8fc9434529845ed12934208c2d10/source.webp)
+> The first ticker is the Base Asset. The second is the Quote Asset. In ![BTC](https://testnet.polyester.com/icons/tokens/btc.svg) ![USDT](https://testnet.polyester.com/icons/tokens/usdt.svg) BTC/USDT , selling BTC gives you USDT, while buying BTC spends USDT.
+3. Choose Buy or Sell and place the Order
+Choose **Sell** when you hold the Base Asset and want the Quote Asset. Choose **Buy** when you hold the Quote Asset and want the Base Asset. Confirm the active account, enter the amount, select a Market or Limit Order, review the estimated total and fees, then place the Order.
+![Order detail for a filled BTC/USDT Limit Buy, with fill progress and transfers](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3b25d6c78784ac40e28d16239891ec70ee03940f49ba55ff6596a7b17476f0db/source.webp)
+> **Market or Limit?**
+>
+> A [Market Order](https://testnet.polyester.com/docs/user-docs/trade/order-types/market-order) prioritizes immediate execution within its protections. A [Limit Order](https://testnet.polyester.com/docs/user-docs/trade/order-types/limit-order) lets you control the worst execution price, but it may remain open until the market reaches that price.
+### Example: Buy BTC with a Limit Order
+You hold USDT in Unified Trading and want BTC.
+1. Open the ![BTC](https://testnet.polyester.com/icons/tokens/btc.svg) ![USDT](https://testnet.polyester.com/icons/tokens/usdt.svg) BTC/USDT market. USDT is the Quote Asset you spend, and BTC is the Base Asset you want to receive.
+2. Select **Buy**, choose a Limit Order, enter the amount of BTC, and set a Limit Price.
+3. Review the Order and place it. When it fills, the spent USDT decreases and the received BTC appears in the same Unified Trading Account.
+A filled Limit Buy shows Fill Progress at 100%, with no remaining quantity. Open the order to see the Limit Price, filled value, and the trades that completed it.
+If a Limit Order remains open, the unfilled quantity stays reserved. Cancel the remaining Order if you want to release that balance back to Unified Trading.
+4. Check the Asset you received
+After the Order fills, open your Unified Trading balance and confirm that the Asset you received is available. [Open Orders](https://testnet.polyester.com/docs/user-docs/trade/widgets/open-orders) shows any quantity still waiting to trade. [Order History](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history) and **Fills** show what executed, including the quantity and price.
+![Unified Trading Account with Total Equity, asset breakdown, and balances](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/4edfc35dc76ce84478860914e240a56f56f81a18cc61d0201cbfe619df0abe78/source.webp)
+> An accepted Order is not always a completed trade. If a Limit Order is still open or partially filled, some of its balance remains reserved until it fills or you cancel it.
+The received Asset can support another eligible Order or be transferred back to Funding when it is available and not reserved.
+Once the received Asset appears in your Unified Trading balance, you can use it in another eligible Order or transfer it to Funding for a supported withdrawal.
+## FAQ
+### Where do I start, and what do I need to use the testnet?
+Start by creating a Polyester account with a supported wallet, Google, or email. If you want to claim paper assets, connect your Discord and X accounts to your Polyester account. You don’t need an existing crypto wallet if you sign up with Google or email. The [Start Here](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester) section of the user docs guides you through protecting your account and making your first deposit and trade.
+### What features can I test now?
+You can trade spot markets, manage your orders, deposit, withdraw, and transfer. You can also customize your trading workspace with widgets, manage sub-accounts, configure account security, create API keys for trading tools, and track transactions on PolyesterScan.

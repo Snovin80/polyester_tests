@@ -1,0 +1,96 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/candles.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+`client.candles` reads and streams public spot OHLCV data. It uses the public transport, so no authentication is required. Every method takes a numeric `symbolId` and a `timeframe`.
+Supported timeframes: `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `12h`, `1d`, `1w`, `1mo`.
+Open, high, low, close, base `volume`, and quote-asset `quoteVolume` are decimal strings. Candle times are epoch **seconds** (`time` in row and columnar output, `tsSec` in the int variants).
+## Methods
+| Method             | Summary                                                          |
+| ------------------ | ---------------------------------------------------------------- |
+| `list`             | Fetch candles as row objects.                                    |
+| `listColumnar`     | Fetch candles as parallel arrays, oldest-first, for charting.    |
+| `listColumnarInts` | Same columnar series keyed by numeric `tsSec` instead of `time`. |
+| `subscribe`        | Stream row candles for a symbol and timeframe.                   |
+| `subscribeInts`    | Stream row candles parsed through the int schema.                |
+### `list(input, options?)`
+Returns a `Candle[]` of row objects. `symbolId` and `timeframe` are required; the rest narrow the range.
+```ts
+const candles = await client.candles.list({
+symbolId: 1,
+timeframe: "1h",
+limit: 200,
+});
+const latest = candles[0];
+console.log(latest.time, latest.open, latest.close, latest.volume, latest.quoteVolume);
+```
+#### `GetCandlesInput`
+| Field        | Type               | Required | Notes                                                       |
+| ------------ | ------------------ | -------- | ----------------------------------------------------------- |
+| `symbolId`   | `number`           | yes      | Positive uint32 engine symbol id (1 through 4,294,967,295). |
+| `timeframe`  | `Timeframe`        | yes      | One of the supported timeframes.                            |
+| `limit`      | `number`           | no       | Integer from 1 through 10,000.                              |
+| `startTsSec` | `number \| string` | no       | Range start, epoch seconds.                                 |
+| `endTsSec`   | `number \| string` | no       | Range end, epoch seconds.                                   |
+### `listColumnar(input, options?)`
+Returns a `CandleColumnar`: parallel arrays ordered oldest-first by bucket start time, which is the shape most charting libraries want.
+```ts
+const series = await client.candles.listColumnar({ symbolId: 1, timeframe: "5m", limit: 500 });
+// series.time[i], series.open[i], series.high[i], series.low[i], series.close[i], series.volume[i]
+// series.quoteVolume[i]
+```
+### `listColumnarInts(input, options?)`
+The same columnar series, but keyed by numeric bucket-start seconds (`tsSec`) instead of `time`.
+```ts
+const series = await client.candles.listColumnarInts({ symbolId: 1, timeframe: "1d" });
+console.log(series.tsSec.at(-1), series.close.at(-1));
+```
+### `subscribe(input)`
+Streams live row candles for one symbol and timeframe. Returns an idempotent unsubscribe function.
+```ts
+const unsubscribe = client.candles.subscribe({
+symbolId: 1,
+timeframe: "1m",
+onEvent: (candle) => console.log(candle.time, candle.close, candle.isClosed),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+`onEvent` is required. `onOpen`, `onClose`, and `onError` are optional. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+### `subscribeInts(input)`
+The same live candle channel and input as `subscribe`, parsed through the int-form row schema.
+```ts
+const unsubscribe = client.candles.subscribeInts({
+symbolId: 1,
+timeframe: "1m",
+onEvent: (candle) => console.log(candle.time, candle.close),
+});
+```
+## The `Candle` shape
+Row methods and both streams share this shape.
+```ts
+import type { Timeframe } from "@polyester/sdk";
+interface Candle {
+symbolId: number;
+timeframe: Timeframe | "unspecified";
+time: number; // bucket start, epoch seconds
+open: string; // decimal string
+high: string;
+low: string;
+close: string;
+volume: string; // base-asset volume
+quoteVolume: string; // exact quote-asset volume
+isClosed: boolean; // false while the bucket is still forming
+}
+```
+The columnar variants replace the scalar fields with arrays (`time`/`tsSec`, `open`, `high`, `low`, `close`, `volume`, `quoteVolume`) plus an optional `reference` series of the same shape.
+`quoteVolume` is the sum of execution price times execution quantity, rather than the candle close multiplied by base volume.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/typescript/guides/market-data) for the task-oriented walkthrough.
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming) for the subscription model.
+- [Market overview](https://testnet.polyester.com/docs/sdk/typescript/reference/market-overview) for per-market stats.
+- [Order book](https://testnet.polyester.com/docs/sdk/typescript/reference/order-book) for depth.
+- [Public trades](https://testnet.polyester.com/docs/sdk/typescript/reference/public-trades) for prints.

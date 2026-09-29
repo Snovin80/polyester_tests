@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/fix-sbe/getting-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Getting started
+Use Polyester's FIX session interface with binary SBE application messages.
+FIX-SBE combines institutional FIX session behavior with fixed-layout binary application messages. It is separate from tag-value FIX Classic and SBE WebSocket.
+> **Use the assigned schema**
+>
+> Generate codecs from the versioned FIX-SBE schema assigned to your session. Internal Polyester SBE schemas and the [SBE WebSocket](https://testnet.polyester.com/docs/developer-docs/sbe-websocket/getting-started) schema are different contracts.
+## When to use FIX-SBE
+Use FIX-SBE when your integration can:
+- operate persistent trading sessions
+- implement sequence, heartbeat, resend, and recovery behavior
+- generate and validate versioned SBE messages
+- complete protocol conformance and certification
+Use [FIX Classic](https://testnet.polyester.com/docs/developer-docs/fix-classic/getting-started) when compatibility with tag-value FIX tooling is more important than binary application encoding.
+## Integration flow
+1. Review the session package
+Confirm the session protocol, schema identity and version, endpoint, authentication method, enabled business workflows, and operational limits.
+2. Generate and validate codecs
+Generate codecs from the assigned schema. Validate schema identity, template identity, block length, and version before decoding application messages.
+3. Implement session behavior
+Implement authentication, heartbeat, sequence persistence, resend, reconnect, and recovery according to the session profile.
+4. Complete certification
+Run the assigned protocol, compatibility, and recovery cases before connecting the production session.
+## Recovery boundaries
+## Session recovery
+Persist protocol sequence and follow the session profile's resend and reset policy. Validate schema version again after reconnecting.
+## Application state
+Session recovery does not necessarily provide a complete trading snapshot. Reconcile application state through the assigned FIX workflow or Polyester read APIs.
+See the [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix) to compare FIX-SBE with ConnectRPC and SBE WebSocket.

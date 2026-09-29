@@ -1,0 +1,204 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/market/currency-conversion/rates
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketOverviewService
+Get Currency Conversion Rates
+Get fiat units per USD and USD per stablecoin unit, grouped with source freshness.
+Copy URL
+Method
+GET
+Path
+/v1/market/currency-conversion/rates
+Visibility
+Public endpoint
+GET
+/v1/market/currency-conversion/rates
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/market/currency-conversion/rates' \
+--header 'Accept: */*'
+Responses
+"fiat": {
+"rates": [
+"code": "value",
+"unitsPerUsd": "0.00000001"
+}
+],
+"sourceTsSec": "1735689600",
+"stale": false
+},
+"snapshotTsSec": "1735689600",
+"stablecoins": [
+"code": "value",
+"sourceTsSec": "1735689600",
+"stale": false,
+"usdPerUnit": "0.00000001"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+fiat
+object
+Complete fiat snapshot; absent until a complete snapshot has been observed.
+3 fields
+rates
+object[]
+Complete fiat rates, including USD, ordered by code.
+2 fields
+code
+string
+Supported fiat currency code.
+Example
+value
+unitsPerUsd
+string
+/^[0-9]…9]+)?$/
+Fiat currency units per 1 USD as an exact decimal string.
+Example
+0.00000001
+sourceTsSec
+string
+/^[0-9]+$/
+Shared source observation time in seconds since the Unix epoch (UTC).
+Example
+1735689600
+stale
+boolean
+True once the source observation is at least two hours old.
+Example
+false
+snapshotTsSec
+string
+/^[0-9]+$/
+Response construction time in seconds since the Unix epoch (UTC).
+Example
+1735689600
+stablecoins
+object[]
+Observed stablecoin rates ordered by code. Unobserved stablecoins are omitted.
+4 fields
+code
+string
+Supported stablecoin code (USDC or USDT).
+Example
+value
+sourceTsSec
+string
+/^[0-9]+$/
+This stablecoin's source observation time in seconds since the Unix epoch (UTC).
+Example
+1735689600
+stale
+boolean
+True once this stablecoin's source observation is at least five seconds old.
+Example
+false
+usdPerUnit
+string
+/^[0-9]…9]+)?$/
+USD per 1 stablecoin unit as an exact decimal string.
+Example
+0.00000001
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/market/currency-conversion/rates
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s363" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/market/currency-conversion/rates' \
+--header 'Accept: */*'
+Responses
+"fiat": {
+"rates": [
+"code": "value",
+"unitsPerUsd": "0.00000001"
+}
+],
+"sourceTsSec": "1735689600",
+"stale": false
+},
+"snapshotTsSec": "1735689600",
+"stablecoins": [
+"code": "value",
+"sourceTsSec": "1735689600",
+"stale": false,
+"usdPerUnit": "0.00000001"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/market/currency-conversion/rates' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "fiat": {
+    "rates": [
+      {
+        "code": "value",
+        "unitsPerUsd": "0.00000001"
+      }
+    ],
+    "sourceTsSec": "1735689600",
+    "stale": false
+  },
+  "snapshotTsSec": "1735689600",
+  "stablecoins": [
+    {
+      "code": "value",
+      "sourceTsSec": "1735689600",
+      "stale": false,
+      "usdPerUnit": "0.00000001"
+    }
+  ]
+}

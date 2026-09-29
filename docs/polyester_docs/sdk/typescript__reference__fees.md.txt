@@ -1,0 +1,49 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/fees.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+`client.fees` is the spot fee surface: the maker and taker percents a fill is charged at, for one account and market. They are effective rates: the account's VIP tier and any symbol-specific adjustment are already applied. These are the numbers to quote in a UI or estimate a cost from, not the catalog percents on [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip).
+Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Percents are decimal strings without a `%` sign (`"0.02"` is 0.02%). Maker can be negative (a rebate), in `-100` to `100`. Taker is `0` to `100`.
+## Methods
+| Method         | Summary                                                              |
+| -------------- | -------------------------------------------------------------------- |
+| `getSpotRates` | Effective maker and taker spot rates, optionally filtered by market. |
+### `getSpotRates(input?, options?)`
+Fetches a `SpotFeeRate[]` for the resolved account, ordered by `symbolId` ascending. The list is a finite snapshot, not a page. Input is optional.
+Omit `symbolIds`, or pass `[]`, to load every currently listed, non-disabled spot market. Pass up to 100 unique `symbolId` values to restrict the response. IDs must be integers from 1 through 4,294,967,295. The SDK drops duplicates before the request leaves your process.
+```ts
+await client.catalog.ensureReady();
+const rates = await client.fees.getSpotRates();
+for (const rate of rates) {
+const symbol = client.catalog.market.requirePairSymbolBySymbolId(rate.symbolId);
+console.log(symbol, rate.makerFeeRatePercent, rate.takerFeeRatePercent);
+}
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const [btc] = await client.fees.getSpotRates({
+symbolIds: [symbolId],
+account: "main",
+});
+```
+Use the catalog to turn `"BTC-USDT"` into a `symbolId`. Passing a symbol string is a validation error.
+#### `GetSpotFeeRatesInput`
+| Field       | Type           | Required | Notes                                                           |
+| ----------- | -------------- | -------- | --------------------------------------------------------------- |
+| `symbolIds` | `number[]`     |          | Market ids. Max 100 unique values. Default `[]` (every market). |
+| `account`   | `AccountScope` |          | Scope override.                                                 |
+#### `SpotFeeRate`
+`vipTier` is the tier the row was resolved at (0 through 10), so you can show which tier earned a rate without a second call to [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip).
+```ts
+interface SpotFeeRate {
+symbolId: number;
+makerFeeRatePercent: string; // "0.02" is 0.02%; may be negative (rebate)
+takerFeeRatePercent: string; // 0 to 100
+vipTier: number; // 0 through 10
+}
+```
+## Related
+- [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip) to read the public tier catalog or the caller's root-account qualification.
+- [Trading](https://testnet.polyester.com/docs/sdk/typescript/guides/trading) to place orders that fill at these rates.
+- [Trading fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees) for the published schedule and fee-asset rules.

@@ -1,0 +1,207 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketoverview.v1.MarketOverviewService
+GetSpotVolumeHistory
+Get aligned pair-level and total trailing-24h USD volume, sampled every
+15 minutes over the latest day. Unavailable valuations fail the request.
+Copy URL
+Method
+POST
+Path
+marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory
+Service
+marketoverview.v1.MarketOverviewService
+Visibility
+Public endpoint
+POST
+marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"symbolId": [
+1
+]
+}'
+Responses
+"bucket": "1m",
+"endTsSec": 1735689600,
+"pairs": [
+"symbolId": 1,
+"volumeUsdScaled": [
+"123456"
+]
+}
+],
+"points": 1,
+"startTsSec": 1735689600,
+"totalVolumeUsdScaled": [
+"123456"
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketoverview.v1.GetSpotVolumeHistoryRequest
+Response
+marketoverview.v1.GetSpotVolumeHistoryResponse
+Request body
+Form
+JSON
+Example
+symbolId
+integer[] (int32)
+max 2000 items, unique
+Pair IDs from GetSpotConfig; empty selects every configured pair separately.
+At most 2000 distinct positive IDs. Unknown IDs are rejected. If the full
+universe exceeds 2000 pairs, specify a filter; results are never truncated.
+Add item
+Response
+Form
+JSON
+bucket
+string
+Sampling interval between points; currently always "15m".
+startTsSec
+integer (int32)
+First sample timestamp in seconds since Unix epoch (UTC), inclusive.
+endTsSec
+integer (int32)
+Last sample timestamp in seconds since Unix epoch (UTC), inclusive.
+points
+integer (int32)
+Number of aligned values in every pair array and the total array; always 97.
+pairs
+object[]
+Pairs ordered by ascending symbol_id; at most 2000, each included once.
+2 fields
+symbolId
+integer (int32)
+Stable numeric pair ID; clients may group these series by base asset.
+volumeUsdScaled
+string[] (sint64)
+Trailing-24h USD amounts scaled by 1e6, oldest first. Exactly points values,
+aligned with the shared response grid. Zero means no executed trades in
+the window. USD values round down once per contributing 15-minute bucket.
+totalVolumeUsdScaled
+string[] (sint64)
+Sum across selected pairs, USD scaled by 1e6. Exactly points values,
+oldest first. REST renders decimal strings in totalVolumeUsd.
+Do not sum overlapping trailing-24h samples to obtain period traded volume.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+bad-request
+400
+Bad Request
+Bad request.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Service Unavailable
+Service unavailable.
+upstream-error
+502
+Upstream Error
+Upstream error.
+POST
+marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s370" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"symbolId": [
+1
+]
+}'
+Responses
+"bucket": "1m",
+"endTsSec": 1735689600,
+"pairs": [
+"symbolId": 1,
+"volumeUsdScaled": [
+"123456"
+]
+}
+],
+"points": 1,
+"startTsSec": 1735689600,
+"totalVolumeUsdScaled": [
+"123456"
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetSpotVolumeHistory' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "symbolId": [
+    1
+  ]
+}'
+
+---
+
+{
+  "bucket": "1m",
+  "endTsSec": 1735689600,
+  "pairs": [
+    {
+      "symbolId": 1,
+      "volumeUsdScaled": [
+        "123456"
+      ]
+    }
+  ],
+  "points": 1,
+  "startTsSec": 1735689600,
+  "totalVolumeUsdScaled": [
+    "123456"
+  ]
+}

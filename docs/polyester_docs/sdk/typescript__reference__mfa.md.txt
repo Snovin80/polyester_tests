@@ -1,0 +1,168 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/mfa.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+`client.mfa` manages multi-factor enrollment, challenges, recovery codes, session elevation, and fresh step-up proofs. Every method is authenticated. These calls need a wallet session. An API key gets `AuthenticationError`.
+Two flows dominate this surface. Enrollment adds a factor (an authenticator app or a passkey), returns one-time recovery codes, and can return MFA-elevated session details and an access token. Challenges prove possession of a factor to either elevate your session (`sessionElevation`) or produce a short-lived `stepUpToken` for one protected action (`freshStepUp`). See the [authentication model](https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model) for how these tokens fit together.
+## Methods
+| Method                        | Summary                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------- |
+| `listFactors`                 | List enrolled factors and whether recovery codes exist.                            |
+| `beginTotpEnrollment`         | Start authenticator-app enrollment (secret + otpauth URI).                         |
+| `finishTotpEnrollment`        | Verify the first code, activate, and return recovery codes plus elevation details. |
+| `beginPasskeyEnrollment`      | Start passkey registration.                                                        |
+| `finishPasskeyEnrollment`     | Verify the credential, activate, and return recovery codes plus elevation details. |
+| `beginChallenge`              | Start a challenge for elevation or step-up.                                        |
+| `verifyTotpChallenge`         | Complete a challenge with an authenticator code.                                   |
+| `finishPasskeyChallenge`      | Complete a challenge with a passkey response.                                      |
+| `verifyRecoveryCodeChallenge` | Complete a challenge with a recovery code.                                         |
+| `updateFactor`                | Rename an enrolled factor.                                                         |
+| `deleteFactor`                | Remove an enrolled factor.                                                         |
+| `regenerateRecoveryCodes`     | Rotate recovery codes (requires step-up).                                          |
+| `claimFreshStepUp`            | Bind a step-up proof to one protected request.                                     |
+| `consumeFreshStepUp`          | Mark a claimed proof used after the request succeeds.                              |
+| `releaseFreshStepUp`          | Release a claimed proof when the request is abandoned.                             |
+### `listFactors(options?)`
+Returns the caller's enrolled factors, oldest first, and whether unused recovery codes exist.
+```ts
+const { factors, hasRecoveryCodes } = await client.mfa.listFactors();
+for (const factor of factors) {
+console.log(factor.factorId, factor.factorType, factor.label);
+}
+```
+## TOTP enrollment
+### `beginTotpEnrollment(input, options?)`
+Starts an authenticator-app enrollment and returns the `secret`, a QR-compatible `otpauthUri`, an `enrollmentId`, and an expiry. Show the URI as a QR code and hold the `enrollmentId` for the finish step.
+```ts
+const enrollment = await client.mfa.beginTotpEnrollment({ label: "1Password" });
+// Render enrollment.otpauthUri as a QR code, or show enrollment.secret for manual entry.
+```
+### `finishTotpEnrollment(input, options?)`
+Verifies the first code from the authenticator, activates the factor, and returns one-time `recoveryCodes`. The codes appear only in this response, so surface them to the user now. The result can also include MFA-elevated `session`, `accessToken`, and `accessTokenExpiresAtMs`.
+```ts
+const { factor, recoveryCodes, session, accessToken, accessTokenExpiresAtMs } =
+await client.mfa.finishTotpEnrollment({
+enrollmentId: enrollment.enrollmentId,
+code: "123456",
+});
+// Show recoveryCodes once; they cannot be retrieved again.
+```
+## Passkey enrollment
+### `beginPasskeyEnrollment(input, options?)`
+Starts passkey registration and returns the WebAuthn `publicKey` creation options plus an `enrollmentId`. Pass `publicKey` to the browser credential API.
+```ts
+const enrollment = await client.mfa.beginPasskeyEnrollment({ label: "MacBook" });
+const credential = await navigator.credentials.create({
+publicKey: enrollment.publicKey as unknown as PublicKeyCredentialCreationOptions,
+});
+```
+### `finishPasskeyEnrollment(input, options?)`
+Verifies the registration response, activates the factor, and returns one-time `recoveryCodes`. The result can also include MFA-elevated `session`, `accessToken`, and `accessTokenExpiresAtMs`.
+```ts
+const { factor, recoveryCodes, session, accessToken, accessTokenExpiresAtMs } =
+await client.mfa.finishPasskeyEnrollment({
+enrollmentId: enrollment.enrollmentId,
+credential, // serialized WebAuthn credential
+});
+```
+## Challenges
+### `beginChallenge(input, options?)`
+Starts a challenge and returns a `challengeId`, the `allowedFactorTypes`, and passkey request options when available. `purpose` decides what completing the challenge yields: `"sessionElevation"` raises your session level, `"freshStepUp"` mints a one-shot `stepUpToken`.
+```ts
+const challenge = await client.mfa.beginChallenge({ purpose: "freshStepUp" });
+console.log(challenge.allowedFactorTypes); // e.g. ["totp", "passkey"]
+```
+### `verifyTotpChallenge(input, options?)` / `finishPasskeyChallenge(input, options?)` / `verifyRecoveryCodeChallenge(input, options?)`
+Complete an open challenge and return a `CompleteMfaChallengeResult`. Depending on the challenge `purpose`, the result carries an `accessToken` (session elevation) or a `stepUpToken` (fresh step-up), each with its own expiry.
+```ts
+// Authenticator code
+const result = await client.mfa.verifyTotpChallenge({
+challengeId: challenge.challengeId,
+code: "123456",
+});
+// Passkey response
+await client.mfa.finishPasskeyChallenge({ challengeId: challenge.challengeId, credential });
+// Recovery code fallback
+await client.mfa.verifyRecoveryCodeChallenge({
+challengeId: challenge.challengeId,
+recoveryCode: "ABCD-EFGH",
+});
+console.log(result.stepUpToken); // set when purpose was "freshStepUp"
+```
+## Managing factors and recovery codes
+### `updateFactor(input, options?)`
+Renames a factor. An empty `label` clears the display name.
+```ts
+await client.mfa.updateFactor({ factorId: "mf_abc...", label: "Work phone" });
+```
+### `deleteFactor(input, options?)`
+Removes an enrolled factor. Backend policy may require a fresh step-up for this protected action.
+```ts
+await client.mfa.deleteFactor({ factorId: "mf_abc..." });
+```
+### `regenerateRecoveryCodes(input?, options?)`
+Rotates recovery codes and returns the new one-time set. This requires a completed step-up. The new codes are only available in this response.
+```ts
+const { recoveryCodes } = await client.mfa.regenerateRecoveryCodes();
+```
+## Fresh step-up proof lifecycle
+For protected actions that need a proof bound to a single request, `claimFreshStepUp`, `consumeFreshStepUp`, and `releaseFreshStepUp` manage a claimed proof. Claim before the protected call, consume after it succeeds, release if you abandon it.
+```ts
+const claim = await client.mfa.claimFreshStepUp({
+requestId: "req-123",
+actionType: "api_key.create",
+subject: "ak_pending",
+});
+try {
+await doProtectedThing();
+await client.mfa.consumeFreshStepUp({
+stepUpId: claim.stepUpId,
+requestId: "req-123",
+actionType: "api_key.create",
+subject: "ak_pending",
+claimNonce: claim.claimNonce,
+});
+} catch (err) {
+await client.mfa.releaseFreshStepUp({
+stepUpId: claim.stepUpId,
+requestId: "req-123",
+actionType: "api_key.create",
+subject: "ak_pending",
+claimNonce: claim.claimNonce,
+reason: "request failed",
+});
+throw err;
+}
+```
+## Full step-up example
+Many mutations (creating an API key, deleting a factor) throw `StepUpRequiredError` when the account requires fresh proof. Catch it, run a `freshStepUp` challenge, and retry the original call with the resulting token.
+```ts
+import { StepUpRequiredError } from "@polyester/sdk";
+async function withStepUp
+(run: (opts?: { stepUpToken: string }) => Promise
+): Promise
+try {
+return await run();
+} catch (err) {
+if (!(err instanceof StepUpRequiredError)) throw err;
+const challenge = await client.mfa.beginChallenge({ purpose: "freshStepUp" });
+const result = await client.mfa.verifyTotpChallenge({
+challengeId: challenge.challengeId,
+code: await promptForTotpCode(),
+});
+if (!result.stepUpToken) throw new Error("step-up did not return a token");
+return run({ stepUpToken: result.stepUpToken });
+}
+}
+// Usage
+await withStepUp((opts) =>
+client.apiKeys.create({ label: "bot", publicKeyEd25519: publicKey.bytes }, opts)
+);
+```
+## Related
+- [Authentication model](https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model) for session levels and step-up tokens.
+- [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling) for `StepUpRequiredError` and retry patterns.
+- [API keys](https://testnet.polyester.com/docs/sdk/typescript/reference/api-keys) for a mutation that commonly triggers step-up.
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for the error type reference.

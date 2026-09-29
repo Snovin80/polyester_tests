@@ -1,0 +1,794 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/orders.v1.OrdersService/BatchReplaceOrders
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+orders.v1.OrdersService
+BatchReplaceOrders
+Replaces same-symbol orders and returns after authoritative admission.
+Copy URL
+Method
+POST
+Path
+orders.v1.OrdersService/BatchReplaceOrders
+Service
+orders.v1.OrdersService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+orders.v1.OrdersService/BatchReplaceOrders
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersService/BatchReplaceOrders' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"items": [
+"newAttachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+}
+},
+"newClientOrderId": "cli-ord-20250101-001",
+"newPriceTicks": "5000000",
+"newQtyScaled": "100000",
+"orderId": "9876543210123"
+}
+],
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "6789012345678",
+"symbolId": 1
+}'
+Responses
+"acceptedCount": 1,
+"acceptedTs": "2025-01-01T00:00:00Z",
+"acceptedTsNs": "1735689600000000000",
+"batchRequestId": "1",
+"rejectedCount": 1,
+"results": [
+"actionTaken": "AMENDED",
+"clientOrderId": "cli-ord-20250101-001",
+"code": "value",
+"error": {
+"code": "ERROR_CODE_BAD_REQUEST",
+"rateLimit": {
+"limit": "100",
+"operationId": "value",
+"policyClass": "AUTH_PUBLIC",
+"policyVersion": "1",
+"reason": "QUOTA_EXCEEDED",
+"refillModel": "CONTINUOUS",
+"remaining": "1",
+"retryAfterMs": "1",
+"scope": "CLIENT_IP"
+},
+"violations": [
+"fieldPath": "value",
+"message": "value",
+"ruleId": "value"
+}
+]
+},
+"itemIndex": 1,
+"oldOrderId": "9876543210123",
+"replacementOrderId": "9876543210123",
+"status": "BATCH_REPLACE_ITEM_ADMISSION_STATUS_ADMITTED"
+}
+],
+"status": "BATCH_REPLACE_ADMISSION_STATUS_ADMITTED"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+orders.v1.BatchReplaceOrdersRequest
+Response
+orders.v1.BatchReplaceOrdersResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+Target sub-account numeric ID. When omitted, uses caller's root account.
+symbolId
+integer (int32)
+> 0
+Trading symbol shared by every replacement.
+requestId
+string
+1-64 chars
+/^[A-Za…:/-]+$/
+Client idempotency key (required).
+items
+object[]
+1-50 items
+Replacement items.
+Edit in JSON
+Response
+Form
+JSON
+batchRequestId
+string (fixed64)
+Server-issued opaque identity used for status and private realtime correlation.
+status
+enum
+Aggregate admission status.
+BATCH_REPLACE_ADMISSION_STATUS_ADMITTED
+BATCH_REPLACE_ADMISSION_STATUS_PARTIALLY_ADMITTED
+BATCH_REPLACE_ADMISSION_STATUS_REJECTED
+results
+object[]
+Per-item admission results in request order.
+8 fields
+itemIndex
+integer (int32)
+Zero-based index in the request.
+status
+enum
+Admission result for this item.
+BATCH_REPLACE_ITEM_ADMISSION_STATUS_ADMITTED
+BATCH_REPLACE_ITEM_ADMISSION_STATUS_REJECTED
+oldOrderId
+string (fixed64)
+Original order targeted by the replacement.
+replacementOrderId
+string (fixed64)
+Assigned successor order ID. Zero for cancel-only outcomes or rejection before assignment.
+clientOrderId
+string
+Client order ID assigned to the successor when available.
+code
+string
+Stable rejection code. Empty for admitted items.
+error
+object
+Structured rejection details. Present for rate-limit guidance and other typed failures.
+3 fields
+code
+enum
+Stable error code matching the REST problem+json "code" field.
+ERROR_CODE_BAD_REQUEST
+ERROR_CODE_INVALID_ARGUMENT
+ERROR_CODE_INSUFFICIENT_FUNDS
+ERROR_CODE_UNKNOWN_SYMBOL
+ERROR_CODE_BAD_PRICE
+ERROR_CODE_BAD_QTY
+ERROR_CODE_MIN_NOTIONAL
+ERROR_CODE_QTY_STEP_SIZE
+ERROR_CODE_CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+ERROR_CODE_UNAVAILABLE
+ERROR_CODE_UNAUTHENTICATED
+ERROR_CODE_PERMISSION_DENIED
+ERROR_CODE_NOT_FOUND
+ERROR_CODE_UPSTREAM_ERROR
+ERROR_CODE_FEE_ASSET_NOT_ALLOWED
+ERROR_CODE_PAIR_DISABLED
+ERROR_CODE_ORDER_UNKNOWN
+ERROR_CODE_INTERNAL_ERROR
+ERROR_CODE_SUBACCOUNT_INACTIVE
+ERROR_CODE_POLICY_MARKET_DENY
+ERROR_CODE_POLICY_MAX_NOTIONAL
+ERROR_CODE_POLICY_TRADING_HALTED
+ERROR_CODE_POLICY_SPOT_TRADE_DENY
+ERROR_CODE_API_KEY_ROOT_SCOPE_ONLY
+ERROR_CODE_API_KEY_SUB_SCOPE_ONLY
+ERROR_CODE_API_KEY_SUBACCOUNT_MISMATCH
+ERROR_CODE_API_KEY_POLICY_REQUIRED
+ERROR_CODE_API_KEY_UNKNOWN
+ERROR_CODE_API_KEY_MARKET_DENY
+ERROR_CODE_PRICE_TICK_SIZE
+ERROR_CODE_MIN_QTY
+ERROR_CODE_POST_ONLY_LIMIT_ONLY
+ERROR_CODE_BATCH_TOO_LARGE
+ERROR_CODE_POLICY_MAX_OPEN_ORDERS
+ERROR_CODE_MODIFICATION_REQUIRES_REPLACE
+ERROR_CODE_CONFLICT_IDEMPOTENCY_KEY_REUSE
+ERROR_CODE_MARKET_PRICE_UNAVAILABLE
+ERROR_CODE_PAIR_NOT_LISTED_YET
+ERROR_CODE_PAIR_DELISTED
+ERROR_CODE_PAIR_CANCEL_ONLY
+ERROR_CODE_PAIR_POST_ONLY
+ERROR_CODE_PAIR_REDUCE_ONLY
+ERROR_CODE_RISK_LIMIT
+ERROR_CODE_MARKET_HALTED
+ERROR_CODE_ACCOUNT_UNKNOWN
+ERROR_CODE_POST_ONLY_CROSS
+ERROR_CODE_REDUCE_ONLY_BLOCKED
+ERROR_CODE_PRICE_BAND_VIOLATION
+ERROR_CODE_MARKET_CAP_VIOLATION
+ERROR_CODE_EMPTY_BOOK
+ERROR_CODE_FOK_INSUFFICIENT_LIQUIDITY
+ERROR_CODE_ORDER_ALREADY_TERMINAL
+ERROR_CODE_TRIGGER_PRICE_INVALID
+ERROR_CODE_TRIGGER_PRICE_SOURCE_UNSUPPORTED
+ERROR_CODE_TRAILING_DISTANCE_INVALID
+ERROR_CODE_TRIGGER_NOT_FOUND
+ERROR_CODE_TRIGGER_CANCEL_REJECTED
+ERROR_CODE_TRIGGER_STATUS_INVALID
+ERROR_CODE_TRIGGER_NOT_MODIFIABLE
+ERROR_CODE_CONFLICT_DUPLICATE_CLIENT_TRIGGER_ID
+ERROR_CODE_MAX_SLIPPAGE_INVALID
+ERROR_CODE_STALE_QUOTE
+ERROR_CODE_VALIDATION_ERROR
+ERROR_CODE_OVERLOADED
+ERROR_CODE_MAX_QUOTE_DEBIT_TOO_SMALL
+ERROR_CODE_RATE_LIMIT_EXCEEDED
+ERROR_CODE_SUBACCOUNT_READ_FORBIDDEN
+ERROR_CODE_POLICY_SPOT_READ_DENY
+ERROR_CODE_API_KEY_SPOT_READ_DENY
+ERROR_CODE_CANCEL_REQUEST_EXPIRED
+violations
+object[]
+Field-level validation failures. Empty for non-validation domain errors.
+3 fields
+fieldPath
+string
+Protobuf field path relative to the request, using canonical field names.
+ruleId
+string
+Stable validation rule identifier suitable for programmatic matching.
+message
+string
+Human-readable explanation of the violation.
+rateLimit
+object
+Structured quota state. Present only for rate-limit rejections.
+9 fields
+reason
+enum
+Machine-readable failure reason.
+QUOTA_EXCEEDED
+AUTHORITY_UNAVAILABLE
+limit
+string (uint64)
+Active weighted quota. Present for quota-exhaustion responses.
+remaining
+string (uint64)
+Weighted capacity remaining when the request was rejected.
+retryAfterMs
+string (uint64)
+Minimum relative delay before retrying, in milliseconds.
+policyVersion
+string (uint64)
+Policy version used for the decision, when available.
+operationId
+string
+Stable operation identifier shared by all aliases of the same action.
+policyClass
+enum
+Mutable quota family used for the decision.
+AUTH_PUBLIC
+TRADING_PLACE
+TRADING_CANCEL
+TRADING_READ
+ACCOUNT_ADMIN
+PUBLIC_READ
+ACCOUNT_SECURITY
+DEPOSIT_CREATE
+INTERNAL_TRANSFER
+WITHDRAW_SUBMIT
+WITHDRAW_VALIDATE
+GUARD_SIGN
+SOCIAL_PROVIDER
+scope
+enum
+Caller dimension that owns the exhausted capacity.
+CLIENT_IP
+API_KEY
+ACCOUNT
+SUBACCOUNT
+CONNECTION
+SERVICE
+REGION
+SYMBOL
+AUTH_SUBJECT
+refillModel
+enum
+Refill behavior used by the active limiter.
+CONTINUOUS
+FIXED_WINDOW
+ROLLING_WINDOW
+actionTaken
+enum
+REPLACED admits a successor. AMENDED cancels the original order's remaining quantity
+without a successor; keep tracking old_order_id until its terminal state is confirmed.
+Unspecified for rejected items.
+AMENDED
+REPLACED
+acceptedCount
+integer (int32)
+Number of items admitted and handed to execution.
+rejectedCount
+integer (int32)
+Number of items rejected before execution handoff.
+acceptedTs
+string (date-time)
+Server acceptance timestamp.
+acceptedTsNs
+string (uint64)
+Server acceptance timestamp as epoch nanoseconds.
+Possible errors
+Possible errors: 70
+Key
+Status
+Error
+When
+account-unknown
+400
+Account Unknown
+Account not found.
+api-key-market-deny
+403
+API Key Market Deny
+API key policy does not allow trading this pair.
+api-key-policy-required
+400
+API Key Policy Required
+This API key must have a policy attached before it can be used for trading.
+api-key-root-scope-only
+400
+API Key Root Scope Only
+This API key is scoped to the master account and cannot trade on sub-accounts.
+api-key-subaccount-mismatch
+400
+API Key Subaccount Mismatch
+This API key is scoped to a different sub-account than the one requested.
+api-key-sub-scope-only
+400
+API Key Sub Scope Only
+This API key is scoped to a specific sub-account and cannot trade on the master account.
+api-key-unknown
+400
+API Key Unknown
+API key referenced in the request could not be resolved by the Orders service.
+bad-price
+400
+Bad Price
+Price is invalid.
+bad-qty
+400
+Bad Quantity
+Quantity is invalid.
+bad-request
+400
+Bad Request
+Invalid request payload.
+batch-too-large
+400
+Batch Too Large
+Batch size exceeds the maximum allowed for this operation.
+cancel-request-expired
+400
+Cancel Request Expired
+Cancel request expired before admission. Use a fresh request ID for a new cancellation.
+conflict-duplicate-client-order-id
+409
+Conflict: Duplicate Client Order ID
+Duplicate client order ID.
+conflict-duplicate-client-trigger-id
+409
+Conflict: Duplicate Client Trigger ID
+Duplicate client trigger ID.
+conflict-idempotency-key-reuse
+409
+Conflict: Idempotency Key Reused
+Idempotency key was already used with a different request payload.
+empty-book
+400
+Empty Book
+Market order cannot execute because the book is empty.
+fee-asset-not-allowed
+400
+Fee Source Not Allowed
+Fee source not permitted for this pair/side.
+fok-insufficient-liquidity
+400
+FOK Insufficient Liquidity
+FOK order cannot be fully filled with available liquidity.
+insufficient-funds
+400
+Insufficient Funds
+Insufficient funds.
+internal-error
+500
+Internal Error
+Internal error.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+market-cap-violation
+400
+Market Cap Violation
+Order violates market-cap limits.
+market-halted
+400
+Market Halted
+Market is halted.
+market-price-unavailable
+503
+Market Price Unavailable
+Cannot reserve MARKET BUY because no reference price is available.
+max-quote-debit-too-small
+400
+Max Quote Debit Too Small
+Max quote debit is too small to resolve one valid order step.
+max-slippage-invalid
+400
+Max Slippage Invalid
+Maximum slippage is invalid.
+min-notional
+400
+Min Notional
+Order notional is below the minimum allowed.
+min-qty
+400
+Min Quantity
+Order quantity is below the minimum allowed.
+modification-requires-replace
+400
+Modification Requires Replace
+Modify request in AMEND_ONLY mode requires replace semantics.
+not-found
+404
+Not Found
+Not found.
+order-already-terminal
+400
+Order Already Terminal
+Client order ID refers to an already terminal order.
+order-unknown
+404
+Order Unknown
+Order not found.
+overloaded
+400
+Service Overloaded
+Batch replace admission capacity is temporarily exhausted.
+pair-cancel-only
+400
+Pair Cancel Only
+Pair is in cancel-only mode; only cancellations are allowed.
+pair-delisted
+400
+Pair Delisted
+Pair has been delisted.
+pair-disabled
+400
+Pair Disabled
+Pair is temporarily disabled.
+pair-not-listed-yet
+400
+Pair Not Listed Yet
+Pair is not listed yet.
+pair-post-only
+400
+Pair Post Only
+Pair is in post-only mode; submit with post_only=true.
+pair-reduce-only
+400
+Pair Reduce Only
+Pair is in reduce-only mode; new spot orders are not allowed.
+permission-denied
+403
+Permission Denied
+Permission denied.
+policy-market-deny
+403
+Policy Market Deny
+Sub-account policy does not allow trading this pair.
+policy-max-notional
+400
+Policy Max Notional
+Order notional exceeds the maximum allowed for this sub-account.
+policy-max-open-orders
+400
+Policy Max Open Orders
+Sub-account policy maximum number of open orders has been reached.
+policy-spot-trade-deny
+403
+Spot Trading Denied
+Effective policy does not allow spot trading for this API key or sub-account.
+policy-trading-halted
+400
+Trading Halted
+Trading is halted for this sub-account.
+post-only-cross
+400
+Post-Only Cross
+Post-only order would cross the book.
+post-only-limit-only
+400
+Post-Only Limit Only
+Post-only is only supported for LIMIT orders.
+price-band-violation
+400
+Price Band Violation
+Order price violates price band limits.
+price-tick-size
+400
+Price Tick Size
+Price must align with the tick size.
+qty-step-size
+400
+Quantity Step Size
+Quantity must align with the step size.
+rate-limit-exceeded
+400
+Rate Limit Exceeded
+Order-admission rate limit exceeded.
+reduce-only-blocked
+400
+Reduce-Only Blocked
+Order is blocked by reduce-only constraints.
+request-too-large
+400
+Request Too Large
+Request body too large.
+risk-limit
+400
+Risk Limit Exceeded
+Order would exceed account risk limits.
+role-spot-trade-deny
+403
+Spot Trading Role Denied
+Your role on this sub-account is read-only for spot trading.
+stale-quote
+400
+Stale Quote
+Client reference price is stale relative to server market data.
+subaccount-inactive
+400
+Sub-account Inactive
+Sub-account is inactive (disabled or deleted).
+trailing-distance-invalid
+400
+Trailing Distance Invalid
+Trailing stop distance is invalid.
+trailing-stop-order-type-unsupported
+400
+Trailing Stop Order Type Unsupported
+Trailing stop attached to an order only supports MARKET child orders in v1.
+trigger-cancel-rejected
+400
+Trigger Cancel Rejected
+Trigger cannot be canceled in its current state.
+trigger-not-found
+404
+Trigger Not Found
+Trigger not found.
+trigger-not-modifiable
+400
+Trigger Not Modifiable
+Trigger does not support this lifecycle operation.
+trigger-price-invalid
+400
+Trigger Price Invalid
+Trigger price is invalid.
+trigger-price-source-unsupported
+400
+Trigger Price Source Unsupported
+Trigger price source not supported.
+trigger-status-invalid
+400
+Trigger Status Invalid
+Trigger cannot perform this action in its current status.
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+unavailable
+503
+Service Unavailable
+Service temporarily unavailable.
+unknown-symbol
+400
+Unknown Symbol
+Unknown symbol.
+upstream-error
+502
+Upstream Error
+Upstream error.
+validation-error
+400
+Validation Error
+Request validation failed.
+POST
+orders.v1.OrdersService/BatchReplaceOrders
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s495" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersService/BatchReplaceOrders' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"items": [
+"newAttachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+}
+},
+"newClientOrderId": "cli-ord-20250101-001",
+"newPriceTicks": "5000000",
+"newQtyScaled": "100000",
+"orderId": "9876543210123"
+}
+],
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "6789012345678",
+"symbolId": 1
+}'
+Responses
+"acceptedCount": 1,
+"acceptedTs": "2025-01-01T00:00:00Z",
+"acceptedTsNs": "1735689600000000000",
+"batchRequestId": "1",
+"rejectedCount": 1,
+"results": [
+"actionTaken": "AMENDED",
+"clientOrderId": "cli-ord-20250101-001",
+"code": "value",
+"error": {
+"code": "ERROR_CODE_BAD_REQUEST",
+"rateLimit": {
+"limit": "100",
+"operationId": "value",
+"policyClass": "AUTH_PUBLIC",
+"policyVersion": "1",
+"reason": "QUOTA_EXCEEDED",
+"refillModel": "CONTINUOUS",
+"remaining": "1",
+"retryAfterMs": "1",
+"scope": "CLIENT_IP"
+},
+"violations": [
+"fieldPath": "value",
+"message": "value",
+"ruleId": "value"
+}
+]
+},
+"itemIndex": 1,
+"oldOrderId": "9876543210123",
+"replacementOrderId": "9876543210123",
+"status": "BATCH_REPLACE_ITEM_ADMISSION_STATUS_ADMITTED"
+}
+],
+"status": "BATCH_REPLACE_ADMISSION_STATUS_ADMITTED"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/orders.v1.OrdersService/BatchReplaceOrders' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "items": [
+    {
+      "newAttachedRisk": {
+        "oco": false,
+        "stopLoss": {
+          "child": {
+            "marketIoc": {}
+          },
+          "triggerPriceTicks": "5000000"
+        },
+        "takeProfit": {
+          "child": {
+            "marketIoc": {}
+          },
+          "triggerPriceTicks": "5000000"
+        }
+      },
+      "newClientOrderId": "cli-ord-20250101-001",
+      "newPriceTicks": "5000000",
+      "newQtyScaled": "100000",
+      "orderId": "9876543210123"
+    }
+  ],
+  "requestId": "request_01J0EXAMPLE",
+  "subaccountId": "6789012345678",
+  "symbolId": 1
+}'
+
+---
+
+{
+  "acceptedCount": 1,
+  "acceptedTs": "2025-01-01T00:00:00Z",
+  "acceptedTsNs": "1735689600000000000",
+  "batchRequestId": "1",
+  "rejectedCount": 1,
+  "results": [
+    {
+      "actionTaken": "AMENDED",
+      "clientOrderId": "cli-ord-20250101-001",
+      "code": "value",
+      "error": {
+        "code": "ERROR_CODE_BAD_REQUEST",
+        "rateLimit": {
+          "limit": "100",
+          "operationId": "value",
+          "policyClass": "AUTH_PUBLIC",
+          "policyVersion": "1",
+          "reason": "QUOTA_EXCEEDED",
+          "refillModel": "CONTINUOUS",
+          "remaining": "1",
+          "retryAfterMs": "1",
+          "scope": "CLIENT_IP"
+        },
+        "violations": [
+          {
+            "fieldPath": "value",
+            "message": "value",
+            "ruleId": "value"
+          }
+        ]
+      },
+      "itemIndex": 1,
+      "oldOrderId": "9876543210123",
+      "replacementOrderId": "9876543210123",
+      "status": "BATCH_REPLACE_ITEM_ADMISSION_STATUS_ADMITTED"
+    }
+  ],
+  "status": "BATCH_REPLACE_ADMISSION_STATUS_ADMITTED"
+}

@@ -1,0 +1,74 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/errors.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Every SDK-raised failure extends `PolyesterError`. The Python tree is flatter than TypeScript’s `TransientError` / `RequestError` hierarchy, classify with `isinstance` and, for MFA control flow, structured auth codes.
+For usage patterns see the [Error handling guide](https://testnet.polyester.com/docs/sdk/python/guides/error-handling).
+## Hierarchy
+```text
+PolyesterError
+├── PolyesterAuthError
+├── PolyesterValidationError
+├── PolyesterResponseContractError
+├── PolyesterTransportError
+│   ├── PolyesterRateLimitError      # .retry_after: float | None
+│   └── PolyesterServerError
+├── PolyesterApiError                # .code, .metadata, .raw
+│   └── PolyesterRouteNotFoundError  # .procedure
+└── PolyesterRealtimeError
+└── PolyesterRealtimeOverflowError
+```
+## Class notes
+| Class                            | When                                                                          |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| `PolyesterAuthError`             | Missing/rejected credentials; realtime HTTP errors include structured context |
+| `PolyesterValidationError`       | Bad SDK input (shape, enums, `post_only` misuse, precision)                   |
+| `PolyesterResponseContractError` | Successful mutation response is empty, malformed, or internally inconsistent  |
+| `PolyesterTransportError`        | Network / timeout / transport failures, usually retryable with backoff        |
+| `PolyesterRateLimitError`        | Rate limited; `retry_after` is optional and usually absent on Connect errors  |
+| `PolyesterServerError`           | Backend 5xx                                                                   |
+| `PolyesterApiError`              | Structured Connect/API error with optional `code`                             |
+| `PolyesterRouteNotFoundError`    | Gateway has no route for the RPC (incomplete env)                             |
+| `PolyesterRealtimeError`         | Realtime connect / subscribe / decode failures                                |
+| `PolyesterRealtimeOverflowError` | Consumer too slow; subscription failed closed                                 |
+There is no separate `CatalogConversionError` / `CatalogLookupError` class tree like TypeScript. Catalog and precision failures typically surface as `PolyesterValidationError` or API errors.
+`is_retryable_error(err)` identifies failures that may succeed after backoff. `PolyesterResponseContractError` is deliberately non-retryable because an immediate replay is not safe, while `mutation_outcome_unknown(err)` returns `True`: the server accepted the RPC but returned an unusable success response. Reconcile first and reuse the original request identity.
+`PolyesterRateLimitError` can also represent exhausted local signing-timestamp capacity during an exceptionally large burst. Normal async Connect and realtime calls wait cooperatively for bounded capacity without blocking the event loop. The low-level synchronous `polyester.auth.sign_request` helper does not sleep: it raises immediately with `retry_after`. Connect error metadata currently does not recover a server retry delay, so use bounded exponential backoff when `retry_after is None`.
+Realtime token HTTP failures populate `PolyesterAuthError.status_code`, `code`, `context`, `endpoint`, `label`, and a bounded `body`. A 403 is a non-transient permission failure: inspect `code` and provision the required API-key policy before retrying.
+## MFA helpers (API / session products)
+API-key trading bots rarely hit interactive MFA. Helpers exist for session/JWT products that share the same error module, prefer structured codes over message text:
+| Helper                             | Code                              |
+| ---------------------------------- | --------------------------------- |
+| `is_mfa_enrollment_required(err)`  | `AUTH_MFA_NOT_ENROLLED`           |
+| `is_step_up_required(err)`         | `AUTH_STEP_UP_REQUIRED`           |
+| `is_mfa_elevation_required(err)`   | `AUTH_MFA_ELEVATION_REQUIRED`     |
+| `is_mfa_last_factor_required(err)` | `AUTH_MFA_LAST_FACTOR_REQUIRED`   |
+| `auth_error_code(err)`             | returns the code string or `None` |
+Creating API keys requires a JWT/session client, these API-key SDKs do **not** expose create-key flows.
+## Retry sketch
+```python
+from polyester import (
+PolyesterError,
+PolyesterRateLimitError,
+PolyesterTransportError,
+PolyesterRealtimeOverflowError,
+)
+import asyncio
+async def with_retry(fn, *, attempts=3):
+for i in range(attempts):
+try:
+return await fn()
+except PolyesterRealtimeOverflowError:
+raise  # resubscribe; not a unary retry
+except PolyesterRateLimitError as err:
+await asyncio.sleep(err.retry_after or (0.5 * 2**i))
+except PolyesterTransportError:
+if i == attempts - 1:
+raise
+await asyncio.sleep(0.5 * 2**i)
+except PolyesterError:
+raise  # permanent: fix input / auth / state
+```
+For a single-order create, reconcile by the stable `client_order_id` before resubmitting; retained reuse returns a duplicate conflict, not the earlier result. Reuse replayable `request_id` / `client_trigger_id` values for their logical mutations. See [Requests & idempotency](https://testnet.polyester.com/docs/sdk/python/concepts/requests-and-idempotency).

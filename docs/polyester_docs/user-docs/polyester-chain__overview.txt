@@ -1,0 +1,236 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Chain
+Overview
+Copy page
+View as Markdown
+Open in
+Polyester Chain
+is the EVM-compatible blockchain that supports Polyester accounts and protocol activity. It is built with Cosmos EVM and CometBFT, giving Polyester a dedicated chain for
+smart accounts
+, asset movement, account controls, and public contract records.
+You interact with Polyester Chain through the Polyester product.
+Polyester Scan
+is the browser that organizes and displays the Chain's public blocks, transactions, accounts, tokens, and contracts.
+What runs on Polyester Chain
+Polyester Chain hosts the contracts and public records behind:
+Safe smart accounts for every
+Main Account
+and
+Subaccount
+Funding Account
+asset movements
+assets moving into and out of Trading
+Zipper
+requests and
+Zipped Asset
+mints and burns
+internal transfers and withdrawal activity
+destination whitelists and other account controls
+ERC-4337 gas sponsorship.
+These contracts give Polyester one shared on-chain layer for account identity, supported asset movement, and public protocol activity.
+How an action reaches the Chain
+Polyester prepares the supported action for your active smart account.
+Your owner credential authorizes the action.
+A bundler submits it through the ERC-4337 infrastructure.
+The relevant Polyester protocol contract executes the action.
+CometBFT validators include the result in Polyester Chain's block history.
+Polyester Scan organizes the public transaction, contract, and event information.
+Polyester sponsors gas for current user-facing Chain actions, so you do not need to hold
+$P
+to use the product.
+Public Chain activity and private trading
+Polyester Chain records public activity such as smart-account calls, protocol transactions, contract events, and Zipped Asset supply changes.
+Your specific orders, fills, fees, reserved Trading balance, members, permissions, sessions, and complete financial ledger remain private to your account. Spot trades execute through
+PolyEngine
+and do not create a separate public Chain transaction for every fill.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public activity does not expose your trading account
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Polyester Scan can show assets entering or leaving your account on-chain. It does not reveal your private Trading balance, open orders, fills, or account-attributed trading history.
+Browse activity with Polyester Scan
+Use
+Polyester Scan
+to browse Polyester Chain blocks, transactions, smart accounts, contracts, tokens, transfers, and Zipper flows.
+Viewing records and using contract read methods in Polyester Scan do not submit transactions or change contract state.
+Explore Polyester Chain
+Smart Account
+explains the Safe that represents your Polyester account.
+Gas Abstraction
+explains how Polyester sponsors Chain gas.
+Validators
+explains CometBFT consensus and the other approval roles used across Polyester.
+RPC Nodes
+covers how anyone can run a local node to access and independently check public Chain data.
+FAQ
+What blockchain is Polyester built on?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester runs on Polyester Chain, its own EVM-compatible Layer 1 blockchain purpose-built for exchange infrastructure. Running on a dedicated chain allows Polyester to optimize performance for trading and lending, and sponsor gas fees to reduce costs for users while maintaining a high-performance environment. It also enables Polyester to unify external blockchains and their assets into a single chain through Zipper, bringing cross-chain liquidity together into one coherent trading ecosystem.
+Can I deploy an application or smart contract on Polyester Chain?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+During testnet, contract deployment on Polyester Chain is restricted to Polyester’s own protocol and application contracts. Third-party developers cannot deploy their own smart contracts during this phase. You can still build applications and trading integrations that connect to Polyester through its APIs and SDKs.
+Related Topics
+Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Gas Abstraction
+See how Polyester sponsors gas for your supported Polyester Chain actions.
+Validators
+See how Polyester Chain validators secure blocks and how other approval roles remain separate.
+RPC Nodes
+Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+Previous
+Security
+Next
+Smart Account
+On this page
+What runs on Polyester Chain
+How an action reaches the Chain
+Public Chain activity and private trading
+Browse activity with Polyester Scan
+Explore Polyester Chain
+FAQ
+Related Topics
+Share this page
+Overview
+See how Polyester Chain supports your account, assets, and public on-chain activity.
+Share
+Copy Link

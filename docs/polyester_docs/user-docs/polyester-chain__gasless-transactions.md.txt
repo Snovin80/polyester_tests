@@ -1,0 +1,38 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/gasless-transactions.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Gas Abstraction
+See how Polyester sponsors gas for your supported Polyester Chain actions.
+**Gas abstraction** lets you use supported Polyester features on Polyester Chain without holding or spending **$P**. Polyester pays the underlying Chain gas through ERC-4337 smart-account infrastructure.
+The action still executes on-chain and uses gas. Sponsorship simply means Polyester pays that cost for you.
+## How sponsorship works
+1. Polyester prepares the supported action for your active Safe smart account.
+2. The smart-account client packages it as a **UserOperation**.
+3. A **bundler** prepares and submits the operation.
+4. A **paymaster** sponsors the **$P** required for the eligible action.
+5. Your owner credential authorizes the operation.
+6. ERC-4337 EntryPoint validates it, and your Safe executes the protocol call.
+The paymaster pays gas but does not authorize the action or own your Safe. Your owner credential and the Safe's rules remain the authorization boundary.
+## What Polyester sponsors
+Sponsorship covers the Polyester Chain gas used by current user-facing product actions, including eligible Funding movements, withdrawals, internal transfers, deposit-routing changes, and account-control updates.
+It can also cover the first eligible action for a counterfactual Safe. In that case, the same UserOperation deploys the Safe and executes the action.
+You do not need to acquire **$P** for these supported product flows.
+## Costs outside Chain sponsorship
+| Cost                                                      | Covered by Polyester Chain gas sponsorship? |
+| --------------------------------------------------------- | ------------------------------------------- |
+| Supported Polyester Chain product gas                     | **Yes**                                     |
+| Gas paid by your external wallet when sending a deposit   | No                                          |
+| Zipper deposit or withdrawal fee                          | No                                          |
+| Spot trading fee                                          | No                                          |
+| Activity performed later on an external destination chain | No                                          |
+Zipper fees are charged for moving assets between chains, while trading fees apply to completed fills. They are separate from the **$P** used to execute a Polyester Chain contract call.
+> **Sponsored gas is not the same as no fees**
+>
+> Polyester pays the **$P** required for supported Chain actions. External-chain gas, Zipper fees, and trading fees remain separate.
+## Gas sponsorship and account ownership
+The bundler and paymaster help submit your action, but neither becomes an owner of your account. They cannot replace your owner credential, bypass your Safe, or ignore your account permissions and security controls.
+See **[Smart Account](https://testnet.polyester.com/docs/user-docs/polyester-chain/smart-account)** for the owner and Safe relationship and **[Deposit & Withdrawal Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/deposit-and-withdrawal-fees)** for charges outside Chain sponsorship.
+## FAQ
+### Do I need to hold a native Polyester Chain token to use the exchange?
+No. Polyester covers the gas fees for supported actions on Polyester Chain. You can use the exchange without acquiring a separate gas token. Trading fees and deposit or withdrawal fees still apply, and your external wallet may need the sending network’s native asset to pay for a deposit transaction.

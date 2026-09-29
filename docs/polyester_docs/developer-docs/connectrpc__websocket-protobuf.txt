@@ -1,0 +1,102 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+WebSocket Protobuf · ConnectRPC & Protobuf
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+ConnectRPC & Protobuf
+Getting started
+Identifiers
+Scaled Integers
+Protobuf contracts
+WebSocket Protobuf
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+ConnectRPC & Protobuf
+svg]:size-3.5">
+/
+WebSocket Protobuf
+WebSocket Protobuf
+Copy page
+View as Markdown
+Open in
+WebSocket Protobuf is the realtime companion for typed ConnectRPC and SDK integrations. It uses
+binary Protobuf payloads over WebSocket while ConnectRPC continues to handle request-response calls.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+This is not ConnectRPC streaming
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The payloads use Protobuf message types, but connection tokens, subscriptions, and reconnects follow
+the
+WebSocket session model
+When to use Protobuf channels
+Choose WebSocket Protobuf when:
+you use an official SDK realtime client
+your application already uses generated Protobuf message types
+compact typed payloads matter more than direct inspection
+the required stream is available only as Protobuf
+Encoding support is channel-specific. A Protobuf channel does not guarantee an equivalent JSON
+channel.
+Channel implementation
+1
+Choose a Protobuf channel
+Use the official SDK product method or identify the exact channel and published message type for a
+custom client.
+2
+Decode with generated types
+Decode each binary publication with the message type assigned to that channel. Apply the integer and
+identifier conventions defined by the field contract.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Protobuf is not SBE
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Do not decode realtime Protobuf frames with the
+SBE WebSocket
+schema. SBE WebSocket is a
+separate binary order-entry session.
+Previous
+Protobuf contracts
+On this page
+When to use Protobuf channels
+Channel implementation
+Share this page
+WebSocket Protobuf
+Consume typed Polyester realtime channels with Protobuf payloads alongside ConnectRPC.
+Share
+Copy Link

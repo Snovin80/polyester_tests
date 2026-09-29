@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/funding-services.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+All services on this page use the authenticated transport and accept the `account` scope field. Methods marked **stream** return `() => void` and take `onEvent` (+ optional `onOpen` / `onClose` / `onError`).
+## `client.deposit`
+| Method                            | Input → Result                                | Notes                                    |
+| --------------------------------- | --------------------------------------------- | ---------------------------------------- |
+| `createAddress(input, options?)`  | chain + `account?` → `DepositAddress \| null` | Creates or returns the existing address. |
+| `listAddresses(input?, options?)` | `chain?`, `account?` → `DepositAddress[]`     |                                          |
+## `client.transfers`
+Ledger transfer history: every balance movement, regardless of cause.
+| Method                  | Input → Result                                                                                                   | Notes |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- | ----- |
+| `list(input, options?)` | `limit?`, direction, time range, transfer-code and ledger filters, `pageToken?` → `{ transfers, nextPageToken }` |       |
+| `subscribe(input)`      | `accountId` → **stream** of transfers                                                                            |       |
+## `client.internalTransfers`
+| Method                    | Input → Result                                                                                          | Notes                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `create(input, options?)` | destination (root / subaccount / smart account), asset, decimal amount → `CreateInternalTransferResult` | Idempotent: repeat requests return the existing transfer. |
+Resolve destinations with `client.accounts.resolve(...)` or the address book's `listTransferDestinations()`.
+## `client.tradingWithdraws`
+Durable, signed withdrawal intents out of the Trading venue.
+| Method                                   | Input → Result                                                                                         | Notes                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------- |
+| `createToFunding(input, options?)`       | asset, decimal amount, destination + signature → `CreateTradingWithdrawResult`                         | Stays on Polyester.    |
+| `createToExternalChain(input, options?)` | asset, gross decimal amount, destination network + address + signature → `CreateTradingWithdrawResult` | Leaves via the Zipper. |
+Each intent embeds a \~5-minute deadline, a nonce, and an idempotency key. Signing options:
+- `walletSigner`: the SDK builds its canonical EIP-191 text message and has the user's EOA sign it with `personal_sign`.
+- `payloadSignature`: you precomputed the signature (API-key / custody infrastructure).
+## Related
+- Supported chains, assets, routes, fees, and minimums: `client.zipper` and `catalog.zipper`. See [Market data services](https://testnet.polyester.com/docs/sdk/typescript/reference/market-data-services) and [Catalog & precision](https://testnet.polyester.com/docs/sdk/typescript/concepts/catalog-and-precision).
+- Tracking a deposit/withdrawal across chains: `client.lifecycle`. See [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/typescript/guides/deposits-and-withdrawals).
+- Guard-signer co-signing for protected actions: [Account services](https://testnet.polyester.com/docs/sdk/typescript/reference/account-services).
+- On-chain user operations from the smart account: `@polyester/sdk/smart-account`. See [Client configuration](https://testnet.polyester.com/docs/sdk/typescript/reference/client-configuration).

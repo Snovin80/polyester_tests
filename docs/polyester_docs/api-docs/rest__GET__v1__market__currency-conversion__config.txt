@@ -1,0 +1,181 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/market/currency-conversion/config
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketOverviewService
+Get Currency Conversion Config
+Get supported fiat and stablecoin display metadata with default English names, symbols, and fraction digits. Clients may localize presentation.
+Copy URL
+Method
+GET
+Path
+/v1/market/currency-conversion/config
+Visibility
+Public endpoint
+GET
+/v1/market/currency-conversion/config
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/market/currency-conversion/config' \
+--header 'Accept: */*'
+Responses
+"fiat": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+],
+"stablecoins": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+fiat
+object[]
+Supported fiat currencies, including USD, ordered by code.
+4 fields
+code
+string
+Uppercase currency or stablecoin code, such as EUR or USDT.
+Example
+value
+defaultEnglishName
+string
+Default English display name.
+Example
+value
+fractionDigits
+integer (int32)
+Default display fraction digits, including zero for currencies such as JPY. This is a formatting default, not rate precision, token decimals, or cash rounding. Stablecoins use two display fraction digits.
+Example
+1
+symbol
+string
+Representative local display symbol; multiple currencies may share a symbol. Uses the code when the selected local display data has no distinct visible symbol.
+Example
+BTC-USDT
+stablecoins
+object[]
+Supported stablecoins (USDC and USDT), ordered by code.
+4 fields
+code
+string
+Uppercase currency or stablecoin code, such as EUR or USDT.
+Example
+value
+defaultEnglishName
+string
+Default English display name.
+Example
+value
+fractionDigits
+integer (int32)
+Default display fraction digits, including zero for currencies such as JPY. This is a formatting default, not rate precision, token decimals, or cash rounding. Stablecoins use two display fraction digits.
+Example
+1
+symbol
+string
+Representative local display symbol; multiple currencies may share a symbol. Uses the code when the selected local display data has no distinct visible symbol.
+Example
+BTC-USDT
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/market/currency-conversion/config
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s355" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/market/currency-conversion/config' \
+--header 'Accept: */*'
+Responses
+"fiat": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+],
+"stablecoins": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/market/currency-conversion/config' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "fiat": [
+    {
+      "code": "value",
+      "defaultEnglishName": "value",
+      "fractionDigits": 1,
+      "symbol": "BTC-USDT"
+    }
+  ],
+  "stablecoins": [
+    {
+      "code": "value",
+      "defaultEnglishName": "value",
+      "fractionDigits": 1,
+      "symbol": "BTC-USDT"
+    }
+  ]
+}

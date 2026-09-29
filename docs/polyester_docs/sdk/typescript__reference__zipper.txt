@@ -1,0 +1,649 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/zipper
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Zipper · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Zipper
+Zipper
+Copy page
+View as Markdown
+Open in
+client.zipper
+is the public surface for
+Zipper
+, the cross-chain deposit and withdraw layer.
+It exposes the configuration that drives on-chain funding (supported external chains, unified
+assets, per-chain asset variants with network fees and minimums, and contract metadata) plus a
+live stream of
+route
+supply. Nothing here is authenticated: the same configuration is served to
+every caller and feeds
+catalog.zipper
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prefer the catalog for reads
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Most apps never call
+client.zipper
+directly. The
+catalog
+bakes this configuration in as a
+snapshot and keeps it fresh, so
+client.catalog.zipper
+gives you the same chains,
+assets, and routes already indexed for lookup. Reach for the service when you want the raw
+config in one call, or the supply stream.
+Methods
+Method
+Summary
+getDepositWithdrawConfig
+Fetch the full deposit and withdraw configuration.
+subscribeZippedAssetSupply
+Stream live per-route supply updates over a public channel.
+getDepositWithdrawConfig(options?)
+Fetches the full
+DepositWithdrawConfig
+unified assets
+and their
+per-chain variants, network fees, minimum deposit and withdraw amounts, and contract metadata.
+Takes only an optional request-options argument.
+const
+config
+=
+await
+client
+zipper
+getDepositWithdrawConfig
+();
+for
+(
+const
+chain
+of
+config
+chains
+) {
+console
+log
+(
+chain
+code
+,
+chain
+name
+,
+`${
+chain
+requiredConfirmations
+} confirmations`
+);
+}
+const
+eth
+=
+config
+assets
+find
+((
+asset
+)
+=>
+asset
+asset
+===
+"ETH"
+);
+for
+(
+const
+variant
+of
+eth
+?.
+variants
+??
+console
+log
+(
+variant
+chainId
+,
+"network fee"
+,
+variant
+networkFee
+,
+"supply"
+,
+variant
+supply
+);
+}
+DepositWithdrawConfig
+Amounts are decimal strings;
+tsMs
+is epoch milliseconds. Read the
+Polyester chain
+ID from
+environment.chain.id
+; it is not a field on this configuration.
+import
+type
+ZipperAssetConfig
+,
+ZipperChainConfig
+,
+ZipperChainContractConfig
+,
+}
+from
+"@polyester/sdk"
+;
+interface
+DepositWithdrawConfig
+chains
+ZipperChainConfig
+assets
+ZipperAssetConfig
+contracts
+ZipperChainContractConfig
+tsMs
+number
+;
+// epoch ms the config was produced
+}
+ZipperChainConfig
+describes one supported external chain:
+interface
+ZipperChainConfig
+chainId
+number
+;
+code
+string
+;
+name
+string
+;
+nativeChainId
+string
+;
+nativeCurrencySymbol
+string
+;
+explorerUrl
+string
+;
+icon
+string
+;
+requiredConfirmations
+number
+;
+confirmationTimeSeconds
+number
+;
+isCaseSensitive
+boolean
+;
+// whether addresses on this chain are case-sensitive
+minAddressLength
+number
+;
+maxAddressLength
+number
+;
+}
+ZipperAssetConfig
+is a unified asset plus one
+ZipperAssetChainVariant
+per chain it lives on.
+Each variant carries the route-level detail: the source token and its z-token wrapper, the current
+network fee, per-route deposit and withdraw minimums, and live supply.
+interface
+ZipperAssetConfig
+asset
+string
+;
+// unified asset symbol, e.g. "USDC"
+ledgerId
+number
+;
+name
+string
+;
+icon
+string
+;
+quantityScale
+number
+;
+quantityDisplayDecimals
+number
+;
+variants
+ZipperAssetChainVariant
+uAssetId
+string
+;
+}
+interface
+ZipperAssetChainVariant
+zippedAssetId
+number
+;
+// route id, keys the supply stream
+chainId
+number
+;
+isNativeAsset
+boolean
+;
+networkFee
+string
+;
+// decimal string
+networkFeeTsSec
+number
+;
+depositMinAmount
+string
+;
+// decimal string
+withdrawMinAmount
+string
+;
+// decimal string
+supply
+string
+;
+// decimal string
+sourceToken
+address
+string
+;
+decimals
+number
+};
+zToken
+address
+string
+;
+decimals
+number
+};
+}
+interface
+ZipperChainContractConfig
+name
+string
+;
+address
+string
+;
+type
+string
+;
+description
+string
+;
+version
+number
+;
+}
+subscribeZippedAssetSupply(input)
+Streams route supply updates over the public channel and returns an idempotent unsubscribe
+function. Each event is a batch of
+updates, where
+zippedAssetId
+matches a variant's
+zippedAssetId
+from the config above and
+supply
+is a decimal string. See the
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+zipper
+subscribeZippedAssetSupply
+({
+onEvent
+batch
+)
+=>
+for
+(
+const
+update
+of
+batch
+updates
+) {
+console
+log
+(
+"route"
+,
+update
+zippedAssetId
+,
+"supply"
+,
+update
+supply
+);
+}
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+The stream needs the client's realtime connection and catalog scales to decode supply into decimal
+strings, so it is available on a fully constructed client. Supply figures are ephemeral: pair this
+stream with a
+getDepositWithdrawConfig
+(or the catalog) read for the static route metadata, and
+let the stream keep
+supply
+current.
+Related
+Deposits and withdrawals guide
+for the
+task-oriented walkthrough.
+Catalog
+for the indexed, always-fresh view of this
+configuration via
+client.catalog.zipper
+Lifecycle
+for tracking a deposit or withdraw
+once it is in flight.
+Deposit
+and
+Balances
+for the funding surfaces built on this config.
+Realtime client
+for the subscription handler
+contract.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Withdrawals
+Next
+Market data services
+On this page
+Methods
+getDepositWithdrawConfig(options?)
+DepositWithdrawConfig
+subscribeZippedAssetSupply(input)
+Related
+Related Topics
+Share this page
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const config = await client.zipper.getDepositWithdrawConfig();
+
+for (const chain of config.chains) {
+	console.log(chain.code, chain.name, `${chain.requiredConfirmations} confirmations`);
+}
+
+const eth = config.assets.find((asset) => asset.asset === "ETH");
+for (const variant of eth?.variants ?? []) {
+	console.log(variant.chainId, "network fee", variant.networkFee, "supply", variant.supply);
+}
+
+---
+
+import type {
+	ZipperAssetConfig,
+	ZipperChainConfig,
+	ZipperChainContractConfig,
+} from "@polyester/sdk";
+
+interface DepositWithdrawConfig {
+	chains: ZipperChainConfig[];
+	assets: ZipperAssetConfig[];
+	contracts: ZipperChainContractConfig[];
+	tsMs: number; // epoch ms the config was produced
+}
+
+---
+
+interface ZipperChainConfig {
+	chainId: number;
+	code: string;
+	name: string;
+	nativeChainId: string;
+	nativeCurrencySymbol: string;
+	explorerUrl: string;
+	icon: string;
+	requiredConfirmations: number;
+	confirmationTimeSeconds: number;
+	isCaseSensitive: boolean; // whether addresses on this chain are case-sensitive
+	minAddressLength: number;
+	maxAddressLength: number;
+}
+
+---
+
+interface ZipperAssetConfig {
+	asset: string; // unified asset symbol, e.g. "USDC"
+	ledgerId: number;
+	name: string;
+	icon: string;
+	quantityScale: number;
+	quantityDisplayDecimals: number;
+	variants: ZipperAssetChainVariant[];
+	uAssetId: string;
+}
+
+interface ZipperAssetChainVariant {
+	zippedAssetId: number; // route id, keys the supply stream
+	chainId: number;
+	isNativeAsset: boolean;
+	networkFee: string; // decimal string
+	networkFeeTsSec: number;
+	depositMinAmount: string; // decimal string
+	withdrawMinAmount: string; // decimal string
+	supply: string; // decimal string
+	sourceToken: { address: string; decimals: number };
+	zToken: { address: string; decimals: number };
+}
+
+interface ZipperChainContractConfig {
+	name: string;
+	address: string;
+	type: string;
+	description: string;
+	version: number;
+}
+
+---
+
+const unsubscribe = client.zipper.subscribeZippedAssetSupply({
+	onEvent: (batch) => {
+		for (const update of batch.updates) {
+			console.log("route", update.zippedAssetId, "supply", update.supply);
+		}
+	},
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();

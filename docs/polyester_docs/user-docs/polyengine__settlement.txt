@@ -1,0 +1,240 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/settlement
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Settlement · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+PolyEngine
+svg]:size-3.5">
+/
+Settlement
+Settlement
+Copy page
+View as Markdown
+Open in
+Settlement
+turns each completed fill into a financial result in your Trading Account. It records the assets exchanged, your fee or rebate, and the amount used or released from your order's reservation.
+Settlement uses
+PolyEngine
+'s immutable ledger. Your spot fill does not require a separate
+Polyester Chain
+transaction, and its account-level details remain immutable.
+All settlements are streamed to
+Verifier Nodes
+, which can view and retain trade records to check that execution follows PolyEngine's matching rules. The stream omits
+maker
+and
+taker
+identities to preserve trading privacy.
+What changes after a fill
+Every trading pair contains a
+base asset
+and a
+quote asset
+Your side
+You spend
+You receive
+Buy
+Quote asset
+Base asset
+Sell
+Base asset
+Quote asset
+Each fill is settled on its own. If your order fills in several parts, each fill has its own price, amount, maker or taker role, and fee result. Your order and balance views then combine those fills into the complete result.
+How trading fees are paid
+Seller fees come from the quote asset received by the trade. When the pair and your account settings allow it, a buyer can choose between:
+Quote
+, which pays the fee from the quote asset
+Received
+, which deducts the fee from the base asset received.
+Your fee source does not change the execution price or whether the fill is maker or taker. Eligible
+maker rebates
+are credited as part of the same fill.
+See
+Trading Fees
+for the current rates, VIP tiers, fee-source options, and maker rebates.
+What happens to reserved balance
+Admission reserves the amount your order may spend. Settlement turns the required part of that reservation into the completed trade:
+a full fill uses the required amount and releases any extra protection
+a partial fill uses the completed portion and keeps the remaining order amount reserved
+canceling after a partial fill releases only the unused remainder
+an order with no fills releases its unused reservation when it ends.
+The reservation itself is never an additional fee.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Canceling does not reverse a completed fill
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Cancellation applies only to the amount that remains open. Assets, fees, and rebates from completed fills stay in your account.
+Where you see the result
+Open
+Order Details
+to see the instruction and every fill. The
+Trades
+view shows each execution, while
+Transfers
+and your
+Ledger
+show the connected asset, fee, rebate, and reservation entries.
+Market Trades shows that an execution occurred for the pair, but it does not reveal your account, balance, fee source, or immutable settlement details.
+Related Topics
+Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+Admission
+See how PolyEngine checks your order and protects the balance it may use.
+Matching
+See how your eligible order receives priority and becomes one or more fills.
+PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+Escape Hatch
+Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+Previous
+Matching
+Next
+PolyEngine Relay
+On this page
+What changes after a fill
+How trading fees are paid
+What happens to reserved balance
+Where you see the result
+Related Topics
+Share this page
+Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+Share
+Copy Link

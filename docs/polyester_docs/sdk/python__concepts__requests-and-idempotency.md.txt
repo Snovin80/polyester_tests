@@ -1,0 +1,58 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/concepts/requests-and-idempotency.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Requests & idempotency
+How Python SDK calls are shaped, cancelled, retried, and reconciled with client order ids and request ids.
+Service methods are async callables on `AsyncPolyester`. Learn the conventions once; they apply across orders, triggers, balances, and market data.
+## Call shape
+```python
+result = await client.orders.list_open(account=None)
+```
+- Keyword arguments (or small request structs) carry payload fields.
+- Account-scoped services accept optional `account` / `sub_account_id`.
+- Results are msgspec structs with decimal `Price` / `Quantity` where applicable.
+- There is no TypeScript-style `options.signal` / `stepUpToken` bag on every call. Cancel via your surrounding `asyncio` task cancellation; MFA step-up is a JWT/session concern, not an API-key create-key flow on this SDK.
+## Stable mutation identifiers
+| Mutation                                     | Key field                                |
+| -------------------------------------------- | ---------------------------------------- |
+| `orders.create` / batch create items         | `client_order_id` (duplicate guard)      |
+| `orders.modify`, `cancel_all`, batch helpers | `request_id`                             |
+| `triggers.create`                            | `client_trigger_id`                      |
+| `internal_transfers.create`                  | `idempotency_key` (required)             |
+| `withdraw.create_to_*`                       | `idempotency_key` and `nonce` (required) |
+Withdrawal and internal-transfer identities are required for every call, including one-shot attempts. Do not treat them as "only for retries."
+If you omit `client_order_id` on create, the call is accepted but you cannot safely reconcile by client ID. The SDK does not generate one; a stable caller-provided ID is recommended for production creates. A retained `client_order_id` cannot be reused: even an identical create returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID` instead of replaying the earlier result. Keep the original value after an ambiguous response, look up the order by that ID, and handle a duplicate conflict as a signal to continue reconciliation.
+If you omit `request_id` on `modify`, `cancel_all`, `cancel_all_after`, or batch create/cancel/modify, the SDK generates one for that single call (same idea as TypeScript/Go/Rust). Fine for one-shot mutations. To retry safely after an ambiguous failure, supply and reuse your own value - a blind retry that omits `request_id` mints a *new* id and is not an idempotent replay.
+Create the key once outside your retry loop:
+```python
+client_order_id = "strategy-run-20260725-0001"  # create and persist once
+request_id = "mod-strategy-run-20260725-0001"  # choose once per logical modify / cancel-all / batch
+async def place():
+return await client.orders.create(
+symbol="BTC-USDT",
+side="buy",
+order_type="limit",
+tif="gtc",
+price="60000",
+qty="0.01",
+client_order_id=client_order_id,
+)
+# After an ambiguous error, reconcile by client_order_id before deciding to resubmit.
+# Reuse of a retained client_order_id returns CONFLICT_DUPLICATE_CLIENT_ORDER_ID.
+# request_id remains the replay identity for modify / cancel_all / batch.
+```
+Client order IDs accept 1 to 36 ASCII letters, digits, `.`, `_`, `:`, `/`, and `-`. Request IDs use the same character set and accept 1 to 64 characters. The SDK validates both locally and raises `PolyesterValidationError` before the request is sent.
+> **A new key every attempt is a bug**
+>
+> Generating a fresh `client_order_id` while the first create is unresolved can place a second order. Persist the original value for reconciliation. For replayable request IDs, create the key once outside the loop and reuse it for the same logical action.
+## Retrying safely
+Retry `PolyesterTransportError` / `PolyesterRateLimitError` with capped exponential backoff and jitter; honor `retry_after` when present. A timeout is ambiguous: the server may have applied the mutation. For a single-order create, reconcile by `client_order_id` before resubmitting and expect a duplicate conflict if the ID was retained. For mutations with replayable request IDs, keep the key stable. Do not blindly retry `PolyesterValidationError` or most `PolyesterApiError` responses; fix input, auth, or state.
+`PolyesterResponseContractError` is outcome-unknown but not directly retryable. Reconcile the mutation first, then reuse its original identity if a retry is still needed.
+See [Error handling](https://testnet.polyester.com/docs/sdk/python/guides/error-handling) and [Errors](https://testnet.polyester.com/docs/sdk/python/reference/errors).
+## Pagination cursors
+Most list APIs return opaque tokens (`next_page_token`). Replay them exactly as returned, including trigger list/event pages.
+## Related
+- [Client order IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/client-order-ids)
+- [Trading guide](https://testnet.polyester.com/docs/sdk/python/guides/trading)
+- [Catalog & precision](https://testnet.polyester.com/docs/sdk/python/concepts/catalog-and-precision)

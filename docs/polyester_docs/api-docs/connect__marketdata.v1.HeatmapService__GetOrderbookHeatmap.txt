@@ -1,0 +1,644 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketdata.v1.HeatmapService/GetOrderbookHeatmap
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketdata.v1.HeatmapService
+GetOrderbookHeatmap
+Retrieve historical orderbook heatmap data for a spot symbol.
+- All intervals (1s/1m/5m/1h) return snapshot + sparse delta chain.
+- Response may also include the latest live bucket state when available.
+Response always includes realtime stitching anchors.
+Copy URL
+Method
+POST
+Path
+marketdata.v1.HeatmapService/GetOrderbookHeatmap
+Service
+marketdata.v1.HeatmapService
+Visibility
+Public endpoint
+POST
+marketdata.v1.HeatmapService/GetOrderbookHeatmap
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.HeatmapService/GetOrderbookHeatmap' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"depth": "DEPTH_1",
+"interval": "INTERVAL_1S",
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"quantityMode": "CLOSE",
+"symbolId": 1,
+"timeRange": {
+"endTime": "2025-01-01T00:00:00Z",
+"startTime": "2025-01-01T00:00:00Z"
+}
+}'
+Responses
+"chain": {
+"baseKeyframe": {
+"asks": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bestAskTicks": "1",
+"bestBidTicks": "1",
+"bids": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bookSeq": "1",
+"midTicks": "1",
+"tsSec": "1735689600"
+},
+"deltas": [
+"asks": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bids": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bookSeqEnd": "1",
+"bookSeqStart": "1",
+"tsSec": "1735689600",
+"updatesInBucket": 1
+}
+]
+},
+"depth": "DEPTH_1",
+"hasLiveAnchor": false,
+"interval": "INTERVAL_1S",
+"lastPersistedTsSec": "1735689600",
+"liveBucket": {
+"asks": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bids": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bookSeqEnd": "1",
+"bookSeqStart": "1",
+"effectiveBinTicks": "1",
+"interval": "INTERVAL_1S",
+"isFinal": false,
+"quantityMode": "CLOSE",
+"symbolId": 1,
+"tsSec": "1735689600",
+"updatesInBucket": 1
+},
+"liveFromBookSeqEnd": "1",
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"quantityMode": "CLOSE",
+"serverTimeSec": "1",
+"symbolId": 1
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketdata.v1.GetOrderbookHeatmapRequest
+Response
+marketdata.v1.GetOrderbookHeatmapResponse
+Request body
+Form
+JSON
+Example
+symbolId
+integer (int32)
+> 0
+Numeric spot market identifier.
+interval
+enum
+must be defined value
+Heatmap bucket interval.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s352" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+INTERVAL_1S
+depth
+enum
+must be defined value
+Top-N levels per side included in each bucket.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s354" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+DEPTH_1
+timeRange
+object
+Absolute time range for the first page. Reuse the same request filters and
+pass page_token from the prior response to continue older buckets.
+2 fields
+startTime
+string (date-time)
+Inclusive lower bound in UTC. Omit to leave the lower bound open.
+endTime
+string (date-time)
+Inclusive upper bound in UTC. Omit to leave the upper bound open.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to symbol, interval, depth, quantity mode, and the original time
+range.
+limit
+integer (int32)
+1–20000
+Maximum number of delta buckets returned (min 1, max 20000).
+This limit counts only `chain.deltas`; `chain.base_keyframe` is not counted.
+quantityMode
+enum
+must be defined value
+Quantity mode used for qty_scaled in snapshot/delta levels:
+- CLOSE: end-of-bucket quantity
+- PEAK: intra-bucket peak quantity
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s369" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+CLOSE
+Response
+Form
+JSON
+symbolId
+integer (int32)
+Numeric spot market identifier returned for the requested market.
+interval
+enum
+Bucket interval used for the returned chain.
+INTERVAL_1S
+INTERVAL_1M
+INTERVAL_5M
+INTERVAL_1H
+depth
+enum
+Top-N depth requested per side.
+DEPTH_1
+DEPTH_5
+DEPTH_10
+DEPTH_20
+DEPTH_50
+DEPTH_100
+DEPTH_200
+DEPTH_500
+DEPTH_1000
+chain
+object
+Always returned as snapshot + sparse deltas for the requested interval.
+2 fields
+baseKeyframe
+object
+Full-book snapshot from which to apply the returned deltas.
+7 fields
+tsSec
+string (uint64)
+Snapshot timestamp (seconds since epoch, UTC).
+bestBidTicks
+string (int64)
+Best bid price in quote units scaled by 1e9.
+bestAskTicks
+string (int64)
+Best ask price in quote units scaled by 1e9.
+midTicks
+string (int64)
+Mid price in quote units scaled by 1e9.
+bids
+object
+Complete bid-side levels at the snapshot.
+2 fields
+priceTicks
+string[] (int64)
+Price levels in quote units scaled by 1e9.
+qtyScaled
+string[] (int64)
+Quantity at each price level according to quantity_mode, scaled by the
+pair's base_quantity_scale from GetSpotConfig.
+asks
+object
+Complete ask-side levels at the snapshot.
+2 fields
+priceTicks
+string[] (int64)
+Price levels in quote units scaled by 1e9.
+qtyScaled
+string[] (int64)
+Quantity at each price level according to quantity_mode, scaled by the
+pair's base_quantity_scale from GetSpotConfig.
+bookSeq
+string (uint64)
+Monotonic order book sequence at the snapshot.
+deltas
+object[]
+Sparse update buckets ordered oldest-first by timestamp.
+6 fields
+tsSec
+string (uint64)
+Bucket start timestamp (seconds since epoch, UTC), aligned to `interval`.
+bids
+object
+Sparse bid-side level changes in this bucket.
+2 fields
+priceTicks
+string[] (int64)
+Price levels in quote units scaled by 1e9.
+qtyScaled
+string[] (int64)
+Quantity at each price level, scaled by the pair's base_quantity_scale from
+GetSpotConfig. A zero value deletes the level at the matching price_ticks
+index.
+asks
+object
+Sparse ask-side level changes in this bucket.
+2 fields
+priceTicks
+string[] (int64)
+Price levels in quote units scaled by 1e9.
+qtyScaled
+string[] (int64)
+Quantity at each price level, scaled by the pair's base_quantity_scale from
+GetSpotConfig. A zero value deletes the level at the matching price_ticks
+index.
+updatesInBucket
+integer (int32)
+Number of upstream L2 updates aggregated into this interval bucket.
+bookSeqStart
+string (uint64)
+Earliest monotonic order book sequence represented by this bucket.
+bookSeqEnd
+string (uint64)
+Latest monotonic order book sequence represented by this bucket.
+lastPersistedTsSec
+string (uint64)
+Latest finalized historical bucket timestamp in seconds since epoch (UTC).
+liveFromBookSeqEnd
+string (uint64)
+Book sequence anchor for realtime continuation; apply live updates where book_seq_end is greater than this value.
+hasLiveAnchor
+boolean
+True when live_from_book_seq_end is available and can be used as a realtime continuation anchor.
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+serverTimeSec
+string (uint64)
+Server response time in seconds since epoch (UTC).
+quantityMode
+enum
+Quantity mode used for all qty_scaled values in the response.
+CLOSE
+PEAK
+liveBucket
+object
+Optional latest live bucket for the requested interval and depth.
+Present only when it is newer than the historical anchor and its quantity semantics match quantity_mode.
+11 fields
+symbolId
+integer (int32)
+Numeric spot market identifier.
+interval
+enum
+must be defined value
+Bucket interval for this payload.
+INTERVAL_1S
+INTERVAL_1M
+INTERVAL_5M
+INTERVAL_1H
+tsSec
+string (uint64)
+Bucket start timestamp (seconds since epoch, UTC), aligned to `interval`.
+isFinal
+boolean
+True when this bucket is finalized; false for provisional updates to an
+open bucket.
+bids
+object
+Sparse bid-side level changes represented by this bucket.
+2 fields
+priceTicks
+string[] (int64)
+Price levels in quote units scaled by 1e9.
+qtyScaled
+string[] (int64)
+Quantity at each price level, scaled by the pair's base_quantity_scale from
+GetSpotConfig. A zero value deletes the level at the matching price_ticks
+index.
+asks
+object
+Sparse ask-side level changes represented by this bucket.
+2 fields
+priceTicks
+string[] (int64)
+Price levels in quote units scaled by 1e9.
+qtyScaled
+string[] (int64)
+Quantity at each price level, scaled by the pair's base_quantity_scale from
+GetSpotConfig. A zero value deletes the level at the matching price_ticks
+index.
+updatesInBucket
+integer (int32)
+Number of upstream L2 updates aggregated into this interval bucket.
+bookSeqStart
+string (uint64)
+Earliest monotonic order book sequence represented by this bucket.
+bookSeqEnd
+string (uint64)
+Latest monotonic order book sequence represented by this bucket.
+quantityMode
+enum
+must be defined value
+Quantity semantics for qty_scaled in bids and asks.
+CLOSE
+PEAK
+effectiveBinTicks
+string (uint64)
+Effective bin stride for this symbol as a price delta in 1e-9 quote-unit
+ticks.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+marketdata.v1.HeatmapService/GetOrderbookHeatmap
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s419" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.HeatmapService/GetOrderbookHeatmap' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"depth": "DEPTH_1",
+"interval": "INTERVAL_1S",
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"quantityMode": "CLOSE",
+"symbolId": 1,
+"timeRange": {
+"endTime": "2025-01-01T00:00:00Z",
+"startTime": "2025-01-01T00:00:00Z"
+}
+}'
+Responses
+"chain": {
+"baseKeyframe": {
+"asks": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bestAskTicks": "1",
+"bestBidTicks": "1",
+"bids": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bookSeq": "1",
+"midTicks": "1",
+"tsSec": "1735689600"
+},
+"deltas": [
+"asks": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bids": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bookSeqEnd": "1",
+"bookSeqStart": "1",
+"tsSec": "1735689600",
+"updatesInBucket": 1
+}
+]
+},
+"depth": "DEPTH_1",
+"hasLiveAnchor": false,
+"interval": "INTERVAL_1S",
+"lastPersistedTsSec": "1735689600",
+"liveBucket": {
+"asks": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bids": {
+"priceTicks": [
+"5000000"
+],
+"qtyScaled": [
+"100000"
+]
+},
+"bookSeqEnd": "1",
+"bookSeqStart": "1",
+"effectiveBinTicks": "1",
+"interval": "INTERVAL_1S",
+"isFinal": false,
+"quantityMode": "CLOSE",
+"symbolId": 1,
+"tsSec": "1735689600",
+"updatesInBucket": 1
+},
+"liveFromBookSeqEnd": "1",
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"quantityMode": "CLOSE",
+"serverTimeSec": "1",
+"symbolId": 1
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketdata.v1.HeatmapService/GetOrderbookHeatmap' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "depth": "DEPTH_1",
+  "interval": "INTERVAL_1S",
+  "limit": 100,
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "quantityMode": "CLOSE",
+  "symbolId": 1,
+  "timeRange": {
+    "endTime": "2025-01-01T00:00:00Z",
+    "startTime": "2025-01-01T00:00:00Z"
+  }
+}'
+
+---
+
+{
+  "chain": {
+    "baseKeyframe": {
+      "asks": {
+        "priceTicks": [
+          "5000000"
+        ],
+        "qtyScaled": [
+          "100000"
+        ]
+      },
+      "bestAskTicks": "1",
+      "bestBidTicks": "1",
+      "bids": {
+        "priceTicks": [
+          "5000000"
+        ],
+        "qtyScaled": [
+          "100000"
+        ]
+      },
+      "bookSeq": "1",
+      "midTicks": "1",
+      "tsSec": "1735689600"
+    },
+    "deltas": [
+      {
+        "asks": {
+          "priceTicks": [
+            "5000000"
+          ],
+          "qtyScaled": [
+            "100000"
+          ]
+        },
+        "bids": {
+          "priceTicks": [
+            "5000000"
+          ],
+          "qtyScaled": [
+            "100000"
+          ]
+        },
+        "bookSeqEnd": "1",
+        "bookSeqStart": "1",
+        "tsSec": "1735689600",
+        "updatesInBucket": 1
+      }
+    ]
+  },
+  "depth": "DEPTH_1",
+  "hasLiveAnchor": false,
+  "interval": "INTERVAL_1S",
+  "lastPersistedTsSec": "1735689600",
+  "liveBucket": {
+    "asks": {
+      "priceTicks": [
+        "5000000"
+      ],
+      "qtyScaled": [
+        "100000"
+      ]
+    },
+    "bids": {
+      "priceTicks": [
+        "5000000"
+      ],
+      "qtyScaled": [
+        "100000"
+      ]
+    },
+    "bookSeqEnd": "1",
+    "bookSeqStart": "1",
+    "effectiveBinTicks": "1",
+    "interval": "INTERVAL_1S",
+    "isFinal": false,
+    "quantityMode": "CLOSE",
+    "symbolId": 1,
+    "tsSec": "1735689600",
+    "updatesInBucket": 1
+  },
+  "liveFromBookSeqEnd": "1",
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "quantityMode": "CLOSE",
+  "serverTimeSec": "1",
+  "symbolId": 1
+}

@@ -1,0 +1,925 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/address-book
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Address book · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Address book
+Address book
+Copy page
+View as Markdown
+Open in
+client.addressBook
+manages saved transfer destinations, tags, whitelist views, and recent
+counterparties. Every method is authenticated and account-scoped: inputs accept an optional
+account
+field (
+"main"
+,
+"active"
+, or
+) that selects the root or
+subaccount
+book. See
+Account scoping
+for how the default
+resolves. Creates, updates, and deletes need the
+manage-address-book
+policy action. A key without that action gets
+AuthenticationError
+on
+writes. Reads still work.
+Destinations come in two kinds:
+external
+(an on-chain address on a specific chain) and
+internal
+(another Polyester account by smart-account address). These feed the
+internal transfer
+and
+withdrawal
+flows.
+Methods
+Method
+Summary
+listBooks
+List the root and subaccount books visible to the caller.
+listEntries
+List saved entries for the resolved scope.
+createEntry
+Save an external or internal destination.
+updateEntry
+Patch an entry's label, note, or tags (requires revision).
+deleteEntry
+Delete one saved entry.
+copyEntry
+Copy an entry into another visible book.
+createTag
+/
+updateTag
+/
+deleteTag
+Manage tags for organizing entries.
+listTransferCounterparties
+List recent counterparties, including unsaved ones.
+listTransferDestinations
+List saved and whitelisted destinations for transfer flows.
+listInternalTransferWhitelistEntries
+List internal-transfer whitelist entries.
+getWithdrawWhitelistView
+Read withdrawal whitelist requirements and active entries.
+getView
+Fetch the composite dashboard view in one call.
+subscribeViewInvalidations
+Stream signals to refetch
+getView
+listBooks(options?)
+Returns the root and subaccount address books visible to the caller, with the caller's role and
+display metadata for each.
+const
+books
+=
+await
+client
+addressBook
+listBooks
+();
+for
+(
+const
+book
+of
+books
+) {
+console
+log
+(
+book
+label
+,
+book
+callerRole
+,
+book
+smartAccountAddress
+);
+}
+Entries
+listEntries(input?, options?)
+Returns saved entries for the resolved scope as
+kind
+(
+"external"
+or
+"internal"
+) and page with
+limit
+and
+pageToken
+const
+entries
+}
+=
+await
+client
+addressBook
+listEntries
+({ kind:
+"external"
+});
+for
+(
+const
+entry
+of
+entries
+)
+console
+log
+(
+entry
+label
+,
+entry
+kind
+);
+createEntry(input, options?)
+Saves a destination and returns the created
+AddressBookEntry
+, or
+null
+entry
+field is a
+tagged union:
+external
+needs
+polychainChainId
+and
+address
+;
+internal
+needs
+smartAccountAddress
+tagIds
+, or create tags inline with
+newTags
+const
+existingTag
+=
+await
+client
+addressBook
+createTag
+({ name:
+"treasury"
+});
+if
+(
+!
+existingTag
+)
+throw
+new
+Error
+(
+"createTag returned null"
+);
+// External on-chain destination
+const
+entry
+=
+await
+client
+addressBook
+createEntry
+({
+label:
+"Cold wallet"
+,
+entry: { kind:
+"external"
+, polychainChainId:
+1
+, address:
+"0xabc..."
+},
+tagIds: [
+existingTag
+tagId
+],
+});
+if
+(
+!
+entry
+)
+throw
+new
+Error
+(
+"createEntry returned null"
+);
+// Internal Polyester account
+await
+client
+addressBook
+createEntry
+({
+label:
+"Ops subaccount"
+,
+entry: { kind:
+"internal"
+, smartAccountAddress:
+"0xdef..."
+},
+newTags: [{ name:
+"internal"
+, color:
+"#22c55e"
+}],
+});
+Both entry methods accept at most 10
+newTags
+characters. An optional color is trimmed, may contain up to 32 characters, and defaults to
+""
+updateEntry(input, options?)
+Patches the provided
+label
+,
+note
+, or tag set for an entry, keyed by
+addressBookEntryId
+Pass the latest
+revision
+returned by
+getView
+,
+createEntry
+, or
+updateEntry
+; the returned entry
+contains the next revision. Omitted fields are unchanged.
+await
+client
+addressBook
+updateEntry
+({
+addressBookEntryId:
+entry
+addressBookEntryId
+,
+expectedRevision:
+entry
+revision
+,
+label:
+"Cold wallet (rotated)"
+,
+note:
+"moved 2026-06"
+,
+tagIds: [
+existingTag
+tagId
+],
+newTags: [{ name:
+"rotated"
+, color:
+"#6366f1"
+}],
+});
+newTags
+creates tags and updates the entry atomically. With
+newTags
+alone, the entry keeps its
+existing tag IDs and adds the created tags. Supplying both
+tagIds
+and
+newTags
+replaces the tag
+set with those existing IDs plus the newly created tags.
+If another writer changed the entry first, the SDK throws
+RevisionConflictError
+address-book view and ask the user to review their draft against the latest entry; do not retry the
+same update automatically.
+deleteEntry(input, options?)
+Deletes one saved entry from the selected book.
+await
+client
+addressBook
+deleteEntry
+({ addressBookEntryId:
+entry
+addressBookEntryId
+});
+copyEntry(input, options?)
+Copies an entry into another visible book, targeting
+targetSubaccountId
+await
+client
+addressBook
+copyEntry
+({
+addressBookEntryId:
+entry
+addressBookEntryId
+,
+targetSubaccountId
+,
+});
+Tags
+createTag
+,
+updateTag
+, and
+deleteTag
+manage the tags used to organize entries. Deleting a tag
+detaches it from any entries.
+const
+tag
+=
+await
+client
+addressBook
+createTag
+({ name:
+"treasury"
+, color:
+"#4f46e5"
+});
+if
+(
+!
+tag
+)
+throw
+new
+Error
+(
+"createTag returned null"
+);
+await
+client
+addressBook
+updateTag
+({ tagId:
+tag
+tagId
+, name:
+"treasury"
+, color:
+"#6366f1"
+});
+await
+client
+addressBook
+deleteTag
+({ tagId:
+tag
+tagId
+});
+Transfer flows
+listTransferCounterparties(input?, options?)
+Returns recent transfer counterparties, including unsaved destinations, as
+timestamps. Filter by
+direction
+,
+kind
+, and
+limit
+const
+counterparties
+}
+=
+await
+client
+addressBook
+listTransferCounterparties
+({
+direction:
+"withdrawTo"
+,
+});
+listTransferDestinations(input?, options?)
+Returns saved and whitelisted destinations available for transfer flows as
+saved
+and
+whitelisted
+, so this is the list to render in a "send to" picker.
+const
+destinations
+}
+=
+await
+client
+addressBook
+listTransferDestinations
+();
+const
+ready
+=
+destinations
+filter
+((
+d
+)
+=>
+d
+whitelisted
+);
+listInternalTransferWhitelistEntries(input?, options?)
+Returns internal-transfer whitelist entries for the resolved scope as
+,
+including target account metadata and resolution status.
+const
+entries
+}
+=
+await
+client
+addressBook
+listInternalTransferWhitelistEntries
+();
+getWithdrawWhitelistView(input?, options?)
+Returns whether external and internal withdrawal whitelists are required, plus the active mirrored
+external whitelist entries, or
+null
+when no view is returned.
+const
+view
+=
+await
+client
+addressBook
+getWithdrawWhitelistView
+();
+if
+(
+view
+?.
+externalWhitelistRequired
+) {
+console
+log
+(
+view
+activeEntries
+);
+}
+The composite view
+getView(input?, options?)
+Fetches the combined dashboard view in one call:
+books
+, saved
+entries
+,
+recentDestinations
+,
+tags
+, and
+withdrawWhitelist
+status. This is the canonical aggregate for rendering an address
+book screen. Pass
+minimumViewRevision
+from an invalidation event to wait until the server view
+has reached that revision.
+const
+view
+=
+await
+client
+addressBook
+getView
+();
+console
+log
+(
+view
+entries
+?.
+external
+length
+,
+view
+tags
+?.
+length
+);
+view.viewRevision
+is a decimal revision string. Use it as
+minimumViewRevision
+after an
+invalidation instead of accepting a view older than the event.
+subscribeViewInvalidations(input)
+Streams scoped invalidation signals for a root account and returns an idempotent unsubscribe
+function. Takes a
+rootAccountPublicId
+plus the standard handler fields. See the
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+addressBook
+subscribeViewInvalidations
+({
+rootAccountPublicId
+,
+onEvent
+event
+)
+=>
+client
+addressBook
+getView
+({ minimumViewRevision:
+event
+viewRevision
+}),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Subscribe, then refetch
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Invalidation events signal that the view changed; they do not carry the new data. Use them only to
+trigger a fresh
+getView
+call, and do not patch individual rows from the event payload.
+Pass the event's
+viewRevision
+as
+minimumViewRevision
+so the read does not
+return an older projection. The event's
+scope
+and
+invalidatedAt
+are for
+diagnostics and ordering.
+Account scopes
+Entries, tags, and invalidation events carry an optional
+scope
+typed as
+AddressBookAccountScope
+, a union keyed by
+scopeType
+import
+type
+AddressBookAccountScope
+}
+from
+"@polyester/sdk"
+;
+type
+AddressBookAccountScope
+=
+|
+scopeType
+"root"
+;
+rootAccountId
+string
+}
+|
+scopeType
+"subaccount"
+;
+rootAccountId
+string
+;
+subaccountId
+string
+}
+|
+scopeType
+"unspecified"
+;
+rootAccountId
+string
+;
+subaccountId
+?:
+string
+};
+Narrow on
+scopeType
+before reading
+subaccountId
+subaccountId
+Related
+Internal transfers
+for sending to saved internal accounts.
+Withdrawals
+for sending to external destinations.
+Account scoping
+for how
+account
+resolves.
+Realtime client
+for the streaming handler contract.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Accounts
+Next
+API keys
+On this page
+Methods
+listBooks(options?)
+Entries
+listEntries(input?, options?)
+createEntry(input, options?)
+updateEntry(input, options?)
+deleteEntry(input, options?)
+copyEntry(input, options?)
+Tags
+Transfer flows
+listTransferCounterparties(input?, options?)
+listTransferDestinations(input?, options?)
+listInternalTransferWhitelistEntries(input?, options?)
+getWithdrawWhitelistView(input?, options?)
+The composite view
+getView(input?, options?)
+subscribeViewInvalidations(input)
+Account scopes
+Related
+Related Topics
+Share this page
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const books = await client.addressBook.listBooks();
+for (const book of books) {
+	console.log(book.label, book.callerRole, book.smartAccountAddress);
+}
+
+---
+
+const { entries } = await client.addressBook.listEntries({ kind: "external" });
+for (const entry of entries) console.log(entry.label, entry.kind);
+
+---
+
+const existingTag = await client.addressBook.createTag({ name: "treasury" });
+if (!existingTag) throw new Error("createTag returned null");
+
+// External on-chain destination
+const entry = await client.addressBook.createEntry({
+	label: "Cold wallet",
+	entry: { kind: "external", polychainChainId: 1, address: "0xabc..." },
+	tagIds: [existingTag.tagId],
+});
+if (!entry) throw new Error("createEntry returned null");
+
+// Internal Polyester account
+await client.addressBook.createEntry({
+	label: "Ops subaccount",
+	entry: { kind: "internal", smartAccountAddress: "0xdef..." },
+	newTags: [{ name: "internal", color: "#22c55e" }],
+});
+
+---
+
+await client.addressBook.updateEntry({
+	addressBookEntryId: entry.addressBookEntryId,
+	expectedRevision: entry.revision,
+	label: "Cold wallet (rotated)",
+	note: "moved 2026-06",
+	tagIds: [existingTag.tagId],
+	newTags: [{ name: "rotated", color: "#6366f1" }],
+});
+
+---
+
+await client.addressBook.deleteEntry({ addressBookEntryId: entry.addressBookEntryId });
+
+---
+
+await client.addressBook.copyEntry({
+	addressBookEntryId: entry.addressBookEntryId,
+	targetSubaccountId,
+});
+
+---
+
+const tag = await client.addressBook.createTag({ name: "treasury", color: "#4f46e5" });
+if (!tag) throw new Error("createTag returned null");
+await client.addressBook.updateTag({ tagId: tag.tagId, name: "treasury", color: "#6366f1" });
+await client.addressBook.deleteTag({ tagId: tag.tagId });
+
+---
+
+const { counterparties } = await client.addressBook.listTransferCounterparties({
+	direction: "withdrawTo",
+});
+
+---
+
+const { destinations } = await client.addressBook.listTransferDestinations();
+const ready = destinations.filter((d) => d.whitelisted);
+
+---
+
+const { entries } = await client.addressBook.listInternalTransferWhitelistEntries();
+
+---
+
+const view = await client.addressBook.getWithdrawWhitelistView();
+if (view?.externalWhitelistRequired) {
+	console.log(view.activeEntries);
+}
+
+---
+
+const view = await client.addressBook.getView();
+console.log(view.entries?.external.length, view.tags?.length);
+
+---
+
+const unsubscribe = client.addressBook.subscribeViewInvalidations({
+	rootAccountPublicId,
+	onEvent: (event) => client.addressBook.getView({ minimumViewRevision: event.viewRevision }),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+---
+
+import type { AddressBookAccountScope } from "@polyester/sdk";
+
+type AddressBookAccountScope =
+	| { scopeType: "root"; rootAccountId: string }
+	| { scopeType: "subaccount"; rootAccountId: string; subaccountId: string }
+	| { scopeType: "unspecified"; rootAccountId: string; subaccountId?: string };

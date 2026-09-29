@@ -1,0 +1,182 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/auth/subaccounts/subaccount_id/permissions
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+SubaccountRoleService
+Get Effective Subaccount Permissions
+Return permissions granted by the caller's current role after applying the attached sub-account policy. Contextual checks such as MFA and resource state still apply.
+Copy URL
+Method
+GET
+Path
+/v1/auth/subaccounts/{subaccount_id}/permissions
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+GET
+/v1/auth/subaccounts/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/subaccounts/6789012345678/permissions' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"permissions": [
+"READ_SUBACCOUNT"
+],
+"role": "VIEWER",
+"subaccountPolicyId": "71dffC88R8"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+subaccount_id
+string (int64)
+required
+> 0
+Target sub-account (opaque ID).
+Response
+Form
+JSON
+role
+enum
+Current role of the caller on the sub-account.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+Example
+VIEWER
+permissions
+enum[]
+Permissions allowed by the role and current sub-account policy. Resource
+state, MFA, limits, and other request context may still deny an operation.
+SUBACCOUNT_PERMISSION_READ_SUBACCOUNT
+SUBACCOUNT_PERMISSION_UPDATE_SUBACCOUNT
+SUBACCOUNT_PERMISSION_READ_BALANCES
+SUBACCOUNT_PERMISSION_READ_SPOT
+SUBACCOUNT_PERMISSION_TRADE_SPOT
+SUBACCOUNT_PERMISSION_READ_INTERNAL_TRANSFERS
+SUBACCOUNT_PERMISSION_INTERNAL_TRANSFER
+SUBACCOUNT_PERMISSION_EXTERNAL_WITHDRAW
+SUBACCOUNT_PERMISSION_READ_ADDRESS_BOOK
+SUBACCOUNT_PERMISSION_MANAGE_ADDRESS_BOOK
+SUBACCOUNT_PERMISSION_READ_MEMBERS
+SUBACCOUNT_PERMISSION_MANAGE_MEMBERS
+SUBACCOUNT_PERMISSION_READ_INVITES
+SUBACCOUNT_PERMISSION_MANAGE_INVITES
+SUBACCOUNT_PERMISSION_READ_API_KEYS
+SUBACCOUNT_PERMISSION_MANAGE_API_KEYS
+SUBACCOUNT_PERMISSION_READ_SUBACCOUNT_POLICY
+SUBACCOUNT_PERMISSION_MANAGE_SUBACCOUNT_POLICY
+SUBACCOUNT_PERMISSION_READ_ACTIVITY
+SUBACCOUNT_PERMISSION_READ_ACTIVITY_SECURITY_DETAILS
+SUBACCOUNT_PERMISSION_MANAGE_MEMBER_MFA_REQUIREMENT
+SUBACCOUNT_PERMISSION_CREATE_DEPOSIT_ADDRESS
+SUBACCOUNT_PERMISSION_READ_DEPOSIT_ADDRESSES
+SUBACCOUNT_PERMISSION_READ_GUARD_SIGNER_STATUS
+SUBACCOUNT_PERMISSION_MANAGE_GUARD_SIGNER
+Example
+subaccountPolicyId
+string (fixed64)
+Attached sub-account policy identifier, or zero when no policy is attached.
+Example
+71dffC88R8
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/auth/subaccounts/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s391" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/subaccounts/6789012345678/permissions' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"permissions": [
+"READ_SUBACCOUNT"
+],
+"role": "VIEWER",
+"subaccountPolicyId": "71dffC88R8"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/subaccounts/6789012345678/permissions' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "permissions": [
+    "READ_SUBACCOUNT"
+  ],
+  "role": "VIEWER",
+  "subaccountPolicyId": "71dffC88R8"
+}

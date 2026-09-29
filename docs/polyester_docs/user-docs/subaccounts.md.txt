@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+Subaccounts let you organize different strategies, teams, or activities beneath one Main Account. Each Subaccount has its own deposit addresses, balances, orders, members, permissions, and account history, so activity in one stays separate from the others.
+Open **[Subaccounts](https://testnet.polyester.com/account/sub-accounts)** to create a new Subaccount or switch between the accounts you can access.
+![Subaccounts with combined equity, the account list, and pending invitations](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/f802ac4305e1ef60d948ba41cfd8462876e28dc8c64ac473f313fa472cbd5a5e/source.webp)
+## What each Subaccount keeps separate
+Every Subaccount has its own:
+- Funding and Trading balances
+- orders and fills
+- members and roles
+- permissions
+- API keys
+- activity and financial records.
+Someone who can use one Subaccount does not automatically gain access to your Main Account or another Subaccount.
+## When to create a Subaccount
+Create a Subaccount when you want a clear boundary between different types of activity. For example, you can keep a trading strategy separate, give a team access to only the assets they manage, or use a dedicated account for an automated trading system.
+Use as many Subaccounts as you need, but give each one a clear purpose. Subaccounts sit directly beneath the Main Account and cannot contain other Subaccounts.
+## Move assets between accounts
+Balances do not move between your Main Account and Subaccounts automatically. Use an **[Internal Transfer](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)** to move available assets between your accounts without withdrawing them from Polyester.
+Each account still keeps its own Funding and Trading balances after the transfer.
+## Control who can do what
+A member's role defines their general responsibility, while the Subaccount's permissions define what is available inside that account. API keys use the same access controls and are scoped to the account where you create them.
+See **[Members & Roles](https://testnet.polyester.com/docs/user-docs/subaccounts/members-and-roles)** for people, **[Permissions & Policies](https://testnet.polyester.com/docs/user-docs/subaccounts/permissions-and-policies)** for account limits, and **[API Keys](https://testnet.polyester.com/docs/user-docs/account/access-and-security/api-keys)** for programmatic access.
+> **One Main Account, separate account spaces**
+>
+> Your Main Account manages the Subaccounts beneath it, but each Subaccount keeps its balances, trading activity, and access separate.
+## FAQ
+### Does every Subaccount have its own deposit address?
+Yes. Every Main Account and Subaccount receives its own deposit addresses so incoming assets can be credited to the correct account. [Learn about Subaccounts.](https://testnet.polyester.com/docs/user-docs/subaccounts/subaccounts-overview)
+### Can I separate trading strategies or team members into different accounts?
+Yes. Create Subaccounts under your Main Account to separate strategies, team members, or trading bots. Each Subaccount has its own Funding and Trading balances, orders, members, permissions, API keys, withdrawal and transfer whitelists, and activity records.

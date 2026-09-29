@@ -1,0 +1,290 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Ed25519 API Keys · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Authentication & Security
+Ed25519 API Keys
+Copy page
+View as Markdown
+Open in
+Polyester
+API keys
+authenticate private API requests with Ed25519 signatures. Generate the
+keypair locally, register only the public key, and keep the private key in your own secure signing
+environment.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Private keys stay client-side
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Polyester only needs your public key to verify requests. Never send your private key to Polyester or any third party.
+Create a key
+Generate an Ed25519 keypair locally; the public key is exactly 32 bytes. Create the Polyester API
+key with
+POST /v1/auth/api-keys
+using an interactive JWT session. A root-level key belongs to the
+authenticated root account. Creating a subaccount-bound key requires owner or administrator access
+to that
+subaccount
+The creation request supports these fields:
+REST / ConnectRPC JSON field
+Required
+Contract
+label
+Yes
+Trimmed display label, 1 to 64 characters; multiline and markup-like input is rejected
+publicKeyEd25519
+Yes
+Exactly 32 public-key bytes. In JSON, protobuf bytes use Base64 encoding.
+subaccountId
+No
+Opaque subaccount ID. If omitted, the key is root-level.
+icon
+No
+Trimmed display value, up to 32 characters; tabs, newlines, and angle brackets are rejected
+color
+No
+Lowercase display token, up to 32 characters; accepts
+a-z
+,
+0-9
+,
+_
+, and
+-
+ipWhitelist
+No
+Enforced list of up to 32 unique IPv4 or IPv6 CIDR entries
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+IP whitelist enforcement
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A non-empty
+ipWhitelist
+permits the key only when the resolved client address belongs
+to at least one configured CIDR. An empty list is unrestricted. Polyester derives the address from
+the network connection and explicitly trusted proxy chain; client-supplied forwarding headers
+cannot override it.
+See
+API key IP allowlists
+for
+creation, update, lockout-prevention, and production deployment guidance.
+API-key creation does not accept scopes, a policy ID, or an expiry. Account security settings may
+require
+MFA
+enrollment or a fresh step-up before creation.
+The response returns an
+apiKey
+object containing the key metadata and
+keyId
+private key material.
+Required headers
+Every API-key-authenticated request requires:
+X-API-KEY-ID: <key_id>
+X-API-TIMESTAMP: <Unix time in milliseconds>
+X-API-SIGNATURE: <Ed25519 signature encoded as hex or standard Base64>
+X-API-TIMESTAMP
+must be within 10 seconds of Polyester server time. Timestamps too far in the
+past or future are rejected.
+X-API-NONCE
+is optional. It is outside the canonical string and does not change the signature.
+It is not a substitute for a fresh timestamp and signature, and it is not an operation
+idempotency key.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Clock sync matters
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Keep client clocks synchronized. Generate the timestamp immediately before signing each request attempt.
+Canonical string
+Build the following UTF-8 string and separate its five fields with a single newline character.
+Do not add a trailing newline.
+<timestamp_ms>
+<uppercase_method>
+<path>
+<canonical_query>
+<body_sha256_hex>
+Use:
+the exact decimal string sent in
+X-API-TIMESTAMP
+the HTTP method converted to uppercase
+the original request path exactly as sent to Polyester, preserving percent-encoding and excluding
+scheme, host, query, and fragment
+the normalized query string described below, or an empty string when there is no query
+the lowercase hexadecimal SHA-256 digest of the exact request body bytes
+An empty request body is still hashed. Its SHA-256 value is:
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Sign exactly what you send
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Serialize the body before signing and send those same bytes. JSON whitespace, field order, and trailing newlines all affect the body hash.
+Query normalization
+Normalize the raw query as follows:
+Parse all query pairs, including repeated keys and empty values.
+Percent-decode each key and value. A raw
++
+is decoded as a space, so a literal plus sign must
+be sent as
+%2B
+Sort pairs by decoded key, then by decoded value.
+Percent-encode each key and value using RFC 3986 query encoding. Encode spaces as
+%20
+and
+literal plus signs as
+%2B
+Write every pair as
+key=value
+, preserving repeated pairs, and join them with
+&
+For example:
+Raw:       tag=z&q=hello+world&literal=%2B&tag=a&empty=
+Canonical: empty=&literal=%2B&q=hello%20world&tag=a&tag=z
+Malformed or ambiguously encoded query strings are unsupported. Send a valid percent-encoded query
+so client and server canonicalization agree.
+Sign and encode
+Sign the UTF-8 bytes of the complete canonical string with the private Ed25519 key. The resulting
+signature must be exactly 64 bytes before encoding.
+Send
+X-API-SIGNATURE
+as either:
+128 hexadecimal characters
+standard padded Base64, normally 88 characters for a 64-byte signature
+Polyester authentication verifies the timestamp, key status and expiry, signature, and configured
+IP allowlist, then resolves the key's root-account and optional subaccount binding. Each endpoint
+separately applies its supported authorization and policy checks.
+Retry safely
+For every request attempt, including retries:
+Generate an
+X-API-TIMESTAMP
+that is distinct from the previous attempt and within the accepted
+server-time window.
+Rebuild the canonical string from the exact request.
+Sign the rebuilt canonical string.
+For retries of the same logical state-changing operation, keep the endpoint's idempotency key and
+operation payload unchanged. A new signature authenticates a new HTTP attempt, but does not prevent
+the operation from running twice.
+See
+API key replay protection
+for the complete retry and idempotency guidance.
+Authentication errors
+Code
+Meaning
+UNAUTHENTICATED
+No usable authentication was supplied, including a missing
+X-API-KEY-ID
+MISSING_HEADERS
+A key ID was supplied, but the timestamp or signature header is missing.
+TIMESTAMP_SKEW
+The timestamp is malformed or more than 10 seconds from server time.
+SIGNATURE_INVALID
+The key ID is unknown, signature encoding is invalid, signature verification failed, or replay protection rejected a repeated signed request.
+KEY_DISABLED
+The key exists but is disabled or revoked.
+KEY_EXPIRED
+The key's expiry time has passed.
+IP_NOT_ALLOWED
+The signature is valid, but the trusted client address is outside the key's IP whitelist or cannot be safely determined.
+Do not blindly retry an authentication error. Correct the signing input first. If a state-changing
+request may already have succeeded, preserve its endpoint idempotency key and payload when signing
+the next attempt.
+Key handling
+Store private keys in a secure keystore, hardware security module, or dedicated signing service.
+Use TLS. Request signatures authenticate the request but do not encrypt it.
+Prefer subaccount-bound keys when they match your integration.
+Rotate keys by registering a new public key, moving traffic to it, and revoking the old key.
+Revoke keys immediately if they are unused or may be compromised.
+Related Topics
+API key replay protection
+Understand signed-request freshness, replay rejection, and operation idempotency when using Ed25519 API keys.
+Multi-Factor Authentication
+How Polyester MFA works: TOTP, passkeys, recovery codes, elevated sessions, and fresh step-up for high-risk actions.
+Guard Signer
+How clients initialize Guard Signer and request approval for protected Funding Account whitelist actions.
+Withdrawals and transfer security
+Understand authentication, MFA, signatures, policies, and whitelist checks for Trading withdrawals and internal transfers.
+API key IP allowlists
+Restrict Ed25519 API keys to approved IPv4 and IPv6 source networks.
+Previous
+WebSocket session model
+Next
+API key replay protection
+On this page
+Create a key
+Required headers
+Canonical string
+Query normalization
+Sign and encode
+Retry safely
+Authentication errors
+Key handling
+Related Topics
+Share this page
+Ed25519 API Keys
+Create Ed25519 API keys and sign private Polyester API requests with the required canonical format.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+<timestamp_ms>
+<uppercase_method>
+<path>
+<canonical_query>
+<body_sha256_hex>
+
+---
+
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+---
+
+Raw:       tag=z&q=hello+world&literal=%2B&tag=a&empty=
+Canonical: empty=&literal=%2B&q=hello%20world&tag=a&tag=z

@@ -1,0 +1,367 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/market-overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market overview · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Market overview
+Market overview
+Copy page
+View as Markdown
+Open in
+client.MarketOverview
+returns one row per spot market (last price, 24h stats, and related
+fields). Public, no authentication required.
+Methods
+Method
+Summary
+List
+Overview rows (optional symbol filter).
+CreateSubscription
+Snapshot-then-stream merged rows (preferred).
+Subscribe
+Raw Centrifugo batches (
+Messages()
+).
+List(ctx, symbols, limit, pageToken, includeSparklines)
+overview
+,
+err
+client
+MarketOverview
+List
+(
+ctx
+, []
+string
+"BTC-USDT"
+},
+50
+,
+""
+,
+false
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+m
+range
+overview
+Markets
+fmt
+Println
+(
+m
+SymbolID
+,
+m
+Symbol
+,
+m
+LastPrice
+)
+}
+The
+pageToken
+argument is accepted for signature parity; filtering is primarily via
+symbols
+and
+limit
+CreateSubscription(ctx, opts)
+Managed books expose
+Updates()
+(slice of merged rows), not
+Messages()
+import
+"
+github.com/Fabric-Labs/polyester-sdk-go/services
+"
+sub
+,
+err
+client
+MarketOverview
+CreateSubscription
+(
+ctx
+,
+services
+MarketOverviewCreateSubscriptionOptions
+Symbols
+string
+"BTC-USDT"
+},
+Limit
+50
+,
+OnEvent
+func
+(
+rows
+models
+MarketOverviewEntry
+) {
+for
+_
+,
+m
+range
+rows
+fmt
+Println
+(
+m
+Symbol
+,
+m
+LastPrice
+)
+}
+},
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+for
+rows
+range
+sub
+Updates
+() {
+fmt
+Println
+(
+len
+(
+rows
+))
+break
+}
+Subscribe(ctx)
+Raw batches, consume with
+Messages()
+CreateSubscription
+for dashboards.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prefer CreateSubscription
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Raw
+Subscribe
+does not merge a REST snapshot for you.
+Related
+Market data guide
+Streaming
+Candles
+Order book
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Lifecycle
+Next
+Order book
+On this page
+Methods
+List(ctx, symbols, limit, pageToken, includeSparklines)
+CreateSubscription(ctx, opts)
+Subscribe(ctx)
+Related
+Related Topics
+Share this page
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+overview, err := client.MarketOverview.List(ctx, []string{"BTC-USDT"}, 50, "", false)
+if err != nil { log.Fatal(err) }
+for _, m := range overview.Markets {
+    fmt.Println(m.SymbolID, m.Symbol, m.LastPrice)
+}
+
+---
+
+import "github.com/Fabric-Labs/polyester-sdk-go/services"
+
+sub, err := client.MarketOverview.CreateSubscription(ctx, services.MarketOverviewCreateSubscriptionOptions{
+    Symbols: []string{"BTC-USDT"},
+    Limit:   50,
+    OnEvent: func(rows []models.MarketOverviewEntry) {
+        for _, m := range rows {
+            fmt.Println(m.Symbol, m.LastPrice)
+        }
+    },
+})
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+
+for rows := range sub.Updates() {
+    fmt.Println(len(rows))
+    break
+}

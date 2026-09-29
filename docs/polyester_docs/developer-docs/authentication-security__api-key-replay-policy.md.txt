@@ -1,0 +1,36 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API key replay protection
+Understand signed-request freshness, replay rejection, and operation idempotency when using Ed25519 API keys.
+Polyester validates the timestamp and signature of every API-key-authenticated request. State-changing endpoints may also reject a signed request that has already been seen.
+These authentication checks are separate from operation idempotency. Replay protection determines whether a signed HTTP request is accepted. Idempotency determines whether multiple accepted requests represent one logical operation.
+## Request freshness
+Every signed request includes `X-API-TIMESTAMP` as Unix time in milliseconds. The timestamp must be within 10 seconds of Polyester server time.
+Keep client clocks synchronized. For every request attempt, use a timestamp that is distinct from the previous attempt and sign the complete request again. Reusing the same timestamp, request data, and signature on a protected endpoint can be rejected as a replay.
+See [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys) for the required headers and canonical signing format.
+## Replay protection versus idempotency
+| Mechanism                   | Purpose                                                      | Client value                                    |
+| --------------------------- | ------------------------------------------------------------ | ----------------------------------------------- |
+| Timestamp and signature     | Authenticate a specific HTTP request and limit its lifetime  | Fresh timestamp and signature for every attempt |
+| Endpoint operation identity | Identify one logical operation under endpoint-specific rules | Follow that endpoint's retry contract           |
+Depending on the endpoint, an operation identity may be named `clientOrderId`, `requestId`, or `idempotencyKey`. Their guarantees differ. In particular, a retained `clientOrderId` on a single-order create returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`; it does not replay the earlier result. Check the endpoint contract before retrying a state-changing request.
+> **A new signature does not make an operation idempotent**
+>
+> A fresh timestamp and signature allow Polyester to authenticate a retry. They do not prevent the underlying operation from running twice. Use the endpoint's idempotency field whenever one is available.
+## Safe retry pattern
+For a state-changing request:
+1. Generate and persist the endpoint's operation identity before the first attempt.
+2. Keep the operation payload and identity unchanged while reconciling an uncertain result.
+3. Use a timestamp distinct from the previous attempt and sign each attempt.
+4. Retry only where the endpoint contract permits it, using bounded backoff with jitter.
+5. Do not create a new identity after a timeout or other uncertain result.
+For order creation, see [Client order IDs and idempotency](https://testnet.polyester.com/docs/developer-docs/shared-concepts/client-order-ids).
+## Nonce behavior
+`X-API-NONCE` is optional. It is not part of the canonical signing string, so changing only the nonce does not produce a new signature and must not be used as a substitute for:
+- a fresh `X-API-TIMESTAMP` and signature
+- an endpoint idempotency field
+## Errors
+A stale or malformed timestamp returns `TIMESTAMP_SKEW`. A repeated signed request may return `SIGNATURE_INVALID`, which is also used for other signature-verification failures.
+Do not blindly retry authentication errors. Correct the timestamp or signing input first. If the operation may already have been accepted, keep its idempotency value and payload unchanged when signing the next attempt.

@@ -1,0 +1,460 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/chain/flows/by-tx/tx_hash/matches
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LifecycleReadService
+List Flows By Tx
+List lifecycle flows that reference a transaction hash.
+Copy URL
+Method
+GET
+Path
+/v1/chain/flows/by-tx/{tx_hash}/matches
+Visibility
+Public endpoint
+GET
+/v1/chain/flows/by-tx/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/chain/flows/by-tx/0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890/matches' \
+--header 'Accept: */*'
+Responses
+"matches": [
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"currentStep": "SOURCE",
+"destinationAddress": "0x3333333333333333333333333333333333333333",
+"destinationDomain": "EXTERNAL_CHAIN",
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"flowKind": "DEPOSIT",
+"isOpen": false,
+"isTerminal": false,
+"lastActivityAtUnixMs": "1",
+"latestTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"ownerAccountId": "7563897446546",
+"polyesterChainId": 1,
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"sourceAddress": "0x4444444444444444444444444444444444444444",
+"sourceDomain": "EXTERNAL_CHAIN",
+"sourceTxHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"txOccurrenceIndex": "1",
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"txHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+tx_hash
+string
+required
+Chain transaction identifier to search for. Accepts a 0x-prefixed 32-byte
+EVM hash or a printable chain-native transaction id such as a Solana
+signature, Bitcoin txid, Litecoin txid, Dogecoin txid, or XRP transaction
+hash.
+Query parameters
+limit
+integer
+≤ 500
+Maximum number of matches to return. Defaults to 100 when omitted; maximum
+is 500.
+lookupKind
+enum
+must be defined value
+Lookup mode that determines which transaction references are searched.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s335-lookupKind" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select lookupKind
+pageToken
+string
+max 512 chars
+Opaque keyset cursor returned by a previous response. The cursor is
+exclusive and bound to the transaction hash and lookup mode.
+Response
+Form
+JSON
+txHash
+string
+Transaction hash searched by the request.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+matches
+object[]
+Matching flows ordered by tx occurrence, flow kind, domains, activity time,
+and stable identifiers.
+20 fields
+flowId
+string
+Public, URL-safe lifecycle identifier for display, URLs, and user search.
+Example
+flow_7YWHMfk9JZeLMgZauHuiSxhI
+flowKind
+enum
+Product flow family.
+KIND_DEPOSIT
+KIND_WITHDRAW
+KIND_TRANSFER
+Example
+DEPOSIT
+sourceTxHash
+string
+First observed source transaction hash for the flow when known.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+latestTxRef
+string
+Latest transaction reference associated with the current visible state.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+txOccurrenceIndex
+string (uint64)
+Stable occurrence discriminator within a transaction. For source-chain
+deposits this is the batched leg index; for on-chain facts it is the log or
+equivalent per-tx occurrence index when available.
+Example
+1
+sourceDomain
+enum
+Product domain where the overall flow starts.
+DOMAIN_EXTERNAL_CHAIN
+DOMAIN_ZIPPER
+DOMAIN_FUNDING
+DOMAIN_TRADING
+DOMAIN_LENDING
+Example
+EXTERNAL_CHAIN
+destinationDomain
+enum
+Product domain where the overall flow ends or currently settles.
+DOMAIN_EXTERNAL_CHAIN
+DOMAIN_ZIPPER
+DOMAIN_FUNDING
+DOMAIN_TRADING
+DOMAIN_LENDING
+Example
+EXTERNAL_CHAIN
+currentStep
+enum
+Current user-facing progress step for this flow.
+FLOW_STEP_SOURCE
+FLOW_STEP_TRANSFER
+FLOW_STEP_REQUEST
+FLOW_STEP_VALIDATION
+FLOW_STEP_EXECUTION
+FLOW_STEP_BRIDGE_FULFILLMENT
+FLOW_STEP_DROPPED
+FLOW_STEP_FAILED
+FLOW_STEP_REFUNDED
+FLOW_STEP_FULFILLING
+FLOW_STEP_SETTLEMENT
+Example
+SOURCE
+isOpen
+boolean
+True when this flow is still progressing.
+Example
+false
+isTerminal
+boolean
+True when this flow reached a final state.
+Example
+false
+assetIds
+object
+Asset identifiers involved in this flow.
+2 fields
+zippedAssetId
+integer (int32)
+Zipped asset identifier for the chain-specific asset mapping row. This is
+the canonical id from `chain_zipped_assets`, which already represents the
+source-chain asset metadata plus its mapped zToken relationship when
+relevant.
+Example
+100
+unifiedAssetId
+integer (int32)
+Unified asset identifier for the uAsset used by funding or trading flows
+when relevant. This is the canonical Polyester asset identity used by
+FundingAccount, TradingGateway, Lending, and other downstream product
+domains.
+Example
+100
+polyesterChainId
+integer (int32)
+Polyester Chain id associated with this flow.
+Example
+1
+amountE18
+object
+Gross principal amount for this flow in 18-decimal unified asset units.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+Example
+1
+lo
+string (fixed64)
+Least significant 64 bits.
+Example
+1
+sourceAddress
+string
+Source address to show for this flow.
+Example
+0x4444444444444444444444444444444444444444
+destinationAddress
+string
+Destination address to show for this flow.
+Example
+0x3333333333333333333333333333333333333333
+lifecycleReason
+enum
+Product-facing reason for failed, dropped, or otherwise notable flows.
+ZIPPER_VALIDATION_REJECTED
+ZIPPER_EXECUTION_REJECTED
+ZIPPER_WITHDRAW_EXECUTION_FAILED
+ZIPPER_DEPOSIT_REFUND_FAILED
+LEDGER_MIRROR_REJECTED
+LEDGER_MIRROR_TRANSFER_EXCEEDS_CREDITS
+LEDGER_MIRROR_TRANSFER_EXISTS
+LEDGER_MIRROR_PENDING_TRANSFER_NOT_FOUND
+LEDGER_MIRROR_TRANSFER_ID_ALREADY_FAILED
+TRADING_WITHDRAW_POLICY_DENIED
+TRADING_WITHDRAW_CONTRACT_REVERTED
+TRADING_WITHDRAW_EXECUTION_FAILED
+Example
+ZIPPER_VALIDATION_REJECTED
+lastActivityAtUnixMs
+string (uint64)
+Timestamp used for list ordering in milliseconds since epoch (UTC).
+Example
+1
+ownerAccountId
+string (fixed64)
+Public account or subaccount identifier that owns this flow.
+Example
+7563897446546
+smartAccountAddress
+string
+Smart account address on Polyester Chain when known.
+Example
+0x2222222222222222222222222222222222222222
+zipperReason
+object
+Specific reason details when a notable outcome has a catalog entry.
+3 fields
+code
+enum
+Stable code assigned to the specific outcome.
+DEPOSIT_WAIT_EXPIRED
+DEPOSIT_AMOUNT_INVALID
+DEPOSIT_AMOUNT_BELOW_MINIMUM
+DEPOSIT_AMOUNT_NOT_ABOVE_FEE
+DEPOSIT_NET_AMOUNT_BELOW_MINIMUM
+EVM_DEPOSIT_SOURCE_TX_INVALID
+EVM_DEPOSIT_SOURCE_TX_ZERO
+EVM_DEPOSIT_SOURCE_TX_NOT_FOUND
+EVM_DEPOSIT_SOURCE_TX_REVERTED
+EVM_DEPOSIT_TRANSFER_MISMATCH
+UTXO_DEPOSIT_TRANSACTION_MISMATCH
+BTC_DEPOSIT_TRANSACTION_MISMATCH
+BCH_DEPOSIT_TRANSACTION_MISMATCH
+DOGE_DEPOSIT_TRANSACTION_MISMATCH
+LTC_DEPOSIT_TRANSACTION_MISMATCH
+UTXO_DEPOSIT_SOURCE_IS_DEPOSIT_ADDRESS
+SOLANA_DEPOSIT_SIGNATURE_INVALID
+SOLANA_DEPOSIT_TRANSACTION_FAILED
+SOLANA_DEPOSIT_TRANSFER_MISMATCH
+XRP_DEPOSIT_SOURCE_HASH_INDEX_INVALID
+XRP_DEPOSIT_SOURCE_ADDRESS_INVALID
+XRP_DEPOSIT_ADDRESS_INVALID
+XRP_DEPOSIT_PAYMENT_MISMATCH
+REJECTION_UNMAPPED
+WITHDRAWAL_AMOUNT_INVALID
+WITHDRAWAL_AMOUNT_BELOW_MINIMUM
+WITHDRAWAL_ASSET_INVALID
+WITHDRAWAL_SENDER_INVALID
+WITHDRAWAL_DESTINATION_INVALID
+WITHDRAWAL_ASSET_UNAVAILABLE
+EVM_WITHDRAWAL_DESTINATION_INVALID
+BTC_WITHDRAWAL_DESTINATION_INVALID
+BCH_WITHDRAWAL_DESTINATION_INVALID
+DOGE_WITHDRAWAL_DESTINATION_INVALID
+LTC_WITHDRAWAL_DESTINATION_INVALID
+SOLANA_WITHDRAWAL_DESTINATION_INVALID
+XRP_WITHDRAWAL_CLASSIC_ADDRESS_INVALID
+XRP_WITHDRAWAL_DESTINATION_TAG_INVALID
+WITHDRAWAL_LIQUIDITY_INSUFFICIENT
+COMPLIANCE_HIGH_RISK_ADDRESS
+REQUEST_VERIFICATION_REJECTED
+REJECTED
+ERROR_UNMAPPED
+ERROR_NETWORK_UNSUPPORTED
+ERROR_REQUEST_PROCESSING_FAILED
+ERROR_REQUEST_VERIFICATION_FAILED
+ERROR_RESULT_SUBMISSION_FAILED
+ERROR_STATUS_UNKNOWN
+Example
+DEPOSIT_WAIT_EXPIRED
+reasonId
+string
+Stable reason identifier suitable for localization lookup.
+Example
+value
+message
+string
+User-displayable English explanation of the outcome.
+Example
+value
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/chain/flows/by-tx/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s455" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/chain/flows/by-tx/0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890/matches' \
+--header 'Accept: */*'
+Responses
+"matches": [
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"currentStep": "SOURCE",
+"destinationAddress": "0x3333333333333333333333333333333333333333",
+"destinationDomain": "EXTERNAL_CHAIN",
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"flowKind": "DEPOSIT",
+"isOpen": false,
+"isTerminal": false,
+"lastActivityAtUnixMs": "1",
+"latestTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"ownerAccountId": "7563897446546",
+"polyesterChainId": 1,
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"sourceAddress": "0x4444444444444444444444444444444444444444",
+"sourceDomain": "EXTERNAL_CHAIN",
+"sourceTxHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"txOccurrenceIndex": "1",
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"txHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/chain/flows/by-tx/0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890/matches' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "matches": [
+    {
+      "amountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "assetIds": {
+        "unifiedAssetId": 100,
+        "zippedAssetId": 100
+      },
+      "currentStep": "SOURCE",
+      "destinationAddress": "0x3333333333333333333333333333333333333333",
+      "destinationDomain": "EXTERNAL_CHAIN",
+      "flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+      "flowKind": "DEPOSIT",
+      "isOpen": false,
+      "isTerminal": false,
+      "lastActivityAtUnixMs": "1",
+      "latestTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+      "lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+      "ownerAccountId": "7563897446546",
+      "polyesterChainId": 1,
+      "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "sourceAddress": "0x4444444444444444444444444444444444444444",
+      "sourceDomain": "EXTERNAL_CHAIN",
+      "sourceTxHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+      "txOccurrenceIndex": "1",
+      "zipperReason": {
+        "code": "DEPOSIT_WAIT_EXPIRED",
+        "message": "value",
+        "reasonId": "value"
+      }
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "txHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
+}

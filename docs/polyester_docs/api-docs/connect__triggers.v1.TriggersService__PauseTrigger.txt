@@ -1,0 +1,175 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/triggers.v1.TriggersService/PauseTrigger
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+triggers.v1.TriggersService
+PauseTrigger
+Pause a trigger (sets status=PAUSED).
+Copy URL
+Method
+POST
+Path
+triggers.v1.TriggersService/PauseTrigger
+Service
+triggers.v1.TriggersService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+triggers.v1.TriggersService/PauseTrigger
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/PauseTrigger' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678",
+"triggerId": "9155001234567"
+}'
+Responses
+"status": "STATUS_CREATED",
+"triggerId": "9155001234567",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+triggers.v1.PauseTriggerRequest
+Response
+triggers.v1.PauseTriggerResponse
+Request body
+Form
+JSON
+Example
+triggerId
+string (fixed64)
+> 0
+Trigger ID to pause.
+subaccountId
+string (fixed64)
+Optional sub-account for authorization.
+Response
+Form
+JSON
+triggerId
+string (fixed64)
+Paused trigger ID.
+status
+enum
+Current trigger status after pausing.
+STATUS_CREATED
+STATUS_ARMED
+STATUS_RUNNING
+STATUS_COMPLETED
+STATUS_CANCELED
+STATUS_FAILED
+STATUS_PAUSED
+ts
+string (date-time)
+Server timestamp.
+tsNs
+string (uint64)
+Server timestamp in nanoseconds since epoch (UTC).
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+triggers.v1.TriggersService/PauseTrigger
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s382" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/PauseTrigger' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678",
+"triggerId": "9155001234567"
+}'
+Responses
+"status": "STATUS_CREATED",
+"triggerId": "9155001234567",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/PauseTrigger' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "subaccountId": "6789012345678",
+  "triggerId": "9155001234567"
+}'
+
+---
+
+{
+  "status": "STATUS_CREATED",
+  "triggerId": "9155001234567",
+  "ts": "2025-01-01T00:00:00Z",
+  "tsNs": "1735689600000000000"
+}

@@ -1,0 +1,30 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/identifiers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Identifiers
+How Polyester ConnectRPC contracts represent public IDs as fixed64 values in typed payloads.
+Polyester Protobuf contracts commonly declare public IDs as `fixed64` values, carrying the underlying unsigned 64-bit value in compact typed payloads.
+For what public IDs are and why they are opaque, see [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids). This page covers only how they look and behave over ConnectRPC and Protobuf.
+## Using fixed64 IDs
+Public ID fields declared as `fixed64` carry the underlying unsigned 64-bit value. Always follow the field type in the published contract; not every identifier uses `fixed64`.
+```protobuf
+message Trade {
+fixed64 order_id = 1;
+uint32 symbol_id = 2;
+uint64 qty_scaled = 3;
+}
+```
+In generated clients, use the type your language SDK gives you for 64-bit integers. In JSON debug mode, protobuf tools often show 64-bit integer fields as decimal strings:
+```json
+"orderId": "72623859790382856"
+}
+```
+JSON debug output shows the fixed64 value as a decimal string because JSON has no native 64-bit integer type. In binary protobuf, the same values are encoded as fixed-width 64-bit fields. This keeps hot paths compact and avoids extra string parsing in clients that already use typed protobuf contracts.
+Using an integer field instead of a string also reduces payload size, especially in large list responses, order history, trade history, realtime-style snapshots, and other payloads that repeat many IDs. If your integration cares about smaller payloads and lower transport overhead, prefer ConnectRPC with binary protobuf.
+## Displaying and converting IDs
+If a directly generated ConnectRPC client also renders user-facing URLs or labels, convert its `fixed64` values to base58 in the display layer. Official SDKs can expose a normalized representation instead, so follow the selected SDK's documented types. For example, the TypeScript SDK returns base58 public-ID strings to application code even when its underlying transport is ConnectRPC.
+Conversion is needed only when an ID crosses between a raw ConnectRPC field and a base58 surface such as REST or URLs (see [REST identifiers](https://testnet.polyester.com/docs/developer-docs/rest/identifiers)). Base58 `An6UebxCZd` and decimal `72623859790382856` are two representations of the same unsigned 64-bit public ID. A custom converter must reject invalid Base58 characters and values larger than `uint64`.
+> **Public IDs are not credentials**
+>
+> Public IDs are safe to expose as identifiers, but access to private resources still requires valid authentication and authorization.

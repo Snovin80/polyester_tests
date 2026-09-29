@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/settlement.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+**Settlement** turns each completed fill into a financial result in your Trading Account. It records the assets exchanged, your fee or rebate, and the amount used or released from your order's reservation.
+Settlement uses PolyEngine's immutable ledger. Your spot fill does not require a separate Polyester Chain transaction, and its account-level details remain immutable.
+All settlements are streamed to [Verifier Nodes](https://testnet.polyester.com/docs/user-docs/polyengine/verifiers), which can view and retain trade records to check that execution follows PolyEngine's matching rules. The stream omits maker and taker identities to preserve trading privacy.
+## What changes after a fill
+Every trading pair contains a base asset and a quote asset. Settlement applies the following movement:
+| Your side | You spend   | You receive |
+| --------- | ----------- | ----------- |
+| **Buy**   | Quote asset | Base asset  |
+| **Sell**  | Base asset  | Quote asset |
+Each fill is settled on its own. If your order fills in several parts, each fill has its own price, amount, maker or taker role, and fee result. Your order and balance views then combine those fills into the complete result.
+## How trading fees are paid
+Seller fees come from the quote asset received by the trade. When the pair and your account settings allow it, a buyer can choose between:
+- **Quote**, which pays the fee from the quote asset
+- **Received**, which deducts the fee from the base asset received.
+Your fee source does not change the execution price or whether the fill is maker or taker. Eligible [maker rebates](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees#maker-rebates) are credited as part of the same fill.
+See **[Trading Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees)** for the current rates, VIP tiers, fee-source options, and maker rebates.
+## What happens to reserved balance
+Admission reserves the amount your order may spend. Settlement turns the required part of that reservation into the completed trade:
+- a full fill uses the required amount and releases any extra protection
+- a partial fill uses the completed portion and keeps the remaining order amount reserved
+- canceling after a partial fill releases only the unused remainder
+- an order with no fills releases its unused reservation when it ends.
+The reservation itself is never an additional fee.
+> **Canceling does not reverse a completed fill**
+>
+> Cancellation applies only to the amount that remains open. Assets, fees, and rebates from completed fills stay in your account.
+## Where you see the result
+Open **Order Details** to see the instruction and every fill. The **Trades** view shows each execution, while **Transfers** and your **[Ledger](https://testnet.polyester.com/docs/user-docs/account/ledger/ledger-overview)** show the connected asset, fee, rebate, and reservation entries.
+Market Trades shows that an execution occurred for the pair, but it does not reveal your account, balance, fee source, or immutable settlement details.

@@ -1,0 +1,239 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/layout.v1.LayoutService/GetLayoutTemplateVersion
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+layout.v1.LayoutService
+GetLayoutTemplateVersion
+Get a specific version snapshot for a template.
+Copy URL
+Method
+POST
+Path
+layout.v1.LayoutService/GetLayoutTemplateVersion
+Service
+layout.v1.LayoutService
+Visibility
+Public endpoint
+POST
+layout.v1.LayoutService/GetLayoutTemplateVersion
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/layout.v1.LayoutService/GetLayoutTemplateVersion' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"ownerId": "1",
+"templateId": "1",
+"version": 1
+}'
+Responses
+"layout": {
+"dockviewState": "AA==",
+"isDefault": false,
+"layoutId": "1",
+"name": "BTC Trading",
+"updatedAtMs": "1",
+"viewerId": "1",
+"widgets": [
+"widgetConfig": "AA==",
+"widgetId": "chart-main",
+"widgetType": "CHART"
+}
+]
+},
+"ownerId": "1",
+"templateId": "1",
+"version": 1
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+layout.v1.GetLayoutTemplateVersionRequest
+Response
+layout.v1.GetLayoutTemplateVersionResponse
+Request body
+Form
+JSON
+Example
+ownerId
+string (fixed64)
+Viewer that owns the template.
+templateId
+string (fixed64)
+Template identifier.
+version
+integer (int32)
+Immutable version number to fetch.
+Response
+Form
+JSON
+layout
+object
+Layout snapshot captured for the requested version.
+7 fields
+viewerId
+string (fixed64)
+Viewer that owns the saved layout.
+layoutId
+string (fixed64)
+Layout identifier unique within the viewer's saved layouts.
+name
+string
+Human-readable layout name.
+isDefault
+boolean
+True when this is the viewer's default layout.
+dockviewState
+string (byte)
+Serialized editor panel arrangement snapshot.
+widgets
+object[]
+Widgets contained in the layout.
+3 fields
+widgetId
+string
+min 1 chars
+Stable widget identifier within the layout, such as "chart-1".
+widgetType
+enum
+must be defined value
+Widget kind that determines how widget_config is decoded.
+CHART
+ORDERBOOK
+TRADES
+POSITIONS
+ORDERS
+widgetConfig
+string (byte)
+Serialized widget configuration bytes for the selected widget_type.
+updatedAtMs
+string (fixed64)
+Last update time in milliseconds since epoch (UTC).
+ownerId
+string (fixed64)
+Viewer that owns the template.
+templateId
+string (fixed64)
+Template identifier.
+version
+integer (int32)
+Immutable version number returned.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+layout.v1.LayoutService/GetLayoutTemplateVersion
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s381" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/layout.v1.LayoutService/GetLayoutTemplateVersion' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"ownerId": "1",
+"templateId": "1",
+"version": 1
+}'
+Responses
+"layout": {
+"dockviewState": "AA==",
+"isDefault": false,
+"layoutId": "1",
+"name": "BTC Trading",
+"updatedAtMs": "1",
+"viewerId": "1",
+"widgets": [
+"widgetConfig": "AA==",
+"widgetId": "chart-main",
+"widgetType": "CHART"
+}
+]
+},
+"ownerId": "1",
+"templateId": "1",
+"version": 1
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/layout.v1.LayoutService/GetLayoutTemplateVersion' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "ownerId": "1",
+  "templateId": "1",
+  "version": 1
+}'
+
+---
+
+{
+  "layout": {
+    "dockviewState": "AA==",
+    "isDefault": false,
+    "layoutId": "1",
+    "name": "BTC Trading",
+    "updatedAtMs": "1",
+    "viewerId": "1",
+    "widgets": [
+      {
+        "widgetConfig": "AA==",
+        "widgetId": "chart-main",
+        "widgetType": "CHART"
+      }
+    ]
+  },
+  "ownerId": "1",
+  "templateId": "1",
+  "version": 1
+}

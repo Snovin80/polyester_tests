@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/guard-signer.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Guard signer
+Guard signer approval helpers.
+`client.GuardSigner` manages approvals for protected funding account-control actions.
+| Method                          | Purpose                         |
+| ------------------------------- | ------------------------------- |
+| `GetStatus` / `CreateWallet`    | Guard wallet state/provisioning |
+| `SignProtectedAction`           | One approval                    |
+| `BatchSignProtectedActions`     | Multiple approvals              |
+| `RotateWallet` / `ExportWallet` | Guard key lifecycle             |
+```go
+status, err := client.GuardSigner.GetStatus(ctx, nil, nil)
+chainID := 6
+approval, err := client.GuardSigner.SignProtectedAction(
+ctx,
+"add_allowed_external_destinations",
+nil, nil,
+&chainID,
+nil, nil,
+)
+```
+The action determines which optional fields are required. These are authenticated control-plane mutations: do not retry blindly and never log approvals or exported key material.
+An approval does not submit an on-chain transaction. Combine it with the matching [Chain helper](https://testnet.polyester.com/docs/sdk/go/reference/chain) and verify the receipt/final state.

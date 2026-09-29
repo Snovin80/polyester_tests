@@ -1,0 +1,202 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/market-trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market Trades · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Market Trades
+Market Trades
+Copy page
+View as Markdown
+Open in
+Market Trades is the live tape for the active Pair.
+Each row is a completed public execution, not a resting order or an unactivated trigger.
+What the widget shows
+Field
+What it means
+Price
+Price where the trade completed
+Amount
+Executed amount in the selected base or
+quote Asset
+unit
+Time
+Time the public execution was reported
+Color
+Displayed buy or sell direction for the trade print
+The widget can show Amount in the base or quote Asset. Its volume threshold can also emphasize larger trades without removing the underlying executions from the market record.
+Read recent activity
+Market Trades shows where price discovery is happening and whether recent activity is clustered around a level. Compare it with the
+Polyester Chart
+for history and the
+Order Book
+for liquidity that is resting now.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public trades are not private fill history
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A row does not identify either participant or prove that the selected account took part. Use Order History and fill details to confirm account activity, fees, and balance changes.
+If the tape looks stale
+Confirm the active Pair, latest timestamp, and connection state. Refresh the widget after a connection gap, then verify your own order independently in
+Order History
+Related Topics
+Polyester Chart
+Read candles, volume, indicators, and drawings in Polyester's native market chart.
+Order Book
+Read current buy and sell prices, the spread, and visible liquidity for one spot market.
+Order History
+Review filled, canceled, expired, and rejected order outcomes for the selected account.
+Previous
+Order Book
+Next
+Order Form
+On this page
+What the widget shows
+Read recent activity
+If the tape looks stale
+Related Topics
+Share this page
+Market Trades
+Follow recent public executions for the active Pair and see where trading is taking place.
+Share
+Copy Link

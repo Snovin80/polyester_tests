@@ -1,0 +1,45 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# User trades
+List and stream your private spot fills (not the public tape).
+`client.Trades` is your authenticated trade history and private fill stream. For the public tape, see [Public trades](https://testnet.polyester.com/docs/sdk/go/reference/public-trades) (`client.MarketData`).
+Methods are account-scoped. Pass an `AccountScope` / `subAccountID` when you need a scope other than the client default. Streams use `Messages()`, Go has no `Recv()`.
+## Methods
+| Method      | Summary                              |
+| ----------- | ------------------------------------ |
+| `List`      | Paginated private user trades.       |
+| `Subscribe` | Stream private fills for an account. |
+### List(ctx, account, subAccountID, symbol, symbolID, limit, pageToken)
+```go
+symbol := "BTC-USDT"
+page, err := client.Trades.List(ctx, nil, nil, &symbol, nil, 50, nil)
+if err != nil { log.Fatal(err) }
+for _, t := range page.Trades {
+fmt.Println(t.MatchID, t.OrderID, t.Side, t.Price, t.Qty, t.FeeAmountE18, t.FeeAsset, t.FeeIsRebate)
+}
+if page.NextPageToken != "" {
+tok := page.NextPageToken
+page, err = client.Trades.List(ctx, nil, nil, &symbol, nil, 50, &tok)
+}
+```
+Each `UserTrade` includes `FeeAmountE18`, `FeeAsset`, `ReferralShareAmountE18`, and `FeeIsRebate`. Fee magnitudes are fixed 18-decimal (`U128`) strings in units of `FeeAsset`. `FeeAsset` is `"quote"` or `"base"` (with unknown future enum values preserved as `"unknown(
+)"`). `FeeIsRebate` is sparse: `true` means `FeeAmountE18` is a rebate credit rather than a fee debit (proto3 omits `false`).
+When `FeeAsset` is `"base"` on a BUY, convert `FeeAmountE18` to the symbol's base quantity scale before adjusting fill quantity: subtract for a fee, add for a rebate. Do not assume a BUY's gross fill quantity is fully available to sell.
+### Subscribe(ctx, accountID)
+Private channel `private:spot:trades:{account_id}:proto`. Needs API key + Account ID.
+```go
+sub, err := client.Trades.Subscribe(ctx, client.DefaultAccountID)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for trade := range sub.Messages() {
+fmt.Println(trade.MatchID, trade.OrderID, trade.Price, trade.Qty)
+break
+}
+```
+## Related
+- [Orders](https://testnet.polyester.com/docs/sdk/go/reference/orders)
+- [Public trades](https://testnet.polyester.com/docs/sdk/go/reference/public-trades)
+- [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming)
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/go/guides/accounts-and-balances)

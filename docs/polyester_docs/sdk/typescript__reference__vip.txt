@@ -1,0 +1,568 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/vip
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+VIP · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+VIP
+VIP
+Copy page
+View as Markdown
+Open in
+client.vip
+is the VIP policy surface. A tier sets the base
+maker
+and
+taker
+percents an account
+trades at, and it is held on the root account: every
+subaccount
+inherits it, and there is no
+per-subaccount VIP.
+There are two ways up. Rolling 30-day settled spot volume earns one tier, rolling 30-day average
+portfolio value (AOP) earns another, and the account gets whichever is higher — the paths are
+evaluated separately and never added together. Catalog percents are the policy rates, before
+symbol-specific adjustments; for what an account is actually charged per market, see
+Fees
+Percents, USD amounts, and rolling metrics are decimal strings with no currency or
+%
+sign.
+Timestamps are epoch milliseconds.
+Methods
+Method
+Summary
+listTiers
+Public. The whole VIP0–VIP10 catalog: entry thresholds, fee percents, policy version.
+getStatus
+Authenticated. The root account's tier, how each path scored, and the next thresholds.
+listTiers(options?)
+Fetches the complete active catalog as a
+VipTierCatalog
+by tier ascending. Not paginated, and no credentials are required. Use this to render a schedule or
+to look up the thresholds for a tier you already know.
+const
+catalog
+=
+await
+client
+vip
+listTiers
+();
+console
+log
+(
+catalog
+policyVersion
+,
+new
+Date
+(
+catalog
+effectiveFrom
+));
+for
+(
+const
+tier
+of
+catalog
+tiers
+) {
+const
+aop
+=
+tier
+tier
+===
+0
+?
+"n/a"
+tier
+aopThresholdUsd
+;
+console
+log
+(
+tier
+tier
+,
+tier
+volumeThresholdUsd
+,
+aop
+,
+tier
+makerFeeRatePercent
+);
+}
+VipTier
+is a union. VIP0 is the entry tier and has no AOP threshold at all, so
+aopThresholdUsd
+exists on VIP1 and up only — narrow with
+tier.tier !== 0
+before reading it, or TypeScript will
+reject the access.
+volumeThresholdUsd
+is the rolling 30-day settled spot volume needed to enter the tier.
+retentionThresholdBp
+sits on the catalog rather than the row: it is the average-portfolio-value
+retention threshold shared by every tier, in basis points (1 through 10000, where one basis point
+is 0.01%).
+VipTierCatalog
+interface
+VipTierCatalog
+policyVersion
+string
+;
+effectiveFrom
+number
+;
+// epoch ms
+retentionThresholdBp
+number
+;
+// 1-10000
+tiers
+VipTier
+}
+type
+VipTier
+=
+|
+tier
+0
+;
+volumeThresholdUsd
+string
+;
+makerFeeRatePercent
+string
+;
+// -100 to 100; negative is a rebate
+takerFeeRatePercent
+string
+;
+// 0 to 100
+}
+|
+tier
+number
+;
+// integer >= 1
+volumeThresholdUsd
+string
+;
+aopThresholdUsd
+string
+;
+// VIP1 and up only
+makerFeeRatePercent
+string
+;
+takerFeeRatePercent
+string
+;
+};
+getStatus(options?)
+Fetches
+VipStatus
+for the authenticated caller's root account: the applied tier (0 through 10),
+what each qualification path scored on its own, the rolling metrics behind them, and what the next
+tier takes.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+There is no
+account
+field:
+getStatus
+always reads the root account, and switching the active
+subaccount does not change the result.
+const
+status
+=
+await
+client
+vip
+getStatus
+();
+console
+log
+(
+status
+tier
+,
+status
+volumeTier
+,
+status
+aopTier
+);
+console
+log
+(
+status
+settledVolume30dUsd
+,
+status
+averageAop30dUsd
+);
+if
+(
+status
+nextTierThresholds
+) {
+console
+log
+(
+status
+nextTierThresholds
+tier
+,
+status
+nextTierThresholds
+volumeThresholdUsd
+,
+status
+nextTierThresholds
+aopThresholdUsd
+,
+);
+}
+tier
+is what the account trades at.
+volumeTier
+and
+aopTier
+say which path got it there, which
+is the difference between telling someone to trade more and telling them to hold more.
+nextTierThresholds
+is omitted at VIP10, where there is nothing above.
+Treat the optional fields as "not reported," never as zero.
+settledVolume30dUsd
+,
+averageAop30dUsd
+, and
+metricsAsOf
+(the UTC cutoff of the rolling window) drop out together when
+complete qualification metrics are unavailable, and
+effectiveFrom
+/
+evaluatedAt
+are absent while
+a new account is still on the default VIP0 assignment instead of an evaluated one.
+VipStatus
+interface
+VipStatus
+tier
+number
+;
+// applied qualification
+volumeTier
+number
+;
+// volume-path tier
+aopTier
+number
+;
+// equity-path tier
+settledVolume30dUsd
+?:
+string
+;
+averageAop30dUsd
+?:
+string
+;
+policyVersion
+string
+;
+policyEffectiveFrom
+number
+;
+// epoch ms
+effectiveFrom
+?:
+number
+;
+evaluatedAt
+?:
+number
+;
+metricsAsOf
+?:
+number
+;
+nextTierThresholds
+?:
+NextVipTierThresholds
+;
+}
+interface
+NextVipTierThresholds
+tier
+number
+;
+// integer >= 1
+volumeThresholdUsd
+string
+;
+aopThresholdUsd
+string
+;
+}
+Related
+Fees
+to read the effective spot rates for an account.
+Profile
+for the
+vipTier
+field on the public profile.
+VIP tiers
+for the product-facing qualification write-up.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Triggers
+Next
+Withdrawals
+On this page
+Methods
+listTiers(options?)
+VipTierCatalog
+getStatus(options?)
+VipStatus
+Related
+Related Topics
+Share this page
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const catalog = await client.vip.listTiers();
+
+console.log(catalog.policyVersion, new Date(catalog.effectiveFrom));
+
+for (const tier of catalog.tiers) {
+	const aop = tier.tier === 0 ? "n/a" : tier.aopThresholdUsd;
+	console.log(tier.tier, tier.volumeThresholdUsd, aop, tier.makerFeeRatePercent);
+}
+
+---
+
+interface VipTierCatalog {
+	policyVersion: string;
+	effectiveFrom: number; // epoch ms
+	retentionThresholdBp: number; // 1-10000
+	tiers: VipTier[];
+}
+
+type VipTier =
+	| {
+			tier: 0;
+			volumeThresholdUsd: string;
+			makerFeeRatePercent: string; // -100 to 100; negative is a rebate
+			takerFeeRatePercent: string; // 0 to 100
+	  }
+	| {
+			tier: number; // integer >= 1
+			volumeThresholdUsd: string;
+			aopThresholdUsd: string; // VIP1 and up only
+			makerFeeRatePercent: string;
+			takerFeeRatePercent: string;
+	  };
+
+---
+
+const status = await client.vip.getStatus();
+
+console.log(status.tier, status.volumeTier, status.aopTier);
+console.log(status.settledVolume30dUsd, status.averageAop30dUsd);
+
+if (status.nextTierThresholds) {
+	console.log(
+		status.nextTierThresholds.tier,
+		status.nextTierThresholds.volumeThresholdUsd,
+		status.nextTierThresholds.aopThresholdUsd,
+	);
+}
+
+---
+
+interface VipStatus {
+	tier: number; // applied qualification
+	volumeTier: number; // volume-path tier
+	aopTier: number; // equity-path tier
+	settledVolume30dUsd?: string;
+	averageAop30dUsd?: string;
+	policyVersion: string;
+	policyEffectiveFrom: number; // epoch ms
+	effectiveFrom?: number;
+	evaluatedAt?: number;
+	metricsAsOf?: number;
+	nextTierThresholds?: NextVipTierThresholds;
+}
+
+interface NextVipTierThresholds {
+	tier: number; // integer >= 1
+	volumeThresholdUsd: string;
+	aopThresholdUsd: string;
+}

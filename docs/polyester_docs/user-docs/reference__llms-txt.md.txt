@@ -1,0 +1,9 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/llms-txt.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# LLMs.txt
+Open Polyester documentation as a plain-text resource for language models and other tools.
+Polyester publishes a plain-text documentation file for language models, search tools, and documentation agents.
+**[Open llms.txt](https://testnet.polyester.com/docs/user-docs/llms.txt)**
+The file contains the public user-docs index available from this site.

@@ -1,0 +1,91 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/vip.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+`client.vip` is the VIP policy surface. A tier sets the base maker and taker percents an account trades at, and it is held on the root account: every subaccount inherits it, and there is no per-subaccount VIP.
+There are two ways up. Rolling 30-day settled spot volume earns one tier, rolling 30-day average portfolio value (AOP) earns another, and the account gets whichever is higher — the paths are evaluated separately and never added together. Catalog percents are the policy rates, before symbol-specific adjustments; for what an account is actually charged per market, see [Fees](https://testnet.polyester.com/docs/sdk/typescript/reference/fees).
+Percents, USD amounts, and rolling metrics are decimal strings with no currency or `%` sign. Timestamps are epoch milliseconds.
+## Methods
+| Method      | Summary                                                                                |
+| ----------- | -------------------------------------------------------------------------------------- |
+| `listTiers` | Public. The whole VIP0–VIP10 catalog: entry thresholds, fee percents, policy version.  |
+| `getStatus` | Authenticated. The root account's tier, how each path scored, and the next thresholds. |
+### `listTiers(options?)`
+Fetches the complete active catalog as a `VipTierCatalog`: 11 rows, VIP0 through VIP10, ordered by tier ascending. Not paginated, and no credentials are required. Use this to render a schedule or to look up the thresholds for a tier you already know.
+```ts
+const catalog = await client.vip.listTiers();
+console.log(catalog.policyVersion, new Date(catalog.effectiveFrom));
+for (const tier of catalog.tiers) {
+const aop = tier.tier === 0 ? "n/a" : tier.aopThresholdUsd;
+console.log(tier.tier, tier.volumeThresholdUsd, aop, tier.makerFeeRatePercent);
+}
+```
+`VipTier` is a union. VIP0 is the entry tier and has no AOP threshold at all, so `aopThresholdUsd` exists on VIP1 and up only — narrow with `tier.tier !== 0` before reading it, or TypeScript will reject the access.
+`volumeThresholdUsd` is the rolling 30-day settled spot volume needed to enter the tier. `retentionThresholdBp` sits on the catalog rather than the row: it is the average-portfolio-value retention threshold shared by every tier, in basis points (1 through 10000, where one basis point is 0.01%).
+#### `VipTierCatalog`
+```ts
+interface VipTierCatalog {
+policyVersion: string;
+effectiveFrom: number; // epoch ms
+retentionThresholdBp: number; // 1-10000
+tiers: VipTier[];
+}
+type VipTier =
+| {
+tier: 0;
+volumeThresholdUsd: string;
+makerFeeRatePercent: string; // -100 to 100; negative is a rebate
+takerFeeRatePercent: string; // 0 to 100
+}
+| {
+tier: number; // integer >= 1
+volumeThresholdUsd: string;
+aopThresholdUsd: string; // VIP1 and up only
+makerFeeRatePercent: string;
+takerFeeRatePercent: string;
+};
+```
+### `getStatus(options?)`
+Fetches `VipStatus` for the authenticated caller's root account: the applied tier (0 through 10), what each qualification path scored on its own, the rolling metrics behind them, and what the next tier takes.
+> There is no `account` field: `getStatus` always reads the root account, and switching the active subaccount does not change the result.
+```ts
+const status = await client.vip.getStatus();
+console.log(status.tier, status.volumeTier, status.aopTier);
+console.log(status.settledVolume30dUsd, status.averageAop30dUsd);
+if (status.nextTierThresholds) {
+console.log(
+status.nextTierThresholds.tier,
+status.nextTierThresholds.volumeThresholdUsd,
+status.nextTierThresholds.aopThresholdUsd,
+);
+}
+```
+`tier` is what the account trades at. `volumeTier` and `aopTier` say which path got it there, which is the difference between telling someone to trade more and telling them to hold more. `nextTierThresholds` is omitted at VIP10, where there is nothing above.
+Treat the optional fields as "not reported," never as zero. `settledVolume30dUsd`, `averageAop30dUsd`, and `metricsAsOf` (the UTC cutoff of the rolling window) drop out together when complete qualification metrics are unavailable, and `effectiveFrom` / `evaluatedAt` are absent while a new account is still on the default VIP0 assignment instead of an evaluated one.
+#### `VipStatus`
+```ts
+interface VipStatus {
+tier: number; // applied qualification
+volumeTier: number; // volume-path tier
+aopTier: number; // equity-path tier
+settledVolume30dUsd?: string;
+averageAop30dUsd?: string;
+policyVersion: string;
+policyEffectiveFrom: number; // epoch ms
+effectiveFrom?: number;
+evaluatedAt?: number;
+metricsAsOf?: number;
+nextTierThresholds?: NextVipTierThresholds;
+}
+interface NextVipTierThresholds {
+tier: number; // integer >= 1
+volumeThresholdUsd: string;
+aopThresholdUsd: string;
+}
+```
+## Related
+- [Fees](https://testnet.polyester.com/docs/sdk/typescript/reference/fees) to read the effective spot rates for an account.
+- [Profile](https://testnet.polyester.com/docs/sdk/typescript/reference/profile) for the `vipTier` field on the public profile.
+- [VIP tiers](https://testnet.polyester.com/docs/user-docs/fees-and-vip/vip-tiers) for the product-facing qualification write-up.

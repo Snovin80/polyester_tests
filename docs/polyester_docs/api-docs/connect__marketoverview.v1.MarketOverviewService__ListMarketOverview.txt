@@ -1,0 +1,350 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketoverview.v1.MarketOverviewService/ListMarketOverview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketoverview.v1.MarketOverviewService
+ListMarketOverview
+Copy URL
+Method
+POST
+Path
+marketoverview.v1.MarketOverviewService/ListMarketOverview
+Service
+marketoverview.v1.MarketOverviewService
+Visibility
+Public endpoint
+POST
+marketoverview.v1.MarketOverviewService/ListMarketOverview
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/ListMarketOverview' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"includeSparklines": false,
+"limit": 100,
+"orderBy": "ORDER_BY_CHANGE_24H_BPS",
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"sort": "SORT_ASC",
+"sparklineIntervals": [
+"SPARKLINE_1H"
+],
+"symbolId": [
+1
+]
+}'
+Responses
+"markets": [
+"bestAskQtyScaled": "100000",
+"bestAskTicks": "1",
+"bestBidQtyScaled": "100000",
+"bestBidTicks": "1",
+"change24hBps": 123,
+"high24hTicks": "1",
+"indexPriceTicks": "5000000",
+"lastPriceTicks": "5000000",
+"lastTradeTsNs": "1735689600000000000",
+"listedTsNs": "1735689600000000000",
+"low24hTicks": "1",
+"sparklines": [
+"closeTicks": [
+"1"
+],
+"interval": "SPARKLINE_1H"
+}
+],
+"symbolId": 1,
+"volume24hBaseScaled": "123456",
+"volume24hQuoteScaled": "123456",
+"volume24hUsdScaled": "123456"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketoverview.v1.ListMarketOverviewRequest
+Response
+marketoverview.v1.ListMarketOverviewResponse
+Request body
+Form
+JSON
+Example
+symbolId
+integer[] (int32)
+max 2000 items, unique
+Filter by stable numeric pair IDs from GetSpotConfig. When empty, returns
+all enabled markets.
+Add item
+limit
+integer (int32)
+≤ 2000
+Maximum number of markets to return. Defaults to 50 when omitted; maximum
+is 2000.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to symbol IDs, sort key, and sort direction. Sparkline options
+affect only response enrichment and may change between pages.
+orderBy
+enum
+must be defined value
+Sort key. When unset/UNSPECIFIED, defaults to descending 24h USD volume.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s356" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+ORDER_BY_CHANGE_24H_BPS
+sort
+enum
+must be defined value
+Sort direction (DESC=newest/highest first).
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s358" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+SORT_ASC
+includeSparklines
+boolean
+When true, include sparklines in each MarketOverview.
+Unset
+False
+True
+sparklineIntervals
+enum[]
+Which sparklines to include. If empty and include_sparklines is true,
+server defaults to 24h.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md rounded-r-none text-sm" id="bits-s363" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+SPARKLINE_1H
+Add item
+Response
+Form
+JSON
+markets
+object[]
+Market overview rows for the requested page.
+16 fields
+symbolId
+integer (int32)
+Numeric spot market identifier.
+lastPriceTicks
+string (int64)
+Last traded price in quote units scaled by 1e9.
+lastTradeTsNs
+string (uint64)
+Last trade timestamp in nanoseconds since epoch.
+change24hBps
+integer (int32)
+Rolling 24h change expressed in basis points (bp). Example: +123 = +1.23%.
+high24hTicks
+string (int64)
+Rolling 24h stats.
+Highest traded price in the 24h window, in quote units scaled by 1e9.
+low24hTicks
+string (int64)
+Lowest traded price in the 24h window, in quote units scaled by 1e9.
+volume24hBaseScaled
+string (int64)
+Rolling 24h base volume scaled by the base asset's
+market_data_volume_scale from GetSpotConfig. Omitted if the amount exceeds
+the signed 64-bit range.
+volume24hQuoteScaled
+string (int64)
+Rolling 24h quote volume scaled by the pair's quote_quantity_scale from
+GetSpotConfig. Omitted if the amount exceeds the signed 64-bit range.
+volume24hUsdScaled
+string (int64)
+Rolling 24h USD volume, scaled by 1e6 (one unit is 0.000001 USD).
+Applies the current quote/USD conversion to the rolling quote volume.
+When conversion is unavailable, USDT and USDC are valued at USD parity.
+Omitted for other quote assets when a current conversion is unavailable.
+listedTsNs
+string (uint64)
+Listing timestamp in nanoseconds since epoch.
+bestBidTicks
+string (int64)
+Current best bid price in quote units scaled by 1e9.
+bestBidQtyScaled
+string (int64)
+Best bid quantity scaled by the pair's base_quantity_scale from
+GetSpotConfig.
+bestAskTicks
+string (int64)
+Current best ask price in quote units scaled by 1e9.
+bestAskQtyScaled
+string (int64)
+Best ask quantity scaled by the pair's base_quantity_scale from
+GetSpotConfig.
+sparklines
+object[]
+Optional sparklines (requested explicitly).
+2 fields
+interval
+enum
+must be defined value
+Time range and sampling resolution represented by these close prices.
+SPARKLINE_1H
+SPARKLINE_24H
+SPARKLINE_1W
+SPARKLINE_1M
+closeTicks
+string[] (int64)
+Newest-first close prices in quote units scaled by 1e9.
+indexPriceTicks
+string (int64)
+Current multi-venue index price in quote units scaled by 1e9.
+Zero when no fresh, valid index price is available.
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+bad-request
+400
+Bad Request
+Bad request.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Service Unavailable
+Service unavailable.
+upstream-error
+502
+Upstream Error
+Upstream error.
+POST
+marketoverview.v1.MarketOverviewService/ListMarketOverview
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s392" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/ListMarketOverview' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"includeSparklines": false,
+"limit": 100,
+"orderBy": "ORDER_BY_CHANGE_24H_BPS",
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"sort": "SORT_ASC",
+"sparklineIntervals": [
+"SPARKLINE_1H"
+],
+"symbolId": [
+1
+]
+}'
+Responses
+"markets": [
+"bestAskQtyScaled": "100000",
+"bestAskTicks": "1",
+"bestBidQtyScaled": "100000",
+"bestBidTicks": "1",
+"change24hBps": 123,
+"high24hTicks": "1",
+"indexPriceTicks": "5000000",
+"lastPriceTicks": "5000000",
+"lastTradeTsNs": "1735689600000000000",
+"listedTsNs": "1735689600000000000",
+"low24hTicks": "1",
+"sparklines": [
+"closeTicks": [
+"1"
+],
+"interval": "SPARKLINE_1H"
+}
+],
+"symbolId": 1,
+"volume24hBaseScaled": "123456",
+"volume24hQuoteScaled": "123456",
+"volume24hUsdScaled": "123456"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/ListMarketOverview' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "includeSparklines": false,
+  "limit": 100,
+  "orderBy": "ORDER_BY_CHANGE_24H_BPS",
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "sort": "SORT_ASC",
+  "sparklineIntervals": [
+    "SPARKLINE_1H"
+  ],
+  "symbolId": [
+    1
+  ]
+}'
+
+---
+
+{
+  "markets": [
+    {
+      "bestAskQtyScaled": "100000",
+      "bestAskTicks": "1",
+      "bestBidQtyScaled": "100000",
+      "bestBidTicks": "1",
+      "change24hBps": 123,
+      "high24hTicks": "1",
+      "indexPriceTicks": "5000000",
+      "lastPriceTicks": "5000000",
+      "lastTradeTsNs": "1735689600000000000",
+      "listedTsNs": "1735689600000000000",
+      "low24hTicks": "1",
+      "sparklines": [
+        {
+          "closeTicks": [
+            "1"
+          ],
+          "interval": "SPARKLINE_1H"
+        }
+      ],
+      "symbolId": 1,
+      "volume24hBaseScaled": "123456",
+      "volume24hQuoteScaled": "123456",
+      "volume24hUsdScaled": "123456"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}

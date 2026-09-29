@@ -1,0 +1,60 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/rest/getting-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Getting started
+How to use Polyester REST endpoints in production: signing, pagination, and common integration patterns.
+REST is the **HTTP-first interface** for Polyester and is **production-supported** for real exchange integrations.
+It is often the fastest way to ship because payloads are readable, tooling is familiar, and integration teams can debug quickly.
+> **REST is first-class**
+>
+> REST is not a second-tier interface. Use it confidently in production when it matches your workload and team tooling.
+Polyester's custom contract-generation tooling derives the REST models, conversions, validation, and OpenAPI schemas from the same public Protobuf contracts used by ConnectRPC. This keeps shared API semantics aligned while allowing REST-specific representations such as decimal strings and text identifiers. Learn more in [Protobuf contracts](https://testnet.polyester.com/docs/developer-docs/connectrpc/protobuf-contracts).
+For trading orders, review [Order Sizing](https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing), [Fee Assets](https://testnet.polyester.com/docs/developer-docs/shared-concepts/fee-assets), and [Preview Order](https://testnet.polyester.com/docs/developer-docs/shared-concepts/preview-order). These pages show the REST field names alongside the canonical contract semantics.
+***
+## When to use REST
+Choose REST when you want:
+- simple HTTP integration with broad ecosystem support
+- human-readable request/response payloads
+- easier debugging with existing API tools
+- fast onboarding for teams that already know exchange REST patterns
+Compare REST with typed and streaming interfaces in the [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix).
+***
+## Signing private requests
+## Public endpoints
+- no API-key signature required
+- ideal for market data and discovery flows
+## Private endpoints
+Private endpoints use **Ed25519 API key signing**.
+Common required headers:
+- `X-API-KEY-ID`
+- `X-API-TIMESTAMP`
+- `X-API-SIGNATURE`
+`X-API-NONCE` is optional and is not part of the canonical signing string or an operation idempotency key.
+Use the full signing guide here: [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys). Replay policy and latency tradeoffs are documented here: [API Key Replay Policy](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy).
+> **Clock sync matters**
+>
+> Signature validation depends on timestamp freshness. Keep client clocks synchronized to avoid auth failures caused by clock drift.
+***
+## Pagination patterns
+REST endpoints use multiple pagination styles depending on data shape and endpoint semantics.
+| Pattern             | Request fields                     | Response fields                      | Notes                                                             |
+| ------------------- | ---------------------------------- | ------------------------------------ | ----------------------------------------------------------------- |
+| Opaque cursor token | `limit`, `page_token`              | `next_page_token`                    | Do not parse the token client-side; treat as opaque.              |
+| Time cursor         | `limit`, `before_ts_ns` or `since` | `next_before_ts_ns` or `next_cursor` | Common for history/event timelines.                               |
+| Offset pagination   | `limit`, `offset`                  | `total` (or equivalent)              | Practical for list views; can drift on rapidly changing datasets. |
+General guidance:
+- keep page sizes bounded and predictable
+- always use the server-provided next cursor/token instead of constructing your own
+- stop paginating when the next cursor/token is empty or zero (endpoint dependent)
+***
+## Common REST integration patterns
+- **Readable payloads:** decimal strings and text identifiers are common on REST surfaces for developer ergonomics.
+- **Idempotent writes:** for endpoints that support request IDs, use stable request IDs to make retries safe.
+- **Retry discipline:** retry transient failures with bounded backoff and jitter; do not blindly retry validation or auth errors.
+- **Transport hygiene:** reuse HTTP connections and keep request/response handling lightweight.
+### Can I run production trading systems on REST?
+Yes. REST is production-supported. Use the [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix) to compare it with ConnectRPC and streaming interfaces.
+### Should clients decode pagination tokens?
+No. Cursor/token fields are opaque by contract. Store and replay them exactly as returned.
+Continue with [WebSocket JSON](https://testnet.polyester.com/docs/developer-docs/rest/websocket-json) when your REST integration also needs live market or account updates.

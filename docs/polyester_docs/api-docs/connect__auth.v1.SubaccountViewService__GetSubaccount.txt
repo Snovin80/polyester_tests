@@ -1,0 +1,901 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.SubaccountViewService/GetSubaccount
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.SubaccountViewService
+GetSubaccount
+Aggregate commonly-needed read data for a sub-account dashboard page.
+Copy URL
+Method
+POST
+Path
+auth.v1.SubaccountViewService/GetSubaccount
+Service
+auth.v1.SubaccountViewService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+auth.v1.SubaccountViewService/GetSubaccount
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.SubaccountViewService/GetSubaccount' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"includeApiKeys": false,
+"includeBalances": false,
+"includeInvites": false,
+"includeMembers": false,
+"includePolicy": false,
+"invitesDirection": "INCOMING",
+"subaccountId": "6789012345678"
+}'
+Responses
+"apiKeys": [
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"createdByActor": "dashboard",
+"expiresAt": "2025-01-01T00:00:00Z",
+"icon": "💰",
+"ipWhitelist": [
+"203.0.113.0/24"
+],
+"keyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+"label": "Trading Bot",
+"lastUsedAt": "2025-01-01T00:00:00Z",
+"policyId": "1",
+"publicKeyEd25519": "AA==",
+"revision": "1",
+"status": "ACTIVE",
+"subaccountId": "6789012345678",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"balances": {
+"balances": [
+"assetId": 100,
+"available": {
+"hi": "1",
+"lo": "1"
+},
+"funding": {
+"hi": "1",
+"lo": "1"
+},
+"fundingRevision": "1",
+"reserved": {
+"hi": "1",
+"lo": "1"
+},
+"trading": {
+"hi": "1",
+"lo": "1"
+},
+"tradingRevision": "1"
+}
+]
+},
+"invites": [
+"createdAt": "2025-01-01T00:00:00Z",
+"granteeAccountId": "7563897446546",
+"granteeRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"granteeUsername": "trader_alpha",
+"id": "1",
+"inviterAccountId": "7563897446546",
+"inviterRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"inviterUsername": "trader_alpha",
+"requireMemberMfa": false,
+"respondedAt": "2025-01-01T00:00:00Z",
+"role": "VIEWER",
+"status": "SUBACCOUNT_INVITE_STATUS_PENDING",
+"subaccountId": "6789012345678",
+"subaccountLabel": "Market Making"
+}
+],
+"members": [
+"accountId": "7563897446546",
+"avatarUrl": "https://placehold.co/128x128.png",
+"mfaEnrolled": false,
+"role": "VIEWER",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"username": "trader_alpha"
+}
+],
+"policy": {
+"actions": [
+"TRADE_SPOT"
+],
+"createdAt": "2025-01-01T00:00:00Z",
+"description": "Allow spot trading for selected markets.",
+"expiresAt": "2025-01-01T00:00:00Z",
+"id": "1",
+"isTemplate": false,
+"locked": false,
+"maxOpenOrders": 1,
+"maxOrderNotional": "12345",
+"name": "Market Maker Policy",
+"reviewAt": "2025-01-01T00:00:00Z",
+"revision": "1",
+"sourceTemplateId": "1",
+"spotMarketScope": "ALL",
+"spotMarkets": [
+"symbolId": 1
+}
+],
+"tradingHalted": false,
+"updatedAt": "2025-01-01T00:00:00Z"
+},
+"subaccount": {
+"color": "#7C3AED",
+"icon": "💰",
+"id": "1",
+"label": "Market Making",
+"ownerAvatarUrl": "https://placehold.co/128x128.png",
+"ownerRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"ownerUsername": "trader_alpha",
+"requireMemberMfa": false,
+"revision": "1",
+"role": "VIEWER",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"smartAccountSaltNonce": 1,
+"status": "SUBACCOUNT_STATUS_ACTIVE",
+"subaccountPolicyId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.GetSubaccountRequest
+Response
+auth.v1.GetSubaccountResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+> 0
+Target sub-account (opaque ID).
+includeApiKeys
+boolean
+Include API keys scoped to this sub-account. Only owner and admin callers receive API keys.
+Unset
+False
+True
+includeMembers
+boolean
+Include current members for this sub-account. Every current member may receive the roster.
+Unset
+False
+True
+includeInvites
+boolean
+Include invitations visible to the caller.
+Unset
+False
+True
+includePolicy
+boolean
+Include the attached sub-account policy, when one is attached. Every current member may receive it.
+Unset
+False
+True
+includeBalances
+boolean
+Include current balances for this sub-account.
+Unset
+False
+True
+invitesDirection
+enum
+must be defined value
+Optional invitation direction filter. An omitted value includes both scopes.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s379" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+INCOMING
+Response
+Form
+JSON
+subaccount
+object
+Requested sub-account summary.
+15 fields
+id
+string (fixed64)
+Sub-account identifier (opaque ID).
+role
+enum
+must be defined value
+Role of the current caller on this sub-account.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+label
+string
+max 64 chars
+Optional human-readable label for this sub-account.
+icon
+string
+max 32 chars
+Optional user-chosen icon/emoji for UI display.
+color
+string (color)
+max 32 chars
+Optional user-chosen color token for UI display. Tokens use lowercase letters, numbers, underscores, or hyphens.
+status
+enum
+must be defined value
+Current public lifecycle status of the sub-account.
+SUBACCOUNT_STATUS_ACTIVE
+SUBACCOUNT_STATUS_DISABLED
+smartAccountAddress
+string
+Smart Account EVM address backing this sub-account.
+ownerUsername
+string
+Owner (root account) public username, if set. Useful for shared views.
+ownerAvatarUrl
+string
+Owner (root account) avatar URL, if set.
+ownerRootSmartAccountAddress
+string
+Owner (root account) primary Smart Account address, when available. Allows
+clients to display a stable identity even when no username is set.
+subaccountPolicyId
+string (fixed64)
+Optional sub-account policy identifier (opaque ID). 0 means no
+explicit policy attached.
+requireMemberMfa
+boolean
+Owner-controlled security baseline for delegated interactive members on
+protected sub-account actions. This does not apply to read-only real-time
+subscriptions.
+smartAccountSaltNonce
+integer (int32)
+Smart-account derivation salt nonce assigned when this sub-account was
+created. Present only when the caller owns the sub-account and can use it
+for direct chain signing.
+updatedAt
+string (date-time)
+Time in UTC when this sub-account's configuration was last changed. For the
+same sub-account, later is fresher, equal is an idempotent replay, and
+earlier is stale. Equal timestamps with different configuration indicate
+an invariant failure.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+apiKeys
+object[]
+API keys scoped to this sub-account when include_api_keys is true and the caller is owner or admin.
+15 fields
+keyId
+string
+/^ak_[a…]{32}$/
+Stable opaque identifier used to refer to this key, formatted as "ak_"
+followed by 32 lowercase hex characters.
+label
+string
+Human-readable label for the key. Maximum length is 64 characters.
+icon
+string
+max 32 chars
+Optional user-chosen icon/emoji for UI display.
+color
+string (color)
+max 32 chars
+Optional user-chosen color token for UI display.
+ipWhitelist
+string[]
+max 32 items, unique
+Optional CIDR whitelist. Empty means no IP restriction. Maximum 32 unique
+entries.
+status
+enum
+Current key status.
+ACTIVE
+REVOKED
+DISABLED
+subaccountId
+string (fixed64)
+Optional sub-account this key is scoped to (opaque ID; empty = root-level).
+policyId
+string (fixed64)
+Optional API policy attached to this key (opaque ID).
+Empty means no policy is attached and the key has no permissions.
+createdAt
+string (date-time)
+Time in UTC when this key was created.
+lastUsedAt
+string (date-time)
+Last time in UTC when this key authenticated a request. Omitted when the
+key has not been used.
+publicKeyEd25519
+string (byte)
+Ed25519 public key bytes associated with this API key. The private key or
+seed is never returned by the API.
+expiresAt
+string (date-time)
+Optional expiry time in UTC. When set, the key cannot authenticate requests
+after this time, regardless of status.
+createdByActor
+string
+Read-only actor label describing who created this key, such as a username
+or account label.
+updatedAt
+string (date-time)
+Time in UTC when this key's configuration was last changed. For the same
+key, later is fresher, equal is an idempotent replay, and earlier is stale.
+Equal timestamps with different configuration indicate an invariant failure.
+This is independent of last_used_at, which tracks authentication activity.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+members
+object[]
+Current members for this sub-account when include_members is true and the caller is a current member.
+6 fields
+accountId
+string (fixed64)
+Identifier for the member's root account (opaque ID).
+role
+enum
+must be defined value
+Effective role on this sub-account.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+username
+string
+Optional username for the member's root account.
+smartAccountAddress
+string
+Smart Account address for the member's root account, if any.
+avatarUrl
+string
+Optional avatar URL for the member's root account.
+mfaEnrolled
+boolean
+True when the member has at least one MFA factor enrolled on their root account.
+invites
+object[]
+Invitations visible to the caller when include_invites is true.
+14 fields
+id
+string (fixed64)
+Invite identifier (opaque ID).
+subaccountId
+string (fixed64)
+Target sub-account (opaque ID).
+granteeAccountId
+string (fixed64)
+Grantee root account ID the invite is for (opaque ID).
+inviterAccountId
+string (fixed64)
+Inviter root account ID (opaque ID).
+role
+enum
+must be defined value
+Requested role for the grantee.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+status
+enum
+Current invitation status.
+SUBACCOUNT_INVITE_STATUS_PENDING
+SUBACCOUNT_INVITE_STATUS_ACCEPTED
+SUBACCOUNT_INVITE_STATUS_DECLINED
+SUBACCOUNT_INVITE_STATUS_CANCELLED
+createdAt
+string (date-time)
+Time when the invitation was created.
+respondedAt
+string (date-time)
+Time when the invitation was accepted, declined, or cancelled. Empty while pending.
+granteeUsername
+string
+Optional usernames for better UX in invite lists.
+inviterUsername
+string
+Username of the account that sent the invitation, when available.
+subaccountLabel
+string
+Optional label for the target sub-account, for display in invite lists.
+inviterRootSmartAccountAddress
+string
+Inviter (root account) primary Smart Account address, when available.
+Useful for displaying a stable identity when no username is set.
+granteeRootSmartAccountAddress
+string
+Grantee (root account) primary Smart Account address, when available.
+Useful for displaying a stable identity when no username is set.
+requireMemberMfa
+boolean
+Current delegated-member MFA requirement on the target sub-account. If true, accepting the invite requires MFA enrollment and fresh step-up.
+policy
+object
+Attached policy when include_policy is true, the caller is a current member, and the sub-account has a policy.
+17 fields
+id
+string (fixed64)
+Policy identifier (opaque ID).
+name
+string
+Human-readable policy name.
+description
+string
+Optional policy description for dashboards and audits.
+spotMarkets
+object[]
+Allowed spot markets for this sub-account.
+1 field
+symbolId
+integer (int32)
+Stable numeric pair ID.
+spotMarketScope
+enum
+must be defined value
+Market-level scope for spot markets. When ALL, spot_markets is returned
+for display only and is not enforced.
+ALL
+ALLOWLIST
+actions
+enum[]
+max 64 items, unique
+Effective high-level actions enabled for the sub-account. Mandatory
+read-only actions are always included.
+TRADE_SPOT
+INTERNAL_TRANSFER
+EXTERNAL_WITHDRAW
+READ_BALANCES
+READ_SPOT
+READ_INTERNAL_TRANSFERS
+READ_ADDRESS_BOOK
+MANAGE_ADDRESS_BOOK
+isTemplate
+boolean
+True if this policy is a reusable template; false if it is a
+per-sub-account instance.
+sourceTemplateId
+string (fixed64)
+Optional source template this policy was copied from (opaque ID). This is
+audit metadata only and does not imply live linkage.
+maxOrderNotional
+string (uint64)
+Maximum notional size allowed for any single order on this sub-account,
+expressed in canonical quote microunits (one unit is 0.000001 USDT).
+A value of 0 means "no explicit cap".
+maxOpenOrders
+integer (int32)
+Maximum number of resting orders allowed on this sub-account at any time.
+A value of 0 means "no explicit cap".
+tradingHalted
+boolean
+When true, new orders and exposure-increasing order or trigger changes are
+rejected regardless of other settings. Existing orders and triggers may
+still be canceled or paused by an otherwise authorized caller.
+locked
+boolean
+When true, this policy is write-protected and requires an elevated approval
+flow to modify it.
+reviewAt
+string (date-time)
+Optional review time in UTC. This is governance metadata and does not
+automatically disable the policy.
+expiresAt
+string (date-time)
+Optional expiry time in UTC. This is governance metadata and does not
+automatically disable the policy.
+createdAt
+string (date-time)
+Creation time in UTC.
+updatedAt
+string (date-time)
+Last update time in UTC.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+balances
+object
+Current balances when include_balances is true.
+1 field
+balances
+object[]
+One entry for every supported unified asset, including assets with zero
+balances. Sorted by available trading amount (highest first), then by
+asset symbol alphabetically.
+7 fields
+assetId
+integer (int32)
+Public unified asset id. Resolve symbol from SpotConfig; U128 amounts in
+this message always use fixed 18-decimal ledger scale.
+trading
+object
+Trading balance at fixed 18-decimal ledger scale.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+funding
+object
+Funding balance at fixed 18-decimal ledger scale.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+reserved
+object
+Reserved amount in the trading bucket at fixed 18-decimal ledger scale.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+available
+object
+Amount currently available for new trading activity at fixed 18-decimal
+ledger scale. This value already accounts for active reservations.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+tradingRevision
+string (uint64)
+Opaque monotonic revision for the atomic trading, reserved, and available
+values. Higher means newer; zero means no trading state has been observed.
+fundingRevision
+string (uint64)
+Opaque monotonic revision for the funding value. Higher means newer; zero
+means no funding state has been observed.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.SubaccountViewService/GetSubaccount
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s482" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.SubaccountViewService/GetSubaccount' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"includeApiKeys": false,
+"includeBalances": false,
+"includeInvites": false,
+"includeMembers": false,
+"includePolicy": false,
+"invitesDirection": "INCOMING",
+"subaccountId": "6789012345678"
+}'
+Responses
+"apiKeys": [
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"createdByActor": "dashboard",
+"expiresAt": "2025-01-01T00:00:00Z",
+"icon": "💰",
+"ipWhitelist": [
+"203.0.113.0/24"
+],
+"keyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+"label": "Trading Bot",
+"lastUsedAt": "2025-01-01T00:00:00Z",
+"policyId": "1",
+"publicKeyEd25519": "AA==",
+"revision": "1",
+"status": "ACTIVE",
+"subaccountId": "6789012345678",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"balances": {
+"balances": [
+"assetId": 100,
+"available": {
+"hi": "1",
+"lo": "1"
+},
+"funding": {
+"hi": "1",
+"lo": "1"
+},
+"fundingRevision": "1",
+"reserved": {
+"hi": "1",
+"lo": "1"
+},
+"trading": {
+"hi": "1",
+"lo": "1"
+},
+"tradingRevision": "1"
+}
+]
+},
+"invites": [
+"createdAt": "2025-01-01T00:00:00Z",
+"granteeAccountId": "7563897446546",
+"granteeRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"granteeUsername": "trader_alpha",
+"id": "1",
+"inviterAccountId": "7563897446546",
+"inviterRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"inviterUsername": "trader_alpha",
+"requireMemberMfa": false,
+"respondedAt": "2025-01-01T00:00:00Z",
+"role": "VIEWER",
+"status": "SUBACCOUNT_INVITE_STATUS_PENDING",
+"subaccountId": "6789012345678",
+"subaccountLabel": "Market Making"
+}
+],
+"members": [
+"accountId": "7563897446546",
+"avatarUrl": "https://placehold.co/128x128.png",
+"mfaEnrolled": false,
+"role": "VIEWER",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"username": "trader_alpha"
+}
+],
+"policy": {
+"actions": [
+"TRADE_SPOT"
+],
+"createdAt": "2025-01-01T00:00:00Z",
+"description": "Allow spot trading for selected markets.",
+"expiresAt": "2025-01-01T00:00:00Z",
+"id": "1",
+"isTemplate": false,
+"locked": false,
+"maxOpenOrders": 1,
+"maxOrderNotional": "12345",
+"name": "Market Maker Policy",
+"reviewAt": "2025-01-01T00:00:00Z",
+"revision": "1",
+"sourceTemplateId": "1",
+"spotMarketScope": "ALL",
+"spotMarkets": [
+"symbolId": 1
+}
+],
+"tradingHalted": false,
+"updatedAt": "2025-01-01T00:00:00Z"
+},
+"subaccount": {
+"color": "#7C3AED",
+"icon": "💰",
+"id": "1",
+"label": "Market Making",
+"ownerAvatarUrl": "https://placehold.co/128x128.png",
+"ownerRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"ownerUsername": "trader_alpha",
+"requireMemberMfa": false,
+"revision": "1",
+"role": "VIEWER",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"smartAccountSaltNonce": 1,
+"status": "SUBACCOUNT_STATUS_ACTIVE",
+"subaccountPolicyId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.SubaccountViewService/GetSubaccount' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "includeApiKeys": false,
+  "includeBalances": false,
+  "includeInvites": false,
+  "includeMembers": false,
+  "includePolicy": false,
+  "invitesDirection": "INCOMING",
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "apiKeys": [
+    {
+      "color": "#7C3AED",
+      "createdAt": "2025-01-01T00:00:00Z",
+      "createdByActor": "dashboard",
+      "expiresAt": "2025-01-01T00:00:00Z",
+      "icon": "💰",
+      "ipWhitelist": [
+        "203.0.113.0/24"
+      ],
+      "keyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+      "label": "Trading Bot",
+      "lastUsedAt": "2025-01-01T00:00:00Z",
+      "policyId": "1",
+      "publicKeyEd25519": "AA==",
+      "revision": "1",
+      "status": "ACTIVE",
+      "subaccountId": "6789012345678",
+      "updatedAt": "2025-01-01T00:00:00Z"
+    }
+  ],
+  "balances": {
+    "balances": [
+      {
+        "assetId": 100,
+        "available": {
+          "hi": "1",
+          "lo": "1"
+        },
+        "funding": {
+          "hi": "1",
+          "lo": "1"
+        },
+        "fundingRevision": "1",
+        "reserved": {
+          "hi": "1",
+          "lo": "1"
+        },
+        "trading": {
+          "hi": "1",
+          "lo": "1"
+        },
+        "tradingRevision": "1"
+      }
+    ]
+  },
+  "invites": [
+    {
+      "createdAt": "2025-01-01T00:00:00Z",
+      "granteeAccountId": "7563897446546",
+      "granteeRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "granteeUsername": "trader_alpha",
+      "id": "1",
+      "inviterAccountId": "7563897446546",
+      "inviterRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "inviterUsername": "trader_alpha",
+      "requireMemberMfa": false,
+      "respondedAt": "2025-01-01T00:00:00Z",
+      "role": "VIEWER",
+      "status": "SUBACCOUNT_INVITE_STATUS_PENDING",
+      "subaccountId": "6789012345678",
+      "subaccountLabel": "Market Making"
+    }
+  ],
+  "members": [
+    {
+      "accountId": "7563897446546",
+      "avatarUrl": "https://placehold.co/128x128.png",
+      "mfaEnrolled": false,
+      "role": "VIEWER",
+      "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "username": "trader_alpha"
+    }
+  ],
+  "policy": {
+    "actions": [
+      "TRADE_SPOT"
+    ],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "description": "Allow spot trading for selected markets.",
+    "expiresAt": "2025-01-01T00:00:00Z",
+    "id": "1",
+    "isTemplate": false,
+    "locked": false,
+    "maxOpenOrders": 1,
+    "maxOrderNotional": "12345",
+    "name": "Market Maker Policy",
+    "reviewAt": "2025-01-01T00:00:00Z",
+    "revision": "1",
+    "sourceTemplateId": "1",
+    "spotMarketScope": "ALL",
+    "spotMarkets": [
+      {
+        "symbolId": 1
+      }
+    ],
+    "tradingHalted": false,
+    "updatedAt": "2025-01-01T00:00:00Z"
+  },
+  "subaccount": {
+    "color": "#7C3AED",
+    "icon": "💰",
+    "id": "1",
+    "label": "Market Making",
+    "ownerAvatarUrl": "https://placehold.co/128x128.png",
+    "ownerRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+    "ownerUsername": "trader_alpha",
+    "requireMemberMfa": false,
+    "revision": "1",
+    "role": "VIEWER",
+    "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+    "smartAccountSaltNonce": 1,
+    "status": "SUBACCOUNT_STATUS_ACTIVE",
+    "subaccountPolicyId": "1",
+    "updatedAt": "2025-01-01T00:00:00Z"
+  }
+}

@@ -1,0 +1,454 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.AddressBookService/UpdateAddressBookEntry
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.AddressBookService
+UpdateAddressBookEntry
+Copy URL
+Method
+POST
+Path
+auth.v1.AddressBookService/UpdateAddressBookEntry
+Service
+auth.v1.AddressBookService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Conditionally required
+POST
+auth.v1.AddressBookService/UpdateAddressBookEntry
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/UpdateAddressBookEntry' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"addressBookEntryId": "1",
+"entry": {
+"label": "Name Of My Subaccount",
+"newTags": [
+"color": "#7C3AED",
+"name": "Treasury"
+}
+],
+"note": "Primary treasury destination.",
+"tagIds": [
+"1"
+]
+},
+"expectedRevision": "1",
+"updateMask": {
+"paths": [
+"value"
+]
+}
+}'
+Responses
+"entry": {
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"external": {
+"address": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1
+},
+"kind": "EXTERNAL_CHAIN",
+"label": "Treasury Wallet",
+"note": "Primary treasury destination.",
+"revision": "1",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"tags": [
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"name": "Treasury",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"tagId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.UpdateAddressBookEntryRequest
+Response
+auth.v1.UpdateAddressBookEntryResponse
+Request body
+Form
+JSON
+Example
+addressBookEntryId
+string (fixed64)
+> 0
+Address-book entry id to update.
+entry
+object
+required
+Candidate values for fields selected by update_mask.
+4 fields
+label
+string
+max 128 chars
+Display label. Empty clears the label when selected.
+note
+string
+max 512 chars
+User-defined note. Empty clears the note when selected.
+tagIds
+string[] (fixed64)
+max 10 items
+Complete replacement set of tag ids when selected.
+Add item
+newTags
+object[]
+max 10 items
+New tags to create and attach in the same protected update. When tag_ids
+is also selected, the resulting set is tag_ids plus these tags. Otherwise,
+currently attached tags are preserved and these tags are appended.
+Edit in JSON
+updateMask
+object
+required
+Mutable fields to apply. Paths are relative to entry. The mask is required,
+must be non-empty, and cannot contain "*".
+1 field
+paths
+string[]
+The set of field mask paths.
+Add item
+expectedRevision
+string (uint64)
+> 0
+Revision returned by the latest successful read.
+Response
+Form
+JSON
+entry
+object
+Updated address book entry.
+11 fields
+addressBookEntryId
+string (fixed64)
+> 0
+Stable public id of the saved address-book entry.
+scope
+object
+Address book that owns this entry.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+kind
+enum
+must be defined value
+Type of saved destination.
+EXTERNAL_CHAIN
+INTERNAL_ACCOUNT
+label
+string
+max 128 chars
+User-defined display label.
+note
+string
+max 512 chars
+Optional user-defined note.
+createdAt
+string (date-time)
+Time this entry was created, as a UTC timestamp.
+updatedAt
+string (date-time)
+Time this entry was last updated, as a UTC timestamp.
+external
+object
+External chain withdraw destination.
+2 fields
+polychainChainId
+integer (int32)
+> 0
+External network identifier for the destination address.
+address
+string
+Destination address on the selected external network.
+internal
+object
+Internal account transfer destination.
+6 fields
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns the target internal account.
+targetAccountId
+string (fixed64)
+> 0
+Target account or subaccount public id.
+targetScopeType
+enum
+must be defined value
+Whether target_account_id identifies a root account or a subaccount.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+smartAccountAddress
+string
+Smart account address for the internal transfer destination.
+rootUsername
+string
+max 64 chars
+Username for the destination root account, when available.
+subaccountLabel
+string
+max 64 chars
+Label for the destination subaccount, when the destination is a subaccount.
+tags
+object[]
+Tags currently attached to this entry.
+6 fields
+tagId
+string (fixed64)
+> 0
+Stable public id of the tag.
+scope
+object
+Address book scope where this tag exists.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+name
+string
+1-48 chars
+Human-readable tag name.
+color
+string (color)
+max 32 chars
+Optional UI color token for this tag.
+createdAt
+string (date-time)
+Time the tag was created, as a UTC timestamp.
+updatedAt
+string (date-time)
+Time this tag was last updated, as a UTC timestamp.
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.AddressBookService/UpdateAddressBookEntry
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s437" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/UpdateAddressBookEntry' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"addressBookEntryId": "1",
+"entry": {
+"label": "Name Of My Subaccount",
+"newTags": [
+"color": "#7C3AED",
+"name": "Treasury"
+}
+],
+"note": "Primary treasury destination.",
+"tagIds": [
+"1"
+]
+},
+"expectedRevision": "1",
+"updateMask": {
+"paths": [
+"value"
+]
+}
+}'
+Responses
+"entry": {
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"external": {
+"address": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1
+},
+"kind": "EXTERNAL_CHAIN",
+"label": "Treasury Wallet",
+"note": "Primary treasury destination.",
+"revision": "1",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"tags": [
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"name": "Treasury",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+},
+"tagId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/UpdateAddressBookEntry' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "addressBookEntryId": "1",
+  "entry": {
+    "label": "Name Of My Subaccount",
+    "newTags": [
+      {
+        "color": "#7C3AED",
+        "name": "Treasury"
+      }
+    ],
+    "note": "Primary treasury destination.",
+    "tagIds": [
+      "1"
+    ]
+  },
+  "expectedRevision": "1",
+  "updateMask": {
+    "paths": [
+      "value"
+    ]
+  }
+}'
+
+---
+
+{
+  "entry": {
+    "addressBookEntryId": "1",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "external": {
+      "address": "0x3333333333333333333333333333333333333333",
+      "polychainChainId": 1
+    },
+    "kind": "EXTERNAL_CHAIN",
+    "label": "Treasury Wallet",
+    "note": "Primary treasury destination.",
+    "revision": "1",
+    "scope": {
+      "rootAccountId": "7563897446546",
+      "scopeType": "SCOPE_ROOT",
+      "subaccountId": "6789012345678"
+    },
+    "tags": [
+      {
+        "color": "#7C3AED",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "name": "Treasury",
+        "scope": {
+          "rootAccountId": "7563897446546",
+          "scopeType": "SCOPE_ROOT",
+          "subaccountId": "6789012345678"
+        },
+        "tagId": "1",
+        "updatedAt": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "updatedAt": "2025-01-01T00:00:00Z"
+  }
+}

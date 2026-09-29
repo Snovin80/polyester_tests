@@ -1,0 +1,208 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/relay
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+PolyEngine Relay · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+PolyEngine
+svg]:size-3.5">
+/
+PolyEngine Relay
+PolyEngine Relay
+Copy page
+View as Markdown
+Open in
+PolyEngine
+Relay gives you direct on-chain access to almost all PolyEngine order types and core account actions. Place orders, transfer funds, and request withdrawals by calling Relay functions directly from your
+smart account
+on
+Polyester Chain
+You do not need to sign in to the Polyester website or create an
+API key
+Gas for Relay calls is
+sponsored through your smart account
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+In development, coming soon
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+PolyEngine Relay is in development. Contract addresses, function signatures, and the full supported-action reference will accompany its release. This page describes the intended interface.
+What you can do
+Core actions available through Relay include:
+Action
+What the call does
+Place limit orders
+Submit a buy or sell order at a specified price or better.
+Place market orders
+Submit an order to trade against available liquidity within price protection.
+Cancel orders
+Request cancellation of an open order's remaining quantity.
+Transfer funds
+Move available funds between supported accounts and balance areas.
+Withdraw funds
+Request withdrawal of available funds through a supported
+route
+The function reference defines the supported order types, execution settings, and transfer routes. Account permissions, available balances, market rules, and withdrawal requirements still apply.
+How on-chain calls work
+Your smart account submits the selected Relay call on Polyester Chain. Relay passes the authorized instruction to PolyEngine for processing through the same admission, matching, and settlement systems used by other trading interfaces.
+You can submit these actions entirely through on-chain calls. A confirmed transaction does not by itself mean an order was accepted or filled, or that a withdrawal has completed.
+On-chain calls can expose the submitting smart account and transaction data.
+Related Topics
+Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+Admission
+See how PolyEngine checks your order and protects the balance it may use.
+Matching
+See how your eligible order receives priority and becomes one or more fills.
+Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+Escape Hatch
+Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+Previous
+Settlement
+Next
+Verifier Nodes
+On this page
+What you can do
+How on-chain calls work
+Related Topics
+Share this page
+PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+Share
+Copy Link

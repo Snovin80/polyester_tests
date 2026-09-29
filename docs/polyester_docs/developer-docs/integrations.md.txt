@@ -1,0 +1,44 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/integrations.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Polyester MCP
+Connect Cursor or Claude Desktop to Polyester documentation search and live deposit, withdraw, and market data via the hosted MCP server.
+Polyester MCP is a hosted **Model Context Protocol** server. It lets AI assistants (Cursor, Claude Desktop, and other HTTP MCP clients) query Polyester documentation and read live platform configuration — no local setup required.
+Connect with a URL only. You do not need to clone a repository or configure environment variables on your machine. The snippet uses the Polyester network this docs site is on.
+## Connect in Cursor
+Add to **Cursor Settings → MCP** or your workspace `.cursor/mcp.json`:
+```json
+"mcpServers": {
+"polyester": {
+"url": "https://polyester-mcp-testnet.fabriclabs.workers.dev/mcp"
+}
+}
+}
+```
+Reload MCP in Cursor after saving.
+## Other clients
+Claude Desktop and other clients that support **remote MCP over HTTP** (Streamable HTTP) can use the same URL. Check your client’s documentation for how to add a remote MCP server URL.
+## Available tools
+All tools are **read-only**. They do not access your account, place trades, or move funds.
+| Tool                          | Description                                                        |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `search_docs`                 | Search published Polyester documentation                           |
+| `get_deposit_withdraw_config` | Deposit and withdraw configuration across supported chains         |
+| `list_asset_routes`           | Deposit/withdraw routes for an asset (fees and minimums per chain) |
+| `compare_deposit_routes`      | Compare routes by network fee or minimum deposit                   |
+| `get_spot_markets`            | Listed spot markets and their configuration                        |
+| `get_market_overview`         | Market overview with last price and 24h statistics                 |
+Configuration and market data reflect **live API responses** at query time.
+## Example prompts
+Try asking your assistant:
+- “What is the minimum deposit for ETH on BNB Chain vs Ethereum on Polyester?”
+- “Which network is cheapest to deposit USDT?”
+- “How do zAssets work?”
+- “What spot markets are listed on Polyester?”
+## Limits
+- Read-only - no trading, withdrawals, or account access
+- Rate limits apply server-side
+- Documentation search covers published docs on polyester.ai; results depend on what is live on the site
+## Disclaimer
+Tool output is for informational purposes only and is not financial advice. Always confirm deposit minimums, fees, and routes in the Polyester app before moving funds.

@@ -1,0 +1,17 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/polychart.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Polychart
+Polychart collaboration APIs (reference-only).
+`client.polychart` wraps chart-layer reads, snapshots, subscribe tokens, share links, publish/unpublish, revisioned layer/drawing mutations, and subscriptions. Each method accepts the matching generated `polyester::proto::polychart::v1` request and returns `ApiData`.
+## Methods
+| Group         | Methods                                                                                             |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| Discovery     | `get_market_layers`, `list_inbox_market_layers`, `get_layer_snapshot`, `get_layer_subscribe_tokens` |
+| Share links   | `resolve_layer_share_token`, `create_layer_share_link`, `revoke_layer_share_link`                   |
+| Publishing    | `list_owner_published_layers`, `publish_layer`, `unpublish_layer`                                   |
+| Layer data    | `upsert_layer`, `delete_layer`, `upsert_drawing`, `delete_drawing`                                  |
+| Subscriptions | `set_layer_subscriptions`                                                                           |
+Mutation requests with `expected_revision` must use the latest revision from a read. `AUTH_REVISION_CONFLICT` means re-read and reconcile, not blind retry.
+This collaboration surface is not required for trading and is not a supported production API-key workflow. It may require JWT/session auth or be unmounted on a deployment. Use the TypeScript session client and keep failures isolated from order placement, cancellation, and risk loops.

@@ -1,0 +1,217 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.MFAService/VerifyRecoveryCodeChallenge
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.MFAService
+VerifyRecoveryCodeChallenge
+Verify an MFA challenge with a recovery code.
+Copy URL
+Method
+POST
+Path
+auth.v1.MFAService/VerifyRecoveryCodeChallenge
+Service
+auth.v1.MFAService
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+POST
+auth.v1.MFAService/VerifyRecoveryCodeChallenge
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.MFAService/VerifyRecoveryCodeChallenge' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"challengeId": "mfa_11111111111111111111111111111111",
+"recoveryCode": "POLY-7H2K-9M4Q"
+}'
+Responses
+"accessToken": "eyJhbGciOiJFZERTQSJ9.example.signature",
+"accessTokenExpiresAt": "2025-01-01T00:00:00Z",
+"session": {
+"authTime": "2025-01-01T00:00:00Z",
+"authenticationMethods": [
+"totp"
+],
+"sessionId": "session_01J0EXAMPLE",
+"sessionLevel": "PRIMARY_AUTHENTICATED"
+},
+"stepUpExpiresAt": "2025-01-01T00:00:00Z",
+"stepUpToken": "eyJhbGciOiJFZERTQSJ9.step-up.signature"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.VerifyRecoveryCodeChallengeRequest
+Response
+auth.v1.CompleteMFAChallengeResponse
+Request body
+Form
+JSON
+Example
+challengeId
+string
+1-64 chars
+/^mfa_[…]{32}$/
+Challenge identifier returned by BeginMFAChallenge.
+recoveryCode
+string
+8-64 chars
+/^[A-Za-z0-9-]+$/
+One-time recovery code. Accepted format is 8 to 64 letters, numbers, or hyphens.
+Response
+Form
+JSON
+session
+object
+MFA-elevated session details after completing the challenge.
+4 fields
+sessionId
+string
+max 64 chars
+Stable session identifier shared by the primary and MFA-elevated tokens.
+sessionLevel
+enum
+must be defined value
+Assurance level represented by this session response.
+PRIMARY_AUTHENTICATED
+MFA_ELEVATED
+FRESH_STEP_UP
+authenticationMethods
+string[]
+max 8 items, unique
+Authentication methods used for this session state, such as wallet, TOTP, passkey, or recovery code. Maximum 8 unique values.
+authTime
+string (date-time)
+Time when the session was authenticated or elevated.
+accessToken
+string
+MFA-elevated session token returned after every successful challenge.
+accessTokenExpiresAt
+string (date-time)
+Time when access_token expires.
+stepUpToken
+string
+Fresh step-up token returned for fresh step-up challenges. Empty for session-elevation challenges.
+stepUpExpiresAt
+string (date-time)
+Time when step_up_token expires. Empty when no step_up_token is returned.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.MFAService/VerifyRecoveryCodeChallenge
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s387" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.MFAService/VerifyRecoveryCodeChallenge' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"challengeId": "mfa_11111111111111111111111111111111",
+"recoveryCode": "POLY-7H2K-9M4Q"
+}'
+Responses
+"accessToken": "eyJhbGciOiJFZERTQSJ9.example.signature",
+"accessTokenExpiresAt": "2025-01-01T00:00:00Z",
+"session": {
+"authTime": "2025-01-01T00:00:00Z",
+"authenticationMethods": [
+"totp"
+],
+"sessionId": "session_01J0EXAMPLE",
+"sessionLevel": "PRIMARY_AUTHENTICATED"
+},
+"stepUpExpiresAt": "2025-01-01T00:00:00Z",
+"stepUpToken": "eyJhbGciOiJFZERTQSJ9.step-up.signature"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.MFAService/VerifyRecoveryCodeChallenge' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "challengeId": "mfa_11111111111111111111111111111111",
+  "recoveryCode": "POLY-7H2K-9M4Q"
+}'
+
+---
+
+{
+  "accessToken": "eyJhbGciOiJFZERTQSJ9.example.signature",
+  "accessTokenExpiresAt": "2025-01-01T00:00:00Z",
+  "session": {
+    "authTime": "2025-01-01T00:00:00Z",
+    "authenticationMethods": [
+      "totp"
+    ],
+    "sessionId": "session_01J0EXAMPLE",
+    "sessionLevel": "PRIMARY_AUTHENTICATED"
+  },
+  "stepUpExpiresAt": "2025-01-01T00:00:00Z",
+  "stepUpToken": "eyJhbGciOiJFZERTQSJ9.step-up.signature"
+}

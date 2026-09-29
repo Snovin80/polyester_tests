@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/rest/websocket-json.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# WebSocket JSON
+Consume Polyester realtime channels with JSON payloads alongside a REST integration.
+WebSocket JSON is the realtime companion for integrations that use REST and JSON tooling. It delivers selected live market and account events without changing the REST request-response workflow.
+> **Session behavior is shared**
+>
+> Connection tokens, private subscription authorization, reconnects, and state reconciliation follow the [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model).
+## When to use JSON channels
+Choose WebSocket JSON when:
+- your integration already uses JSON models and tooling
+- readable payloads are more important than compact binary encoding
+- the required channel publishes a JSON variant
+- you are building a custom client rather than an official SDK realtime client
+JSON support is channel-specific. Some account and configuration streams are Protobuf-only.
+## Channel implementation
+1. Choose a JSON channel
+Confirm that the required product stream publishes a JSON variant and use its exact channel name and schema.
+2. Decode the channel payload
+Validate each message against the channel's JSON contract. Do not infer a JSON shape from a Protobuf-only channel.
+> **Prefer Protobuf for official SDKs**
+>
+> Official SDK realtime clients use typed Protobuf channels. See [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf) when using an official SDK or generated message types.

@@ -1,0 +1,43 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/accounts-and-balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Use `client.balances` and account-scoped services to reconcile funding, trading, holds, and subaccount state.
+## Funding vs trading
+Ledger balances have separate **funding** and **trading** buckets per asset.
+- An external deposit can stop in **funding** or continue to **trading**, depending on its route
+- Spot orders spend **trading**
+- Move funding → trading on-chain (or via the Polyester UI), not through a ConnectRPC balance call
+Rust balances takes an explicit `GetBalancesRequest` (not keyword-only args).
+```rust
+use polyester::proto::ledger::read::v1::GetBalancesRequest;
+let balances = client.balances.list(GetBalancesRequest::default()).await?;
+for b in &balances.balances {
+println!(
+"{} funding={} trading={}",
+b.asset_id,
+polyester::codecs::scalars::format_ledger_u128(&b.funding, 18)?,
+polyester::codecs::scalars::format_ledger_u128(&b.trading, 18)?,
+);
+}
+```
+These fields are raw ledger `u128` strings at ledger scale 18. Format once for display and retain the raw strings for exact accounting.
+Also: history/holds helpers and `balances.subscribe` (`recv_result()`). See [Balances](https://testnet.polyester.com/docs/sdk/rust/reference/balances).
+## Account scope
+Set `default_sub_account_id` / `default_account_id` on `Config`, or pass per-call ids where the service accepts them. Private streams need Account ID.
+## Subaccounts & policies
+The SDK exposes subaccount **reads** plus private subaccount streams. `client.policies` is subscribe-only. Create/update/delete and membership or policy administration require the Polyester app/TypeScript session client.
+A subaccount-scoped API key also needs its own attached API-key policy. Permit ledger reads for balance reads/streams and add the required trading actions for mutations. The API-key policy and subaccount policy are distinct and both constrain the request.
+## Profile & API keys
+`client.auth` and `client.api_keys` cover identity and key metadata. Unary reads work with an API key; the private administration stream requires its API-key administration permission. **Creating** keys is JWT/session-only.
+## Transfer history
+`client.transfers` (and balances list helpers where exposed) for history. Mutations: [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals).
+> **Private realtime**
+>
+> Consume with `recv().await`. See [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming).
+## Related
+- [Balances](https://testnet.polyester.com/docs/sdk/rust/reference/balances)
+- [Subaccounts](https://testnet.polyester.com/docs/sdk/rust/reference/subaccounts)
+- [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals)

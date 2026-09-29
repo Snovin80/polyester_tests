@@ -1,0 +1,46 @@
+Источник: https://testnet.polyester.com/docs/user-docs/zipper/vaults.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Vaults
+See how Zipper deposit addresses, custody vaults, and route inventory support deposits and withdrawals.
+Zipper vaults hold the external assets that back supported Zipped Assets and fulfill withdrawals. Every supported asset on every source chain has its own vault, supply, and redemption path, limiting exposure between different assets and networks.
+Your deposit address identifies the account and route receiving a transfer. It is not the same thing as a custody vault.
+## Deposit addresses and vaults
+Each Main Account and Subaccount receives deposit addresses for its supported routes. These addresses let Zipper connect an external transfer to the correct Polyester account.
+After a deposit is credited, Polyester can move the external asset from the deposit address into a controlled vault. This movement is called a **sweep**. A sweep organizes custody; it is not another deposit and does not create another account credit or Zipped Asset mint.
+Vaults can also be separated by chain, asset, signing policy, or operational purpose. This does not change the Unified Asset shown in your account.
+> **Deposit addresses come from Polyester**
+>
+> Use the address shown on the Deposit page for your selected account, asset, and chain. A vault or custody address visible in an explorer is not assigned to your account.
+## Asset and source-chain isolation
+The same ticker can have several independent custody paths. USDT from Ethereum, USDT from Solana, and USDT from Base each use a separate external vault and a separate Zipped Asset supply on Polyester Chain.
+Each Zipped Asset is backed one-to-one by the exact native asset held on its originating chain. Activity affecting one asset or source chain remains separated from the vault, supply, and withdrawal path of the others.
+## Route inventory
+**Route inventory** is the amount of an external asset available through a specific chain route. Zipper uses that inventory to fulfill withdrawals on the route you select.
+A route's withdrawal capacity can change based on:
+- available and already reserved inventory
+- deposits and withdrawals still in progress
+- the route minimum and fee
+- chain health and finality
+- route or custody status
+- signer availability.
+Your Unified Asset balance can be larger than the amount currently available on one destination chain. Another compatible route may still be available.
+## Zipped Asset supply and vault inventory
+Zipped Asset supply shows how much of a route is represented on Polyester Chain. Vault inventory shows how much external asset is held, reserved, or moving through that route's custody path.
+They are connected, but they do not always change at the same moment. Confirmations, pending withdrawals, custody sweeps, fees, and in-flight transactions can temporarily place assets at different stages of the route.
+## How backing is used
+External assets held as Zipped Asset backing stay inside the Zipper custody purpose. Polyester does not lend them for yield, deploy them into other protocols, rehypothecate them, or send them through another external bridge.
+Controlled sweeps and approved withdrawals can move backing between custody addresses because those movements continue serving the same deposit and withdrawal system.
+The mint-and-burn design maintains verifiable one-to-one backing and prevents the same deposit from creating duplicate Zipped Asset supply. For withdrawals, the route-specific Zipped Asset is locked before the corresponding native backing leaves its source-chain vault. After the destination transaction reaches finality, Zipper burns the locked Zipped Asset.
+## Balancing withdrawal liquidity across source chains
+The supply available for an asset can differ greatly from one source chain to another. One chain may receive more deposits, while another may process more withdrawals. This can leave a source chain with less of that asset available for future withdrawals.
+Polyester reviews these supplies daily. When one source chain needs more withdrawal liquidity, Polyester uses **Polyester-owned operational funds** to make a series of deposits on that chain. Polyester then withdraws the same total amount through a source chain with surplus liquidity.
+> **Example: USDT on Ethereum and Solana**
+>
+> Suppose there is **100 million USDT** available through Ethereum but only **2 million USDT** available through Solana. Polyester can repeatedly deposit its own USDT through Solana and withdraw the same total amount through Ethereum. This increases the USDT supply available for Solana withdrawals while reducing the Ethereum surplus by an equal amount.
+These movements use the normal Zipper deposit and withdrawal lifecycles. Deposits are validated before minting. For withdrawals, the route-specific Zipped Asset is locked before external delivery, and Zipper burns it after the destination transaction reaches finality.
+The custody and contract design does not provide an operational path for Polyester to move Zipped Asset backing directly between vaults or chains. Polyester must use its own funds through the standard lifecycle instead.
+This separation protects user backing and does not change your Unified Asset balance.
+Vault balances, deposits, Zipped Asset mints and burns, withdrawals, and circulating supplies can be independently viewed through **[Polyester Scan](https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows)**.
+See **[Asset Lifecycle](https://testnet.polyester.com/docs/user-docs/zipper/asset-lifecycle)** for deposits and withdrawals and **[Security](https://testnet.polyester.com/docs/user-docs/zipper/security)** for the controls around vault signing and request approval.

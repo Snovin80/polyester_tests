@@ -1,0 +1,337 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/client-configuration
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Client configuration · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Client configuration
+Client configuration
+Copy page
+View as Markdown
+Open in
+Configure
+AsyncPolyester
+/
+Polyester
+with an environment, API/WS URL overrides, credentials, default account/
+subaccount
+,
+catalog hydration, timeouts, and wire format (binary Protobuf default).
+Recommended constructor
+from
+polyester
+import
+AsyncPolyester,
+POLYESTER_TESTNET_ENVIRONMENT
+async
+with
+AsyncPolyester(
+environment
+=
+POLYESTER_TESTNET_ENVIRONMENT
+,
+api_key_id
+=
+"ak_..."
+,
+api_private_key
+=
+"..."
+,
+# 64-char hex from key creation
+default_account_id
+=
+"..."
+,
+# Profile → Account ID
+# api_url=None,  # overrides environment.api_url
+# ws_url=None,  # overrides environment.websocket_url
+# default_sub_account_id=None,
+# timeout=10.0,
+# wire_format="binary",  # or "json"
+# hydrate_catalogs=True,
+)
+as
+client:
+await
+client.wait_for_catalogs()
+Python ships
+async
+(
+AsyncPolyester
+) and
+sync
+(
+Polyester
+) clients with the same service
+tree. Prefer async for bots with streams. Unary ConnectRPC responses are limited to 4 MiB after
+decompression.
+Options
+Option
+Default
+Notes
+environment
+pass
+POLYESTER_TESTNET_ENVIRONMENT
+Network preset: API, WS, RPC, chain ID
+api_key_id
+/
+api_private_key
+unset
+Required for private RPCs / private WS
+api_url
+environment.api_url
+ConnectRPC base
+ws_url
+environment.websocket_url
+Centrifugo WebSocket
+default_account_id
+unset
+Private channel scoping
+default_sub_account_id
+unset
+Default trading scope
+timeout
+10.0
+HTTP timeout seconds
+wire_format
+"binary"
+"binary"
+or
+"json"
+hydrate_catalogs
+True
+Background spot +
+Zipper
+hydration attempt
+Aliases
+Alias
+Points to
+client.candles
+client.market_data
+client.trading_withdraws
+client.withdraw
+From environment
+AsyncPolyester.from_env()
+/
+Polyester.from_env()
+load:
+POLYESTER_ENV
+(set to
+testnet
+)
+POLYESTER_API_KEY_ID
+POLYESTER_API_PRIVATE_KEY
+POLYESTER_ACCOUNT_ID
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+(optional
+api_url
+/
+ws_url
+overrides)
+Keyword arguments passed to
+from_env(**overrides)
+take precedence over the process environment.
+Prefer explicit credentials in production.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Catalog readiness
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+With
+hydrate_catalogs=True
+, call
+await client.wait_for_catalogs()
+before
+decimal order writes that need symbol scales. The wait fails if either required
+catalog cannot be hydrated or validated.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Retries are application-controlled
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The SDK does not automatically retry unary calls. Retry only transport and rate-limit failures
+with backoff and stable idempotency keys. Reconcile mutation outcomes before retrying.
+Related
+Authentication
+Catalog
+Realtime
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Chain analytics
+Next
+Deposit
+On this page
+Recommended constructor
+Options
+Aliases
+From environment
+Related
+Related Topics
+Share this page
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+
+async with AsyncPolyester(
+    environment=POLYESTER_TESTNET_ENVIRONMENT,
+    api_key_id="ak_...",
+    api_private_key="...",  # 64-char hex from key creation
+    default_account_id="...",  # Profile → Account ID
+    # api_url=None,  # overrides environment.api_url
+    # ws_url=None,  # overrides environment.websocket_url
+    # default_sub_account_id=None,
+    # timeout=10.0,
+    # wire_format="binary",  # or "json"
+    # hydrate_catalogs=True,
+) as client:
+    await client.wait_for_catalogs()

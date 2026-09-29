@@ -1,0 +1,253 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/collab.v1.WhiteboardService/MintJoinToken
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+collab.v1.WhiteboardService
+MintJoinToken
+MintJoinToken resolves access and mints a short-lived room admission token.
+Copy URL
+Method
+POST
+Path
+collab.v1.WhiteboardService/MintJoinToken
+Service
+collab.v1.WhiteboardService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+collab.v1.WhiteboardService/MintJoinToken
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/collab.v1.WhiteboardService/MintJoinToken' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"boardId": "123e4567-e89b-42d3-a456-426614174000"
+}'
+Responses
+"access": {
+"permissions": {
+"canEdit": false,
+"canManage": false,
+"canView": false
+},
+"role": "VIEWER"
+},
+"accessVersion": "1",
+"boardId": "123e4567-e89b-42d3-a456-426614174000",
+"connectionId": "connection_01J5EXAMPLE",
+"expiresAt": "2025-01-01T00:00:00Z",
+"presence": {
+"accountId": "7563897446546",
+"role": "VIEWER"
+},
+"roomId": "123e4567-e89b-42d3-a456-426614174000",
+"socketPath": "/connection/websocket",
+"token": "share_01J5EXAMPLE000000000"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+collab.v1.MintJoinTokenRequest
+Response
+collab.v1.MintJoinTokenResponse
+Request body
+Form
+JSON
+Example
+boardId
+string
+Board identifier as a UUID string.
+Response
+Form
+JSON
+boardId
+string
+Board identifier as a UUID string.
+access
+object
+Resolved caller access for the board.
+2 fields
+role
+enum
+must be defined value
+Highest resolved role for the caller.
+VIEWER
+EDITOR
+OWNER
+permissions
+object
+Expanded permission flags for the caller.
+3 fields
+canView
+boolean
+Whether the caller may view metadata and join the room.
+canEdit
+boolean
+Whether the caller may edit board content in the room.
+canManage
+boolean
+Whether the caller may manage sharing and board settings.
+expiresAt
+string (date-time)
+Token expiry time in UTC. Join tokens expire 5 minutes after issuance.
+token
+string
+Signed short-lived room admission token.
+roomId
+string
+Room identifier the client should join. This is the board ID.
+connectionId
+string
+Unique connection identifier embedded in the token.
+socketPath
+string
+Realtime room URL the client should connect to.
+presence
+object
+Lightweight local presence payload for the caller.
+2 fields
+accountId
+string (fixed64)
+Caller account public ID.
+role
+enum
+must be defined value
+Resolved board role for this join.
+VIEWER
+EDITOR
+OWNER
+accessVersion
+string (uint64)
+Access version embedded in the token; clients must refresh when the board access version changes.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+collab.v1.WhiteboardService/MintJoinToken
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s390" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/collab.v1.WhiteboardService/MintJoinToken' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"boardId": "123e4567-e89b-42d3-a456-426614174000"
+}'
+Responses
+"access": {
+"permissions": {
+"canEdit": false,
+"canManage": false,
+"canView": false
+},
+"role": "VIEWER"
+},
+"accessVersion": "1",
+"boardId": "123e4567-e89b-42d3-a456-426614174000",
+"connectionId": "connection_01J5EXAMPLE",
+"expiresAt": "2025-01-01T00:00:00Z",
+"presence": {
+"accountId": "7563897446546",
+"role": "VIEWER"
+},
+"roomId": "123e4567-e89b-42d3-a456-426614174000",
+"socketPath": "/connection/websocket",
+"token": "share_01J5EXAMPLE000000000"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/collab.v1.WhiteboardService/MintJoinToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "boardId": "123e4567-e89b-42d3-a456-426614174000"
+}'
+
+---
+
+{
+  "access": {
+    "permissions": {
+      "canEdit": false,
+      "canManage": false,
+      "canView": false
+    },
+    "role": "VIEWER"
+  },
+  "accessVersion": "1",
+  "boardId": "123e4567-e89b-42d3-a456-426614174000",
+  "connectionId": "connection_01J5EXAMPLE",
+  "expiresAt": "2025-01-01T00:00:00Z",
+  "presence": {
+    "accountId": "7563897446546",
+    "role": "VIEWER"
+  },
+  "roomId": "123e4567-e89b-42d3-a456-426614174000",
+  "socketPath": "/connection/websocket",
+  "token": "share_01J5EXAMPLE000000000"
+}

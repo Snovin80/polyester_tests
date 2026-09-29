@@ -1,0 +1,128 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Every service on this page is public. An unauthenticated `PolyesterClient` can call all of them.
+```ts
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+const client = new PolyesterClient({ environment: POLYESTER_TESTNET_ENVIRONMENT });
+```
+## Symbols and symbol IDs
+Trading and market-data endpoints use stable numeric `symbolId` values. The catalog converts them to pair symbols for display and knows each pair's precision rules:
+`symbolId` must be a positive uint32, from 1 through 4,294,967,295.
+```ts
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const symbol = client.catalog.market.requirePairSymbolBySymbolId(symbolId);
+const pair = client.catalog.market.requirePairBySymbol("BTC-USDT");
+const listedPairs = client.catalog.market.listPairs({ listed: true });
+console.log(symbol, pair.symbolId, listedPairs.length);
+```
+You rarely need `ensureReady()` before service calls (methods that need reference data await it internally). Direct catalog reads like the above need it once.
+## Market overview (tickers)
+One row per market: last price, 24h stats, top-of-book, optional sparklines. Filter, sort, page:
+```ts
+const { markets, nextPageToken } = await client.marketOverview.list({
+orderBy: "volume_24h_usd",
+sort: "desc",
+limit: 50,
+});
+```
+`volume24hUsd` is the canonical USD volume. Missing volume values are unavailable, not zero: base and quote volumes can also be `undefined` after overflow. See [Market overview](https://testnet.polyester.com/docs/sdk/typescript/reference/market-overview) for trailing-24h volume history.
+The stream is snapshot-then-stream: full set first, then live merges. It also refetches on reconnect. Passing `symbolIds` filters both the snapshot and live or buffered updates, including after reconnect. Omit it or pass `[]` for all symbols:
+```ts
+const unsubscribe = client.marketOverview.subscribe({
+onEvent: (markets) => render(markets),
+onError: (ctx) => console.error(ctx),
+});
+```
+## Candles (OHLCV)
+Row form for consumption, columnar for chart libraries. Timeframes: `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `12h`, `1d`, `1w`, `1mo`.
+```ts
+const candles = await client.candles.list({
+symbolId,
+timeframe: "1h",
+limit: 200,
+});
+// Chart-friendly parallel arrays (oldest-first)
+const columns = await client.candles.listColumnar({
+symbolId,
+timeframe: "1h",
+startTsSec: Math.floor(Date.now() / 1000) - 86_400,
+});
+const unsubscribe = client.candles.subscribe({
+symbolId,
+timeframe: "1m",
+onEvent: (candle) => chart.update(candle),
+});
+```
+`listColumnarInts` / `subscribeInts` key by numeric `tsSec` instead of formatted times. Handy for chart engines.
+## Order book
+Snapshot, or a live local book:
+```ts
+const book = await client.orderbook.get({ symbolId, depth: 20 });
+console.log(book.bids[0], book.asks[0]);
+```
+For a live book, `createSubscription` handles the initial snapshot, sequence-checked deltas, and refetch after an observed sequence gap or reconnect. Any `depth` in `[1, 500]` works; the SDK maps it onto a published channel and slices levels back to the depth you asked for. It does not detect a connected feed that goes quiet. See [Order book](https://testnet.polyester.com/docs/sdk/typescript/reference/order-book).
+```ts
+const subscription = client.orderbook.createSubscription({
+symbolId,
+depth: 10,
+onEvent: (book) => render(book),
+onError: (ctx) => console.error(ctx),
+});
+// change local price-bucket aggregation without reconnecting
+subscription.setBucket("10");
+subscription.unsubscribe();
+```
+## Public trades
+```ts
+const { trades, nextPageToken } = await client.marketData.listTrades({
+symbolId,
+limit: 100,
+});
+const unsubscribe = client.marketData.subscribeTrades({
+symbolId,
+onEvent: (trade) => console.log(trade.price, trade.qty),
+});
+```
+## Order book heatmap
+Historical liquidity heatmaps plus a live bucket stream:
+```ts
+const heatmap = await client.heatmap.getOrderbookHeatmap({
+symbolId,
+interval: "1m", // "1s" | "1m" | "5m" | "1h"
+depth: 100,
+limit: 60,
+startTsSec: Math.floor(Date.now() / 1000) - 3600,
+});
+const unsubscribe = client.heatmap.subscribeLive({
+symbolId,
+interval: "1m",
+onEvent: (bucket) => draw(bucket),
+});
+```
+Historical queries page by time range (`startTsSec` / `endTsSec`) or cursor (`pageToken`). One of the two is required, along with an integer `limit` from 1 through 20,000.
+## Chain analytics
+Public chart series about the chain: zToken supply per route and unified asset balances.
+```ts
+const supply = await client.chainAnalytics.getZippedAssetSupply({
+zippedAssetId,
+range: "7d",
+});
+const group = await client.chainAnalytics.getZippedAssetSupplyGroup({
+groupId,
+range: "7d",
+});
+const balances = await client.chainAnalytics.getUnifiedAssetBalances({
+assetId,
+range: "7d",
+});
+```
+## Spot configuration
+`client.marketData.getSpotConfig()` returns the raw reference-data snapshot (assets, pairs, scales, statuses). You normally skip it. It feeds `client.catalog`, which adds lookups, conversions, and validation. See [Catalog & precision](https://testnet.polyester.com/docs/sdk/typescript/concepts/catalog-and-precision).
+> **Pagination**
+>
+> List endpoints that can return large sets accept a `pageToken` and return a `nextPageToken`. An empty token means you are done.

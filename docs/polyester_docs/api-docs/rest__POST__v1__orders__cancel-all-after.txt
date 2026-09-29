@@ -1,0 +1,204 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/orders/cancel-all-after
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrdersService
+Cancel All After (Dead-Man Switch)
+Set or disable a dead-man switch timeout for automatic cancel-all. Supports optional symbol and side scope with idempotent heartbeat refresh.
+Copy URL
+Method
+POST
+Path
+/v1/orders/cancel-all-after
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+/v1/orders/cancel-all-after
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/cancel-all-after' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"requestId": "request_01J0EXAMPLE",
+"side": "BUY",
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT",
+"timeoutSec": 1
+}'
+Responses
+"effectiveTimeoutSec": 1,
+"expiresAtTsNs": "1735689600000000000",
+"status": "ARMED",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+requestId
+string
+Idempotency/trace key from caller (required).
+side
+enum
+Optional side filter for cancel-on-expiry.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s346" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+BUY
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Target sub-account numeric ID. When omitted, uses caller's root account.
+symbol
+string
+Optional trading pair symbol, e.g. BTC-USDT.
+timeoutSec
+integer (int32)
+Heartbeat timeout in seconds. - 0 disables the dead-man switch for this account. - 10..120 arms or refreshes the switch.
+Response
+Form
+JSON
+effectiveTimeoutSec
+integer (int32)
+Effective timeout in seconds (0 when disabled).
+Example
+1
+expiresAtTsNs
+string
+/^[0-9]+$/
+Expiry timestamp in epoch nanoseconds (0 when disabled).
+Example
+1735689600000000000
+status
+enum
+Dead-man switch state after applying the request.
+ARMED
+DISABLED
+Example
+ARMED
+ts
+string
+Server timestamp.
+Example
+2025-01-01T00:00:00Z
+tsNs
+string
+/^[0-9]+$/
+Server timestamp as epoch nanoseconds (for bots).
+Example
+1735689600000000000
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/orders/cancel-all-after
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s371" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/cancel-all-after' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"requestId": "request_01J0EXAMPLE",
+"side": "BUY",
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT",
+"timeoutSec": 1
+}'
+Responses
+"effectiveTimeoutSec": 1,
+"expiresAtTsNs": "1735689600000000000",
+"status": "ARMED",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/orders/cancel-all-after' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "requestId": "request_01J0EXAMPLE",
+  "side": "BUY",
+  "subaccountId": "45LUmqjT",
+  "symbol": "BTC-USDT",
+  "timeoutSec": 1
+}'
+
+---
+
+{
+  "effectiveTimeoutSec": 1,
+  "expiresAtTsNs": "1735689600000000000",
+  "status": "ARMED",
+  "ts": "2025-01-01T00:00:00Z",
+  "tsNs": "1735689600000000000"
+}

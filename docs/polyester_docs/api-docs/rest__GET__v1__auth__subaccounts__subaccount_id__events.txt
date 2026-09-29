@@ -1,0 +1,243 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/auth/subaccounts/subaccount_id/events
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+SubaccountViewService
+List Subaccount Activity
+List audit and activity events for a sub-account, newest first.
+Copy URL
+Method
+GET
+Path
+/v1/auth/subaccounts/{subaccount_id}/events
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/auth/subaccounts/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/subaccounts/6789012345678/events' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"events": [
+"actorAccountId": "3CT33BAbxNG",
+"createdAt": "2025-01-01T00:00:00Z",
+"entityKind": "ACCOUNT",
+"eventAction": "CREATED",
+"ip": "203.0.113.42",
+"payloadJson": "{\"action\":\"member_role_updated\",\"role\":\"TRADER\"}",
+"source": "WEB",
+"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+subaccount_id
+string (int64)
+required
+> 0
+Target sub-account (opaque ID).
+Query parameters
+limit
+integer
+≤ 200
+Maximum number of events to return. Defaults to 50 when omitted; maximum is
+200.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to the authenticated account and requested sub-account.
+Response
+Form
+JSON
+events
+object[]
+Activity events ordered newest first.
+8 fields
+createdAt
+string (date-time)
+Time when the event occurred.
+Example
+2025-01-01T00:00:00Z
+entityKind
+enum
+Category of entity affected by the event.
+ACTIVITY_ENTITY_ACCOUNT
+ACTIVITY_ENTITY_SESSION
+ACTIVITY_ENTITY_API_KEY
+ACTIVITY_ENTITY_SUBACCOUNT
+ACTIVITY_ENTITY_MEMBER
+ACTIVITY_ENTITY_POLICY
+ACTIVITY_ENTITY_INVITE
+ACTIVITY_ENTITY_SECURITY
+ACTIVITY_ENTITY_DESTINATION
+Example
+ACCOUNT
+eventAction
+enum
+Action recorded for the entity.
+ACTIVITY_ACTION_CREATED
+ACTIVITY_ACTION_UPDATED
+ACTIVITY_ACTION_DELETED
+ACTIVITY_ACTION_ENABLED
+ACTIVITY_ACTION_DISABLED
+ACTIVITY_ACTION_REMOVED
+ACTIVITY_ACTION_ROLE_SET
+ACTIVITY_ACTION_RECEIVED
+ACTIVITY_ACTION_REPLIED
+ACTIVITY_ACTION_FAILED
+ACTIVITY_ACTION_REVOKED
+ACTIVITY_ACTION_BLOCKED
+ACTIVITY_ACTION_HOLD_PLACED
+ACTIVITY_ACTION_HOLD_RELEASED
+Example
+CREATED
+source
+enum
+Client channel from which the event originated.
+ACTIVITY_SOURCE_WEB
+ACTIVITY_SOURCE_MOBILE
+ACTIVITY_SOURCE_API
+Example
+WEB
+ip
+string
+Origin IP address. Masked for non-owner and non-admin callers.
+Example
+203.0.113.42
+userAgent
+string
+User agent associated with the event, when available.
+Example
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36
+actorAccountId
+string (fixed64)
+Account that performed the action (opaque ID).
+Example
+3CT33BAbxNG
+payloadJson
+string
+Structured event details as a JSON string. Maximum 64 KiB.
+Example
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/auth/subaccounts/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s394" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/subaccounts/6789012345678/events' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"events": [
+"actorAccountId": "3CT33BAbxNG",
+"createdAt": "2025-01-01T00:00:00Z",
+"entityKind": "ACCOUNT",
+"eventAction": "CREATED",
+"ip": "203.0.113.42",
+"payloadJson": "{\"action\":\"member_role_updated\",\"role\":\"TRADER\"}",
+"source": "WEB",
+"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/subaccounts/6789012345678/events' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "events": [
+    {
+      "actorAccountId": "3CT33BAbxNG",
+      "createdAt": "2025-01-01T00:00:00Z",
+      "entityKind": "ACCOUNT",
+      "eventAction": "CREATED",
+      "ip": "203.0.113.42",
+      "payloadJson": "{\"action\":\"member_role_updated\",\"role\":\"TRADER\"}",
+      "source": "WEB",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}

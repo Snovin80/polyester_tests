@@ -1,0 +1,644 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/triggers/trigger_id
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+TriggersService
+Get Trigger
+Retrieve a single trigger by trigger ID, including lifecycle state and strategy-specific fields.
+Copy URL
+Method
+GET
+Path
+/v1/triggers/{trigger_id}
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/triggers/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/triggers/9155001234567' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"trigger": {
+"armedAt": "2025-01-01T00:00:00Z",
+"cancelReason": "USER_REQUEST",
+"clientTriggerId": "9155001234567",
+"completedAt": "2025-01-01T00:00:00Z",
+"createdAt": "2025-01-01T00:00:00Z",
+"feeAsset": "QUOTE",
+"parentOrderId": "5USXJZmk",
+"qty": "100000",
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"status": "CREATED",
+"stop": {
+"triggerDirection": "ABOVE",
+"triggerPrice": "0.005",
+"triggerPriceSource": "LAST_PRICE"
+},
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"side": "BUY",
+"triggerPrice": "0.005"
+},
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT",
+"triggerId": "59VD7Lar",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+trigger_id
+string
+required
+> 0
+Trigger ID (base58 public ID)
+Query parameters
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Response
+Form
+JSON
+trigger
+object
+Trigger state and configuration.
+24 fields
+armedAt
+string (date-time)
+Timestamp when the trigger became armed.
+Example
+2025-01-01T00:00:00Z
+cancelReason
+enum
+Why an admitted trigger was canceled.
+USER_REQUEST
+OCO
+PARENT_CANCELED_NO_FILL
+MISSING_REASON_CODE
+INTERNAL_ERROR
+Example
+USER_REQUEST
+clientTriggerId
+string
+Client-provided trigger ID for idempotency and correlation.
+Example
+9155001234567
+completedAt
+string (date-time)
+Timestamp when the trigger reached a terminal successful state.
+Example
+2025-01-01T00:00:00Z
+createdAt
+string (date-time)
+Creation timestamp.
+Example
+2025-01-01T00:00:00Z
+failureReason
+enum
+Why an admitted trigger failed.
+UNKNOWN_SYMBOL
+PAIR_DISABLED
+MIN_NOTIONAL
+TICK_SIZE
+INSUFFICIENT_FUNDS
+RISK_LIMIT
+DUPLICATE_CLIENT_ID
+MARKET_HALTED
+ENGINE_BUSY
+ACCOUNT_UNKNOWN
+ORDER_UNKNOWN
+POST_ONLY_CROSS
+REDUCE_ONLY_BLOCKED
+PRICE_BAND_VIOLATION
+MARKET_CAP_VIOLATION
+EMPTY_BOOK
+FOK_INSUFFICIENT_LIQUIDITY
+FEE_ASSET_NOT_ALLOWED
+MARKET_PRICE_UNAVAILABLE
+STALE_QUOTE
+MIN_QUANTITY
+STEP_SIZE
+INVALID_SIZING
+MAX_QUOTE_DEBIT_TOO_SMALL
+FEE_CEILING_EXCEEDED
+TRIGGER_PRICE_INVALID
+TRIGGER_PRICE_SOURCE_UNSUPPORTED
+TRAILING_DISTANCE_INVALID
+MODIFICATION_REQUIRES_REPLACE
+ORDER_ALREADY_TERMINAL
+CONFLICT_IDEMPOTENCY_KEY_REUSE
+RATE_LIMITED
+POLICY_SPOT_TRADE_DENY
+POLICY_MARKET_DENY
+POLICY_MAX_NOTIONAL
+POLICY_MAX_OPEN_ORDERS
+POLICY_TRADING_HALTED
+MAX_SLIPPAGE_INVALID
+MISSING_REASON_CODE
+INTERNAL_ERROR
+feeAsset
+enum
+Fee asset for BUY child orders.
+QUOTE
+BASE
+Example
+QUOTE
+ladder
+object
+Ladder configuration.
+5 fields
+levels
+integer (int32)
+Number of linearly distributed levels.
+postOnly
+boolean
+Reject each level instead of taking liquidity.
+priceMax
+string
+/^[0-9]…9]+)?$/
+Maximum generated level price in quote units scaled by 1e9.
+priceMin
+string
+/^[0-9]…9]+)?$/
+Minimum generated level price in quote units scaled by 1e9.
+side
+enum
+Child side.
+BUY
+SELL
+ladderState
+object
+Ladder trigger details.
+6 fields
+executedLevels
+integer (int32)
+Number of distinct ladder levels with at least one fill. A partially filled level counts once, including across replacement child orders. This is not the number of fully filled levels.
+executedQty
+string
+/^[0-9]…9]+)?$/
+Cumulative filled child-order base quantity scaled by the pair's base_quantity_scale from GetSpotConfig. Zero means no quantity executed, including when the parent completed because all children were canceled.
+ladderDistribution
+enum
+Quantity distribution across ladder levels.
+LINEAR
+GEOMETRIC
+WEIGHTED_FAVORABLE
+levels
+integer (int32)
+Number of price levels in the ladder.
+priceMax
+string
+/^[0-9]…9]+)?$/
+Maximum price in quote units scaled by 1e9 for the ladder range.
+priceMin
+string
+/^[0-9]…9]+)?$/
+Minimum price in quote units scaled by 1e9 for the ladder range.
+parentOrderId
+string
+/^[1-9A…m-z]+$/
+Parent order ID for attached-risk triggers; empty for standalone triggers.
+Example
+5USXJZmk
+qty
+string
+/^[0-9]…9]+)?$/
+Child quantity scaled by the pair's base_quantity_scale from GetSpotConfig.
+Example
+100000
+selfTradePreventionMode
+enum
+Self-trade prevention mode for child orders.
+EXPIRE_MAKER
+EXPIRE_TAKER
+EXPIRE_BOTH
+Example
+EXPIRE_MAKER
+status
+enum
+Current trigger lifecycle status.
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+Example
+CREATED
+stop
+object
+Stop-loss or take-profit trigger details.
+3 fields
+triggerDirection
+enum
+Direction the price must cross to fire the trigger.
+ABOVE
+BELOW
+Example
+ABOVE
+triggerPrice
+string
+/^[0-9]…9]+)?$/
+Trigger threshold price in quote units scaled by 1e9.
+Example
+0.005
+triggerPriceSource
+enum
+Price source used for trigger evaluation.
+LAST_PRICE
+INDEX_PRICE
+MARK_PRICE
+Example
+LAST_PRICE
+stopLoss
+object
+Stop-loss configuration.
+3 fields
+child
+object
+Child execution.
+4 fields
+limitFok
+object
+Fill-or-kill limit child.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitGtc
+object
+Resting GTC limit child, optionally post-only.
+2 fields
+postOnly
+boolean
+Reject instead of taking liquidity.
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitIoc
+object
+Immediate-or-cancel limit child.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+side
+enum
+Child order side.
+BUY
+SELL
+Example
+BUY
+triggerPrice
+string
+/^[0-9]…9]+)?$/
+Trigger threshold in quote units scaled by 1e9.
+Example
+0.005
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Public account or sub-account ID associated with the trigger.
+Example
+45LUmqjT
+symbol
+string
+Trading pair symbol, e.g. BTC-USDT.
+Example
+BTC-USDT
+takeProfit
+object
+Take-profit configuration.
+3 fields
+child
+object
+Child execution.
+4 fields
+limitFok
+object
+Fill-or-kill limit child.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitGtc
+object
+Resting GTC limit child, optionally post-only.
+2 fields
+postOnly
+boolean
+Reject instead of taking liquidity.
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitIoc
+object
+Immediate-or-cancel limit child.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+side
+enum
+Child order side.
+BUY
+SELL
+triggerPrice
+string
+/^[0-9]…9]+)?$/
+Trigger threshold in quote units scaled by 1e9.
+trailing
+object
+Trailing-stop trigger details.
+10 fields
+activationPrice
+string
+/^[0-9]…9]+)?$/
+Optional activation price: trailing only starts after this price is reached. Expressed in quote units scaled by 1e9.
+maxSlippageBps
+integer (int32)
+Optional maximum allowed slippage in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Non-negative maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units). Zero means no absolute cap is configured.
+peakPrice
+string
+/^[0-9]…9]+)?$/
+Current peak price in quote units scaled by 1e9 for sell trailing stops.
+trailingDistanceBps
+integer (int32)
+Trailing distance in basis points (1 bp = 0.01%).
+trailingDistanceTicks
+string
+/^[0-9]…9]+)?$/
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+triggerDirection
+enum
+Direction the price must cross to fire the trigger. Fixed for the lifetime of the trigger and exposed for completeness.
+ABOVE
+BELOW
+triggerPrice
+string
+/^[0-9]…9]+)?$/
+Current trailing trigger threshold in quote units scaled by 1e9. This is evaluator-authored runtime state and moves when the peak or trough changes. It is absent until the trailing trigger is armed and a positive threshold exists.
+triggerPriceSource
+enum
+Price source used for trigger evaluation. Fixed for the lifetime of the trigger and exposed for completeness.
+LAST_PRICE
+INDEX_PRICE
+MARK_PRICE
+troughPrice
+string
+/^[0-9]…9]+)?$/
+Current trough price in quote units scaled by 1e9 for buy trailing stops.
+trailingStop
+object
+Trailing-stop configuration.
+6 fields
+activationPrice
+string
+/^[0-9]…9]+)?$/
+Optional activation price in quote units scaled by 1e9.
+maxSlippageBps
+integer (int32)
+Maximum slippage in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+side
+enum
+Child order side.
+BUY
+SELL
+trailingDistanceBps
+integer (int32)
+Distance in basis points (1 bp = 0.01%).
+trailingDistanceTicks
+string
+/^[0-9]…9]+)?$/
+Distance as a price delta in 1e-9 quote-unit ticks.
+triggerId
+string
+/^[1-9A…m-z]+$/
+Trigger ID.
+Example
+59VD7Lar
+twap
+object
+TWAP configuration.
+5 fields
+durationMs
+integer (int64)
+Total execution duration in milliseconds.
+limitGtc
+object
+Limit GTC slices with cancel-before-next behavior.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Slice limit price in quote units scaled by 1e9.
+marketIoc
+object
+Server-priced market IOC slices.
+2 fields
+maxSlippageBps
+integer (int32)
+Maximum adverse price movement per slice in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Positive maximum absolute price delta per slice in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+side
+enum
+Child side.
+BUY
+SELL
+sliceIntervalMs
+integer (int64)
+Interval between slices in milliseconds.
+twapState
+object
+TWAP trigger details.
+5 fields
+durationMs
+integer (int64)
+Total duration of TWAP execution in milliseconds.
+executedQty
+string
+/^[0-9]…9]+)?$/
+Cumulative filled child-order base quantity scaled by the pair's base_quantity_scale from GetSpotConfig.
+sliceCount
+integer (int32)
+Total number of planned slices.
+sliceIndex
+integer (int32)
+Current slice index, zero-based.
+sliceIntervalMs
+integer (int64)
+Interval between TWAP slices in milliseconds.
+updatedAt
+string (date-time)
+Last update timestamp.
+Example
+2025-01-01T00:00:00Z
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/triggers/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s530" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/triggers/9155001234567' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"trigger": {
+"armedAt": "2025-01-01T00:00:00Z",
+"cancelReason": "USER_REQUEST",
+"clientTriggerId": "9155001234567",
+"completedAt": "2025-01-01T00:00:00Z",
+"createdAt": "2025-01-01T00:00:00Z",
+"feeAsset": "QUOTE",
+"parentOrderId": "5USXJZmk",
+"qty": "100000",
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"status": "CREATED",
+"stop": {
+"triggerDirection": "ABOVE",
+"triggerPrice": "0.005",
+"triggerPriceSource": "LAST_PRICE"
+},
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"side": "BUY",
+"triggerPrice": "0.005"
+},
+"subaccountId": "45LUmqjT",
+"symbol": "BTC-USDT",
+"triggerId": "59VD7Lar",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/triggers/9155001234567' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "trigger": {
+    "armedAt": "2025-01-01T00:00:00Z",
+    "cancelReason": "USER_REQUEST",
+    "clientTriggerId": "9155001234567",
+    "completedAt": "2025-01-01T00:00:00Z",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "feeAsset": "QUOTE",
+    "parentOrderId": "5USXJZmk",
+    "qty": "100000",
+    "selfTradePreventionMode": "EXPIRE_MAKER",
+    "status": "CREATED",
+    "stop": {
+      "triggerDirection": "ABOVE",
+      "triggerPrice": "0.005",
+      "triggerPriceSource": "LAST_PRICE"
+    },
+    "stopLoss": {
+      "child": {
+        "marketIoc": {}
+      },
+      "side": "BUY",
+      "triggerPrice": "0.005"
+    },
+    "subaccountId": "45LUmqjT",
+    "symbol": "BTC-USDT",
+    "triggerId": "59VD7Lar",
+    "updatedAt": "2025-01-01T00:00:00Z"
+  }
+}

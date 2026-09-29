@@ -1,0 +1,341 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/authentication/api-keys
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+API Keys · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Authentication
+API Keys
+Copy page
+View as Markdown
+Open in
+An
+API key
+is an Ed25519 keypair for authenticating a bot, script, or backend service with
+PolyesterClient
+sends
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+, and
+X-API-SIGNATURE
+For browser apps, see
+Wallet Login
+For the underlying model, see
+Authentication model
+Create a key
+Generate the keypair client-side. Register only the public key. You need an already authenticated
+client, either a browser session or an existing key, to create a new key:
+const
+publicKey
+,
+secretKey
+}
+=
+await
+client
+apiKeys
+generateKeypair
+();
+const
+apiKey
+=
+await
+client
+apiKeys
+create
+({
+label:
+"trading-bot"
+,
+publicKeyEd25519:
+publicKey
+bytes
+,
+ipWhitelist: [
+"203.0.113.7/32"
+],
+// optional
+});
+// Persist `0x${secretKey.hex}` somewhere safe. The SDK never sends it.
+console
+log
+(
+apiKey
+?.
+keyId
+,
+`0x${
+secretKey
+hex
+}`
+);
+A newly created key has no policy.
+auth.me
+works; trading, order reads, and ledger reads throw
+PermissionError
+until you attach one. Create and assign it from an interactive session (wallet
+login), not from the new key. The key itself cannot call
+apiKeys.policies.*
+await
+client
+apiKeys
+policies
+create
+({
+name:
+"trading-bot"
+,
+spotMarketScope:
+"all"
+,
+actions: [
+"read-balances"
+,
+"read-spot"
+,
+"trade-spot"
+],
+assignToKeyId:
+apiKey
+?.
+keyId
+,
+});
+Policies control spot-market scopes and allowed actions. Use
+spotMarketScope: "allowlist"
+with
+spotMarkets: [{ symbolId }]
+to restrict a key to selected markets.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+MFA step-up
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Depending on account settings,
+apiKeys.create
+may throw
+StepUpRequiredError
+MFA
+challenge and retry with
+options.stepUpToken
+Error handling
+Use the key
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+evmHexToBytes
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+auth: {
+kind:
+"api-key-ed25519"
+,
+getKeyId
+=>
+process
+env
+POLYESTER_API_KEY_ID
+??
+null
+,
+getSecretKey
+=>
+evmHexToBytes
+(
+process
+env
+POLYESTER_API_SECRET_HEX
+??
+"0x"
+),
+},
+});
+const
+me
+=
+await
+client
+auth
+me
+();
+console
+log
+(
+"authenticated as"
+,
+me
+username
+,
+me
+apiKeyId
+);
+Both getters may return promises, so secrets-manager lookups work.
+evmHexToBytes
+requires a
+0x
+prefix;
+secretKey.hex
+from
+generateKeypair
+does not include one. Scope keys with policies
+(
+client.apiKeys.policies
+), including market allowlists, action lists, and notional limits. For an
+API-key request,
+me.apiKeyId
+is the stable public
+ak_...
+handle.
+Related Topics
+Wallet Login
+Authenticate browser apps with a wallet-backed session and forward that session to a server.
+Previous
+Quickstart
+Next
+Wallet Login
+On this page
+Create a key
+Use the key
+Related Topics
+Share this page
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { publicKey, secretKey } = await client.apiKeys.generateKeypair();
+
+const apiKey = await client.apiKeys.create({
+	label: "trading-bot",
+	publicKeyEd25519: publicKey.bytes,
+	ipWhitelist: ["203.0.113.7/32"], // optional
+});
+
+// Persist `0x${secretKey.hex}` somewhere safe. The SDK never sends it.
+console.log(apiKey?.keyId, `0x${secretKey.hex}`);
+
+---
+
+await client.apiKeys.policies.create({
+	name: "trading-bot",
+	spotMarketScope: "all",
+	actions: ["read-balances", "read-spot", "trade-spot"],
+	assignToKeyId: apiKey?.keyId,
+});
+
+---
+
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT, evmHexToBytes } from "@polyester/sdk";
+
+const client = new PolyesterClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	auth: {
+		kind: "api-key-ed25519",
+		getKeyId: () => process.env.POLYESTER_API_KEY_ID ?? null,
+		getSecretKey: () => evmHexToBytes(process.env.POLYESTER_API_SECRET_HEX ?? "0x"),
+	},
+});
+
+const me = await client.auth.me();
+console.log("authenticated as", me.username, me.apiKeyId);

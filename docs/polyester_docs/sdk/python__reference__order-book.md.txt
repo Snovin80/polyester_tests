@@ -1,0 +1,55 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/order-book.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+`client.orderbook` reads spot depth snapshots and maintains a stateful live book. It uses the public transport, so no authentication is required.
+Levels are `{ price, qty }` pairs (decimal / money types), best-first (bids descending, asks ascending). Each snapshot carries `book_seq`, the backend sequence number used to detect gaps.
+## Methods
+| Method                | Summary                                                 |
+| --------------------- | ------------------------------------------------------- |
+| `get`                 | Fetch a one-shot depth snapshot.                        |
+| `create_subscription` | Managed live book (snapshot + sequence-checked deltas). |
+| `subscribe`           | Convenience wrapper around `create_subscription`.       |
+| `subscribe_deltas`    | Raw delta stream (no local merge).                      |
+### Get
+Fetches a depth snapshot for a symbol and returns `OrderbookData`. `depth` defaults to `50` and is snapped to a supported level (`1, 5, 10, 20, 50, 100, 200, 500, 1000`).
+```python
+book = await client.orderbook.get(symbol="BTC-USDT", depth=20)
+print(book.bids[0], book.asks[0], book.book_seq)
+```
+### Create subscription and subscribe
+Builds a managed live order book: REST snapshot, then Centrifugo deltas with sequence checking. Gaps or reconnects trigger a REST refresh so you always see a consistent book. Returns an `OrderbookSubscription` (async-iterable). One-shot snapshots support depth `1000`; managed realtime channels are capped at depth `500`.
+```python
+sub = await client.orderbook.create_subscription(
+symbol="BTC-USDT",
+depth=50,
+bucket="1.0",  # optional local price aggregation
+)
+async with sub:
+async for book in sub:
+print(book.bids[0], book.asks[0], book.book_seq)
+break
+# Re-bucket without reconnecting
+sub.set_bucket("5.0")
+```
+`symbol_id` is resolved from catalogs when omitted; await `wait_for_catalogs()` first if you rely on symbol strings. Optional callbacks: `on_event`, `on_open`, `on_close`, `on_error`, `on_sequence_gap`, `on_reconnect`, `on_snapshot_refresh`.
+> **Prefer the managed subscription**
+>
+> `create_subscription` handles snapshot fetch, sequence gaps, and reconnect refetch. Use raw `subscribe_deltas` only when you maintain your own book.
+### Subscribe deltas
+```python
+deltas = await client.orderbook.subscribe_deltas(symbol_id=1, depth=50)
+async with deltas:
+async for delta in deltas:
+print(delta.book_seq_start, delta.book_seq_end)
+break
+```
+## Shapes
+`OrderbookData`: `symbol`, `depth`, `book_seq` (string), `bids` / `asks` as `OrderbookLevel` (`price`, `qty`). Pass `bucket` (or call `set_bucket`) to aggregate into coarser price buckets; `None` / empty clears bucketing. Bids round down and asks round up, preserving executable spread semantics. Malformed snapshots raise `PolyesterValidationError` instead of returning corrupted data. A malformed delta is rejected atomically and triggers a snapshot refresh without advancing the local sequence.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/python/guides/market-data)
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [Market overview](https://testnet.polyester.com/docs/sdk/python/reference/market-overview)
+- [Public trades](https://testnet.polyester.com/docs/sdk/python/reference/public-trades)

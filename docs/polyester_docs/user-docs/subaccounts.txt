@@ -1,0 +1,215 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Subaccounts
+Overview
+Copy page
+View as Markdown
+Open in
+Subaccounts
+let you organize different strategies, teams, or activities beneath one
+Main Account
+Open
+Subaccounts
+to create a new Subaccount or switch between the accounts you can access.
+What each Subaccount keeps separate
+Every Subaccount has its own:
+Funding and Trading balances
+orders and fills
+members and roles
+permissions
+API keys
+activity and financial records.
+Someone who can use one Subaccount does not automatically gain access to your Main Account or another Subaccount.
+When to create a Subaccount
+Create a Subaccount when you want a clear boundary between different types of activity. For example, you can keep a trading strategy separate, give a team access to only the assets they manage, or use a dedicated account for an automated trading system.
+Use as many Subaccounts as you need, but give each one a clear purpose. Subaccounts sit directly beneath the Main Account and cannot contain other Subaccounts.
+Move assets between accounts
+Balances do not move between your Main Account and Subaccounts automatically. Use an
+Internal Transfer
+to move available assets between your accounts without withdrawing them from Polyester.
+Each account still keeps its own Funding and Trading balances after the transfer.
+Control who can do what
+A member's role defines their general responsibility, while the Subaccount's permissions define what is available inside that account. API keys use the same access controls and are scoped to the account where you create them.
+See
+Members & Roles
+for people,
+Permissions & Policies
+for account limits, and
+API Keys
+for programmatic access.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+One Main Account, separate account spaces
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Your Main Account manages the Subaccounts beneath it, but each Subaccount keeps its balances, trading activity, and access separate.
+FAQ
+Does every Subaccount have its own deposit address?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. Every Main Account and Subaccount receives its own deposit addresses so incoming assets can be credited to the correct account.
+Learn about Subaccounts.
+Can I separate trading strategies or team members into different accounts?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. Create Subaccounts under your Main Account to separate strategies, team members, or trading bots. Each Subaccount has its own Funding and Trading balances, orders, members, permissions, API keys, withdrawal and transfer whitelists, and activity records.
+Related Topics
+Manage Subaccounts
+Create, switch, fund, disable, reactivate, or leave a Subaccount.
+Members & Roles
+Invite people to a Subaccount and choose what each role can do.
+Permissions & Policies
+Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+Audit Logs
+See membership, permission, API-key, and account-setting changes for a Subaccount.
+Previous
+Footer
+Next
+Manage Subaccounts
+On this page
+What each Subaccount keeps separate
+When to create a Subaccount
+Move assets between accounts
+Control who can do what
+FAQ
+Related Topics
+Share this page
+Overview
+Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+Share
+Copy Link

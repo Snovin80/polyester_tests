@@ -1,0 +1,132 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/protobuf-contracts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Protobuf contracts · ConnectRPC & Protobuf
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+ConnectRPC & Protobuf
+Getting started
+Identifiers
+Scaled Integers
+Protobuf contracts
+WebSocket Protobuf
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+ConnectRPC & Protobuf
+svg]:size-3.5">
+/
+Protobuf contracts
+Protobuf contracts
+Copy page
+View as Markdown
+Open in
+Polyester defines its public typed application APIs using Protobuf. These contracts describe
+services, methods, messages, field types, validation rules, and compatibility boundaries.
+ConnectRPC clients consume the contracts directly. Polyester's official SDKs build on the same
+definitions, providing language-specific types and higher-level integration helpers.
+Browse the public Protobuf contracts
+One contract, multiple interfaces
+Polyester developed custom contract-generation tooling to produce a developer-friendly REST surface
+from the same Protobuf definitions used by ConnectRPC.
+The tooling generates REST request and response models, conversions to and from the canonical
+Protobuf messages, validation boundaries, and OpenAPI descriptions. Both interfaces then invoke the
+same business capabilities instead of maintaining separate handwritten API models.
+Derived surface
+What comes from the contracts
+ConnectRPC
+Typed procedure paths, messages, validation, and JSON or binary Protobuf encoding
+REST
+Generated JSON models, canonical message conversion, validation, and OpenAPI schemas
+Official SDKs
+Language-specific types and clients for the published services
+API documentation
+Public methods, fields, constraints, and schema references
+This contract-first pipeline keeps shared operations, field semantics, and validation rules aligned
+as the API evolves. A contract change flows through generated clients, REST adapters, schemas, and
+documentation rather than requiring the same shape to be maintained independently in each layer.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public contracts only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The published Protobuf bundle contains the public API contract. Internal and administrative
+services are not included in public descriptors, documentation, OpenAPI schemas, or SDK generation.
+Intentional interface differences
+Contract alignment does not mean that REST and ConnectRPC have identical wire representations.
+Polyester adapts some fields to make each interface natural for its users:
+REST commonly uses decimal strings, readable JSON, and text-form public IDs.
+ConnectRPC can use binary Protobuf or ProtoJSON and preserves Protobuf integer representations.
+Authentication, headers, status codes, and error envelopes follow the selected interface.
+Some capabilities may be available through only one interface.
+These differences are explicit mappings around the shared contract, not separate business models.
+Review
+Public IDs
+and
+Scaled integers
+before translating payloads
+between interfaces.
+Using the contracts directly
+Developers are not limited to the official SDK languages. The published contracts can be used to
+generate compatible Protobuf types and Connect clients for other supported ecosystems.
+When integrating directly:
+generate code only from the published contract bundle
+follow each field's documented validation, unit, and scale
+preserve unknown fields when your Protobuf runtime supports them
+treat package versions as API compatibility boundaries
+use the interface-specific guides for authentication and wire-format behavior.
+Continue with
+ConnectRPC getting started
+for typed
+HTTP calls or
+REST getting started
+for the generated
+JSON interface.
+Previous
+Scaled Integers
+Next
+WebSocket Protobuf
+On this page
+One contract, multiple interfaces
+Intentional interface differences
+Using the contracts directly
+Share this page
+Protobuf contracts
+How Polyester keeps its typed APIs, REST endpoints, SDKs, and public schemas aligned from shared Protobuf contracts.
+Share
+Copy Link

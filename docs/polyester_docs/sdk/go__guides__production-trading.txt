@@ -1,0 +1,239 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/production-trading
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Production trading operations · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Production trading operations
+Production trading operations
+Copy page
+View as Markdown
+Open in
+This guide applies to automated execution, quoting, portfolio automation, and other long-running
+trading systems. Strategy selection and profitability are outside the SDK's scope.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Fail closed
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+If book continuity, account state, or mutation outcome is uncertain, stop creating orders. Keep the
+dead-man switch armed and reconcile before resuming.
+Health model
+Dependency
+Healthy evidence
+Response when unhealthy
+Catalogs
+WaitForCatalogs
+completed; symbol and scale resolve
+Do not encode or submit
+Managed book
+Recent update, bid below ask, no refresh in progress
+Pause book-dependent writes
+Private orders
+Recent event or successful bounded reconciliation
+Reconcile before replacing
+Balances
+Recent
+Balances.List
+snapshot
+Stop the affected side
+Dead-man switch
+Last
+armed
+response has safe time remaining
+Stop new orders immediately
+Event queue
+No
+*errors.QueueOverflowError
+Replace subscription and resnapshot
+Track book age/sequence, refresh and reconnect counts, owned open orders, reserved and available
+balance, mutation latency, rejected batch items, unknown outcomes, dead-man expiry margin, and
+reconciliation duration. Generic queues hold 1000 items; the managed book queue holds 200.
+Deployment and shutdown
+Start with writes disabled.
+Hydrate catalogs and validate configured symbols.
+Start managed public feeds and private order/balance streams.
+Reconcile open orders owned by this process prefix.
+Arm
+Orders.CancelAllAfter
+for 10 to 120 seconds.
+Enable writes only when all dependencies are healthy.
+For shutdown: disable new orders, cancel owned IDs, confirm they disappear from
+Orders.ListOpen
+,
+then close streams. Do not disarm the dead-man switch until cleanup is confirmed. Avoid
+account-wide cancellation as ownership cleanup; filter process-owned client IDs first. Treat
+not_found
+from those targeted cancels as idempotent success and propagate every other error.
+Troubleshooting
+Symptom
+Safe action
+Post-only
+rejection
+Refresh the book and calculate a new catalog-aligned price
+Insufficient balance
+Refresh balances; reduce or disable the affected order flow
+Stale/one-sided book
+Pause writes until a valid snapshot
+Mutation timeout
+Query known client/request IDs before retrying
+Missing fills
+Use
+WaitForOrderTradesComplete
+Realtime overflow
+Replace the subscription, snapshot, and reconcile
+Dead-man refresh failure
+Stop writes and continue cleanup/reconciliation
+Authentication failure
+Stop; treat as configuration/policy, not transient transport
+Create status
+accepted
+is admission, not working state. Batch RPC success does not mean every
+item was accepted.
+Testing ladder
+Unit-test strategy math, rounding, limits, and reprice thresholds.
+Run SDK codec/service tests for invalid input and malformed outcomes.
+Compile all documentation snippets against local SDK source.
+Run public testnet books, trades, and candles.
+Run authenticated reads on a dedicated account.
+Gate mutations behind an explicit flag with unique IDs and targeted cleanup.
+Run bounded scheduled canaries and assert final open-order state.
+Every mutation test needs a strict notional cap, total context deadline, deferred targeted cleanup,
+and final
+ListOpen
+assertion.
+Upgrade checklist
+Pin prereleases exactly (
+github.com/Fabric-Labs/polyester-sdk-go@v0.1.0a54
+here). Review
+request/default/status/stream changes, run tests and snippet checks, run public reads, execute one
+gated create-cancel-reconcile cycle, deploy canaries first, then roll out gradually. A model field
+is not proof that the current codec sends it; verify the service/codec path.
+Tested recipes
+Two-sided order management
+Production trading bot
+Portfolio tracker
+Examples
+05
+,
+07
+, and
+10
+in
+polyester-examples-go
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Previous
+Error handling
+Next
+Address book
+On this page
+Health model
+Deployment and shutdown
+Troubleshooting
+Testing ladder
+Upgrade checklist
+Tested recipes
+Related Topics
+Share this page
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Share
+Copy Link

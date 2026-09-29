@@ -1,0 +1,31 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/heatmap.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Heatmap
+L2 order book heatmap reads.
+`client.heatmap` reads historical L2 heatmap buckets and streams live buckets. It is a visualization/analytics surface, not an authoritative local order book.
+```python
+await client.wait_for_catalogs()
+history = await client.heatmap.get(
+symbol="BTC-USDT",
+interval="1s",
+depth=50,
+limit=100,
+quantity_mode="close",
+)
+print(history.raw)
+```
+`symbol` or `symbol_id` is required. `start_time` / `end_time` accept `datetime`; `from_ts_sec` is an alternate cursor. Interval, depth, and quantity-mode labels are validated by the SDK.
+```python
+sub = await client.heatmap.subscribe_live(
+symbol="BTC-USDT",
+interval="1s",
+)
+async with sub:
+async for bucket in sub:
+print(bucket.raw)
+break
+```
+The live channel is public, but symbol-name use depends on a hydrated catalog. Responses are `ApiData` forward-compatible trees.
+For executable price levels and sequence recovery use [Order book](https://testnet.polyester.com/docs/sdk/python/reference/order-book).

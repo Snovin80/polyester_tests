@@ -1,0 +1,56 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/sbe-websocket/getting-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Getting started
+Use Polyester's SBE WebSocket interface for ultra-low-latency binary order entry.
+SBE WebSocket is the specialized path for clients that prioritize minimal encoding and transport overhead for order entry. It uses Simple Binary Encoding in binary WebSocket frames.
+> **Command path, not state stream**
+>
+> Use SBE WebSocket for order commands and immediate acknowledgements. Use [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf) for typed market, execution, and account events, and use REST or ConnectRPC for state reconciliation. This interface is separate from FIX-SBE and Polyester's internal SBE transports.
+## When to use SBE WebSocket
+Use this interface for latency-sensitive trading systems that:
+- maintain long-lived authenticated sessions
+- encode and decode fixed-layout binary messages
+- manage strict client sequencing and backpressure
+- operate REST, ConnectRPC, or realtime subscriptions alongside order entry
+Use an official SDK with ConnectRPC when typed API access and broader service coverage matter more than the smallest order-entry wire format.
+## Session flow
+1. Sign the WebSocket upgrade
+Connect to the environment API host at:
+```text
+/ws/trade.sbe
+```
+Authenticate the WebSocket upgrade with the Ed25519 API-key headers described in [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys). The session is bound to the key's root-account or subaccount scope.
+2. Start the connection sequence
+Begin at sequence `1`. Every subsequent command on the same connection must use the next contiguous sequence number and a client correlation value.
+3. Send an SBE command
+Encode one supported command with the published SBE schema and send it in a binary WebSocket frame.
+4. Handle the response
+Match the echoed sequence and correlation values to the command. Handle the command acknowledgement, command rejection, or pong response.
+5. Reconcile application state
+After reconnecting or receiving an uncertain command outcome, use REST or ConnectRPC to reload state before resuming decisions.
+## Message scope
+## Commands
+- create order
+- cancel order
+- modify order
+- cancel all orders
+- ping
+## Responses
+- command acknowledgement
+- command rejection
+- pong
+## Create-order sizing in schema version 2
+Every `CreateOrder` command must set `sizingKind` and exactly one matching quantity field:
+| `sizingKind`      | Required value field  | Field that must use its null value |
+| ----------------- | --------------------- | ---------------------------------- |
+| `BASE_QUANTITY`   | `baseQtyScaled`       | `maxQuoteDebitScaled`              |
+| `MAX_QUOTE_DEBIT` | `maxQuoteDebitScaled` | `baseQtyScaled`                    |
+`MAX_QUOTE_DEBIT` is valid only for BUY Market IOC and BUY Limit IOC. It is a hard all-in quote ceiling. `BASE_QUANTITY` is an exact gross base quantity.
+Set `feeAsset` to `QUOTE` or `BASE`. `BASE` is valid only for BUY. A successful create acknowledgement returns `resolvedBaseQtyScaled` and returns `submittedMaxQuoteDebitScaled` when a quote budget was submitted.
+> **Populating baseQtyScaled alone is not enough**
+>
+> Schema version 2 requires `sizingKind`. A zero-initialized or omitted sizing enum is rejected even when `baseQtyScaled` contains a positive value.
+The SBE command path does not expose order preview. Use [Preview Order](https://testnet.polyester.com/docs/developer-docs/shared-concepts/preview-order) over REST or ConnectRPC when an integration needs a non-mutating account admission check. See [Order Sizing](https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing) for schema-version-2 quantity fields and acknowledgement semantics.
+See the [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix) for the role of each interface.

@@ -1,0 +1,8 @@
+Источник: https://testnet.polyester.com/docs/user-docs/help-and-support/feature-requests.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Feature Requests
+Submit an idea or browse feature requests from the Polyester community.
+Use **[Feature Requests](https://testnet.polyester.com/help/feature-requests)** to submit a product idea, browse existing requests, and join their discussions.
+Feature requests are public. Use a [support ticket](https://testnet.polyester.com/docs/user-docs/help-and-support/submit-a-support-ticket) when your message includes private account information.

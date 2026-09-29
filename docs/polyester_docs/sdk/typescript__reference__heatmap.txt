@@ -1,0 +1,506 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/heatmap
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Heatmap · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Heatmap
+Heatmap
+Copy page
+View as Markdown
+Open in
+client.heatmap
+reads historical order book liquidity heatmaps and streams live buckets. It uses
+the public transport, so no authentication is required.
+A heatmap is a time series of resting-liquidity snapshots: each bucket has bid and ask levels as
+decimal-string columns. Historical responses arrive as a delta chain (a base
+keyframe plus per-bucket deltas) to keep the payload small.
+Intervals:
+1s
+,
+1m
+,
+5m
+,
+1h
+1, 5, 10, 20, 50, 100, 200, 500, 1000
+Methods
+Method
+Summary
+getOrderbookHeatmap
+Fetch a historical heatmap delta chain for a window or page.
+subscribeLive
+Stream live heatmap buckets for a symbol and interval.
+getOrderbookHeatmap(input, options?)
+Returns an
+OrderbookHeatmapResponse
+symbolId
+and
+limit
+are required, and you must supply
+either a time range (
+startTsSec
+and/or
+endTsSec
+)
+or
+a
+pageToken
+validation error.
+const
+now
+=
+Math
+floor
+(
+Date
+now
+()
+/
+1000
+);
+const
+heatmap
+=
+await
+client
+heatmap
+getOrderbookHeatmap
+({
+symbolId:
+1
+,
+interval:
+"1m"
+,
+depth:
+100
+,
+limit:
+60
+,
+quantityMode:
+"close"
+,
+startTsSec:
+now
+-
+3600
+,
+endTsSec:
+now
+,
+});
+console
+log
+(
+heatmap
+chain
+?.
+baseKeyframe
+?.
+mid
+);
+console
+log
+(
+heatmap
+chain
+?.
+deltas
+length
+,
+"delta buckets"
+);
+Page forward with the returned token instead of a time range:
+const
+next
+=
+await
+client
+heatmap
+getOrderbookHeatmap
+({
+symbolId:
+1
+,
+interval:
+"1m"
+,
+limit:
+60
+,
+pageToken:
+heatmap
+nextPageToken
+,
+});
+GetOrderbookHeatmapInput
+Field
+Type
+Default
+Notes
+symbolId
+number
+required
+Positive uint32 engine symbol id (1 through 4,294,967,295).
+interval
+"1s" | "1m" | "5m" | "1h"
+"1s"
+Bucket interval.
+depth
+fixed step
+50
+One of the supported depth steps.
+quantityMode
+"close" | "peak"
+"close"
+How per-bucket quantity is summarized.
+limit
+number
+required
+Integer from 1 through 20,000.
+startTsSec
+number
+none
+Range start, epoch seconds. Range or page.
+endTsSec
+number
+none
+Range end, epoch seconds. Range or page.
+pageToken
+string
+""
+Cursor. Supply this instead of a range.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Range or page, not both
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Provide a time range on the first call, then follow
+nextPageToken
+to walk forward. A
+request with no range/page token or no
+limit
+is rejected before it leaves your process.
+subscribeLive(input)
+Streams live heatmap buckets for one symbol and interval. Returns an idempotent unsubscribe
+function.
+const
+unsubscribe
+=
+client
+heatmap
+subscribeLive
+({
+symbolId:
+1
+,
+interval:
+"1m"
+,
+onEvent
+bucket
+)
+=>
+console
+log
+(
+bucket
+tsSec
+,
+bucket
+isFinal
+,
+bucket
+bids
+?.
+price
+length
+);
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+onEvent
+is required.
+onOpen
+,
+onClose
+, and
+onError
+are optional. See the
+realtime client reference
+for the handler contract.
+Shapes
+import
+type
+OrderbookHeatmapLevels
+,
+OrderbookHeatmapLiveBucket
+,
+OrderbookHeatmapResponse
+,
+}
+from
+"@polyester/sdk"
+;
+Levels are
+decimal-string columns. Historical responses are a
+delta chain (
+chain.baseKeyframe
+plus
+chain.deltas
+).
+interval
+/
+quantityMode
+include
+"unspecified"
+when the server omits a label.
+depth
+is one of
+1 | 5 | 10 | 20 | 50 | 100 | 200 | 500 | 1000 | "unspecified"
+Related
+Market data guide
+for the task-oriented walkthrough.
+Streaming guide
+for the subscription model.
+Order book
+for live depth.
+Candles
+for OHLCV series.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Guard signer
+Next
+Internal transfers
+On this page
+Methods
+getOrderbookHeatmap(input, options?)
+GetOrderbookHeatmapInput
+subscribeLive(input)
+Shapes
+Related
+Related Topics
+Share this page
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const now = Math.floor(Date.now() / 1000);
+const heatmap = await client.heatmap.getOrderbookHeatmap({
+	symbolId: 1,
+	interval: "1m",
+	depth: 100,
+	limit: 60,
+	quantityMode: "close",
+	startTsSec: now - 3600,
+	endTsSec: now,
+});
+
+console.log(heatmap.chain?.baseKeyframe?.mid);
+console.log(heatmap.chain?.deltas.length, "delta buckets");
+
+---
+
+const next = await client.heatmap.getOrderbookHeatmap({
+	symbolId: 1,
+	interval: "1m",
+	limit: 60,
+	pageToken: heatmap.nextPageToken,
+});
+
+---
+
+const unsubscribe = client.heatmap.subscribeLive({
+	symbolId: 1,
+	interval: "1m",
+	onEvent: (bucket) => {
+		console.log(bucket.tsSec, bucket.isFinal, bucket.bids?.price.length);
+	},
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+import type {
+	OrderbookHeatmapLevels,
+	OrderbookHeatmapLiveBucket,
+	OrderbookHeatmapResponse,
+} from "@polyester/sdk";

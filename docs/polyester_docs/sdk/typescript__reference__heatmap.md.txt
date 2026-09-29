@@ -1,0 +1,82 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/heatmap.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+`client.heatmap` reads historical order book liquidity heatmaps and streams live buckets. It uses the public transport, so no authentication is required.
+A heatmap is a time series of resting-liquidity snapshots: each bucket has bid and ask levels as `{ price[], qty[] }` decimal-string columns. Historical responses arrive as a delta chain (a base keyframe plus per-bucket deltas) to keep the payload small.
+Intervals: `1s`, `1m`, `5m`, `1h`. Depths are fixed steps: `1, 5, 10, 20, 50, 100, 200, 500, 1000`.
+## Methods
+| Method                | Summary                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| `getOrderbookHeatmap` | Fetch a historical heatmap delta chain for a window or page. |
+| `subscribeLive`       | Stream live heatmap buckets for a symbol and interval.       |
+### `getOrderbookHeatmap(input, options?)`
+Returns an `OrderbookHeatmapResponse`. `symbolId` and `limit` are required, and you must supply either a time range (`startTsSec` and/or `endTsSec`) **or** a `pageToken`. Passing neither is a validation error.
+```ts
+const now = Math.floor(Date.now() / 1000);
+const heatmap = await client.heatmap.getOrderbookHeatmap({
+symbolId: 1,
+interval: "1m",
+depth: 100,
+limit: 60,
+quantityMode: "close",
+startTsSec: now - 3600,
+endTsSec: now,
+});
+console.log(heatmap.chain?.baseKeyframe?.mid);
+console.log(heatmap.chain?.deltas.length, "delta buckets");
+```
+Page forward with the returned token instead of a time range:
+```ts
+const next = await client.heatmap.getOrderbookHeatmap({
+symbolId: 1,
+interval: "1m",
+limit: 60,
+pageToken: heatmap.nextPageToken,
+});
+```
+#### `GetOrderbookHeatmapInput`
+| Field          | Type                           | Default   | Notes                                                       |
+| -------------- | ------------------------------ | --------- | ----------------------------------------------------------- |
+| `symbolId`     | `number`                       | required  | Positive uint32 engine symbol id (1 through 4,294,967,295). |
+| `interval`     | `"1s" \| "1m" \| "5m" \| "1h"` | `"1s"`    | Bucket interval.                                            |
+| `depth`        | fixed step                     | `50`      | One of the supported depth steps.                           |
+| `quantityMode` | `"close" \| "peak"`            | `"close"` | How per-bucket quantity is summarized.                      |
+| `limit`        | `number`                       | required  | Integer from 1 through 20,000.                              |
+| `startTsSec`   | `number`                       | none      | Range start, epoch seconds. Range or page.                  |
+| `endTsSec`     | `number`                       | none      | Range end, epoch seconds. Range or page.                    |
+| `pageToken`    | `string`                       | `""`      | Cursor. Supply this instead of a range.                     |
+> **Range or page, not both**
+>
+> Provide a time range on the first call, then follow `nextPageToken` to walk forward. A request with no range/page token or no `limit` is rejected before it leaves your process.
+### `subscribeLive(input)`
+Streams live heatmap buckets for one symbol and interval. Returns an idempotent unsubscribe function.
+```ts
+const unsubscribe = client.heatmap.subscribeLive({
+symbolId: 1,
+interval: "1m",
+onEvent: (bucket) => {
+console.log(bucket.tsSec, bucket.isFinal, bucket.bids?.price.length);
+},
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+`onEvent` is required. `onOpen`, `onClose`, and `onError` are optional. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+## Shapes
+```ts
+import type {
+OrderbookHeatmapLevels,
+OrderbookHeatmapLiveBucket,
+OrderbookHeatmapResponse,
+} from "@polyester/sdk";
+```
+Levels are `{ price: string[]; qty: string[] }` decimal-string columns. Historical responses are a delta chain (`chain.baseKeyframe` plus `chain.deltas`). `interval` / `quantityMode` include `"unspecified"` when the server omits a label. `depth` is one of `1 | 5 | 10 | 20 | 50 | 100 | 200 | 500 | 1000 | "unspecified"`.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/typescript/guides/market-data) for the task-oriented walkthrough.
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming) for the subscription model.
+- [Order book](https://testnet.polyester.com/docs/sdk/typescript/reference/order-book) for live depth.
+- [Candles](https://testnet.polyester.com/docs/sdk/typescript/reference/candles) for OHLCV series.

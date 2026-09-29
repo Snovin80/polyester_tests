@@ -1,0 +1,44 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/get-started/installation.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Installation
+Install the Python SDK and verify connectivity to Polyester testnet.
+## Install the package
+```bash
+pip install "polyester-sdk==0.1.0a55"
+```
+Requires **Python 3.11+**. Realtime (Centrifugo) and on-chain Funding helpers ship with every install.
+PyPI: [polyester-sdk](https://pypi.org/project/polyester-sdk/). Source (access required): [Fabric-Labs/polyester-sdk-python](https://github.com/Fabric-Labs/polyester-sdk-python).
+> **Alpha**
+>
+> The SDK is pre-1.0. Pin an exact version in production (example above). Version `0.1.0a55` is the current API-key-only release. It supports signed unary calls, binary realtime subscriptions with handshake-before-return, and opaque pagination tokens for complete trigger list/event scans. Breaking public API changes are called out in the repository changelog.
+## Testnet endpoints
+Pass `environment=POLYESTER_TESTNET_ENVIRONMENT` to target Polyester **testnet**:
+| Setting   | Testnet                             |
+| --------- | ----------------------------------- |
+| API       | `https://api-testnet.polyester.com` |
+| WebSocket | `wss://api-testnet.polyester.com`   |
+Override with constructor `api_url` / `ws_url`. See [Environments](https://testnet.polyester.com/docs/sdk/python/concepts/environments).
+## Verify the install
+Public market data needs no credentials:
+```python
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+async with AsyncPolyester(environment=POLYESTER_TESTNET_ENVIRONMENT) as client:  # public market data only
+```
+```python
+import asyncio
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+async def main() -> None:
+async with AsyncPolyester(environment=POLYESTER_TESTNET_ENVIRONMENT) as client:
+overview = await client.market_overview.list(limit=5)
+for market in overview.markets:
+print(market.symbol, market.last_price)
+asyncio.run(main())
+```
+If that prints a few markets, you are connected. Next: [Quickstart](https://testnet.polyester.com/docs/sdk/python/get-started/quickstart).
+## Contributor live harness (strict)
+```bash
+python -m pytest tests/unit -q          # CI / public offline
+```
+Credentialed live tests need `POLYESTER_API_KEY_ID` / `POLYESTER_API_PRIVATE_KEY` (usually `POLYESTER_ACCOUNT_ID`). Optional gates: `POLYESTER_TEST_MUTATION=1`, `POLYESTER_TEST_FUNDED=1`. Set `POLYESTER_TEST_STRICT_LIVE=1` for release certification so skips fail closed. The harness prints executed / skipped / failed counts and enforces a minimum executed floor (default **5**, override with `POLYESTER_TEST_MIN_EXECUTED`) when strict live is on.

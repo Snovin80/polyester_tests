@@ -1,0 +1,195 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/tradingview-chart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+TradingView Chart · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+TradingView Chart
+TradingView Chart
+Copy page
+View as Markdown
+Open in
+The TradingView Chart is an alternative charting surface for Polyester market data.
+Use it when you prefer TradingView Advanced Charts, indicators, drawing tools, and chart controls.
+Chart settings and market context
+TradingView changes how the market is displayed and analyzed. It does not change how Polyester admits, matches, or settles an order.
+Before using the chart for a decision, confirm:
+the active Polyester Pair matches the chart symbol
+the interval and chart style fit the question you are asking
+the latest candle time is current
+saved indicators or drawings are the ones you intended to load.
+Available tools can vary with the embedded chart configuration. The controls visible in the current widget are the source of truth.
+Move from analysis to an order
+A chart can help you choose an intended price or condition. The
+Order Form
+defines the instruction Polyester receives.
+Use the
+Order Book
+for current displayed liquidity and
+Market Trades
+for recent public executions. Use account order and fill records to confirm your own result.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Saved chart settings stay local
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Saved chart preferences can depend on the current browser. Confirm the expected style, indicators, and drawings when opening the workspace somewhere else.
+Related Topics
+Polyester Chart
+Read candles, volume, indicators, and drawings in Polyester's native market chart.
+Order Book
+Read current buy and sell prices, the spread, and visible liquidity for one spot market.
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Previous
+Polyester Chart
+Next
+Depth Chart
+On this page
+Chart settings and market context
+Move from analysis to an order
+Related Topics
+Share this page
+TradingView Chart
+Analyze Polyester markets with TradingView Advanced Charts and your saved chart preferences.
+Share
+Copy Link

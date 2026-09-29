@@ -1,0 +1,231 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/members-and-roles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Members & Roles · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Subaccounts
+svg]:size-3.5">
+/
+Members & Roles
+Members & Roles
+Copy page
+View as Markdown
+Open in
+Members let you share one
+Subaccount
+without sharing your entire Polyester account. Each person receives a role that applies only to that Subaccount.
+Open the Subaccount and select
+Members
+to invite someone, update their role, or remove their access.
+Invite a member
+1
+Choose Invite Member
+Open the Subaccount's Members tab and select
+Invite Member
+2
+Find the person
+Search by username, wallet address, or account ID and select the correct Polyester account.
+3
+Choose a role
+Give the person the role that matches what they need to do.
+4
+Send the invitation
+Select
+Invite member
+Choose the right role
+Role
+Best for
+Access
+Owner
+The person responsible for the Subaccount
+Full account and access management
+Admin
+Someone who manages day-to-day account setup
+Trading, transfers, members,
+API keys
+, and most settings
+Treasury
+Someone responsible for assets
+Balances, internal transfers, and withdrawals
+Trader
+Someone responsible for trading
+Balances and spot trading
+Viewer
+Someone who only needs visibility
+Read-only account access
+The Subaccount's permissions can narrow what any role is allowed to do. See
+Permissions & Policies
+for those account-wide controls.
+Require MFA for members
+The Owner can turn on
+Require
+MFA
+for the Subaccount. Members who have not set up MFA are prompted to add it before using protected account actions.
+This setting applies to members of the selected Subaccount. Each person manages their own MFA from their Polyester account.
+Update or remove access
+Change a member's role when their responsibilities change, or remove them when they no longer need the Subaccount. Removing a member ends their access but does not change completed trades or transfers.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+API keys are managed separately
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A member role does not create or control an API key. Manage programmatic access from the shared
+API Keys page
+Related Topics
+Overview
+Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+Manage Subaccounts
+Create, switch, fund, disable, reactivate, or leave a Subaccount.
+Permissions & Policies
+Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+Audit Logs
+See membership, permission, API-key, and account-setting changes for a Subaccount.
+Previous
+Manage Subaccounts
+Next
+Permissions & Policies
+On this page
+Invite a member
+Choose the right role
+Require MFA for members
+Update or remove access
+Related Topics
+Share this page
+Members & Roles
+Invite people to a Subaccount and choose what each role can do.
+Share
+Copy Link

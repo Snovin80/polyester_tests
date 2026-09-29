@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Testnet Faucets
+Claim testnet Assets from faucets that do not require a mainnet balance.
+Polyester Testnet supports deposits of assets from supported blockchains’ own test networks. These assets let you test the deposit process from the source chain into Polyester.
+Testnet assets are different from the paper funds created by the Polyester team for paper trading competitions and giveaways. Paper funds are minted through a smart contract and can be created in unlimited amounts, allowing the team to distribute more or replace funds lost during trading.
+Source-chain testnet assets are issued on their respective networks, such as Bitcoin Testnet. Depending on the network, they may need to be mined or obtained through third-party faucets. Polyester does not control their supply or availability. Depositing these assets lets you test the actual source-chain integration.
+Below are the test networks supported by Polyester and the faucets where you can request funds. Expand an asset to view its networks, available faucets, and any requirements.
+## Eligibility and Usage
+These faucets send testnet Assets without requiring a mainnet balance. After you receive funds, [deposit](https://testnet.polyester.com/docs/user-docs/funds/deposit-assets) them into Polyester.
+If a faucet is unavailable, see [Faucet Backups](https://testnet.polyester.com/docs/user-docs/reference/faucet-backups).
+| Asset | Network                  | Faucet                                                                             | Notes                                                                                          |
+| ----- | ------------------------ | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| AVAX  | Avalanche C Fuji         | [Avalanche Builder Hub](https://build.avax.network/console/primary-network/faucet) | 0.5 AVAX per claim. Free account required.                                                     |
+| BCH   | Bitcoin Cash Testnet     | [Googol](https://tbch.googol.cash/)                                                | Select **testnet**, enter a BCH testnet address, and complete the CAPTCHA.                     |
+| BNB   | BNB Smart Chain Testnet  | [GHOST](https://ghostchain.io/faucet/bnb-testnet/)                                 | 0.01 BNB per claim.                                                                            |
+| BTC   | Bitcoin Testnet          | [CoinFaucet](https://coinfaucet.eu/en/btc-testnet/)                                | Use a Bitcoin Testnet3 address.                                                                |
+| DOGE  | Dogecoin Testnet         | [doge.toys](https://faucet.doge.toys/)                                             | Can be unstable or unavailable. Use a Dogecoin testnet address.                                |
+| ETC   | Ethereum Classic Testnet | [ETCMC Monitor](https://faucet.etcmc-monitor.org/)                                 | Proof-of-work faucet: uses your device's processing power. Amount depends on mining completed. |
+| ETH   | Ethereum Sepolia         | [Google Cloud](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)  | Google account sign-in required.                                                               |
+| ETH   | Base Sepolia             | [OpenFaucet](https://openfaucet.org/base-sepolia)                                  | Proof-of-work browser mining. Keep the page open while mining.                                 |
+| ETH   | Arbitrum Sepolia         | [OpenFaucet](https://openfaucet.org/arbitrum-sepolia)                              | Proof-of-work browser mining. Keep the page open while mining.                                 |
+| ETH   | Robinhood Testnet        | [Robinhood Chain](https://faucet.testnet.chain.robinhood.com/)                     | 0.01 ETH per claim. Google account sign-in required.                                           |
+| LTC   | Litecoin Testnet         | [CypherFaucet](https://www.cypherfaucet.com/ltc-testnet)                           | 0.01 LTC per hour. CAPTCHA required.                                                           |
+| POL   | Polygon Amoy             | [OpenFaucet](https://openfaucet.org/polygon-amoy)                                  | Proof-of-work browser mining. Listed claim range: 0.01 to 0.05 POL.                            |
+| TRX   | Tron Nile                | [NileEX](https://nileex.io/join/getJoinPage)                                       | 1,000 TRX per claim. Enter a Nile wallet address and complete the CAPTCHA.                     |
+| XRP   | Ripple Testnet           | [XRP Ledger](https://xrpl.org/resources/dev-tools/xrp-faucets)                     | Select **Testnet**. Generate a funded test wallet or refill an existing wallet.                |
+Faucet amounts and availability can change. Use the faucet's own page for current terms.
+## FAQ
+### Do I need to connect and verify my Discord account to participate in testnet?
+No. Connecting your Discord account to your Polyester account is only required to claim paper assets. If you don’t want to use paper assets, you can obtain supported assets from external test networks through the [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) page in the user docs, then deposit them into Polyester.
+### Do I need to connect and verify my X account to participate in testnet?
+No. Connecting your X account to your Polyester account is only required to claim paper assets. If you don’t want to use paper assets, you can obtain supported assets from external test networks through the [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) page in the user docs, then deposit them into Polyester.
+### How do I obtain and deposit assets from external test networks?
+A faucet is a website that provides testnet assets. Visit [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) in the user docs to find faucets for supported assets and networks. After receiving the assets in your wallet, open Deposit in Polyester, choose the matching asset and test network, and send them to the deposit address shown. These faucets are operated by third parties, not Polyester. The links are provided for reference.

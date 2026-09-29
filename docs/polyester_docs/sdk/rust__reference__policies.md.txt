@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/policies.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Policies
+Realtime API-key and subaccount-policy updates.
+The Rust SDK intentionally exposes policy **streams only**. Unary policy administration requires a JWT/session and is not part of this API-key SDK.
+| Method                                        | Event type         |
+| --------------------------------------------- | ------------------ |
+| `subscribe` / `subscribe_subaccount_policies` | `SubaccountPolicy` |
+| `subscribe_api_policies`                      | `ApiPolicy`        |
+```rust
+let mut policies = client.policies.subscribe_api_policies(None).await?;
+if let Some(policy) = policies.recv_result().await? {
+println!("{} {}", policy.policy_id, policy.revision);
+}
+if let Some(err) = policies.take_err() {
+eprintln!("policy stream ended: {err}");
+}
+```
+`None` uses `Config.default_account_id`. Both private channels require API-key credentials plus Account ID and the corresponding policy read permission. The method returns only after private token fetch and the Centrifugo handshake.
+Policy events may describe MFA requirements, but Rust cannot perform a browser MFA challenge. Manage mutations and assignments in the Polyester app/TypeScript session client.
+## Related
+- [API keys](https://testnet.polyester.com/docs/sdk/rust/reference/api-keys)
+- [Authentication](https://testnet.polyester.com/docs/sdk/rust/guides/authentication)
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)

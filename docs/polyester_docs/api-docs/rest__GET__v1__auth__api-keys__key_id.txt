@@ -1,0 +1,271 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/auth/api-keys/key_id
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+ApiKeyService
+Get API Key
+Retrieve a single API key owned by the caller account or scoped to a sub-account the caller administers.
+Copy URL
+Method
+GET
+Path
+/v1/auth/api-keys/{key_id}
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/auth/api-keys/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/api-keys/ak_1a3c6de8153d5a5b04cd2a6529779542' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"apiKey": {
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"createdByActor": "dashboard",
+"expiresAt": "2025-01-01T00:00:00Z",
+"icon": "💰",
+"ipWhitelist": [
+"203.0.113.0/24"
+],
+"keyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+"label": "Trading Bot",
+"lastUsedAt": "2025-01-01T00:00:00Z",
+"policyId": "ADVPd9FYi2",
+"publicKeyEd25519": "AA==",
+"revision": "1",
+"status": "ACTIVE",
+"subaccountId": "39HwgZg2gCw",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+key_id
+string
+required
+min 1 chars
+/^ak_[a…]{32}$/
+Opaque API key identifier, formatted as "ak_" followed by 32 lowercase hex
+characters.
+Response
+Form
+JSON
+apiKey
+object
+Matching API key metadata.
+15 fields
+keyId
+string
+Stable opaque identifier used to refer to this key, formatted as "ak_"
+followed by 32 lowercase hex characters.
+Example
+ak_1a3c6de8153d5a5b04cd2a6529779542
+label
+string
+Human-readable label for the key. Maximum length is 64 characters.
+Example
+Trading Bot
+icon
+string
+Optional user-chosen icon/emoji for UI display.
+Example
+💰
+color
+string (color)
+Optional user-chosen color token for UI display.
+Example
+#7C3AED
+ipWhitelist
+string[]
+Optional CIDR whitelist. Empty means no IP restriction. Maximum 32 unique
+entries.
+Example
+status
+enum
+Current key status.
+ACTIVE
+REVOKED
+DISABLED
+Example
+ACTIVE
+subaccountId
+string (fixed64)
+Optional sub-account this key is scoped to (opaque ID; empty = root-level).
+Example
+39HwgZg2gCw
+policyId
+string (fixed64)
+Optional API policy attached to this key (opaque ID).
+Empty means no policy is attached and the key has no permissions.
+Example
+ADVPd9FYi2
+createdAt
+string (date-time)
+Time in UTC when this key was created.
+Example
+2025-01-01T00:00:00Z
+lastUsedAt
+string (date-time)
+Last time in UTC when this key authenticated a request. Omitted when the
+key has not been used.
+Example
+2025-01-01T00:00:00Z
+publicKeyEd25519
+string (byte)
+Ed25519 public key bytes associated with this API key. The private key or
+seed is never returned by the API.
+Example
+AA==
+expiresAt
+string (date-time)
+Optional expiry time in UTC. When set, the key cannot authenticate requests
+after this time, regardless of status.
+Example
+2025-01-01T00:00:00Z
+createdByActor
+string
+Read-only actor label describing who created this key, such as a username
+or account label.
+Example
+dashboard
+updatedAt
+string (date-time)
+Time in UTC when this key's configuration was last changed. For the same
+key, later is fresher, equal is an idempotent replay, and earlier is stale.
+Equal timestamps with different configuration indicate an invariant failure.
+This is independent of last_used_at, which tracks authentication activity.
+Example
+2025-01-01T00:00:00Z
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/auth/api-keys/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s367" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/api-keys/ak_1a3c6de8153d5a5b04cd2a6529779542' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"apiKey": {
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"createdByActor": "dashboard",
+"expiresAt": "2025-01-01T00:00:00Z",
+"icon": "💰",
+"ipWhitelist": [
+"203.0.113.0/24"
+],
+"keyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+"label": "Trading Bot",
+"lastUsedAt": "2025-01-01T00:00:00Z",
+"policyId": "ADVPd9FYi2",
+"publicKeyEd25519": "AA==",
+"revision": "1",
+"status": "ACTIVE",
+"subaccountId": "39HwgZg2gCw",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/api-keys/ak_1a3c6de8153d5a5b04cd2a6529779542' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "apiKey": {
+    "color": "#7C3AED",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "createdByActor": "dashboard",
+    "expiresAt": "2025-01-01T00:00:00Z",
+    "icon": "💰",
+    "ipWhitelist": [
+      "203.0.113.0/24"
+    ],
+    "keyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+    "label": "Trading Bot",
+    "lastUsedAt": "2025-01-01T00:00:00Z",
+    "policyId": "ADVPd9FYi2",
+    "publicKeyEd25519": "AA==",
+    "revision": "1",
+    "status": "ACTIVE",
+    "subaccountId": "39HwgZg2gCw",
+    "updatedAt": "2025-01-01T00:00:00Z"
+  }
+}

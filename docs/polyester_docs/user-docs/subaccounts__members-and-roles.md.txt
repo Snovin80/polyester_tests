@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/members-and-roles.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Members & Roles
+Invite people to a Subaccount and choose what each role can do.
+Members let you share one Subaccount without sharing your entire Polyester account. Each person receives a role that applies only to that Subaccount.
+Open the Subaccount and select **Members** to invite someone, update their role, or remove their access.
+## Invite a member
+1. Choose Invite Member
+Open the Subaccount's Members tab and select **Invite Member**.
+2. Find the person
+Search by username, wallet address, or account ID and select the correct Polyester account.
+![Share subaccount search by username, account ID, or address](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/bf67cefa4debd4e4d3f98bf47eac56f1c6932e6df7daf6ce06cc16c3d73807a3/source.webp)
+3. Choose a role
+Give the person the role that matches what they need to do.
+![Share subaccount with Role to grant](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/4100d901718d900b6f9b518bbd534e4a4c391441d56afec2ed2bffcfce4ff3a1/source.webp)
+4. Send the invitation
+Select **Invite member**. Polyester may ask you to verify with your passkey before sending the invitation. The invitation remains pending until the person accepts it. Access begins after acceptance.
+![Verify with your passkey before inviting a member](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/07efe8ed9ed11101501bbb53e8f25cdae5fdba9d8a78ea246fe89d35b7599641/source.webp)
+## Choose the right role
+| Role         | Best for                                     | Access                                                   |
+| ------------ | -------------------------------------------- | -------------------------------------------------------- |
+| **Owner**    | The person responsible for the Subaccount    | Full account and access management                       |
+| **Admin**    | Someone who manages day-to-day account setup | Trading, transfers, members, API keys, and most settings |
+| **Treasury** | Someone responsible for assets               | Balances, internal transfers, and withdrawals            |
+| **Trader**   | Someone responsible for trading              | Balances and spot trading                                |
+| **Viewer**   | Someone who only needs visibility            | Read-only account access                                 |
+The Subaccount's permissions can narrow what any role is allowed to do. See **[Permissions & Policies](https://testnet.polyester.com/docs/user-docs/subaccounts/permissions-and-policies)** for those account-wide controls.
+## Require MFA for members
+The Owner can turn on **Require MFA** for the Subaccount. Members who have not set up MFA are prompted to add it before using protected account actions.
+This setting applies to members of the selected Subaccount. Each person manages their own MFA from their Polyester account.
+## Update or remove access
+Change a member's role when their responsibilities change, or remove them when they no longer need the Subaccount. Removing a member ends their access but does not change completed trades or transfers.
+> **API keys are managed separately**
+>
+> A member role does not create or control an API key. Manage programmatic access from the shared **[API Keys page](https://testnet.polyester.com/docs/user-docs/account/access-and-security/api-keys)**.

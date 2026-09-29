@@ -1,0 +1,235 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/trailing-stop
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trailing Stop · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+svg]:size-3.5">
+/
+Trailing Stop
+Trailing Stop
+Copy page
+View as Markdown
+Open in
+A trailing stop follows favorable price movement and activates after price reverses by the configured distance.
+What it does
+A
+trailing stop
+follows a favorable price extreme at a configured distance. When price reverses through the current trigger, Polyester attempts to submit the configured child order.
+Unlike a fixed stop, the trigger can become more protective as the market moves favorably.
+How it works
+Setting
+What it controls
+Trailing distance
+The supported percentage or quote amount between the favorable extreme and trigger
+Favorable extreme
+The highest observed price for the current standalone trailing sell model
+Activation price
+An optional condition that starts trailing only after price reaches it
+Slippage cap
+Price protection for the market-style child after activation
+The trigger moves with a new favorable extreme. It holds its most protective level when price reverses, then activates when the condition is met.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Current standalone behavior
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The current public create-trigger path supports standalone Trailing Stop only on the
+Sell
+side and uses a market-IOC child. It rejects a standalone Buy trailing stop, including through the API. An attached Buy trailing child can arise only as opposite-side risk after a Sell parent fills.
+A standalone trailing stop reserves capital when it is created. An attached trailing-risk instruction begins with zero reservation and arms after its parent fills. Both are persisted and evaluated server-side, so closing the browser does not cancel them.
+When to use it
+Use it when protection should follow a favorable move.
+Trailing Stop fits a position that should keep gaining room while price rises, then react after a defined reversal.
+Avoid it when a fixed trigger is more appropriate.
+Choose a fixed stop when the exit condition should not move or when ordinary volatility could activate the selected trail too early.
+Choose a distance that matches the trading plan. A smaller distance reacts sooner, while a larger distance allows more movement before activation.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, worth about 1,000 USDT, and want your protection to follow the price higher without manually moving a fixed stop. You choose a Sell trailing stop with a
+5% distance
+so it activates after a 5% reversal from the highest observed price.
+At 100,000 USDT, the trigger begins at 95,000 USDT, which is 5% below the current high.
+BTC rises to 110,000 USDT, so the trigger moves up to 104,500 USDT.
+BTC then falls to 104,500 USDT, activating the Market IOC child for 0.01 BTC.
+Result:
+The trigger follows the market higher, then attempts to sell after price reverses by 5% from the new high.
+These are example prices. The trailing distance controls activation, not the final fill price.
+What to watch
+The trailing distance controls activation, not the final fill price.
+A small distance can activate during ordinary market movement.
+A large distance can allow a larger reversal before activation.
+A gap can change execution after the trigger fires.
+Balance, policy, or market state can block the child at activation.
+Related Topics
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Previous
+Stop-Loss Limit
+Next
+Manage Orders
+On this page
+What it does
+How it works
+When to use it
+Example
+What to watch
+Related Topics
+Share this page
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Share
+Copy Link

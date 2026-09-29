@@ -1,0 +1,379 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/auth/policies/subaccounts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+PolicyService
+Create Subaccount Policy
+Create a new sub-account policy template for the caller account or workspace.
+Copy URL
+Method
+POST
+Path
+/v1/auth/policies/subaccounts
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Fresh step-up required
+POST
+/v1/auth/policies/subaccounts
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/auth/policies/subaccounts' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"policy": {
+"actions": [
+"TRADE_SPOT"
+],
+"description": "Example configuration for the API playground.",
+"expiresAt": "2025-01-01T00:00:00Z",
+"locked": false,
+"maxOpenOrders": 1,
+"maxOrderNotional": "12345",
+"name": "value",
+"reviewAt": "2025-01-01T00:00:00Z",
+"spotMarketScope": "ALL",
+"spotMarkets": [
+"symbolId": 1
+}
+],
+"tradingHalted": false
+},
+"subaccountId": "6789012345678"
+}'
+Responses
+"policy": {
+"actions": [
+"TRADE_SPOT"
+],
+"createdAt": "2025-01-01T00:00:00Z",
+"description": "Allow spot trading for selected markets.",
+"expiresAt": "2025-01-01T00:00:00Z",
+"id": "7gQY8okwBT",
+"isTemplate": false,
+"locked": false,
+"maxOpenOrders": 1,
+"maxOrderNotional": "12345",
+"name": "Market Maker Policy",
+"reviewAt": "2025-01-01T00:00:00Z",
+"revision": "1",
+"sourceTemplateId": "8gnKtjkL5A",
+"spotMarketScope": "ALL",
+"spotMarkets": [
+"symbolId": 1
+}
+],
+"tradingHalted": false,
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+policy
+string
+required
+Complete mutable policy configuration.
+subaccountId
+string (int64)
+Optional target sub-account to attach atomically after creation.
+Response
+Form
+JSON
+policy
+object
+Created sub-account policy.
+17 fields
+id
+string (fixed64)
+Policy identifier (opaque ID).
+Example
+7gQY8okwBT
+name
+string
+Human-readable policy name.
+Example
+Market Maker Policy
+description
+string
+Optional policy description for dashboards and audits.
+Example
+Allow spot trading for selected markets.
+spotMarkets
+object[]
+Allowed spot markets for this sub-account.
+1 field
+symbolId
+integer (int32)
+Stable numeric pair ID.
+Example
+1
+spotMarketScope
+enum
+Market-level scope for spot markets. When ALL, spot_markets is returned
+for display only and is not enforced.
+ALL
+ALLOWLIST
+Example
+ALL
+actions
+enum[]
+Effective high-level actions enabled for the sub-account. Mandatory
+read-only actions are always included.
+TRADE_SPOT
+INTERNAL_TRANSFER
+EXTERNAL_WITHDRAW
+READ_BALANCES
+READ_SPOT
+READ_INTERNAL_TRANSFERS
+READ_ADDRESS_BOOK
+MANAGE_ADDRESS_BOOK
+Example
+isTemplate
+boolean
+True if this policy is a reusable template; false if it is a
+per-sub-account instance.
+Example
+false
+sourceTemplateId
+string (fixed64)
+Optional source template this policy was copied from (opaque ID). This is
+audit metadata only and does not imply live linkage.
+Example
+8gnKtjkL5A
+maxOrderNotional
+string (uint64)
+Maximum notional size allowed for any single order on this sub-account,
+expressed in canonical quote microunits (one unit is 0.000001 USDT).
+A value of 0 means "no explicit cap".
+Example
+12345
+maxOpenOrders
+integer (int32)
+Maximum number of resting orders allowed on this sub-account at any time.
+A value of 0 means "no explicit cap".
+Example
+1
+tradingHalted
+boolean
+When true, new orders and exposure-increasing order or trigger changes are
+rejected regardless of other settings. Existing orders and triggers may
+still be canceled or paused by an otherwise authorized caller.
+Example
+false
+locked
+boolean
+When true, this policy is write-protected and requires an elevated approval
+flow to modify it.
+Example
+false
+reviewAt
+string (date-time)
+Optional review time in UTC. This is governance metadata and does not
+automatically disable the policy.
+Example
+2025-01-01T00:00:00Z
+expiresAt
+string (date-time)
+Optional expiry time in UTC. This is governance metadata and does not
+automatically disable the policy.
+Example
+2025-01-01T00:00:00Z
+createdAt
+string (date-time)
+Creation time in UTC.
+Example
+2025-01-01T00:00:00Z
+updatedAt
+string (date-time)
+Last update time in UTC.
+Example
+2025-01-01T00:00:00Z
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/auth/policies/subaccounts
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s380" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/auth/policies/subaccounts' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"policy": {
+"actions": [
+"TRADE_SPOT"
+],
+"description": "Example configuration for the API playground.",
+"expiresAt": "2025-01-01T00:00:00Z",
+"locked": false,
+"maxOpenOrders": 1,
+"maxOrderNotional": "12345",
+"name": "value",
+"reviewAt": "2025-01-01T00:00:00Z",
+"spotMarketScope": "ALL",
+"spotMarkets": [
+"symbolId": 1
+}
+],
+"tradingHalted": false
+},
+"subaccountId": "6789012345678"
+}'
+Responses
+"policy": {
+"actions": [
+"TRADE_SPOT"
+],
+"createdAt": "2025-01-01T00:00:00Z",
+"description": "Allow spot trading for selected markets.",
+"expiresAt": "2025-01-01T00:00:00Z",
+"id": "7gQY8okwBT",
+"isTemplate": false,
+"locked": false,
+"maxOpenOrders": 1,
+"maxOrderNotional": "12345",
+"name": "Market Maker Policy",
+"reviewAt": "2025-01-01T00:00:00Z",
+"revision": "1",
+"sourceTemplateId": "8gnKtjkL5A",
+"spotMarketScope": "ALL",
+"spotMarkets": [
+"symbolId": 1
+}
+],
+"tradingHalted": false,
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/policies/subaccounts' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "policy": {
+    "actions": [
+      "TRADE_SPOT"
+    ],
+    "description": "Example configuration for the API playground.",
+    "expiresAt": "2025-01-01T00:00:00Z",
+    "locked": false,
+    "maxOpenOrders": 1,
+    "maxOrderNotional": "12345",
+    "name": "value",
+    "reviewAt": "2025-01-01T00:00:00Z",
+    "spotMarketScope": "ALL",
+    "spotMarkets": [
+      {
+        "symbolId": 1
+      }
+    ],
+    "tradingHalted": false
+  },
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "policy": {
+    "actions": [
+      "TRADE_SPOT"
+    ],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "description": "Allow spot trading for selected markets.",
+    "expiresAt": "2025-01-01T00:00:00Z",
+    "id": "7gQY8okwBT",
+    "isTemplate": false,
+    "locked": false,
+    "maxOpenOrders": 1,
+    "maxOrderNotional": "12345",
+    "name": "Market Maker Policy",
+    "reviewAt": "2025-01-01T00:00:00Z",
+    "revision": "1",
+    "sourceTemplateId": "8gnKtjkL5A",
+    "spotMarketScope": "ALL",
+    "spotMarkets": [
+      {
+        "symbolId": 1
+      }
+    ],
+    "tradingHalted": false,
+    "updatedAt": "2025-01-01T00:00:00Z"
+  }
+}

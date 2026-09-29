@@ -1,0 +1,451 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Deposits & withdrawals · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Deposits & withdrawals
+Deposits & withdrawals
+Copy page
+View as Markdown
+Open in
+Use deposit
+routes
+, signed withdrawal intents, and internal transfers to move funds between
+external networks, Funding, and Trading.
+How funds move
+Flow
+How
+External → funding
+Deposit address route configured to stop in Funding
+External → trading
+Deposit address route configured to continue to Trading
+Funding → funding
+On-chain
+Funding Account
+transfer
+Funding → trading
+On-chain via
+polyester::chain
+helpers
+Funding → external
+On-chain
+Zipper
+path
+Trading → funding
+client.withdraw.create_to_funding
+(signed intent)
+Trading → external
+client.withdraw.create_to_external_chain
+Trading → trading
+client.internal_transfers.create
+Product overview:
+Funds & Transfers
+Deposit addresses
+use
+polyester
+proto
+chain
+deposit
+v1
+CreateDepositAddressRequest
+;
+let
+addr
+=
+client
+deposit
+create_address
+(
+CreateDepositAddressRequest
+chain_id
+1
+,
+Default
+default
+() })
+;
+let
+listed
+=
+client
+deposit
+list_addresses
+()
+;
+// no chain filter on Rust helper
+See
+Deposit
+Trading withdraws
+Amounts are
+AssetAmount
+in the ledger domain. Let the configured
+API key
+build and sign the
+complete deterministic payload:
+use
+polyester
+models
+CreateApiKeyTradingWithdrawParams
+;
+use
+polyester
+types
+AssetAmount
+,
+QuantityDomain
+};
+use
+polyester
+new_trading_withdraw_idempotency_key;
+let
+amount
+=
+AssetAmount
+from_decimal_str
+(
+"100.00"
+,
+2
+,
+QuantityDomain
+LedgerE18
+,
+Some
+(
+2
+))
+?
+;
+let
+idempotency_key
+=
+new_trading_withdraw_idempotency_key
+()
+?
+;
+let
+prepared
+=
+client
+withdraw
+prepare_api_key_to_funding
+(
+CreateApiKeyTradingWithdrawParams
+asset_id
+2
+,
+amount
+,
+destination_address
+String
+new
+(),
+idempotency_key
+,
+amount_scale
+Some
+(
+2
+),
+deadline_ts_sec
+None
+,
+nonce
+None
+,
+},
+)
+?
+;
+// Persist before submission; restore and resubmit these exact bytes on retry.
+std
+fs
+write
+(
+"prepared-withdraw.bin"
+,
+prepared
+request_bytes
+())
+map_err
+(
+|
+e
+|
+polyester
+Error
+validation
+(
+e
+to_string
+()))
+?
+;
+let
+result
+=
+client
+withdraw
+submit_prepared
+(
+&
+prepared
+)
+;
+The payload signature covers the exact deterministic protobuf bytes, including deadline and nonce.
+amount_scale
+is input precision; wire
+amount_e18
+is always exact 18-decimal units. Precomputed
+signature methods require an explicit deadline and never add one after signing.
+Details:
+Withdrawals
+Internal transfers
+use
+polyester
+models
+CreateInternalTransferParams
+;
+use
+polyester
+types
+AssetAmount
+,
+QuantityDomain
+};
+client
+internal_transfers
+create
+(
+CreateInternalTransferParams
+asset_id
+2
+,
+quantity
+AssetAmount
+from_decimal_str
+(
+"10.00"
+,
+2
+,
+QuantityDomain
+LedgerE18
+,
+Some
+(
+2
+)
+)
+?
+,
+idempotency_key
+"xfer-1"
+into
+(),
+subaccount_id
+None
+,
+destination_account_id
+None
+,
+destination_subaccount_id
+Some
+(
+"123"
+into
+()),
+destination_smart_account_address
+None
+,
+quantity_scale
+Some
+(
+2
+),
+})
+;
+Internal transfers use the same exact conversion to canonical
+amount_e18
+non-divisible downscaling, zero value, or overflow is accepted.
+See
+Internal transfers
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Security
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+High-risk money movement may require additional account controls. See
+Withdrawals & transfers security
+Related
+Deposit
+Withdrawals
+Internal transfers
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Accounts & balances
+Next
+Server-side usage
+On this page
+How funds move
+Deposit addresses
+Trading withdraws
+Internal transfers
+Related
+Related Topics
+Share this page
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::proto::chain::deposit::v1::CreateDepositAddressRequest;
+
+let addr = client
+    .deposit
+    .create_address(CreateDepositAddressRequest { chain_id: 1, ..Default::default() })
+    .await?;
+let listed = client.deposit.list_addresses().await?; // no chain filter on Rust helper
+
+---
+
+use polyester::models::CreateApiKeyTradingWithdrawParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+use polyester::new_trading_withdraw_idempotency_key;
+
+let amount = AssetAmount::from_decimal_str("100.00", 2, QuantityDomain::LedgerE18, Some(2))?;
+let idempotency_key = new_trading_withdraw_idempotency_key()?;
+let prepared = client.withdraw.prepare_api_key_to_funding(
+    CreateApiKeyTradingWithdrawParams {
+        asset_id: 2,
+        amount,
+        destination_address: String::new(),
+        idempotency_key,
+        amount_scale: Some(2),
+        deadline_ts_sec: None,
+        nonce: None,
+    },
+)?;
+// Persist before submission; restore and resubmit these exact bytes on retry.
+std::fs::write("prepared-withdraw.bin", prepared.request_bytes())
+    .map_err(|e| polyester::Error::validation(e.to_string()))?;
+let result = client.withdraw.submit_prepared(&prepared).await?;
+
+---
+
+use polyester::models::CreateInternalTransferParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+
+client.internal_transfers.create(CreateInternalTransferParams {
+    asset_id: 2,
+    quantity: AssetAmount::from_decimal_str(
+        "10.00", 2, QuantityDomain::LedgerE18, Some(2)
+    )?,
+    idempotency_key: "xfer-1".into(),
+    subaccount_id: None,
+    destination_account_id: None,
+    destination_subaccount_id: Some("123".into()),
+    destination_smart_account_address: None,
+    quantity_scale: Some(2),
+}).await?;

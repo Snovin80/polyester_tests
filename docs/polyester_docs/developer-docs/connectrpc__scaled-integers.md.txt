@@ -1,0 +1,205 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/scaled-integers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Scaled Integers
+How decimal amounts, prices, balances, and quantities are represented as scaled integers in Polyester APIs.
+Scaled integers are how Polyester represents decimal values in typed protobuf API contracts.
+These fields represent prices, quantities, balances, fees, and chart series as integer values. Direct protobuf clients must determine which scale applies before parsing or encoding values.
+If you use the official Polyester TypeScript, Python, or Go SDK, normal amount conversion is handled by the SDK. This guide is mainly for developers who work with protobuf contracts directly or build lower-level ConnectRPC tooling.
+> **REST users can skip this guide**
+>
+> This article is not required for REST integrations. Polyester REST APIs expose decimal values as strings, such as `"qty": "0.00100000"` and `"price": "50000.000000"`, so REST clients do not need to decode `*_scaled`, `*_ticks`, `U128`, or `_e18` protobuf fields. Continue reading only if you work directly with protobuf or ConnectRPC payloads.
+***
+## The short version
+Use this mental model:
+- **Trading prices use 6-decimal ticks:** fields named `*_ticks` make this explicit; market-data OHLC fields such as `open`, `high`, `low`, and `close` use the same scale without the suffix.
+- **Quantities use asset scale:** trading pair quantities use `base_quantity_scale` or `quote_quantity_scale` from `GetSpotConfigResponse.pairs`; asset-only APIs use `quantity_scale` from `GetSpotConfigResponse.assets`.
+- **Ledger and chain canonical amount fields use 18 decimals:** `U128` ledger balance fields and fields named `amount_e18` are 18-decimal integer values. Non-amount `U128` identifiers are not decimals.
+- **Chart series may use their own scale:** `*_q` fields are compact chart values and must be read from the field's API documentation. Do not use them as authoritative balances.
+- **Basis points are not scaled decimals:** `*_bps` fields are direct integer basis points.
+> **Always identify the scale before decoding**
+>
+> Do not assume every quantity uses 18 decimals. Trading quantities use scales from `marketdata.v1.MarketDataService.GetSpotConfig`, while ledger and chain canonical amounts use 18 decimals.
+> **Never use floating-point math**
+>
+> Do not encode or decode scaled integers through `float`, `double`, JavaScript `Number`, Python `float`, or Go `float64`. Parse user input as an exact decimal string, shift the decimal point by the scale, reject unsupported fractional precision, and only then encode the integer.
+***
+## Why APIs use scaled integers
+Scaled integers avoid floating-point drift, keep protobuf payloads compact, reduce serialization and deserialization work, and make matching, balance, and settlement calculations deterministic. For trading activity, those encoding costs matter because busy clients may send and receive many prices, quantities, fills, balances, and book levels per second.
+The conversion rule is:
+```text
+scaled integer = decimal value * 10^scale
+decimal value = scaled integer / 10^scale
+```
+For example, if `BTC` has `quantity_scale = 8`, then `0.001 BTC` is encoded as:
+```text
+0.001 * 10^8 = 100000
+```
+***
+## Transport behavior
+| Interface                 | Representation                    | Example                                                  |
+| ------------------------- | --------------------------------- | -------------------------------------------------------- |
+| REST JSON                 | decimal or integer strings        | `"amount": "0.5"`, `"nonce": "123"`                      |
+| ConnectRPC JSON/protojson | integer strings for 64-bit values | `"qty_scaled": "100000"`, `"price_ticks": "50000000000"` |
+| ConnectRPC protobuf       | integer fields                    | `qty_scaled = 100000`, `price_ticks = 50000000000`       |
+ConnectRPC clients use generated integer types and decode using the field's scale. REST amount strings are decimals, while non-amount U128 identifiers such as withdraw `nonce` are unsigned integer strings.
+If you build directly on generated protobuf types in TypeScript or JavaScript, do not store 64-bit scaled values in `Number`. Use your generated protobuf type, `bigint`, or string-backed helpers. For `U128` values, ConnectRPC JSON/protojson uses `{ "hi": "...", "lo": "..." }`.
+***
+## Scale registry
+| Field shape                      | Scale source                | How to decode                                                     | Common examples                                                                     |
+| -------------------------------- | --------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `*_ticks` price fields           | Fixed 6 decimals            | `value / 1_000_000`                                               | `price_ticks`, `avg_price_ticks`, `trigger_price_ticks`, `close_ticks`, `mid_ticks` |
+| Unsuffixed OHLC price fields     | Fixed 6 decimals            | `value / 1_000_000`                                               | candle `open`, `high`, `low`, `close`                                               |
+| Base quantity `*_scaled` fields  | Pair `base_quantity_scale`  | `value / 10^base_quantity_scale`                                  | `qty_scaled`, `new_qty_scaled`, `executed_qty_scaled`, orderbook quantities         |
+| Quote quantity `*_scaled` fields | Pair `quote_quantity_scale` | `value / 10^quote_quantity_scale`                                 | quote volume, quote-side fees, quote notional-style values                          |
+| Unsuffixed base volume fields    | Pair `base_quantity_scale`  | `value / 10^base_quantity_scale`                                  | candle `volume`, `reference_volume`                                                 |
+| Asset quantity fields            | Asset `quantity_scale`      | `value / 10^quantity_scale`                                       | supply values                                                                       |
+| Ledger `U128` balances           | Fixed 18 decimals           | combine `hi` and `lo`, then divide by `10^18`                     | `trading`, `funding`, `reserved` balances                                           |
+| `amount_e18`                     | Fixed 18 decimals           | combine `hi` and `lo`, then divide by `10^18`                     | internal transfers, chain lifecycle, and withdraw amounts                           |
+| `*_q` chart fields               | Field-specific              | Read the field docs; never use as authoritative money             | balance history, equity history, supply series                                      |
+| `*_bps`                          | Basis points                | integer basis points; divide by 100 only when rendering a percent | slippage, trailing distance, 24h change                                             |
+The suffix alone is not enough for every `*_scaled` field. Use the field comment and denomination to choose base, quote, or asset scale.
+***
+## Trading prices
+Trading prices use ticks with a fixed 6-decimal scale. This is independent of the quote asset's quantity scale.
+```json
+"price_ticks": "50000000000"
+}
+```
+Decode it as:
+```text
+50000000000 / 10^6 = 50000.000000
+```
+Use this rule for fields such as `price_ticks`, `avg_price_ticks`, `trigger_price_ticks`, `limit_price_ticks`, `activation_price_ticks`, market-data OHLC prices, and heatmap fields such as `mid_ticks`.
+Slippage and trailing distance tick fields use the same 1e-6 quote-unit tick space, but they are price deltas rather than absolute prices. For example, `market_max_slippage_ticks`, `max_slippage_ticks`, and `trailing_distance_ticks` are added to or subtracted from a reference price.
+Price protection fields often appear as `oneof` alternatives. Send either the tick form, such as `market_max_slippage_ticks`, or the basis-point form, such as `market_max_slippage_bps`, not both.
+> **Some market-data fields omit the suffix**
+>
+> Candle `open`, `high`, `low`, and `close` use the same 6-decimal price scale without `_ticks`. Candle `volume` uses the pair's `base_quantity_scale` without `_scaled`. These fields keep chart payloads compact, so the protobuf field comment is authoritative.
+> **Price scale is not quote asset scale**
+>
+> Do not decode `price_ticks` with `quote_quantity_scale`. Price ticks use 6 decimals even when the quote asset has a different quantity scale.
+***
+## Trading quantities
+Trading order quantities use the pair's base asset scale.
+To decode pair-specific quantities, fetch `GetSpotConfigResponse` and locate the pair in `pairs` by `symbol_id` or `symbol`. For `BTC-USDT`, if that `PairConfig` says:
+```json
+"symbol_id": 1,
+"symbol": "BTC-USDT",
+"base_quantity_scale": 8,
+"quote_quantity_scale": 6
+}
+```
+Then this ConnectRPC payload:
+```json
+"qty_scaled": "100000"
+}
+```
+Means:
+```text
+100000 / 10^8 = 0.001 BTC
+```
+Use the base scale for order quantities, orderbook quantities, executed quantities, and base volume fields.
+Order read quantities use the `_scaled` suffix too: fields such as `orig_qty_scaled`, `cum_qty_scaled`, and `leaves_qty_scaled` use the pair's `base_quantity_scale`.
+Order placement has two explicit sizing alternatives. `base_qty_scaled` uses `base_quantity_scale`. `max_quote_debit_scaled` uses `quote_quantity_scale` because it is a hard all-in quote budget. Preview and create responses return `resolved_base_qty_scaled` using the base scale and can echo `submitted_max_quote_debit_scaled` using the quote scale. See [Order Sizing](https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing) for eligibility and acknowledgement semantics.
+Use the quote scale for quote-denominated totals, quote volume, and quote-side fees. Use the asset `quantity_scale` for asset-scaled fields such as supply analytics. Internal transfers use `amount_e18` instead.
+`quantity_display_decimals` is display guidance only. Do not use it for protobuf encode or decode; use `base_quantity_scale`, `quote_quantity_scale`, or asset `quantity_scale`.
+***
+## Fees and quote-side values
+Fees and quote-side totals use the asset that the value is denominated in.
+For trades, use the companion `fee_asset` field to choose the scale:
+- If `fee_asset` is `QUOTE` or `FEE_ASSET_UNSPECIFIED`, decode `fee_scaled` with `quote_quantity_scale`.
+- If `fee_asset` is `BASE`, decode `fee_scaled` with `base_quantity_scale`.
+- Referral share fields follow the same asset-denomination rule as `fee_scaled`.
+SELL fees are always quote-denominated. For BUY trades, `fee_asset` decides whether the fee is charged in quote (`QUOTE`) or deducted from received base (`BASE`). See [Fee Assets](https://testnet.polyester.com/docs/developer-docs/shared-concepts/fee-assets) for valid combinations.
+Quote volume is also quote-denominated. Decode fields such as `volume_24h_quote_scaled` with the quote asset scale, not the price tick scale.
+***
+## Ledger balances
+Ledger balance fields use `U128` integer values with 18 decimal places. This ledger scale is fixed and does not come from `GetSpotConfigResponse` quantity scales.
+These fields are larger than regular 64-bit quantities because balances and movements must be represented without overflow across assets and accounts.
+`U128` is split into two 64-bit halves. Reconstruct the full integer before applying the decimal scale:
+```text
+u128 = (hi
+**JavaScript bigint division truncates**
+>
+> In TypeScript and JavaScript, `bigint / bigint` performs integer division. `1500000000000000000n / 10n ** 18n` returns `1n`, not `1.5`. Format bigint values as decimal strings or use an arbitrary-precision decimal library.
+***
+## 18-decimal amount\_e18 fields
+Any field named `amount_e18` uses fixed 18-decimal scale. This includes ledger transfer rows, order transfer legs, chain lifecycle flows, and withdraw payloads.
+```json
+"amount_e18": {
+"hi": "0",
+"lo": "500000000000000000"
+}
+}
+```
+This represents:
+```text
+(0
+**\_q fields are not canonical money**
+>
+> `*_q` fields are for charts and analytics. Never use `balance_q`, `equity_q`, or other `*_q` fields as authoritative balances, order inputs, withdrawal amounts, or settlement values. For funds, transfers, and trading, use ledger `U128` balances, `amount_e18`, `*_scaled`, or `*_ticks` fields as appropriate.
+Common examples:
+| Field             | Meaning                                                       |
+| ----------------- | ------------------------------------------------------------- |
+| `balance_q`       | balance chart values scaled by 1e7                            |
+| `equity_q`        | quote-equity chart values scaled by 1e4                       |
+| `btc_prices_q`    | BTC-USDT price series using 1e6 price tick scale              |
+| `supply_q`        | supply values scaled by the parent asset's `quantity_scale`   |
+| `total_supply_q`  | analytics supply values scaled by the asset `quantity_scale`  |
+| `total_balance_q` | analytics balance values scaled by the asset `quantity_scale` |
+When a field uses `_q`, check that field's API documentation. Do not infer the scale from another `_q` field.
+Some `_q` series and delta fields are signed. Preserve the signedness from the generated protobuf type instead of assuming every compact series is unsigned.
+***
+## Basis points
+Basis point fields are plain integers, not decimal fixed-point fields. Divide by 100 only when rendering a percentage for humans.
+```text
+1 bp = 0.01%
+100 bps = 1%
+250 bps = 2.5%
+```
+Use this rule for fields such as `market_max_slippage_bps`, `trailing_distance_bps`, and `change_24h_bps`.
+***
+## Conversion cookbook
+When sending a ConnectRPC request:
+1. Fetch and cache `GetSpotConfigResponse` when the field uses pair or asset scale.
+2. Find the field's denomination: base asset, quote asset, ledger amount, chain amount, price, chart value, or basis points.
+3. Pick the scale from the registry above.
+4. Parse the user decimal as an exact decimal string.
+5. Reject values with more fractional digits than the scale supports.
+6. Validate trading inputs against applicable constraints such as `tick_size`, `step_size`, minimum quantity, and minimum notional.
+7. Send the resulting integer in the protobuf field.
+When reading a ConnectRPC response:
+1. Read the field suffix and field documentation.
+2. Resolve the scale from `GetSpotConfigResponse` or from the fixed-scale registry.
+3. Format the integer as a decimal string for display.
+4. Keep the original integer for follow-up API calls when possible.
+Example order input:
+```text
+symbol: BTC-USDT
+price: 50000.000000
+qty: 0.001
+base_quantity_scale: 8
+price_ticks = 50000.000000 * 10^6 = 50000000000
+qty_scaled = 0.001 * 10^8 = 100000
+```
+***
+## Common mistakes
+- Do not use JavaScript `Number` for 64-bit scaled integers.
+- Do not multiply or divide financial values with floating-point types.
+- Do not decode a `U128` from `lo` alone. Combine `hi` and `lo` first.
+- Do not assume every amount with 18 decimals is a trading quantity.
+- Do not apply 18-decimal scaling to non-amount `U128` fields such as `nonce`.
+- Do not decode `price_ticks` with quote asset scale.
+- Do not decode `fee_scaled` without checking `fee_asset`.
+- Do not treat `_q` as a single global scale or canonical money.
+- Do not use `quantity_display_decimals` for protobuf encode/decode. It is display guidance only.
+- Do not drop signedness from generated types; some compact series and deltas are signed.
+- Do not mix decimal strings and scaled integers inside the same client path.
+- Do not round silently when a user enters more fractional digits than the scale allows.
+> **Client default**
+>
+> For trading clients, fetch `GetSpotConfigResponse` once at startup, refresh it on a bounded interval, and keep a small local map from `symbol_id` to base and quote scales.
+***
+When in doubt, prefer the protobuf field comment and `GetSpotConfigResponse` over examples copied from another endpoint.

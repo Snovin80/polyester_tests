@@ -1,0 +1,163 @@
+Источник: https://testnet.polyester.com/docs/sdk/python
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Get started
+Overview
+Copy page
+View as Markdown
+Open in
+The official Python SDK is an
+API-key
+client for Polyester ConnectRPC APIs and
+Centrifugo WebSocket Protobuf streams. It is built for trading bots, automated execution, and
+backend automation, not browser wallet login.
+Python ships
+async
+(
+AsyncPolyester
+) and
+sync
+(
+Polyester
+) clients with the same service tree. Prefer async for bots with streams.
+What you can build
+Market data:
+overview, candles, order books, public trades, heatmap, chain analytics
+Trading:
+spot orders (including batch / cancel-all), attached risk, standalone triggers
+Accounts:
+balances (funding vs trading),
+subaccounts
+, policies,
+API keys
+, profile
+Funding:
+deposit addresses, trading withdraws, internal transfers, lifecycle,
+Zipper
+config
+On-chain helpers:
+Funding → Trading and Funding → external via the
+chain
+module
+Realtime:
+public and private streams with fail-closed overflow behavior
+Intentionally not in this SDK
+Wallet login, session
+MFA
+enrollment/challenges, and account resolve/lookup require interactive
+JWT/session flows. Use the
+TypeScript SDK
+for those.
+SBE and FIX are separate transports, see the
+connectivity matrix
+Details:
+Limitations & non-features
+Resources
+Python SDK repository
+Runnable examples
+SDK capability matrix
+Ed25519 API keys
+Public Protobuf contracts
+Next:
+Installation
+Related Topics
+Installation
+Install the Python SDK and verify connectivity to Polyester testnet.
+Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+Next
+Installation
+On this page
+What you can build
+Intentionally not in this SDK
+Resources
+Related Topics
+Share this page
+Overview
+Build typed Polyester integrations with the official Python API-key SDK.
+Share
+Copy Link

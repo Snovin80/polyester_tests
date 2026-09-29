@@ -1,0 +1,183 @@
+Источник: https://testnet.polyester.com/docs/user-docs/help-and-support/submit-a-support-ticket
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Submit a Support Ticket · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Help & Support
+svg]:size-3.5">
+/
+Submit a Support Ticket
+Submit a Support Ticket
+Copy page
+View as Markdown
+Open in
+Use
+My Submissions
+to create a support ticket and follow replies from Polyester support.
+Include a short description of your question and any relevant account, order, transaction, or Flow ID. Never include a password, seed phrase, private key,
+MFA
+code, recovery code, or API private key.
+FAQ
+Will the team ever ask for my private key, recovery phrase, or verification code?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. The team will never ask for your private key, recovery phrase, login or MFA codes, recovery codes, or API private key. Never share these in messages or support tickets. The Polyester team will never send you an unexpected private message. Treat these messages as phishing attempts and exercise caution.
+Where should I go for account support, bug reports, or product feedback?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+You’ll need a Polyester account to create a ticket. After signing in, click the chat box icon in the lower-right corner of the app and follow the instructions to submit support requests, bug reports, or feedback. You can track your previously submitted tickets in My Submissions.
+What information should I include when reporting a problem?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Describe what you were trying to do, what happened, and what you expected. Include the steps to reproduce the problem if applicable, the approximate time and time zone, your device and browser, and any relevant order or transaction ID. Screenshots or a short recording can help. Never include passwords, private keys, recovery phrases, login or MFA codes, recovery codes, or API private keys.
+How can I contact the team about a partnership or business inquiry?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Submit a partnership or business inquiry through the customer support tool. You’ll need a Polyester account to create an inquiry. Include all relevant details, and the team will get back to you.
+Related Topics
+FAQs
+Search answers to common questions about Polyester.
+Feature Requests
+Submit an idea or browse feature requests from the Polyester community.
+Previous
+Feature Requests
+On this page
+FAQ
+Related Topics
+Share this page
+Submit a Support Ticket
+Contact Polyester support about a private or account-specific question.
+Share
+Copy Link

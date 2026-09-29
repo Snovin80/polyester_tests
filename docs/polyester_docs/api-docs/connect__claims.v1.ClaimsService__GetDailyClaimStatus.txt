@@ -1,0 +1,229 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/claims.v1.ClaimsService/GetDailyClaimStatus
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+claims.v1.ClaimsService
+GetDailyClaimStatus
+Get today's reward and claim status for the authenticated root account. Future reward schedules are not returned.
+Copy URL
+Method
+POST
+Path
+claims.v1.ClaimsService/GetDailyClaimStatus
+Service
+claims.v1.ClaimsService
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+POST
+claims.v1.ClaimsService/GetDailyClaimStatus
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/claims.v1.ClaimsService/GetDailyClaimStatus' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"campaign": {
+"campaignId": "value",
+"claimPolicy": "UTC_DAILY",
+"description": "Example configuration for the API playground.",
+"name": "value"
+},
+"claimId": "value",
+"resetAt": "2025-01-01T00:00:00Z",
+"rewards": [
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetCode": "USDC",
+"assetId": 100
+}
+],
+"state": "CLAIM_AVAILABLE"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+claims.v1.GetDailyClaimStatusRequest
+Response
+claims.v1.GetDailyClaimStatusResponse
+Response
+Form
+JSON
+state
+enum
+Current state of today's claim.
+CLAIM_AVAILABLE
+CLAIM_PROCESSING
+CLAIM_CLAIMED
+CLAIM_UNAVAILABLE
+resetAt
+string (date-time)
+Start of the next UTC calendar day.
+rewards
+object[]
+Assets and amounts available or already granted for the current UTC day. Future rewards are not returned.
+3 fields
+assetId
+integer (int32)
+Asset identifier.
+assetCode
+string
+Asset code.
+amountE18
+object
+Claim amount in 18-decimal unified asset units.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+claimId
+string
+Claim identifier. Empty until a claim has been created.
+campaign
+object
+Campaign associated with the current reward or existing claim. Omitted when no campaign applies.
+4 fields
+campaignId
+string
+Stable campaign identifier.
+name
+string
+Campaign name. Existing claims retain the name that applied when they were created.
+description
+string
+Campaign description. Existing claims retain the description that applied when they were created.
+claimPolicy
+enum
+How frequently each root account may claim from this campaign.
+UTC_DAILY
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+claims.v1.ClaimsService/GetDailyClaimStatus
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s381" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/claims.v1.ClaimsService/GetDailyClaimStatus' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"campaign": {
+"campaignId": "value",
+"claimPolicy": "UTC_DAILY",
+"description": "Example configuration for the API playground.",
+"name": "value"
+},
+"claimId": "value",
+"resetAt": "2025-01-01T00:00:00Z",
+"rewards": [
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetCode": "USDC",
+"assetId": 100
+}
+],
+"state": "CLAIM_AVAILABLE"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/claims.v1.ClaimsService/GetDailyClaimStatus' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "campaign": {
+    "campaignId": "value",
+    "claimPolicy": "UTC_DAILY",
+    "description": "Example configuration for the API playground.",
+    "name": "value"
+  },
+  "claimId": "value",
+  "resetAt": "2025-01-01T00:00:00Z",
+  "rewards": [
+    {
+      "amountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "assetCode": "USDC",
+      "assetId": 100
+    }
+  ],
+  "state": "CLAIM_AVAILABLE"
+}

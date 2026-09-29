@@ -1,0 +1,563 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/guard-signer
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Guard signer · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Guard signer
+Guard signer
+Copy page
+View as Markdown
+Open in
+client.guardSigner
+manages backend-managed guard wallets that co-sign protected account actions,
+such as whitelist updates and whitelist-requirement changes. Every method is authenticated and
+account-scoped: inputs accept an optional
+account
+field (
+"main"
+,
+"active"
+, or
+).
+A guard wallet holds a signer key on the backend. When you perform a protected funding action, you
+ask the guard signer for an approval signature and submit it alongside the action. See the
+funding
+flows for where these approvals are consumed.
+Methods
+Method
+Summary
+createWallet
+Create a guard wallet and return its signer address.
+getStatus
+Read stored and live signer status, or
+null
+if absent.
+signProtectedAction
+Produce one approval signature for a protected action.
+batchSignProtectedActions
+Produce ordered approvals for a batch of actions.
+rotateWallet
+Replace the signer wallet and return a rotation approval.
+exportWallet
+Export the signer's private key (owner + fresh step-up).
+createWallet(input?, options?)
+Creates a guard wallet for the resolved account target and returns the generated signer EVM address.
+const
+signerAddress
+}
+=
+await
+client
+guardSigner
+createWallet
+();
+console
+log
+(
+signerAddress
+);
+// "0x..."
+getStatus(input?, options?)
+Returns stored and live guard signer status: signer address, on-chain signer, initialization state,
+nonce, and nonce space. Returns
+null
+when the backend reports no wallet.
+nonceSpace
+is a
+bigint
+; do not
+JSON.stringify
+the whole object.
+const
+status
+=
+await
+client
+guardSigner
+getStatus
+();
+if
+(
+status
+) {
+console
+log
+(
+status
+signerAddress
+,
+status
+initialized
+,
+status
+nonce
+);
+}
+signProtectedAction(input, options?)
+Produces one guard approval signature for a supported protected
+action
+and returns a
+GuardApproval
+, or
+null
+when the response has no approval payload. Some actions carry
+args
+const
+approval
+=
+await
+client
+guardSigner
+signProtectedAction
+({
+action:
+"fundingAddExternalWhitelist"
+,
+args: {
+case:
+"externalWhitelist"
+,
+polychainChainId:
+1
+,
+addresses: [
+"0xabc..."
+],
+},
+});
+if
+(
+approval
+) {
+// Submit approval.signature, approval.nonceSpace, approval.deadlineUnix with the action.
+console
+log
+(
+approval
+signature
+);
+// "0x..."
+}
+Supported actions are
+fundingSetExternalWhitelistRequired
+,
+fundingAddExternalWhitelist
+,
+fundingRemoveExternalWhitelist
+,
+fundingAddInternalWhitelist
+,
+fundingRemoveInternalWhitelist
+,
+and
+fundingSetInternalWhitelistRequired
+args
+union has three cases:
+externalWhitelist
+(
+polychainChainId
++
+addresses
+),
+internalWhitelist
+(
+addresses
+), and
+whitelistRequirement
+(
+required
+).
+polychainChainId
+must be an integer from 1 through 4,294,967,295.
+batchSignProtectedActions(input, options?)
+Produces ordered approvals for a batch of protected actions and returns
+, one per
+requested action in the same order. It throws if the backend returns a mismatched count.
+const
+approvals
+}
+=
+await
+client
+guardSigner
+batchSignProtectedActions
+({
+actions: [
+action:
+"fundingSetExternalWhitelistRequired"
+,
+args: { case:
+"whitelistRequirement"
+, required:
+true
+},
+},
+action:
+"fundingAddExternalWhitelist"
+,
+args: { case:
+"externalWhitelist"
+, polychainChainId:
+1
+, addresses: [
+"0xabc..."
+] },
+},
+],
+});
+console
+log
+(
+approvals
+length
+);
+// 2, matching the request order
+rotateWallet(input?, options?)
+Generates a backend-managed replacement guard signer and returns the new signer address plus the
+rotation
+approval
+(or
+null
+). Submit the rotation approval to complete the swap on-chain.
+const
+newSignerAddress
+,
+approval
+}
+=
+await
+client
+guardSigner
+rotateWallet
+();
+console
+log
+(
+newSignerAddress
+);
+exportWallet(input?, options?)
+Exports the guard signer's private key material and returns
+as a
+0x
+-prefixed hex
+string. This is a high-privilege action.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Export requires owner authorization and fresh step-up
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+exportWallet
+returns raw private key material. The backend requires owner authorization
+and a fresh
+MFA
+step-up before it will export, and the key gives full control of the signer. Handle
+the result as a secret and never log it. See
+MFA
+for
+the step-up flow.
+const
+privateKey
+}
+=
+await
+client
+guardSigner
+exportWallet
+();
+// Store privateKey securely; do not log or transmit it.
+The
+GuardApproval
+shape
+signProtectedAction
+,
+batchSignProtectedActions
+, and
+rotateWallet
+return approvals in this
+shape.
+nonceSpace
+and
+deadlineUnix
+are stringified big integers;
+signature
+is
+0x
+-prefixed
+hex.
+interface
+GuardApproval
+nonceSpace
+string
+;
+deadlineUnix
+string
+;
+signature
+`0x${
+string
+}`
+;
+raw
+nonceSpace
+bigint
+;
+deadlineUnix
+bigint
+;
+signature
+Uint8Array
+<
+ArrayBuffer
+> };
+}
+Related
+Withdrawals
+for protected funding actions these approvals authorize.
+MFA
+for the fresh step-up that
+exportWallet
+requires.
+Address book
+for the whitelists these actions modify.
+Errors
+for the error type reference.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Fees
+Next
+Heatmap
+On this page
+Methods
+createWallet(input?, options?)
+getStatus(input?, options?)
+signProtectedAction(input, options?)
+batchSignProtectedActions(input, options?)
+rotateWallet(input?, options?)
+exportWallet(input?, options?)
+The GuardApproval shape
+Related
+Related Topics
+Share this page
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { signerAddress } = await client.guardSigner.createWallet();
+console.log(signerAddress); // "0x..."
+
+---
+
+const status = await client.guardSigner.getStatus();
+if (status) {
+	console.log(status.signerAddress, status.initialized, status.nonce);
+}
+
+---
+
+const approval = await client.guardSigner.signProtectedAction({
+	action: "fundingAddExternalWhitelist",
+	args: {
+		case: "externalWhitelist",
+		polychainChainId: 1,
+		addresses: ["0xabc..."],
+	},
+});
+
+if (approval) {
+	// Submit approval.signature, approval.nonceSpace, approval.deadlineUnix with the action.
+	console.log(approval.signature); // "0x..."
+}
+
+---
+
+const { approvals } = await client.guardSigner.batchSignProtectedActions({
+	actions: [
+		{
+			action: "fundingSetExternalWhitelistRequired",
+			args: { case: "whitelistRequirement", required: true },
+		},
+		{
+			action: "fundingAddExternalWhitelist",
+			args: { case: "externalWhitelist", polychainChainId: 1, addresses: ["0xabc..."] },
+		},
+	],
+});
+console.log(approvals.length); // 2, matching the request order
+
+---
+
+const { newSignerAddress, approval } = await client.guardSigner.rotateWallet();
+console.log(newSignerAddress);
+
+---
+
+const { privateKey } = await client.guardSigner.exportWallet();
+// Store privateKey securely; do not log or transmit it.
+
+---
+
+interface GuardApproval {
+	nonceSpace: string;
+	deadlineUnix: string;
+	signature: `0x${string}`;
+	raw: { nonceSpace: bigint; deadlineUnix: bigint; signature: Uint8Array<ArrayBuffer> };
+}

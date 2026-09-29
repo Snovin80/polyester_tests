@@ -1,0 +1,326 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/trading-screen
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading Screen · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Trading Screen
+Trading Screen
+Copy page
+View as Markdown
+Open in
+The Polyester Trading Screen brings live market data, order entry, private account activity, and balances into one customizable workspace. Choose your chart, personalize its appearance, and arrange every panel around the way you trade.
+Open the
+Trading Screen
+to choose a market and arrange the workspace around the information you use most.
+Trading Screen USDT/BTC pair
+Public market data and private account data
+The Trading Screen keeps public market information and private account activity together without combining their visibility.
+Screen area
+Visibility
+What it shows
+Charts, Depth Chart, Order Book, and Market Trades
+Public market data
+Price history, aggregated liquidity, and completed market-level trades
+Open Orders, Order History, Triggers, and Funds
+Private account data
+Your attributed orders, fills, balances, reservations, and history
+The Order Form connects both contexts. It uses the selected Pair's market rules and the active account's available balance and permissions.
+Market Trades is not your personal trade history. It shows completed public executions without identifying the accounts behind them. Use Order History and fill details for activity attributed to your account.
+Personalize
+Personalize is one of the core features of Polyester. We keep adding layout, chart, and panel options, and more will come. Feel free to send
+feedback or a feature request
+Pick a layout, choose a chart, and arrange the panels around the way you trade.
+Standard and Advanced layouts
+Use
+Trading Layout
+in the market header to switch between
+Standard
+and
+Advanced
+Choose Standard or Advanced from Trading Layout
+Standard
+Advanced
+Standard keeps chart, Order Book, Order Form, and orders in a
+fixed arrangement
+Resize panels
+and switch tabs without dragging widgets around.
+Standard layout features
+Fixed arrangement
+Resizable panels
+Prefilled tabs
+Chart
+and
+Depth
+Polyester Chart
+or
+TradingView
+with
+Depth Chart
+Order Book
+and
+Trades
+Order Book
+and
+Trades
+in one panel. Order Book also has Tabbed, Stacked, and Side by side
+Limit
+and
+Market
+Order Form
+tabs for Limit, Market, and More
+Open Orders
+,
+Triggers
+, and
+Order History
+Open Orders
+,
+Triggers
+, and
+Order History
+Funds
+Advanced lets each widget become a panel you can
+drag
+,
+resize
+,
+float
+, or
+expand
+Advanced layout Features
+Draggable
+Resizable
+Floating widgets
+Float panel
+to pull a group out of the grid
+Maximize View
+Move one tab to another
+Widgets
+Overview
+Learn each Trading Screen widget and how to add it in Advanced.
+Trading chart
+Choose
+Polyester Chart
+, the native chart built in-house, or
+TradingView Chart
+Polyester Chart
+TradingView Chart
+Customize the chart's theme and appearance, then keep the chart beside the market data and order controls you use with it. You can also place both charts in one tab group and switch between them without rebuilding the rest of your workspace.
+Polyester Chart
+Learn the native chart's candles, indicators, and drawing tools.
+TradingView Chart
+Learn the TradingView Advanced Charts widget and its controls.
+Customize your workspace
+On
+Advanced
+, customize the display from
+Preset Layouts
+in the header. Switch a starting arrangement, then save your own layout.
+Creating a new preset
+1
+Choose a preset layout
+Default Trading.
+A balanced view of charts, liquidity, order entry, activity, and Funds
+Compact View.
+More information in a tighter arrangement
+Chart Focused.
+More room for chart analysis
+Orderbook Focused.
+More room for visible liquidity and order entry
+Choose a preset layout
+2
+Open the widgets you need
+Click
+in a tab header to add a widget to that group. Or click
+at the top of the workspace, then drag the widget where you need it.
+Widgets Overview
+Learn each Trading Screen widget and how to add it in Advanced.
+3
+Resize and arrange the panels
+Drag panels into place, then adjust their width and height around the information you use most.
+4
+Name and save your layout
+Click
+Save
+next to the layout name, then enter a name in
+Save Layout
+Click Save
+Name and save the layout
+Remember
+Layout changes affect
+presentation
+only. They do not place, modify, cancel, or settle an
+order
+Saved layouts stay in the
+current browser
+Clearing
+site data
+can remove saved layouts.
+Related Topics
+Overview
+See how Polyester combines order-book markets, advanced trading tools, and low-latency APIs.
+Overview
+Learn the Trading Screen widgets you can add, group, and rearrange in Advanced layout.
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Manage Orders
+Track active orders, understand fills, modify remaining quantity, and confirm how each order ends.
+Quick Swap
+Convert one supported asset into another and deliver it to a chosen wallet with Quick Swap.
+Previous
+Overview
+Next
+Overview
+On this page
+Public market data and private account data
+Personalize
+Standard and Advanced layouts
+Trading chart
+Customize your workspace
+Creating a new preset
+Remember
+Related Topics
+Share this page
+Trading Screen
+Use and customize Polyester's connected workspace for market analysis, order entry, and account activity.
+Share
+Copy Link

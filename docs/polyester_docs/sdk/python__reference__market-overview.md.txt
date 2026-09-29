@@ -1,0 +1,52 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/market-overview.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+`client.market_overview` returns one row per spot market (last price, 24h stats, and related fields). Public, no authentication required.
+## Methods
+| Method                | Summary                                       |
+| --------------------- | --------------------------------------------- |
+| `list`                | Paginated / filtered overview rows.           |
+| `create_subscription` | Snapshot-then-stream merged rows (preferred). |
+| `subscribe`           | Raw Centrifugo batches (no snapshot merge).   |
+### List
+```python
+overview = await client.market_overview.list(
+symbols=["BTC-USDT"],
+limit=50,
+include_sparklines=False,
+)
+for market in overview.markets:
+print(market.symbol_id, market.symbol, market.last_price, market.change_24h_bp)
+```
+| Field                | Notes                     |
+| -------------------- | ------------------------- |
+| `symbols`            | Optional filter list      |
+| `limit`              | Default `50`              |
+| `page_token`         | Opaque cursor             |
+| `include_sparklines` | Heavier payload when true |
+### Create subscription
+Fetches a REST snapshot, then merges live updates by `symbol_id`. Prefer this over raw `subscribe` for dashboards.
+```python
+sub = await client.market_overview.create_subscription(
+symbols=["BTC-USDT"],
+limit=50,
+)
+async with sub:
+async for rows in sub:
+for m in rows:
+print(m.symbol, m.last_price)
+break
+```
+### Subscribe
+Raw batches on `public:spot:market_overview:updates:proto` without snapshot merge.
+> **Prefer create\_subscription**
+>
+> Raw `subscribe` is for advanced consumers that apply their own merge logic.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/python/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [Candles](https://testnet.polyester.com/docs/sdk/python/reference/candles)
+- [Order book](https://testnet.polyester.com/docs/sdk/python/reference/order-book)

@@ -1,0 +1,219 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/admission
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Admission · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+PolyEngine
+svg]:size-3.5">
+/
+Admission
+Admission
+Copy page
+View as Markdown
+Open in
+Admission
+is the first stage of every spot order.
+PolyEngine
+reviews your instruction and account together before the order can enter the market.
+If the order is accepted, PolyEngine gives it an Order ID and reserves the balance it may spend. If it is not accepted, the order does not begin working and Polyester shows the reason.
+What Admission checks
+PolyEngine checks:
+that your active account can trade the selected pair
+that the market and order type are available
+that the price and amount follow the market's minimums and increments
+that time in force,
+post-only
+, and self-trade prevention work with the order
+that the order stays within its slippage limit
+which asset will pay the trading fee
+that your Trading Account has enough available balance.
+The current market rules always apply. A price or amount copied from an older order may no longer fit the pair's current minimums or increments.
+How your balance is protected
+Admission reserves only the balance the order may need. A sell order reserves the
+base asset
+you want to sell. A buy order reserves the
+quote asset
+required for the purchase and any applicable fee protection.
+The reservation is not a fee or a second charge. It simply prevents another order, transfer, or withdrawal from spending the same balance while your order is active.
+As your order progresses:
+completed fills use the amount required for the trade
+an unfilled portion keeps the balance it still needs reserved
+cancellation or completion releases any amount the order no longer needs.
+See
+Trading Account
+for more about available and reserved balances.
+Market orders still have slippage protection
+A market order tries to trade immediately, but it does not accept any price. Each Pair has a default slippage limit, but the user can select a different limit. Polyester applies the selected limit when it processes the order. The order can fill completely, fill partly, or end without a fill when eligible liquidity is unavailable within that limit.
+The selected market state also matters. A market can allow normal trading, accept only post-only orders, allow cancellations only, or stop accepting new orders.
+What acceptance means
+Acceptance means your order passed Admission and received an Order ID. The order can then move to
+Matching
+It does not guarantee that the order will fill. The result still depends on its price, time in force, available liquidity, and other order settings.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+One balance cannot fund two active actions
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Your available balance excludes amounts already reserved by open orders and other pending activity. This keeps every accepted order fully backed by the balance it may spend.
+Related Topics
+Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+Matching
+See how your eligible order receives priority and becomes one or more fills.
+Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+Escape Hatch
+Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+Previous
+Overview
+Next
+Matching
+On this page
+What Admission checks
+How your balance is protected
+Market orders still have slippage protection
+What acceptance means
+Related Topics
+Share this page
+Admission
+See how PolyEngine checks your order and protects the balance it may use.
+Share
+Copy Link

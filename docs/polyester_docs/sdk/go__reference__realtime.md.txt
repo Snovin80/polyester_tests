@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/realtime.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+`client.Realtime` is the shared Centrifugo WebSocket client. Prefer typed service helpers (`client.Orders.Subscribe`, `client.Balances.Subscribe`, …). They return `*realtime.Subscription[T]`.
+Realtime is binary-only: the transport negotiates `centrifuge-protobuf` and uses length-delimited Protobuf control frames and publication payloads. JSON wire mode applies only to ConnectRPC debugging, never to realtime. Incoming WebSocket messages and protobuf record/field lengths are capped at 8 MiB.
+Managed order-book and market-overview subscriptions return dedicated types that expose **`Updates()`** instead of `Messages()`. They also expose `SetOnError(...)` and `Err()`; register the callback so a managed feed failure cannot leave quoting logic on a frozen book.
+## Subscription contract
+| API                  | Behavior                                                            |
+| -------------------- | ------------------------------------------------------------------- |
+| `Messages()`         | `
+**No silent drops**
+>
+> Bounded queues. A slow consumer fails the subscription with `*errors.QueueOverflowError` instead of dropping updates.
+Generic typed subscriptions default to a 1000-item queue. Managed order-book subscriptions use a dedicated 200-item update queue. Either queue fails closed on overflow.
+## Snapshot-then-stream
+Order book and market overview managed subscriptions snapshot via REST, then stream deltas/batches with gap recovery. Their create methods wait for the WebSocket handshake and initial snapshot before returning. Prefer those helpers over wiring raw channels yourself.
+## Lower-level
+```go
+sub, err := realtime.SubscribeProto(ctx, client.Realtime, channel, decodeFn)
+```
+See [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming). Session model: [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model).

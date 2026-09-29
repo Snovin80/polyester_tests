@@ -1,0 +1,22 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/layout.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Layout
+Layout collaboration APIs (reference-only).
+`client.Layout` wraps app layout collaboration RPCs: reads, upsert/delete, share links, publish/unpublish, version history, and template subscriptions.
+## Methods
+| Group               | Methods                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| Saved layouts       | `GetLayouts`, `GetLayout`, `UpsertLayout`, `DeleteLayout`                                                |
+| Share links         | `ResolveLayoutShareToken`, `CreateLayoutShareLink`, `RevokeLayoutShareLink`                              |
+| Published templates | `ListOwnerPublishedLayouts`, `PublishLayout`, `UnpublishLayout`                                          |
+| Versions            | `ListLayoutTemplateVersions`, `GetLayoutTemplateVersion`                                                 |
+| Subscriptions       | `SetLayoutTemplateSubscription`, `DeleteLayoutTemplateSubscription`, `ListMyLayoutTemplateSubscriptions` |
+```go
+layouts, err := client.Layout.GetLayouts(ctx, 50, "")
+one, err := client.Layout.GetLayout(ctx, "...")
+```
+Methods accept typed scalar arguments plus map-shaped Protobuf data where a layout payload is required, and return `models.ApiData`. List methods accept an opaque `pageToken`.
+This is **not a supported API-key flow**. Layout collaboration is tied to the interactive app/session, and some deployments may not mount these routes. Use the TypeScript session client for production layout work.
+Do not retry a raw layout mutation without understanding its revision/idempotency behavior. Never let layout availability block trading or risk controls.

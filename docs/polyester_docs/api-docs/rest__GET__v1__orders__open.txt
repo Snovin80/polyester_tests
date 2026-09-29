@@ -1,0 +1,828 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/orders/open
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrdersService
+Get Open Orders
+Retrieve non-terminal orders for an account. Supports optional subaccount, trigger, symbol, and side filters with cursor pagination.
+Copy URL
+Method
+GET
+Path
+/v1/orders/open
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/orders/open
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/orders/open?limit=100' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"orders": [
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"policy": {
+"child": {},
+"triggerPrice": "0.005"
+},
+"state": {
+"armedAt": "2025-01-01T00:00:00Z",
+"childOrderId": "5USXJZmk",
+"status": "NOT_CONFIGURED",
+"terminalAt": "2025-01-01T00:00:00Z",
+"triggerId": "59VD7Lar"
+}
+},
+"takeProfit": {
+"policy": {
+"child": {},
+"triggerPrice": "0.005"
+},
+"state": {
+"armedAt": "2025-01-01T00:00:00Z",
+"childOrderId": "5USXJZmk",
+"status": "NOT_CONFIGURED",
+"terminalAt": "2025-01-01T00:00:00Z",
+"triggerId": "59VD7Lar"
+}
+},
+"trailingStop": {
+"policy": {
+"activationPrice": "0.005",
+"maxSlippageTicks": 1,
+"trailingDistanceTicks": "0.000000001"
+},
+"state": {
+"armedAt": "2025-01-01T00:00:00Z",
+"childOrderId": "5USXJZmk",
+"status": "NOT_CONFIGURED",
+"terminalAt": "2025-01-01T00:00:00Z",
+"triggerId": "59VD7Lar"
+}
+}
+},
+"avgPx": "0.005",
+"batchRequestId": "2",
+"clientOrderId": "cli-ord-20250101-001",
+"createdAt": "2025-01-01T00:00:00Z",
+"cumQty": "100000",
+"expireAt": "2025-01-01T00:00:00Z",
+"feeAsset": "QUOTE",
+"inheritedCumQty": "100000",
+"leavesQty": "100000",
+"lineage": {
+"generation": 1,
+"id": "2"
+},
+"marketClientRefPrice": "0.005",
+"marketMaxSlippageBps": 1,
+"marketMaxSlippageTicks": 1,
+"orderId": "5USXJZmk",
+"orderType": "LIMIT",
+"origQty": "100000",
+"origin": {
+"childSeq": 1,
+"parentOrderId": "5USXJZmk",
+"scope": "DIRECT",
+"triggerId": "59VD7Lar",
+"triggerType": "STOP_LOSS"
+},
+"postOnly": false,
+"price": "0.005",
+"side": "BUY",
+"status": "PENDING",
+"stpMode": "EXPIRE_MAKER",
+"submittedMaxQuoteDebit": "1",
+"symbol": "BTC-USDT",
+"tif": "GTC",
+"version": 1
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+Example
+includeAttachedRisk
+boolean
+Include attached-risk policy fields in each order. Defaults to false when omitted.
+Unset
+False
+True
+includeAttachedRiskState
+boolean
+Include attached-risk state fields in each order. Defaults to false when omitted.
+Unset
+False
+True
+limit
+integer
+1–1000
+Max results (1-1000)
+pageToken
+string
+max 512 chars
+Pagination cursor from previous response
+side
+enum
+must be defined value
+Filter by side
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s339-side" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+subaccountId
+string
+> 0
+Subaccount public ID (base58). When omitted, reads root account.
+symbol
+array
+Filter by symbol(s): use repeated params (?symbol=BTC-USDT&symbol=ETH-USDT) or comma-separated values.
+triggerId
+string
+> 0
+Filter by trigger public ID (base58).
+Response
+Form
+JSON
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+orders
+object[]
+Open orders ordered newest-first.
+27 fields
+attachedRisk
+object
+Attached risk controls + runtime state on the parent order. Empty when no attached risk exists.
+4 fields
+oco
+boolean
+True when the take-profit and stop leg are linked as one-cancels-the-other.
+Example
+false
+stopLoss
+object
+Stop-loss leg, if configured or if state exists.
+2 fields
+policy
+object
+Stop-loss policy configured on the parent order.
+2 fields
+child
+object
+Child execution when the threshold is crossed.
+2 fields
+limitGtc
+object
+Resting GTC limit child.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+triggerPrice
+string
+/^[0-9]…9]+)?$/
+Trigger price in quote units scaled by 1e9.
+Example
+0.005
+state
+object
+Runtime state for the stop-loss leg.
+5 fields
+armedAt
+string (date-time)
+Time the leg was armed, in nanoseconds since epoch (UTC). Zero if not armed.
+Example
+2025-01-01T00:00:00Z
+childOrderId
+string
+/^[1-9A…m-z]+$/
+Child order ID created by this leg after it fires.
+Example
+5USXJZmk
+status
+enum
+Current runtime lifecycle status for this attached-risk leg.
+NOT_CONFIGURED
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+Example
+NOT_CONFIGURED
+terminalAt
+string (date-time)
+Time the leg reached a terminal state, in nanoseconds since epoch (UTC). Zero if not terminal.
+Example
+2025-01-01T00:00:00Z
+triggerId
+string
+/^[1-9A…m-z]+$/
+Trigger identifier for this attached-risk leg.
+Example
+59VD7Lar
+takeProfit
+object
+Take-profit leg, if configured or if state exists.
+2 fields
+policy
+object
+Take-profit policy configured on the parent order.
+2 fields
+child
+object
+Child execution when the threshold is crossed.
+2 fields
+limitGtc
+object
+Resting GTC limit child.
+1 field
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+triggerPrice
+string
+/^[0-9]…9]+)?$/
+Trigger price in quote units scaled by 1e9.
+Example
+0.005
+state
+object
+Runtime state for the take-profit leg.
+5 fields
+armedAt
+string (date-time)
+Time the leg was armed, in nanoseconds since epoch (UTC). Zero if not armed.
+Example
+2025-01-01T00:00:00Z
+childOrderId
+string
+/^[1-9A…m-z]+$/
+Child order ID created by this leg after it fires.
+Example
+5USXJZmk
+status
+enum
+Current runtime lifecycle status for this attached-risk leg.
+NOT_CONFIGURED
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+Example
+NOT_CONFIGURED
+terminalAt
+string (date-time)
+Time the leg reached a terminal state, in nanoseconds since epoch (UTC). Zero if not terminal.
+Example
+2025-01-01T00:00:00Z
+triggerId
+string
+/^[1-9A…m-z]+$/
+Trigger identifier for this attached-risk leg.
+Example
+59VD7Lar
+trailingStop
+object
+Trailing-stop leg, if configured or if state exists.
+2 fields
+policy
+object
+Trailing-stop policy configured on the parent order.
+5 fields
+activationPrice
+string
+/^[0-9]…9]+)?$/
+Optional activation price: trailing only starts after this price is reached. If omitted, trailing starts immediately after the parent order fills. Expressed in quote units scaled by 1e9.
+Example
+0.005
+maxSlippageBps
+integer (int32)
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+Example
+1
+trailingDistanceBps
+integer (int32)
+Trailing distance in basis points (1 bp = 0.01%).
+trailingDistanceTicks
+string
+/^[0-9]…9]+)?$/
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+Example
+0.000000001
+state
+object
+Runtime state for the trailing-stop leg.
+5 fields
+armedAt
+string (date-time)
+Time the leg was armed, in nanoseconds since epoch (UTC). Zero if not armed.
+Example
+2025-01-01T00:00:00Z
+childOrderId
+string
+/^[1-9A…m-z]+$/
+Child order ID created by this leg after it fires.
+Example
+5USXJZmk
+status
+enum
+Current runtime lifecycle status for this attached-risk leg.
+NOT_CONFIGURED
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+Example
+NOT_CONFIGURED
+terminalAt
+string (date-time)
+Time the leg reached a terminal state, in nanoseconds since epoch (UTC). Zero if not terminal.
+Example
+2025-01-01T00:00:00Z
+triggerId
+string
+/^[1-9A…m-z]+$/
+Trigger identifier for this attached-risk leg.
+Example
+59VD7Lar
+avgPx
+string
+/^[0-9]…9]+)?$/
+Average execution price across the lineage through this generation, in quote units scaled by 1e9. Zero if no fills.
+Example
+0.005
+batchRequestId
+string
+/^[1-9A…m-z]+$/
+Batch-replace identity that admitted this order. Zero for other origins.
+Example
+2
+clientOrderId
+string
+Client-provided, account-scoped identifier for correlation, lookup, and cancellation. Empty when none was supplied.
+Example
+cli-ord-20250101-001
+createdAt
+string (date-time)
+Creation timestamp in nanoseconds since epoch (UTC).
+Example
+2025-01-01T00:00:00Z
+cumQty
+string
+/^[0-9]…9]+)?$/
+Cumulative filled quantity across the lineage through this generation, scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id.
+Example
+100000
+expireAt
+string (date-time)
+Exact UTC expiry time for GTD orders, within the supported signed Unix-nanosecond range from 1677-09-21T00:12:43.145224193Z through 2262-04-11T23:47:16.854775807Z. Omitted for all other time-in-force policies. The order cannot execute when the current time equals this value.
+Example
+2025-01-01T00:00:00Z
+feeAsset
+enum
+Fee asset selected for fills.
+QUOTE
+BASE
+Example
+QUOTE
+inheritedCumQty
+string
+/^[0-9]…9]+)?$/
+Cumulative filled base quantity inherited from predecessors when this replacement was accepted, scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id. Zero for the original order and immutable within a generation. cum_qty_scaled minus this value is the quantity executed by this generation, not the quantity new to a client session.
+Example
+100000
+leavesQty
+string
+/^[0-9]…9]+)?$/
+Remaining working quantity scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id. Zero for terminal orders.
+Example
+100000
+lineage
+object
+Logical-order identity and requested generation. Always populated by order reads.
+2 fields
+generation
+integer (int32)
+One-based replacement generation, distinct from per-order state version.
+Example
+1
+id
+string
+/^[1-9A…m-z]+$/
+Stable logical-order ID: the first generation's public order ID. Replace preserves this ID; an independent new order starts a new lineage.
+Example
+2
+marketClientRefPrice
+string
+/^[0-9]…9]+)?$/
+Optional client-side reference price used for MARKET slippage protection, in quote units scaled by 1e9.
+Example
+0.005
+marketMaxSlippageBps
+integer (int32)
+Optional MARKET max slippage in basis points (1 bp = 0.01%).
+Example
+1
+marketMaxSlippageTicks
+integer (int64)
+Non-negative MARKET maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units). Zero means no absolute cap is configured.
+Example
+1
+orderId
+string
+/^[1-9A…m-z]+$/
+Public order identifier as fixed64.
+Example
+5USXJZmk
+orderType
+enum
+Order type.
+LIMIT
+MARKET
+Example
+LIMIT
+origQty
+string
+/^[0-9]…9]+)?$/
+Current accepted total order quantity, updated by successful modifies, scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id.
+Example
+100000
+origin
+object
+Runtime lineage metadata (why the order exists and what generated it).
+5 fields
+childSeq
+integer (int32)
+Child sequence number for multi-child trigger strategies. Zero when not applicable.
+Example
+1
+parentOrderId
+string
+/^[1-9A…m-z]+$/
+Parent order ID for attached-risk child orders.
+Example
+5USXJZmk
+scope
+enum
+Broad class describing how the order was created.
+DIRECT
+ATTACHED_RISK
+STANDALONE_TRIGGER
+SYSTEM
+Example
+DIRECT
+triggerId
+string
+/^[1-9A…m-z]+$/
+Trigger identifier when the order was created by a trigger.
+Example
+59VD7Lar
+triggerType
+enum
+Trigger strategy that created this order, or unspecified for direct orders.
+STOP_LOSS
+TAKE_PROFIT
+TRAILING_STOP
+TWAP
+LADDER
+Example
+STOP_LOSS
+postOnly
+boolean
+True if the order was submitted as post-only (maker-only).
+Example
+false
+price
+string
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9. Zero for MARKET orders.
+Example
+0.005
+side
+enum
+Order side.
+BUY
+SELL
+Example
+BUY
+status
+enum
+Current order lifecycle status.
+PENDING
+PENDING_CANCEL
+WORKING
+FILLED
+CANCELED
+REJECTED
+Example
+PENDING
+stpMode
+enum
+Self-trade prevention mode.
+EXPIRE_MAKER
+EXPIRE_TAKER
+EXPIRE_BOTH
+Example
+EXPIRE_MAKER
+submittedMaxQuoteDebit
+string
+/^[0-9]…9]+)?$/
+Submitted hard all-in quote debit limit, scaled by the pair's quote_quantity_scale from GetSpotConfig. Present only when that sizing method was submitted.
+Example
+1
+symbol
+string
+Trading symbol numeric identifier.
+Example
+BTC-USDT
+tif
+enum
+Time-in-force policy.
+GTC
+IOC
+FOK
+GTD
+Example
+GTC
+version
+integer (int32)
+Per-order state version. Starts at 1 and increases for every published state change. Use this field to reconcile API and realtime updates.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/orders/open
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s504" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/orders/open?limit=100' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"orders": [
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"policy": {
+"child": {},
+"triggerPrice": "0.005"
+},
+"state": {
+"armedAt": "2025-01-01T00:00:00Z",
+"childOrderId": "5USXJZmk",
+"status": "NOT_CONFIGURED",
+"terminalAt": "2025-01-01T00:00:00Z",
+"triggerId": "59VD7Lar"
+}
+},
+"takeProfit": {
+"policy": {
+"child": {},
+"triggerPrice": "0.005"
+},
+"state": {
+"armedAt": "2025-01-01T00:00:00Z",
+"childOrderId": "5USXJZmk",
+"status": "NOT_CONFIGURED",
+"terminalAt": "2025-01-01T00:00:00Z",
+"triggerId": "59VD7Lar"
+}
+},
+"trailingStop": {
+"policy": {
+"activationPrice": "0.005",
+"maxSlippageTicks": 1,
+"trailingDistanceTicks": "0.000000001"
+},
+"state": {
+"armedAt": "2025-01-01T00:00:00Z",
+"childOrderId": "5USXJZmk",
+"status": "NOT_CONFIGURED",
+"terminalAt": "2025-01-01T00:00:00Z",
+"triggerId": "59VD7Lar"
+}
+}
+},
+"avgPx": "0.005",
+"batchRequestId": "2",
+"clientOrderId": "cli-ord-20250101-001",
+"createdAt": "2025-01-01T00:00:00Z",
+"cumQty": "100000",
+"expireAt": "2025-01-01T00:00:00Z",
+"feeAsset": "QUOTE",
+"inheritedCumQty": "100000",
+"leavesQty": "100000",
+"lineage": {
+"generation": 1,
+"id": "2"
+},
+"marketClientRefPrice": "0.005",
+"marketMaxSlippageBps": 1,
+"marketMaxSlippageTicks": 1,
+"orderId": "5USXJZmk",
+"orderType": "LIMIT",
+"origQty": "100000",
+"origin": {
+"childSeq": 1,
+"parentOrderId": "5USXJZmk",
+"scope": "DIRECT",
+"triggerId": "59VD7Lar",
+"triggerType": "STOP_LOSS"
+},
+"postOnly": false,
+"price": "0.005",
+"side": "BUY",
+"status": "PENDING",
+"stpMode": "EXPIRE_MAKER",
+"submittedMaxQuoteDebit": "1",
+"symbol": "BTC-USDT",
+"tif": "GTC",
+"version": 1
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/orders/open?limit=100' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "orders": [
+    {
+      "attachedRisk": {
+        "oco": false,
+        "stopLoss": {
+          "policy": {
+            "child": {},
+            "triggerPrice": "0.005"
+          },
+          "state": {
+            "armedAt": "2025-01-01T00:00:00Z",
+            "childOrderId": "5USXJZmk",
+            "status": "NOT_CONFIGURED",
+            "terminalAt": "2025-01-01T00:00:00Z",
+            "triggerId": "59VD7Lar"
+          }
+        },
+        "takeProfit": {
+          "policy": {
+            "child": {},
+            "triggerPrice": "0.005"
+          },
+          "state": {
+            "armedAt": "2025-01-01T00:00:00Z",
+            "childOrderId": "5USXJZmk",
+            "status": "NOT_CONFIGURED",
+            "terminalAt": "2025-01-01T00:00:00Z",
+            "triggerId": "59VD7Lar"
+          }
+        },
+        "trailingStop": {
+          "policy": {
+            "activationPrice": "0.005",
+            "maxSlippageTicks": 1,
+            "trailingDistanceTicks": "0.000000001"
+          },
+          "state": {
+            "armedAt": "2025-01-01T00:00:00Z",
+            "childOrderId": "5USXJZmk",
+            "status": "NOT_CONFIGURED",
+            "terminalAt": "2025-01-01T00:00:00Z",
+            "triggerId": "59VD7Lar"
+          }
+        }
+      },
+      "avgPx": "0.005",
+      "batchRequestId": "2",
+      "clientOrderId": "cli-ord-20250101-001",
+      "createdAt": "2025-01-01T00:00:00Z",
+      "cumQty": "100000",
+      "expireAt": "2025-01-01T00:00:00Z",
+      "feeAsset": "QUOTE",
+      "inheritedCumQty": "100000",
+      "leavesQty": "100000",
+      "lineage": {
+        "generation": 1,
+        "id": "2"
+      },
+      "marketClientRefPrice": "0.005",
+      "marketMaxSlippageBps": 1,
+      "marketMaxSlippageTicks": 1,
+      "orderId": "5USXJZmk",
+      "orderType": "LIMIT",
+      "origQty": "100000",
+      "origin": {
+        "childSeq": 1,
+        "parentOrderId": "5USXJZmk",
+        "scope": "DIRECT",
+        "triggerId": "59VD7Lar",
+        "triggerType": "STOP_LOSS"
+      },
+      "postOnly": false,
+      "price": "0.005",
+      "side": "BUY",
+      "status": "PENDING",
+      "stpMode": "EXPIRE_MAKER",
+      "submittedMaxQuoteDebit": "1",
+      "symbol": "BTC-USDT",
+      "tif": "GTC",
+      "version": 1
+    }
+  ]
+}

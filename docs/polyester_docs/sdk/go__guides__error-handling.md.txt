@@ -1,0 +1,48 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/error-handling.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Use `errors.As` / `errors.Is` against `github.com/Fabric-Labs/polyester-sdk-go/errors`. Full type list: [Errors reference](https://testnet.polyester.com/docs/sdk/go/reference/errors).
+Use `sdkerrors.IsRetryable(err)` for backoff classification. For mutations, `sdkerrors.MutationOutcomeUnknown(err)` means you must reconcile state and reuse the original request identity before retrying; it does not mean the request was rejected.
+```go
+import sdkerrors "github.com/Fabric-Labs/polyester-sdk-go/errors"
+_, err := client.Orders.Create(ctx, req, nil)
+if err != nil {
+var rl *sdkerrors.RateLimitError
+var transport *sdkerrors.TransportError
+var validation *sdkerrors.ValidationError
+var overflow *sdkerrors.QueueOverflowError
+switch {
+case errors.As(err, &overflow):
+// subscription only, resubscribe after catching up
+case errors.As(err, &rl):
+// sleep rl.RetryAfter; reconcile this create by ClientOrderID
+case errors.As(err, &transport):
+// outcome may be unknown; reconcile before resubmitting
+case errors.As(err, &validation):
+// fix input (e.g. post_only on non-GTC)
+default:
+if errors.Is(err, sdkerrors.ErrPolyester) {
+log.Println(err)
+} else {
+return err
+}
+}
+}
+```
+## Retry rules
+- Retry transport / rate-limit failures with backoff. For a single-order create, reconcile by the stable `ClientOrderID` before resubmitting; retained reuse returns a duplicate conflict, not the earlier result.
+- Keep replayable `requestID` and `clientTriggerID` values stable for the same logical action.
+- Do not invent a new client order ID while the first create is unresolved.
+- On subscriptions, `*QueueOverflowError` means resubscribe after catching up, not a unary retry.
+> **Client order IDs do not replay creates**
+>
+> `CONFLICT_DUPLICATE_CLIENT_ORDER_ID` means the ID is retained. Reconcile the original create; the conflict does not return its outcome.
+## Validation & precision
+`*ValidationError` covers client-side encode failures (unknown enums, `post_only` on non-GTC, bad shapes). Catalog miss / excess precision usually surfaces here or as `*APIError`.
+## MFA
+Step-up / elevation helpers exist for shared auth codes. API-key SDKs do not implement wallet login, MFA enrollment UX, or create-API-key session flows.
+## Streaming errors
+Unary methods return `error`. Subscriptions surface terminal errors via `sub.Err()` after the `Messages()` channel closes, including `*QueueOverflowError`. See [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming).

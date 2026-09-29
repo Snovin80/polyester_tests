@@ -1,0 +1,46 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/time-in-force-and-post-only.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Time-in-force decides what happens to unfilled quantity, while post-only prevents taker execution.
+## What it does
+**Time-in-force** controls whether unfilled quantity waits, cancels, or prevents the order from executing at all. **Post-only** prevents a limit order from taking liquidity.
+These are instructions applied to eligible orders, not separate markets.
+## How it works
+| Instruction | Immediate behavior                          | Unfilled quantity                                                                                       |
+| ----------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| GTC         | Eligible quantity can fill                  | The remainder stays active until filled, canceled, or ended by another market or order lifecycle action |
+| IOC         | Eligible quantity fills immediately         | The remainder is canceled                                                                               |
+| FOK         | The complete quantity must fill immediately | The entire order is canceled if a full fill is unavailable                                              |
+| Post-only   | A crossing order is rejected                | No taker execution occurs                                                                               |
+In the current spot model, post-only applies to an eligible limit GTC order. Market execution is IOC-style rather than a resting time-in-force choice.
+## When to use each instruction
+| Instruction | Use it when                                                    | Avoid it when                                                         |
+| ----------- | -------------------------------------------------------------- | --------------------------------------------------------------------- |
+| GTC         | Unfilled quantity may wait for future liquidity                | Any resting remainder would create unwanted exposure                  |
+| IOC         | Available quantity should fill now without leaving a remainder | The complete amount must fill or the order should do nothing          |
+| FOK         | The complete amount must fill immediately or not at all        | A partial fill would still be useful                                  |
+| Post-only   | The order must add liquidity as a maker                        | Immediate execution matters or the price may cross the current market |
+A limit price by itself does not guarantee maker status.
+Polyester rejects a post-only order that would cross the book. It does not reprice the order to keep it resting, and post-only cannot be combined with a market order.
+FOK evaluates all executable matching-engine liquidity within the order's price boundary after self-trade prevention. The visible [Order Book](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book) can show only part of that liquidity, so its displayed rows are useful context but not the authoritative FOK test.
+GTC has no implemented maximum lifetime or hidden expiry timestamp. Pair disablement, delisting, cancellation, or another explicit lifecycle action can still terminate the order, but those events are not a GTC time-to-live.
+> **Available combinations depend on the Pair**
+>
+> The active Pair determines which instructions and combinations are available. Use the controls shown in the current Order Form or supported by the approved API Reference.
+## Example
+Let's say Bitcoin is currently trading at **100,000 USDT**. You want to place a **0.01 BTC Limit buy** at that price, but only **0.006 BTC** is available immediately. You choose the instruction based on whether a partial fill is useful, whether the remainder can wait, or whether the entire order must fill at once. You choose post-only when your goal is to add liquidity instead of executing immediately.
+Here is what each instruction does:
+1. **GTC** can fill 0.006 BTC and leave the remaining 0.004 BTC open on the Order Book.
+2. **IOC** can fill 0.006 BTC and cancel the remaining 0.004 BTC.
+3. **FOK** cancels the entire order because the full 0.01 BTC cannot fill immediately.
+4. **Post-only** rejects the order if its 100,000 USDT limit price would immediately match a resting ask.
+**Result:** The price and quantity stay the same, but the instruction changes what happens to the order and any unfilled quantity.
+*These are example prices and available quantities. FOK evaluates all eligible matching-engine liquidity, which can differ from the rows currently visible in the Order Book.*
+## What to watch
+- Maker or taker treatment is determined per fill.
+- A partially resting order can have both immediate and later fills when post-only is not used.
+- Self-trade prevention can end an otherwise eligible match.
+- A post-only rejection means the submitted price would have removed liquidity at admission.

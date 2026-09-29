@@ -1,0 +1,275 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Unified Assets · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Funds
+Unified Assets
+Copy page
+View as Markdown
+Open in
+A
+Unified Asset
+is the balance you see in Funding or Unified Trading after a deposit completes. It is an accounting identity, not an ERC-20 in your external wallet. You trade, transfer, and withdraw against that one balance.
+Why Unified Assets exist
+The problem
+Decentralized finance (DeFi) has had this problem for years. The same Asset is split across blockchains, exchanges, and lending markets that can't share liquidity. Without unification, Ethereum USDT and Solana USDT sit as separate piles. You decide which pile to trade from and which pile to withdraw from.
+The solution
+Polyester maps compatible deposit
+routes
+to one Unified Asset. Funding shows one balance. Behind it,
+Zipper
+keeps a separate
+Zipped Asset
+for each Network so each route keeps its own backing and withdrawal path.
+Unification is configured per route. Matching tickers alone do not merge balances. See
+Supported Assets
+for the mapped routes.
+Example: three USDT deposits become 150 Unified USDT
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_table]:my-4 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 svelte-wjm2xv" data-component-part="details-disclosure-content">
+You deposit 50
+USDT
+from
+Ethereum
+, 50 from
+Solana
+, and 50 from
+Base
+Polyester credits your account with one Unified Asset: 150
+USDT
+What that means in practice:
+You can trade 150
+USDT
+for
+BTC
+You can transfer 150
+USDT
+to another Polyester account
+You can withdraw 150 as Ethereum
+USDT
+You do not pick which Network you deposited from in Funding
+cbBTC on
+Base
+and native
+BTC
+from the
+Bitcoin Network
+stay separate Unified Assets. Polyester only merges routes it maps as equivalent.
+Unified Asset Flow
+Deposits from each source Network are zipped into Network-specific backing, then unified into one balance. That single Unified Asset is what you trade across all markets.
+Overview
+Example
+How chain-specific deposits become Unified Assets
+How a deposit becomes a Unified Asset
+You send the External Asset once. Zipper runs the
+Deposit Flow
+Deposit Funds
+Learn more about depositing funds.
+Where you use the Unified Asset
+The same Unified Asset can sit in Funding or Unified Trading.
+Location
+What you use it for
+Funding Account
+Transfers and withdrawals; Zipped Asset backing stays here
+Unified Trading Account
+Orders, Fills, fees, and eligible collateral for borrowing
+Default Deposit Destination chooses where new credits appear first. Open
+Settings > Security
+to set
+Funding
+or
+Unified Trading
+Moving between Funding and Trading does not create another Zipped Asset. It only changes which account area can use the balance.
+What you can do next
+Once credited, you can:
+Trade
+after the balance is in Unified Trading
+Transfer
+to another eligible Polyester account
+Withdraw
+to an external wallet on a supported destination Network
+You can withdraw on a different Network than you deposited from when Polyester supports an equivalent destination route for that Unified Asset. Route availability, inventory, fee, and minimums still apply.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+Funding and Trading balances are Unified Assets. Flow and Scan records that show a Zipped Asset are showing the Network-specific backing behind that credit.
+FAQ
+What is a Unified Asset?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A Unified Asset, or uAsset, combines compatible Zipped Assets into one balance in your Polyester account. For example, supported USDT deposits from Ethereum and Solana contribute to the same USDT balance, which you can use in your Funding Account or Unified Trading Account. Only deposit routes that Polyester recognizes as the same asset are combined.
+Learn about Unified Assets.
+Why do deposits from different networks appear as one balance?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester combines equivalent assets deposited through supported networks into one Unified Asset balance. For example, USDT deposited through Ethereum and Solana contributes to the same USDT balance on Polyester, so you do not need to manage separate balances for each network. Zipper keeps each network’s backing and withdrawal route separate.
+Does Polyester treat tokens from different networks as the same unified asset if they have the same symbol?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. Tokens are combined only when Polyester recognizes their supported deposit routes as the same Unified Asset. A matching name or symbol by itself would not be enough. See
+Unified Assets
+in the user docs.
+Related Topics
+Supported Assets
+Deposit and withdraw Unified Assets on supported networks. Expand a row for fees, minimums, and confirmation time.
+Funding Account
+Learn how the Funding Account keeps on-chain balances ready to deposit, transfer, trade, or withdraw.
+Trading Account
+Learn how the Trading Account manages available and reserved balances for trading, borrowing, transfers, and withdrawals.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Withdraw Funds
+Withdraw an available Polyester balance to an external wallet on a supported chain.
+Internal Transfers
+Move an available balance between Polyester accounts or balance areas.
+Previous
+First Deposit & Trade
+Next
+Supported Assets
+On this page
+Why Unified Assets exist
+The problem
+The solution
+Unified Asset Flow
+How a deposit becomes a Unified Asset
+Where you use the Unified Asset
+What you can do next
+FAQ
+Related Topics
+Share this page
+Unified Assets
+Learn how Polyester turns chain-specific deposits into one account balance you can trade, transfer, or withdraw.
+Share
+Copy Link

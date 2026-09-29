@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/admission.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Admission
+See how PolyEngine checks your order and protects the balance it may use.
+**Admission** is the first stage of every spot order. PolyEngine reviews your instruction and account together before the order can enter the market.
+If the order is accepted, PolyEngine gives it an Order ID and reserves the balance it may spend. If it is not accepted, the order does not begin working and Polyester shows the reason.
+## What Admission checks
+PolyEngine checks:
+- that your active account can trade the selected pair
+- that the market and order type are available
+- that the price and amount follow the market's minimums and increments
+- that time in force, post-only, and self-trade prevention work with the order
+- that the order stays within its slippage limit
+- which asset will pay the trading fee
+- that your Trading Account has enough available balance.
+The current market rules always apply. A price or amount copied from an older order may no longer fit the pair's current minimums or increments.
+## How your balance is protected
+Admission reserves only the balance the order may need. A sell order reserves the base asset you want to sell. A buy order reserves the quote asset required for the purchase and any applicable fee protection.
+The reservation is not a fee or a second charge. It simply prevents another order, transfer, or withdrawal from spending the same balance while your order is active.
+As your order progresses:
+- completed fills use the amount required for the trade
+- an unfilled portion keeps the balance it still needs reserved
+- cancellation or completion releases any amount the order no longer needs.
+See **[Trading Account](https://testnet.polyester.com/docs/user-docs/funds/trading-account)** for more about available and reserved balances.
+## Market orders still have slippage protection
+A market order tries to trade immediately, but it does not accept any price. Each Pair has a default slippage limit, but the user can select a different limit. Polyester applies the selected limit when it processes the order. The order can fill completely, fill partly, or end without a fill when eligible liquidity is unavailable within that limit.
+The selected market state also matters. A market can allow normal trading, accept only post-only orders, allow cancellations only, or stop accepting new orders.
+## What acceptance means
+Acceptance means your order passed Admission and received an Order ID. The order can then move to **[Matching](https://testnet.polyester.com/docs/user-docs/polyengine/matching)**.
+It does not guarantee that the order will fill. The result still depends on its price, time in force, available liquidity, and other order settings.
+> **One balance cannot fund two active actions**
+>
+> Your available balance excludes amounts already reserved by open orders and other pending activity. This keeps every accepted order fully backed by the balance it may spend.

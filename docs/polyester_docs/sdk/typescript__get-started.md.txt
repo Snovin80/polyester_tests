@@ -1,0 +1,42 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/get-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+A typed TypeScript SDK for the Polyester exchange API: market data, trading, accounts, funding, and realtime streams.
+`@polyester/sdk` is the official TypeScript client for Polyester.
+It wraps the public ConnectRPC API with full types. Requests are validated before they leave your process. Responses come back as plain TypeScript objects. Prices and quantities are decimal strings, not floats and not raw scaled integers.
+## What you can build
+- Market data: tickers, candles, order books, public trades, heatmaps, chain analytics
+- Trading: spot orders with attached TP/SL/trailing risk, standalone triggers, fee rates, and trading quotas
+- Accounts: wallet and API key auth, subaccounts, policies, balances, MFA, profiles, VIP status, address books, daily reward claims
+- Funding: deposits, ledger transfers, internal transfers, withdrawals
+- Realtime: typed WebSocket streams with a shared `subscribe(...)` / unsubscribe contract
+## One SDK, three clients
+Same service surface in every JavaScript runtime:
+| Client                   | Runs in                             | Authenticates with                         |
+| ------------------------ | ----------------------------------- | ------------------------------------------ |
+| `PolyesterClient`        | Anywhere (Node, Bun, edge, browser) | API key (Ed25519) or a JWT you supply      |
+| `PolyesterBrowserClient` | Browsers                            | Wallet-backed account signer               |
+| `PolyesterServerClient`  | Servers handling user requests      | Session cookies forwarded from the browser |
+All three expose the same lazy services (`client.orders`, `client.marketData`, `client.balances`, `client.vip`, `client.fees`, `client.tradingRateLimits`, and so on), plus a shared realtime client and reference-data catalog.
+## Entry points
+Heavy helpers live on subpaths so they stay out of your main bundle:
+| Import                          | Contents                                                |
+| ------------------------------- | ------------------------------------------------------- |
+| `@polyester/sdk`                | Clients, environments, errors, service types, utilities |
+| `@polyester/sdk/errors`         | Error classes and codes on their own                    |
+| `@polyester/sdk/account-signer` | Safe account derivation and subaccount signing          |
+| `@polyester/sdk/smart-account`  | Smart account + bundler/paymaster helpers               |
+| `@polyester/sdk/catalogs`       | Catalog snapshot builders and reader types              |
+| `@polyester/sdk/server-session` | Cookie/session parsing helpers for servers              |
+| `@polyester/sdk/unstable/gen`   | Raw protobuf types and service descriptors              |
+Anything under `unstable/` can change in a patch release.
+## How these docs are organized
+- Get started: install through your first testnet order
+- [Tutorials](https://testnet.polyester.com/docs/sdk/typescript/tutorials/trading-bot): runnable projects (ticker, bot, portfolio)
+- Guides: auth, market data, trading, streaming, accounts, funding, server-side, errors
+- Concepts: architecture, environments, auth model, catalog and precision
+- Reference: every service method, config option, and error type by domain
+Start at [Installation](https://testnet.polyester.com/docs/sdk/typescript/get-started/installation).
+Compare languages on the [SDK capability matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix).

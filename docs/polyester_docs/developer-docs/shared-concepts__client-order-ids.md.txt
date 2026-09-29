@@ -1,0 +1,93 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/client-order-ids.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Client order IDs and idempotency
+Use client order IDs to prevent duplicate placement, correlate client intents, and reconcile uncertain outcomes.
+A client order ID is an identifier that your application assigns when it places an order. Polyester binds the value to the first retained create attempt for that account. Reusing the value is rejected as `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`; Polyester does not replay the earlier create result. After creation, some order APIs also accept it as a client-defined reference to locate the target order. It is not a general idempotency key for cancels or modifications.
+The field is named `clientOrderId` in REST, ConnectRPC ProtoJSON, and Polyester SDKs. The protobuf source field is `client_order_id`; generated language-specific names vary.
+> **Generate the ID before the first attempt**
+>
+> Create one client order ID for each logical order and persist it with the order intent. Keep that ID while reconciling an uncertain response. Do not generate a replacement ID until you have determined that placing another order is safe.
+## Client order ID versus order ID
+| Identifier      | Assigned by | Purpose                                                                |
+| --------------- | ----------- | ---------------------------------------------------------------------- |
+| `clientOrderId` | Your client | Duplicate guard, client-side correlation, and locating the order later |
+| `orderId`       | Polyester   | Canonical order identity returned after the order is accepted          |
+Store both values after a successful response. Use `orderId` as the canonical identity in your application, while retaining `clientOrderId` for reconciliation and retry handling.
+## Format
+A client order ID:
+- is optional when placing an order
+- must contain no more than 36 characters
+- may contain ASCII letters, numbers, `.`, `_`, `:`, `/`, and `-`
+- is case-sensitive
+- is scoped to the account or subaccount that places the order
+A UUID is a suitable default because its standard string representation is exactly 36 characters:
+```text
+0190f3f4-7c2a-7d86-9e2b-7af0f8f8f102
+```
+Do not put secrets or sensitive user information in client order IDs. They may appear in responses, logs, order history, and support workflows.
+## Retry behavior
+When Polyester receives an order with a client order ID it has retained for the same account, it rejects the request with `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`. This applies when the payload is identical or different, while the original order is open or terminal, and when the retained first attempt was rejected. `CreateOrder` does not return the previously recorded outcome.
+A duplicate conflict proves only that the account-scoped ID is retained. It does not prove that the payload matched, that the earlier attempt was accepted, or what state an accepted order is in. Use the order read APIs to reconcile the original attempt.
+## Reconcile an uncertain create
+Generate and persist the client order ID before sending the request:
+```ts
+const clientOrderId = crypto.randomUUID();
+const order = {
+symbol: "BTC-USDC",
+side: "buy" as const,
+orderType: "limit" as const,
+timeInForce: "gtc" as const,
+price: "64250.5",
+qty: "0.25",
+clientOrderId,
+};
+await client.orders.create(order);
+```
+If the response is lost because of a timeout or network failure:
+1. Keep the original `clientOrderId` and payload.
+2. Look up the order by `clientOrderId`. Retry the read after backoff if the accepted order has not reached the read projection yet.
+3. If a repeated create is still necessary, send the same ID and unchanged payload. It can create the order only when the ID was not retained. If it returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`, continue reconciliation because the conflict does not replay the original outcome.
+4. Use a new client order ID only for a deliberate new order after resolving the earlier intent.
+This pattern is unsafe:
+```ts
+await retry(() =>
+client.orders.create({
+clientOrderId: crypto.randomUUID(),
+})
+);
+```
+Generating a new ID for each attempt makes every attempt a new logical order and can place a second order when the first response was merely lost.
+## When to retry
+Retry only when the failure may be temporary, such as:
+- a connection failure
+- a request timeout
+- rate limiting
+- temporary service unavailability
+Use bounded exponential backoff with jitter. Keep the client order ID and all order parameters unchanged while resolving the original intent. A repeated single-order create is not a replay: it may succeed if the earlier attempt was never retained, or return a duplicate conflict if it was.
+Do not retry validation, authorization, insufficient-funds, or conflicting-client-ID errors as if they were temporary. Reconcile a duplicate conflict. A corrected order is a new logical order and needs a new client order ID.
+## Retention and reuse
+Polyester retains client order IDs according to the order lifecycle:
+| Order state                | Client order ID behavior                                                                                  |
+| -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Pending or open            | Retained without a TTL while the order remains active                                                     |
+| Terminal                   | Retained through the configured terminal window after the order is filled, canceled, rejected, or expired |
+| After the retention window | Eligible for background cleanup; the ID may remain reserved until cleanup completes                       |
+The current default terminal retention window is 24 hours. Deployments can configure this window, and background cleanup runs asynchronously, so 24 hours is not an exact release time. Polyester does not provide an API that reports when a particular ID has been released.
+> **Do not schedule ID reuse**
+>
+> Treat a client order ID as permanently consumed by its logical order. Generate a new ID for every new order instead of waiting for the terminal retention window.
+Uniqueness is enforced within the selected account. The same value can be reused across different subaccounts without conflict, but globally unique values simplify reconciliation and incident investigation.
+## Using the ID after creation
+Order APIs can use a client order ID to locate an existing order. Depending on the endpoint, you can use either the Polyester-assigned `orderId` or your `clientOrderId` to:
+- cancel an order
+- identify the target of a modification
+- retrieve order details
+In these operations, `clientOrderId` identifies the target order. It is not necessarily the idempotency key for the operation itself. For example, order modification uses a separate `requestId` so a retry of the same modification can be deduplicated.
+> **Read immediately after an accepted create**
+>
+> `GetOrder` briefly waits server-side when an accepted order has not reached the selected API region's read projection yet. If that bounded grace window expires before projection freshness can be confirmed, the API returns a temporary unavailable error instead of `NOT_FOUND`. Retry the same ordinary lookup with the same `orderId` or `clientOrderId`; no consistency token or sticky session is required.
+## SDK behavior
+The Polyester TypeScript SDK does not generate a client order ID for order creation. If you omit `clientOrderId`, the create request has no client-order-ID duplicate guard or reconciliation key.
+Generate and persist your own client order ID before the first attempt whenever your application may retry, resume after a restart, or reconcile an uncertain outcome.

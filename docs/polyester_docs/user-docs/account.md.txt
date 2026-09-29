@@ -1,0 +1,33 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Dashboard
+See your account equity, asset balances, open orders, and recent transactions in one place.
+Your **[Dashboard](https://testnet.polyester.com/account/dashboard)** gives you a high-level view of everything happening in your account. It shows your current account equity, Funding and Trading balances, asset allocation, open orders, and recent transactions.
+![Dashboard with total equity, account cards, balances, and recent transactions](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/0fa14221b8f0453e0566a186d8b41163b4ad1d9c507159fcf802137fec697041/source.webp)
+## Dashboard at a glance
+### Total equity
+Total Equity estimates the current value of the assets in your Funding and Trading Accounts. It can change when asset prices move, even when you have not deposited, withdrawn, or traded.
+### Funding and Trading
+The Dashboard shows how much value is held in each part of your account:
+- **Funding Account** holds assets available for deposits, withdrawals, and internal transfers.
+- **Unified Trading Account** holds assets available for trading, borrowing, and margin.
+Open [Funding Account](https://testnet.polyester.com/docs/user-docs/funds/funding-account) or [Trading Account](https://testnet.polyester.com/docs/user-docs/funds/trading-account) when you need the complete balance details.
+### Assets
+The Assets view combines your Funding and Trading balances by asset. It shows the quantity you hold, its estimated value, and its share of your account equity.
+The combined balance is not always the amount available for a new action. Open orders, withdrawals, and transfers can reserve part of a Trading balance.
+### Open orders
+Open Orders shows orders that are still working or partially filled. Open **[Orders](https://testnet.polyester.com/account/orders)** or [Manage Orders](https://testnet.polyester.com/docs/user-docs/trade/manage-orders) to change or cancel an order and see its complete fill history.
+### Recent transactions
+Recent Transactions shows your latest deposits, withdrawals, and transfers with their current status. Select a transaction when you want to see its complete progress and identifying details. Open [Ledger](https://testnet.polyester.com/docs/user-docs/account/ledger/ledger-overview) for the complete balance history.
+## Quick actions
+Use **Deposit**, **Withdraw**, or **Transfer** to start moving an asset. These actions open the relevant page with your account context ready, but nothing moves until you review and submit the request.
+> **Hide balances before sharing your screen**
+>
+> Use the amount-visibility control to hide account values in shared spaces. This changes only what is displayed; it does not change your balances.
+## FAQ
+### Why is Available Balance lower than Total Balance?
+Part of your balance is reserved for activity already in progress. Unfilled portions of orders, pending withdrawals, and pending transfers can reduce Available Balance while leaving Total Balance unchanged. Trading uses only the Available Balance in your Unified Trading Account. [Learn about Trading.](https://testnet.polyester.com/docs/user-docs/funds/trading-account)
+### Why did the displayed value of my account change when my token balances did not?
+Your account’s displayed value uses each asset’s Index Price, a reference price based on prices and trading volumes across multiple exchanges. When those prices change, your account value can rise or fall even if your token quantities stay the same.

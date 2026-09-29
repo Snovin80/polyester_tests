@@ -1,0 +1,50 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/concepts/environments.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Environments
+The frozen configuration object that tells the SDK where to connect, and why it is fingerprinted.
+A `PolyesterEnvironment` describes one Polyester deployment: API, WebSocket, RPC, chain, account-abstraction infra, and venue contracts. Every client, signer, and session is created against an environment.
+## Built-in environments
+```ts
+import { POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+```
+| Field          | Testnet                             |
+| -------------- | ----------------------------------- |
+| `name`         | `polyester-testnet`                 |
+| `apiUrl`       | `https://api.testnet.polyester.com` |
+| `websocketUrl` | `wss://api.testnet.polyester.com`   |
+| `rpcUrl`       | `https://rpc.polyester.live`        |
+| `chain.id`     | `888169`                            |
+| Block explorer | `https://testnet.polyesterscan.com` |
+The preset includes Multicall3 at `0xfc9B0991DC84E419C9b164dE89795958a5B0A0cF` (block 179823) for batched contract reads.
+## Defining an environment
+```ts
+import { createPolyesterEnvironment, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+const environment = createPolyesterEnvironment({
+name: "my-environment",
+apiUrl: "https://api.example.com",
+websocketUrl: "wss://api.example.com",
+rpcUrl: "https://rpc.example.com",
+chain: POLYESTER_TESTNET_ENVIRONMENT.chain,
+accountAbstraction: POLYESTER_TESTNET_ENVIRONMENT.accountAbstraction,
+contracts: POLYESTER_TESTNET_ENVIRONMENT.contracts,
+});
+```
+`createPolyesterEnvironment` validates and freezes the result:
+- URLs must parse with the right scheme. Plain `http:` / `ws:` only for `localhost`.
+- `apiUrl` must not carry query parameters.
+- Addresses are checksummed. Invalid ones throw `ConfigurationError`.
+- Entry point version must be `0.7`.
+- The chain's default RPC is rewritten to `rpcUrl`, so viem clients derived from the environment agree with it.
+Misconfiguration fails at startup with a precise message, not at request time.
+## Why account abstraction is in here
+Polyester accounts are Safe smart accounts. The `accountAbstraction` block pins the Safe deployment used to derive account addresses (proxy factory, singleton, 4337 module, and related addresses).
+The account signer and smart-account helpers read those fields. Same owner key always maps to the same Polyester account. That is why this block lives on the environment, not as a helper option.
+## The fingerprint
+Every environment gets a `fingerprint`: a hash of the RPC URL, chain ID, account-abstraction configuration, and venue contracts. API and WebSocket URLs are excluded, so switching regional gateways for the same deployment preserves signer and session identity.
+The SDK uses it to fail fast:
+- An `AccountSigner` records the fingerprint it was derived for. The browser client refuses a signer from a different environment.
+- Stored sessions are fingerprint-bound. Changing the chain, RPC, account-abstraction config, or contracts changes that identity; changing only API or WebSocket gateways does not.
+- Smart-account instances are checked against the client's environment before sending user operations.
+Treat environments as singletons: define once, import everywhere. Frozen and validated, so sharing is safe.

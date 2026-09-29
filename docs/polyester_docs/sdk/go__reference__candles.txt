@@ -1,0 +1,524 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/candles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Candles · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Candles
+Candles
+Copy page
+View as Markdown
+Open in
+client.MarketData
+(alias
+client.Candles
+) reads and streams public spot OHLCV data. No
+authentication is required. Resolve
+symbol
+→
+symbolID
+via catalogs (or pass
+symbolID
+).
+Supported timeframe aliases:
+1s
+,
+1m
+,
+5m
+,
+15m
+,
+30m
+,
+1h
+,
+4h
+,
+12h
+,
+1d
+,
+1w
+,
+1mo
+OHLCV fields are decimal strings. Candle times are epoch
+seconds
+(
+TsSec
+).
+Row results are ordered
+newest-first
+at index
+0
+; never use
+len(result.Candles)-1
+as the latest candle. Reverse or sort row results
+by
+TsSec
+before feeding them to chronological indicators. The columns API is
+oldest-first
+Methods
+Method
+Summary
+GetCandles
+Fetch candles as row objects.
+GetCandlesColumns
+Fetch columnar series, decoded to the same row result.
+GetCurrentCandle
+Latest candle (
+limit=1
+, incomplete included), or
+nil
+when no rows exist.
+SubscribeCandles
+Stream live row candles (
+Messages()
+).
+GetCandles(ctx, symbol, symbolID, timeframe, limit, start, end, includeIncomplete)
+symbol
+"BTC-USDT"
+result
+,
+err
+client
+Candles
+GetCandles
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1h"
+,
+200
+,
+nil
+,
+nil
+,
+false
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+if
+len
+(
+result
+Candles
+)
+>
+0
+latest
+result
+Candles
+0
+]
+fmt
+Println
+(
+latest
+TsSec
+,
+latest
+Open
+,
+latest
+Close
+,
+latest
+Volume
+)
+}
+for
+left
+,
+right
+0
+,
+len
+(
+result
+Candles
+)
+-
+1
+;
+left
+<
+right
+;
+left
+,
+right
+=
+left
++
+1
+,
+right
+-
+1
+result
+Candles
+left
+],
+result
+Candles
+right
+]
+=
+result
+Candles
+right
+],
+result
+Candles
+left
+]
+}
+// result.Candles is now oldest-first for rolling indicators.
+Pass
+*time.Time
+for
+start
+/
+end
+to bound the range.
+GetCandlesColumns(...)
+Same filters plus optional
+pageToken
+models.CandlesResult
+The SDK verifies that every OHLCV column has exactly one value per timestamp and returns
+*errors.TransportError
+if the response is misaligned.
+GetCurrentCandle(...)
+Returns
+(*models.Candle, error)
+symbol/timeframe, the candle pointer is
+nil
+and
+err
+is
+nil
+(Rust
+Option<Candle>
+semantics).
+candle
+,
+err
+client
+Candles
+GetCurrentCandle
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1m"
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+)
+}
+if
+candle
+==
+nil
+fmt
+Println
+(
+"no candle rows yet"
+)
+}
+else
+fmt
+Println
+(
+candle
+TsSec
+,
+candle
+Close
+)
+}
+SubscribeCandles(ctx, symbol, symbolID, timeframe)
+sub
+,
+err
+client
+Candles
+SubscribeCandles
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1m"
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+for
+candle
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+candle
+TsSec
+,
+candle
+Close
+)
+break
+}
+Candle
+does not expose
+IsClosed
+TsSec
+/
+timeframe bucket; a later update for the same bucket supersedes the earlier value. Use
+includeIncomplete
+on reads when you want the still-forming bucket included.
+Related
+Market data guide
+Streaming
+Order book
+Public trades
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Balances
+Next
+Catalog
+On this page
+Methods
+GetCandles(ctx, symbol, symbolID, timeframe, limit, start, end, includeIncomplete)
+GetCandlesColumns(...)
+GetCurrentCandle(...)
+SubscribeCandles(ctx, symbol, symbolID, timeframe)
+Related
+Related Topics
+Share this page
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+symbol := "BTC-USDT"
+result, err := client.Candles.GetCandles(ctx, &symbol, nil, "1h", 200, nil, nil, false)
+if err != nil { log.Fatal(err) }
+if len(result.Candles) > 0 {
+    latest := result.Candles[0]
+    fmt.Println(latest.TsSec, latest.Open, latest.Close, latest.Volume)
+}
+
+for left, right := 0, len(result.Candles)-1; left < right; left, right = left+1, right-1 {
+    result.Candles[left], result.Candles[right] = result.Candles[right], result.Candles[left]
+}
+// result.Candles is now oldest-first for rolling indicators.
+
+---
+
+candle, err := client.Candles.GetCurrentCandle(ctx, &symbol, nil, "1m")
+if err != nil {
+	log.Fatal(err)
+}
+if candle == nil {
+	fmt.Println("no candle rows yet")
+} else {
+	fmt.Println(candle.TsSec, candle.Close)
+}
+
+---
+
+sub, err := client.Candles.SubscribeCandles(ctx, &symbol, nil, "1m")
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for candle := range sub.Messages() {
+    fmt.Println(candle.TsSec, candle.Close)
+    break
+}

@@ -1,0 +1,751 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/orders.v1.OrdersService/CreateOrder
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+orders.v1.OrdersService
+CreateOrder
+Create a new order.
+REST clients submit decimal quantity and price strings. ConnectRPC clients
+submit scaled integer values.
+Copy URL
+Method
+POST
+Path
+orders.v1.OrdersService/CreateOrder
+Service
+orders.v1.OrdersService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+orders.v1.OrdersService/CreateOrder
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersService/CreateOrder' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"order": {
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+}
+},
+"baseQtyScaled": "100000",
+"clientOrderId": "cli-ord-20250101-001",
+"feeAsset": "QUOTE",
+"marketIoc": {
+"clientRefPriceTicks": "5000000",
+"maxSlippageTicks": "1"
+},
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"side": "BUY",
+"symbolId": 1
+},
+"subaccountId": "6789012345678"
+}'
+Responses
+"acceptedAt": "2025-01-01T00:00:00Z",
+"acceptedAtTsNs": "1735689600000000000",
+"clientOrderId": "cli-ord-20250101-001",
+"orderId": "9876543210123",
+"resolvedBaseQtyScaled": "100000",
+"stopLossTriggerId": "8734243232987",
+"submittedMaxQuoteDebitScaled": "1",
+"takeProfitTriggerId": "2352352532523",
+"trailingStopTriggerId": "9155001234569"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+orders.v1.CreateOrderRequest
+Response
+orders.v1.CreateOrderResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+Target sub-account numeric ID. When omitted, uses caller's root account.
+order
+object
+required
+Order to admit.
+13 fields
+symbolId
+integer (int32)
+> 0
+Stable numeric pair ID from GetSpotConfig.
+side
+enum
+must be defined value
+Order side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s364" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+BUY
+baseQtyScaled
+string (int64)
+required one of
+> 0
+Exact gross base quantity scaled by the pair's base_quantity_scale from
+GetSpotConfig.
+maxQuoteDebitScaled
+string (int64)
+required one of
+> 0
+Hard all-in quote debit limit scaled by the pair's quote_quantity_scale
+from GetSpotConfig. Valid only for BUY market IOC and BUY limit IOC.
+one-of
+marketIoc
+object
+required one of
+Market order with implicit IOC behavior.
+3 fields
+maxSlippageTicks
+string (int64)
+> 0
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxSlippageBps
+integer (int32)
+> 0, ≤ 10000
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+one-of
+clientRefPriceTicks
+string (int64)
+> 0
+Optional client reference price in quote units scaled by 1e9. When
+omitted, admission uses server-side reference pricing.
+limitGtc
+object
+required one of
+Resting GTC limit order, optionally post-only.
+2 fields
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+postOnly
+boolean
+Reject the order instead of taking liquidity. Post-only is available only
+on this resting limit-order variant.
+Unset
+False
+True
+one-of
+limitIoc
+object
+required one of
+Immediate-or-cancel limit order.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+limitFok
+object
+required one of
+Fill-or-kill limit order.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+limitGtd
+object
+required one of
+Limit order with an exact expiry time.
+3 fields
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+postOnly
+boolean
+Reject the order instead of taking liquidity.
+Unset
+False
+True
+expireAt
+string (date-time)
+required
+≤ 2262-04-11T23:47:16.854775807Z
+Exact expiry time in UTC. It must be at least 1 second and at most 30 days
+after validation time. The order cannot execute when the current time equals
+this value.
+clientOrderId
+string
+max 36 chars
+/^[A-Za…:/-]*$/
+Optional account-scoped identifier for correlation, lookup, and cancellation.
+While this identifier is retained, reuse returns
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID for every new submission, even with the
+same payload. This identifier enables GetOrder reconciliation after a
+timeout; it does not provide exact replay.
+feeAsset
+enum
+must be defined value
+Asset charged for fees. Defaults to QUOTE. BASE is available only for BUY
+orders; SELL orders must use QUOTE.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s422" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+QUOTE
+selfTradePreventionMode
+enum
+must be defined value
+Self-trade prevention mode. Defaults to EXPIRE_MAKER if unspecified.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s424" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+EXPIRE_MAKER
+attachedRisk
+object
+Optional attached risk controls that arm after the parent order fills.
+4 fields
+takeProfit
+object
+Optional take-profit configuration.
+2 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger price in quote units scaled by 1e9.
+child
+object
+required
+Child execution when the threshold is crossed.
+2 fields
+marketIoc
+object
+required one of
+Market child with implicit IOC behavior.
+Edit in JSON
+limitGtc
+object
+required one of
+Resting GTC limit child.
+Edit in JSON
+one-of
+stopLoss
+object
+Optional stop-loss configuration.
+2 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger price in quote units scaled by 1e9.
+child
+object
+required
+Child execution when the threshold is crossed.
+2 fields
+marketIoc
+object
+required one of
+Market child with implicit IOC behavior.
+Edit in JSON
+limitGtc
+object
+required one of
+Resting GTC limit child.
+Edit in JSON
+one-of
+trailingStop
+object
+Optional trailing stop configuration.
+5 fields
+trailingDistanceTicks
+string (int64)
+> 0
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+trailingDistanceBps
+integer (int32)
+> 0, ≤ 10000
+Trailing distance in basis points (1 bp = 0.01%).
+one-of
+maxSlippageTicks
+string (int64)
+> 0
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxSlippageBps
+integer (int32)
+> 0, ≤ 10000
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+one-of
+activationPriceTicks
+string (int64)
+Optional activation price: trailing only starts after this price is
+reached. If omitted, trailing starts immediately after the parent order
+fills. Expressed in quote units scaled by 1e9.
+one-of
+oco
+boolean
+If true, take-profit and the configured stop leg (stop-loss or trailing-stop)
+form an OCO pair: when one fires, the other is canceled.
+Default is false (no mutual cancellation).
+Unset
+False
+True
+Response
+Form
+JSON
+orderId
+string (fixed64)
+Assigned order ID.
+clientOrderId
+string
+Echoed client order ID when one was supplied.
+acceptedAt
+string (date-time)
+Time admission completed.
+acceptedAtTsNs
+string (uint64)
+Admission completion time as epoch nanoseconds (UTC).
+resolvedBaseQtyScaled
+string (int64)
+Gross base quantity resolved for execution, scaled by the pair's
+base_quantity_scale from GetSpotConfig.
+submittedMaxQuoteDebitScaled
+string (int64)
+Submitted hard all-in quote debit limit, scaled by the pair's
+quote_quantity_scale from GetSpotConfig. Present only when that sizing
+method was submitted.
+takeProfitTriggerId
+string (uint64)
+Trigger ID for attached take-profit.
+stopLossTriggerId
+string (uint64)
+Trigger ID for attached stop-loss.
+trailingStopTriggerId
+string (uint64)
+Trigger ID for attached trailing stop.
+Possible errors
+Possible errors: 70
+Key
+Status
+Error
+When
+account-unknown
+400
+Account Unknown
+Account not found.
+api-key-market-deny
+403
+API Key Market Deny
+API key policy does not allow trading this pair.
+api-key-policy-required
+400
+API Key Policy Required
+This API key must have a policy attached before it can be used for trading.
+api-key-root-scope-only
+400
+API Key Root Scope Only
+This API key is scoped to the master account and cannot trade on sub-accounts.
+api-key-subaccount-mismatch
+400
+API Key Subaccount Mismatch
+This API key is scoped to a different sub-account than the one requested.
+api-key-sub-scope-only
+400
+API Key Sub Scope Only
+This API key is scoped to a specific sub-account and cannot trade on the master account.
+api-key-unknown
+400
+API Key Unknown
+API key referenced in the request could not be resolved by the Orders service.
+bad-price
+400
+Bad Price
+Price is invalid.
+bad-qty
+400
+Bad Quantity
+Quantity is invalid.
+bad-request
+400
+Bad Request
+Invalid request payload.
+batch-too-large
+400
+Batch Too Large
+Batch size exceeds the maximum allowed for this operation.
+cancel-request-expired
+400
+Cancel Request Expired
+Cancel request expired before admission. Use a fresh request ID for a new cancellation.
+conflict-duplicate-client-order-id
+409
+Conflict: Duplicate Client Order ID
+Duplicate client order ID.
+conflict-duplicate-client-trigger-id
+409
+Conflict: Duplicate Client Trigger ID
+Duplicate client trigger ID.
+conflict-idempotency-key-reuse
+409
+Conflict: Idempotency Key Reused
+Idempotency key was already used with a different request payload.
+empty-book
+400
+Empty Book
+Market order cannot execute because the book is empty.
+fee-asset-not-allowed
+400
+Fee Source Not Allowed
+Fee source not permitted for this pair/side.
+fok-insufficient-liquidity
+400
+FOK Insufficient Liquidity
+FOK order cannot be fully filled with available liquidity.
+insufficient-funds
+400
+Insufficient Funds
+Insufficient funds.
+internal-error
+500
+Internal Error
+Internal error.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+market-cap-violation
+400
+Market Cap Violation
+Order violates market-cap limits.
+market-halted
+400
+Market Halted
+Market is halted.
+market-price-unavailable
+503
+Market Price Unavailable
+Cannot reserve MARKET BUY because no reference price is available.
+max-quote-debit-too-small
+400
+Max Quote Debit Too Small
+Max quote debit is too small to resolve one valid order step.
+max-slippage-invalid
+400
+Max Slippage Invalid
+Maximum slippage is invalid.
+min-notional
+400
+Min Notional
+Order notional is below the minimum allowed.
+min-qty
+400
+Min Quantity
+Order quantity is below the minimum allowed.
+modification-requires-replace
+400
+Modification Requires Replace
+Modify request in AMEND_ONLY mode requires replace semantics.
+not-found
+404
+Not Found
+Not found.
+order-already-terminal
+400
+Order Already Terminal
+Client order ID refers to an already terminal order.
+order-unknown
+404
+Order Unknown
+Order not found.
+overloaded
+400
+Service Overloaded
+Batch replace admission capacity is temporarily exhausted.
+pair-cancel-only
+400
+Pair Cancel Only
+Pair is in cancel-only mode; only cancellations are allowed.
+pair-delisted
+400
+Pair Delisted
+Pair has been delisted.
+pair-disabled
+400
+Pair Disabled
+Pair is temporarily disabled.
+pair-not-listed-yet
+400
+Pair Not Listed Yet
+Pair is not listed yet.
+pair-post-only
+400
+Pair Post Only
+Pair is in post-only mode; submit with post_only=true.
+pair-reduce-only
+400
+Pair Reduce Only
+Pair is in reduce-only mode; new spot orders are not allowed.
+permission-denied
+403
+Permission Denied
+Permission denied.
+policy-market-deny
+403
+Policy Market Deny
+Sub-account policy does not allow trading this pair.
+policy-max-notional
+400
+Policy Max Notional
+Order notional exceeds the maximum allowed for this sub-account.
+policy-max-open-orders
+400
+Policy Max Open Orders
+Sub-account policy maximum number of open orders has been reached.
+policy-spot-trade-deny
+403
+Spot Trading Denied
+Effective policy does not allow spot trading for this API key or sub-account.
+policy-trading-halted
+400
+Trading Halted
+Trading is halted for this sub-account.
+post-only-cross
+400
+Post-Only Cross
+Post-only order would cross the book.
+post-only-limit-only
+400
+Post-Only Limit Only
+Post-only is only supported for LIMIT orders.
+price-band-violation
+400
+Price Band Violation
+Order price violates price band limits.
+price-tick-size
+400
+Price Tick Size
+Price must align with the tick size.
+qty-step-size
+400
+Quantity Step Size
+Quantity must align with the step size.
+rate-limit-exceeded
+400
+Rate Limit Exceeded
+Order-admission rate limit exceeded.
+reduce-only-blocked
+400
+Reduce-Only Blocked
+Order is blocked by reduce-only constraints.
+request-too-large
+400
+Request Too Large
+Request body too large.
+risk-limit
+400
+Risk Limit Exceeded
+Order would exceed account risk limits.
+role-spot-trade-deny
+403
+Spot Trading Role Denied
+Your role on this sub-account is read-only for spot trading.
+stale-quote
+400
+Stale Quote
+Client reference price is stale relative to server market data.
+subaccount-inactive
+400
+Sub-account Inactive
+Sub-account is inactive (disabled or deleted).
+trailing-distance-invalid
+400
+Trailing Distance Invalid
+Trailing stop distance is invalid.
+trailing-stop-order-type-unsupported
+400
+Trailing Stop Order Type Unsupported
+Trailing stop attached to an order only supports MARKET child orders in v1.
+trigger-cancel-rejected
+400
+Trigger Cancel Rejected
+Trigger cannot be canceled in its current state.
+trigger-not-found
+404
+Trigger Not Found
+Trigger not found.
+trigger-not-modifiable
+400
+Trigger Not Modifiable
+Trigger does not support this lifecycle operation.
+trigger-price-invalid
+400
+Trigger Price Invalid
+Trigger price is invalid.
+trigger-price-source-unsupported
+400
+Trigger Price Source Unsupported
+Trigger price source not supported.
+trigger-status-invalid
+400
+Trigger Status Invalid
+Trigger cannot perform this action in its current status.
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+unavailable
+503
+Service Unavailable
+Service temporarily unavailable.
+unknown-symbol
+400
+Unknown Symbol
+Unknown symbol.
+upstream-error
+502
+Upstream Error
+Upstream error.
+validation-error
+400
+Validation Error
+Request validation failed.
+POST
+orders.v1.OrdersService/CreateOrder
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s482" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersService/CreateOrder' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"order": {
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+}
+},
+"baseQtyScaled": "100000",
+"clientOrderId": "cli-ord-20250101-001",
+"feeAsset": "QUOTE",
+"marketIoc": {
+"clientRefPriceTicks": "5000000",
+"maxSlippageTicks": "1"
+},
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"side": "BUY",
+"symbolId": 1
+},
+"subaccountId": "6789012345678"
+}'
+Responses
+"acceptedAt": "2025-01-01T00:00:00Z",
+"acceptedAtTsNs": "1735689600000000000",
+"clientOrderId": "cli-ord-20250101-001",
+"orderId": "9876543210123",
+"resolvedBaseQtyScaled": "100000",
+"stopLossTriggerId": "8734243232987",
+"submittedMaxQuoteDebitScaled": "1",
+"takeProfitTriggerId": "2352352532523",
+"trailingStopTriggerId": "9155001234569"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/orders.v1.OrdersService/CreateOrder' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "order": {
+    "attachedRisk": {
+      "oco": false,
+      "stopLoss": {
+        "child": {
+          "marketIoc": {}
+        },
+        "triggerPriceTicks": "5000000"
+      },
+      "takeProfit": {
+        "child": {
+          "marketIoc": {}
+        },
+        "triggerPriceTicks": "5000000"
+      }
+    },
+    "baseQtyScaled": "100000",
+    "clientOrderId": "cli-ord-20250101-001",
+    "feeAsset": "QUOTE",
+    "marketIoc": {
+      "clientRefPriceTicks": "5000000",
+      "maxSlippageTicks": "1"
+    },
+    "selfTradePreventionMode": "EXPIRE_MAKER",
+    "side": "BUY",
+    "symbolId": 1
+  },
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "acceptedAt": "2025-01-01T00:00:00Z",
+  "acceptedAtTsNs": "1735689600000000000",
+  "clientOrderId": "cli-ord-20250101-001",
+  "orderId": "9876543210123",
+  "resolvedBaseQtyScaled": "100000",
+  "stopLossTriggerId": "8734243232987",
+  "submittedMaxQuoteDebitScaled": "1",
+  "takeProfitTriggerId": "2352352532523",
+  "trailingStopTriggerId": "9155001234569"
+}

@@ -1,0 +1,272 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+Overview
+Copy page
+View as Markdown
+Open in
+Polyester brings permissionless, non-custodial trading together with the speed and tools of an institutional-grade exchange.
+Unified Assets
+from supported chains become available in one Trading Account, where you can trade through an interactive workspace or connect programmatically.
+Every Pair has its own dedicated spot order book. Polyester uses its own internal liquidity and never sources liquidity from another exchange or bridge.
+Base and quote assets
+Every trading pair is written as base/quote. The
+Base Asset
+is the first Asset, which you buy or sell. The
+Quote Asset
+is the second Asset, used to express the price of one unit of the base Asset.
+For example, in
+BTC/USDT
+, BTC is the base Asset and USDT is the quote Asset. A hypothetical price of 100,000 means one BTC costs 100,000 USDT.
+At that example price, before fees:
+Order
+You spend
+You receive
+Buy 0.01 BTC
+1,000 USDT
+0.01 BTC
+Sell 0.01 BTC
+0.01 BTC
+1,000 USDT
+The quote Asset does not have to be a stablecoin. In a pair written as ETH/BTC, ETH is the base Asset and BTC is the quote Asset. A hypothetical price of 0.05 means one ETH costs 0.05 BTC.
+Order-book trading with Unified Assets
+Polyester uses dedicated order books rather than AMMs or liquidity pools. Orders match at the best available price; when several orders share the same price, the order submitted first is first in line.
+Supported forms of the same economic asset become one Unified Asset before they reach Trading. This allows liquidity from supported chains to meet in the same market instead of splitting into separate order books based on where the asset originated.
+Order Book
+Read prices, the spread, and visible liquidity for one market.
+Private balances and trading activity
+Your
+Unified Trading Account
+is private by default. Your individual Trading balances, open orders, fills, and trading history are visible only within the authorized
+Main Account
+or
+Subaccount
+Movements into and out of Trading can be visible on-chain because they cross the boundary between your public
+Funding Account
+and private Trading balance. Once assets are inside Trading, your individual balance and trading activity are not published on-chain.
+Polyester still publishes the market information needed for an order-book exchange, including prices, aggregated liquidity, charts, and completed Market Trades. This public market data does not identify the account behind an order or fill.
+Trading Account
+Private balances, available vs reserved, and what Trading can use.
+An interactive trading workspace
+The Trading Screen brings market analysis, order entry, account activity, and balances into one customizable workspace. You can arrange and group the widgets that matter to your trading style without changing the underlying order or balance state.
+The workspace includes Polyester and TradingView charts, a Depth Chart, Order Book, Market Trades, Order Form, Open Orders, Order History, Triggers, and Funds. Public market information and your private account activity stay visible in their proper contexts while you trade.
+Trading Screen
+Arrange charts, order entry, and account activity in one workspace.
+Order types for different trading styles
+Polyester supports nine order types across immediate execution, price control, triggered protection, and algorithmic execution.
+Core orders
+Use Market, Limit, and
+post-only
+controls to prioritize execution, price, or adding liquidity.
+Triggered orders
+Use Stop-Loss Market, Stop-Loss Limit, and Trailing Stop orders to act when a price condition is reached.
+Execution strategies
+Use TWAP, Ladder, and Iceberg orders to divide, distribute, or conceal displayed quantity.
+Each order type has its own purpose and lifecycle. The current Pair, account, and available balance determine whether an order can be placed and how much it can use.
+Engineered for low latency
+Polyester's Order Management System, or OMS, separates account-level checks from symbol-level order processing. This design keeps account admission, market sequencing, matching, and settlement focused on their own responsibilities while communicating over low-latency paths.
+Admit the Order.
+The Account Admission Shard checks the account, available balance, authorization, and required reservation.
+Sequence the instruction.
+The Symbol Order Shard maintains the ordered lifecycle state for the selected market.
+Match eligible Orders.
+Buy and sell Orders execute against Polyester's internal order book.
+Settle the result.
+Polyester finalizes Fills, fees, balance changes, and reservation releases.
+The
+Account Admission Shard (AAS)
+handles account-specific admission, spend checks, and reservations. The
+Symbol Order Shard (SOS)
+maintains ordered state for each market and forwards eligible instructions to the matching engine. This separation lets account and market workloads scale independently while keeping the execution path short.
+The architecture is designed for rapid order entry and high-throughput market activity, including latency-sensitive market-making, automated strategies, and high-frequency trading systems.
+PolyEngine
+How orders are admitted, matched, and settled.
+APIs for traders, market makers, and agents
+The same trading system is available through interfaces designed for different levels of performance and operational control.
+Interface
+Best suited to
+REST
+Direct HTTP integrations, scripts, readable payloads, and operational tools
+WebSocket JSON
+Live updates for JSON-based applications
+ConnectRPC and WebSocket Protobuf
+Typed, high-throughput trading applications and official SDK integrations
+SBE WebSocket
+Ultra-low-latency binary order entry and immediate acknowledgements
+FIX Classic and FIX-SBE
+Institutional connectivity, session recovery, and existing market-making infrastructure
+Read APIs are designed for high-volume access with generous rate limits, while realtime streams deliver market, order, execution, balance, and account updates without repeated polling. Integrations can combine a fast order-entry interface with REST or ConnectRPC for state reconciliation.
+Polyester's non-custodial account model also makes it well suited to AI agents and autonomous trading systems. An agent can operate through scoped API credentials while the account owner retains control of the account and assets.
+APIs
+Start with Polyester APIs, SDKs, streams, and trading interfaces.
+FAQ
+Does Polyester use an order book or liquidity pools?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester uses its own order books for spot trading. Buy and sell orders are matched in a dedicated market for each trading pair. You deposit your funds into your Polyester account before trading, rather than swapping directly from your wallet through an AMM.
+Where do the assets go from a completed trade?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+The received asset appears in your Unified Trading Account. It can immediately support another eligible order or be returned to your Funding Account.
+Learn about first deposit and trade.
+Related Topics
+Manage Orders
+Track active orders, understand fills, modify remaining quantity, and confirm how each order ends.
+Quick Swap
+Convert one supported asset into another and deliver it to a chosen wallet with Quick Swap.
+Previous
+Internal Transfers
+Next
+Trading Screen
+On this page
+Base and quote assets
+Order-book trading with Unified Assets
+Private balances and trading activity
+An interactive trading workspace
+Order types for different trading styles
+Engineered for low latency
+APIs for traders, market makers, and agents
+FAQ
+Related Topics
+Share this page
+Overview
+See how Polyester combines order-book markets, advanced trading tools, and low-latency APIs.
+Share
+Copy Link

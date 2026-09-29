@@ -1,0 +1,209 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/audit-logs
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Audit Logs · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Subaccounts
+svg]:size-3.5">
+/
+Audit Logs
+Audit Logs
+Copy page
+View as Markdown
+Open in
+Audit Logs give you a clear history of access and setting changes for a
+Subaccount
+Security
+, and find
+Audit Log
+to see who made each change and when it happened.
+What appears in the Audit Log
+The Audit Log includes changes such as:
+creating, renaming, disabling, or reactivating a Subaccount
+sending or responding to member invitations
+changing a member's role or access
+creating, updating, or removing an
+API key
+updating or locking permissions
+changing the member
+MFA
+requirement.
+Read an Audit Log entry
+Each entry shows the time, the type of item that changed, the action, where the change came from, and the account that made it. When available, Polyester also shows the source IP address.
+The newest entries appear first. Select
+Load more
+to continue through earlier entries.
+Trading and balance history
+The Audit Log focuses on access and account settings. Other records remain in the part of Polyester where they belong:
+Manage Orders
+shows orders and fills.
+Overview
+shows balance entries.
+Deposit, withdrawal, and transfer pages show the progress of fund movements.
+Polyester Scan
+shows public
+Polyester Chain
+activity.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+A focused account history
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Audit Logs keep membership, permission, credential, and account-setting changes together without mixing them with trading or balance records.
+Related Topics
+Overview
+Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+Manage Subaccounts
+Create, switch, fund, disable, reactivate, or leave a Subaccount.
+Members & Roles
+Invite people to a Subaccount and choose what each role can do.
+Permissions & Policies
+Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+Previous
+Address Book & Whitelists
+Next
+API Keys
+On this page
+What appears in the Audit Log
+Read an Audit Log entry
+Trading and balance history
+Related Topics
+Share this page
+Audit Logs
+See membership, permission, API-key, and account-setting changes for a Subaccount.
+Share
+Copy Link

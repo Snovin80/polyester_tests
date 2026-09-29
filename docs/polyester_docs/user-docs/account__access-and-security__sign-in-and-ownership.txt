@@ -1,0 +1,232 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/sign-in-and-ownership
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Sign-In & Ownership · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Access & Security
+Sign-In & Ownership
+Copy page
+View as Markdown
+Open in
+You can sign in to Polyester with a non-custodial wallet, Google, or email. The method you choose becomes the owner credential that brings you back to the same Polyester account.
+Every
+Main Account
+and
+Subaccount
+has its own Safe
+smart account
+on
+Polyester Chain
+Choose your sign-in method
+Non-custodial wallet
+Google
+Email
+Connect MetaMask, Rabby, Phantom, WalletConnect, or another supported wallet. Your wallet signs a message to prove ownership without sharing its private key or paying gas.
+The wallet provider remains responsible for its backup and recovery. Returning with the same wallet address reconnects you to the same owner path.
+Google creates a Turnkey-backed embedded
+owner wallet
+connected to your Google identity. Sign in with the same Google account whenever you return.
+Email creates a Turnkey-backed embedded owner wallet connected to your email address. A verification code proves access to that mailbox during sign-in.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Use the same identity when you return
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A different wallet address, Google account, or email address can open a different Polyester account. If your expected balances are missing, sign out and use the identity that originally created the account before depositing or trading.
+Your owner credential and smart account
+Your owner credential approves account access and protected actions. It is always a non-custodial wallet, whether you connect an existing wallet or create an embedded owner wallet with Google or email.
+Your Safe smart account is the Polyester account that appears on Polyester Chain. It has its own address and does not have one account-wide private key to export. The owner credential signs for it.
+Signing in is free. The Safe is deployed automatically with your first eligible on-chain action, such as your first deposit, if it has not already been deployed.
+Sessions and MFA
+After you sign in, the browser keeps your Polyester session until it expires or you sign out. Signing out of Polyester does not sign you out of your wallet, Google account, or email provider.
+Completing multi-factor authentication (
+MFA
+) elevates your session for 30 minutes. While your session is elevated, actions that accept session elevation can reuse that verification without another MFA prompt. Some high-risk actions still require a fresh MFA check while your session is elevated. Each successful MFA check restarts the 30-minute elevated-session period.
+Export an embedded owner wallet
+If you use Google or email, you can export the embedded owner's seed phrase or private key from the Security page. Polyester shows it only when you request an export and is never notified of the exported value.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Keep exported private keys safe
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+An exported seed phrase or private key can control your account. Store it securely and never send it to support, paste it into a chat, or save it in an unprotected file.
+External wallets use their own provider's export and recovery tools.
+Recover access
+For a connected wallet, use the wallet provider's recovery process.
+For Google, recover the Google account connected to your embedded owner wallet.
+For email, recover access through your email provider.
+If an MFA method is unavailable, use another enrolled method or an unused recovery code.
+Polyester support never needs your seed phrase, private key, email verification code, MFA code, recovery code, or API private key.
+FAQ
+What’s the difference between the wallet I use to connect / sign in and my Polyester Smart Wallet?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+The wallet you use to connect / sign in owns and controls your Polyester Smart Wallet, which is your Polyester account on the blockchain. Connecting / signing in establishes a session but does not move funds or make transactions by itself. You remain in control of the assets in your
+Funding Account
+and
+Unified Trading Account
+Why do I see a different account after signing in?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Every unique wallet address, Google account, or email address signs into a specific Polyester account. If you see an unexpected account, you may have used a wallet or identity other than the one linked to the account you expected. If you are certain you signed in correctly, check the account selector to make sure you’re viewing your Main Account rather than a Subaccount.
+Related Topics
+MFA & Recovery
+Add a passkey or authenticator app and keep recovery codes available if you lose a method.
+Sessions & Alerts
+Manage account sessions, understand security alerts, and respond to unfamiliar activity.
+Address Book & Whitelists
+Save trusted destinations and control where withdrawals and internal transfers can be sent.
+GuardSigner
+Set up and manage the additional signer that protects withdrawal and internal transfer whitelist changes.
+API Keys
+Create API keys, choose what they can access, and keep their private signing keys safe.
+Previous
+Dashboard
+Next
+MFA & Recovery
+On this page
+Choose your sign-in method
+Your owner credential and smart account
+Sessions and MFA
+Export an embedded owner wallet
+Recover access
+FAQ
+Related Topics
+Share this page
+Sign-In & Ownership
+Understand how your wallet, Google account, or email connects you to your Polyester account.
+Share
+Copy Link

@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/deposit.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+`client.Deposit` manages chain deposit addresses. Every method is authenticated and account-scoped.
+Deposit addresses are per-account and per-chain. Creating an address is idempotent: it returns the existing address when one is already assigned. A deposit flow can target **funding** or **trading**; select and confirm the intended destination in the corresponding chain flow.
+## Methods
+| Method          | Summary                                           |
+| --------------- | ------------------------------------------------- |
+| `CreateAddress` | Create or return the deposit address for a chain. |
+| `ListAddresses` | List deposit addresses for a chain.               |
+### CreateAddress(ctx, chainID, account, subAccountID)
+```go
+addr, err := client.Deposit.CreateAddress(ctx, 1, nil, nil)
+if err != nil { log.Fatal(err) }
+fmt.Println(addr.ChainID, addr.DepositAddress)
+```
+The SDK returns `*errors.TransportError` if a successful response omits or empties the required address; it never fabricates a placeholder address.
+### ListAddresses(ctx, chainID, account, subAccountID)
+```go
+listed, err := client.Deposit.ListAddresses(ctx, 1, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, a := range listed.Addresses {
+fmt.Println(a.ChainID, a.DepositAddress)
+}
+```
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/go/guides/deposits-and-withdrawals)
+- [Balances](https://testnet.polyester.com/docs/sdk/go/reference/balances)
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/go/reference/withdrawals)

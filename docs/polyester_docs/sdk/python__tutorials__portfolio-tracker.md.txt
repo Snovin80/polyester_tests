@@ -1,0 +1,91 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/tutorials/portfolio-tracker.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Portfolio tracker
+Build a revision-aware Python account monitor for balances, reservations, open orders, fills, and reconciliation.
+Build an authenticated account monitor that keeps exact funding and trading balances separate, tracks reservations and open orders, and uses revisions to reject stale balance updates.
+> **A dashboard is not the source of truth**
+>
+> Treat every screen as a projection of ledger and OMS state. Preserve raw scaled values, revisions, and timestamps. Never calculate spendable collateral from rounded display strings.
+1. Read and format the balance snapshot
+```python
+from polyester import format_ledger_u128
+balances = await client.balances.list()
+for balance in balances.balances:
+print(
+balance.asset_id,
+"available",
+format_ledger_u128(balance.available),
+"reserved",
+format_ledger_u128(balance.reserved),
+"trading_revision",
+balance.trading_revision,
+"funding_revision",
+balance.funding_revision,
+)
+```
+`funding` is deposit/withdraw custody state. `trading`, `reserved`, and `available` are execution state. Their revisions are independent; compare `trading_revision` only with trading-state updates and `funding_revision` only with funding-state updates.
+2. Reconcile open orders
+```python
+open_orders = await client.orders.list_open(
+include_attached_risk=True,
+include_attached_risk_state=True,
+)
+for order in open_orders.orders:
+print(
+order.order_id,
+order.client_order_id,
+order.symbol_id,
+order.status,
+order.orig_qty,
+order.cum_qty,
+order.leaves_qty,
+)
+```
+Reserved balance and open-order leaves should move together eventually, but they are served by different read models and can lag briefly. Do not flag a mismatch until a bounded reconciliation window and a fresh read have both completed.
+3. Subscribe for low-latency order changes
+```python
+subscription = await client.orders.subscribe(account_id=account_id)
+async with subscription:
+order = await anext(subscription)
+scale = client.catalogs.base_quantity_scale_for_symbol_id(order.symbol_id)
+if scale is None:
+raise RuntimeError(f"stream symbol {order.symbol_id} quantity scale is unavailable")
+cum = order.cum_qty.format(scale=scale) if order.cum_qty else None
+leaves = order.leaves_qty.format(scale=scale) if order.leaves_qty else None
+print(order.order_id, order.status, cum, leaves)
+if subscription.error:
+raise subscription.error
+```
+The private stream accelerates the UI; it does not replace snapshots. On reconnect or queue overflow, discard local assumptions and reconcile balances plus open orders again. Stream quantities can omit scale, so resolve it from the hydrated catalog by `symbol_id` and fail closed if unavailable; never invent a stream scale.
+4. Resolve fills before computing inventory
+```python
+details = await client.orders.wait_for_order_trades_complete(
+order_id="order-id-from-create",
+timeout=15.0,
+)
+if details.order:
+print(details.order.cum_qty, len(details.trades))
+```
+The order projection can show cumulative quantity before every related trade row is queryable. Use the completed trade projection for fee-source-aware received inventory and realized execution reporting.
+5. Poll as a safety net
+Poll slowly enough to respect rate limits, add jitter across replicas, and set one overall timeout per cycle. A useful cycle is balances → open orders → recent history. Publish the new dashboard state atomically only after all required reads succeed; otherwise retain the previous state and mark it stale.
+## Account-state API map
+| Method                                  | Important inputs                       | Use                                    |
+| --------------------------------------- | -------------------------------------- | -------------------------------------- |
+| `balances.list`                         | account scope, subaccount              | Funding/trading snapshot and revisions |
+| `balances.get_balance_history`          | range, ledger, account codes           | Auditable balance movement             |
+| `orders.list_open`                      | scope, pagination, attached-risk flags | Current reservation intent             |
+| `orders.list_history`                   | symbol/ID, pagination                  | Terminal and recent order states       |
+| `orders.get`                            | order ID or client order ID            | One order plus related fills           |
+| `orders.subscribe`                      | account ID                             | Low-latency private lifecycle updates  |
+| `orders.wait_for_order_trades_complete` | order identity, timeout                | Complete fill projection               |
+| `trades.list`                           | account filters, pagination            | User execution ledger                  |
+## Tested source
+Example `02` in [`polyester-examples-python`](https://github.com/Fabric-Labs/polyester-examples-python) performs authenticated balance and order reads. Its helpers are tested and linted against `polyester-sdk==0.1.0a25`.
+## Related
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/python/guides/accounts-and-balances)
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders)
+- [Trades](https://testnet.polyester.com/docs/sdk/python/reference/trades)
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)

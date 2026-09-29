@@ -1,0 +1,42 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/public-trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Public trades
+Public trade tape reads and subscribe via market_data.
+Public prints for a spot market live on `client.market_data` (not `client.trades`, which is your private fills). Unary reads need no authentication. `subscribe_trades` needs hydrated catalogs for symbol resolution; realtime support is always included.
+## Methods
+| Method                           | Summary                             |
+| -------------------------------- | ----------------------------------- |
+| `get_trades` / `get_trades_with` | Recent public trades.               |
+| `subscribe_trades`               | Live public tape (`recv_result()`). |
+### Get trades and get trades with
+```rust
+use polyester::models::GetTradesOpts;
+let result = client.market_data.get_trades("BTC-USDT", Some(20)).await?;
+for t in &result.trades {
+println!("{} {} {:?}", t.match_id, t.side, t.price);
+}
+if !result.next_page_token.is_empty() {
+let more = client
+symbol: Some("BTC-USDT".into()),
+limit: Some(20),
+page_token: Some(result.next_page_token),
+})
+let _ = more;
+}
+```
+`MarketTrade.side` is a string: `"buy"` or `"sell"` (aggressor / taker side). There is no `is_buy` field on the decoded model. REST and realtime both attach the hydrated catalog scale to `MarketTrade.qty`; the SDK returns a validation error instead of guessing when that scale is unavailable.
+### Subscribe trades
+```rust
+client.wait_for_catalogs().await?;
+let mut sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+while let Some(trade) = sub.recv_result().await? {
+println!("{} {}", trade.side, trade.match_id);
+break;
+}
+```
+## Related
+- [User trades](https://testnet.polyester.com/docs/sdk/rust/reference/trades) for your private fills
+- [Market data guide](https://testnet.polyester.com/docs/sdk/rust/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)

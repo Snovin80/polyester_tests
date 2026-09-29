@@ -1,0 +1,234 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/chain-activity
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Chain Activity · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Scan
+svg]:size-3.5">
+/
+Chain Activity
+Chain Activity
+Copy page
+View as Markdown
+Open in
+Polyester Scan
+organizes the public activity recorded on
+Polyester Chain
+Browse chain records
+Page
+What you can see
+Transactions
+Confirmed transactions, methods, blocks, addresses, amounts, and fees
+Pending Transactions
+Transactions waiting to be included in a block
+Internal Transactions
+Contract calls and internal value movements created during execution
+Blocks
+Block production, included transactions, gas, fees, and producer information
+Accounts
+Public addresses and their indexed Polyester Chain activity
+The main lists update as new records arrive. When useful,
+Download Page Data
+exports the rows currently shown in the table.
+Transactions
+Blocks
+Read a transaction
+The Overview gives you the transaction's result and main details. A
+Success
+status means the Chain execution completed without reverting.
+Failed
+means it reverted, while
+Pending
+means it has not yet reached a final Chain result.
+Use the tabs when you want more detail:
+Tab
+What it shows
+Token Transfers
+ERC-20 transfers, mints, and burns
+Internal Txns
+Calls or value movements created inside the transaction
+Logs
+Events emitted by the contracts involved
+State
+Indexed before-and-after changes created by execution
+If the transaction belongs to a deposit, withdrawal, or transfer Flow, Scan also shows a Flow summary with links to the other lifecycle stages.
+Read a block
+A block groups transactions that were included together. Its Overview can show the block height, time, transaction count, producer, gas use, base fee, burned fees, and the hashes that connect it to the surrounding Chain history.
+Additional tabs provide the transactions and internal calls within the block. Consensus, MEV, and blob information appears when the active Chain supplies it.
+Read an address
+An address page adapts to the type of address you open:
+a regular wallet address shows its public balance and activity
+a Safe
+smart account
+adds smart-account and Flow information
+a contract can add source code, contract methods, proxy information, and trusted Polyester labels.
+All of these pages show public Polyester Chain activity. They do not reveal the person behind an address or the private contents of a Polyester account.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Internal transaction and internal transfer mean different things
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+An internal transaction is a contract call or value movement created during Chain execution. A Polyester internal transfer moves an asset between supported account or balance areas and can be followed as an Asset Flow.
+Use
+Asset Flows
+when you want the complete deposit, withdrawal, or transfer journey rather than one Chain transaction.
+Related Topics
+Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Previous
+Asset Flows
+Next
+Tokens & Chains
+On this page
+Browse chain records
+Read a transaction
+Read a block
+Read an address
+Related Topics
+Share this page
+Chain Activity
+Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+Share
+Copy Link

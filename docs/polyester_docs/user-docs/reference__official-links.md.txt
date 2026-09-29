@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/official-links.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Official Links
+Open official Polyester products, documentation, support, community, and developer resources.
+Use this directory to open official Polyester resources.
+| Category      | Resource                    | Link                                                                                |
+| ------------- | --------------------------- | ----------------------------------------------------------------------------------- |
+| Product       | Polyester                   | [polyester.com](https://polyester.com/)                                             |
+| Product       | Polyester application       | [Open Polyester](https://testnet.polyester.com/)                                    |
+| Product       | Polyester Scan              | [polyesterscan.com](https://polyesterscan.com/)                                     |
+| Product       | Zipper                      | [zipper.trade](https://zipper.trade/)                                               |
+| Service       | Status                      | [status.polyester.com](https://status.polyester.com/)                               |
+| Documentation | User Docs                   | [Open User Docs](https://testnet.polyester.com/docs/user-docs)                      |
+| Documentation | Developer Docs              | [Open Developer Docs](https://testnet.polyester.com/docs/developer-docs)            |
+| Support       | Help Center                 | [Open Help Center](https://testnet.polyester.com/help)                              |
+| Support       | My Submissions              | [Open My Submissions](https://testnet.polyester.com/help/my-submissions)            |
+| Support       | Feature Requests            | [Open Feature Requests](https://testnet.polyester.com/help/feature-requests)        |
+| Community     | Discord                     | [Join Polyester Discord](https://discord.com/invite/polyester)                      |
+| Community     | X                           | [@polyester](https://x.com/polyester)                                               |
+| Developers    | Public Protobuf definitions | [polyester-proto](https://github.com/Fabric-Labs/polyester-proto)                   |
+| Developers    | TypeScript SDK              | [polyester-sdk-typescript](https://github.com/Fabric-Labs/polyester-sdk-typescript) |
+| Developers    | Python SDK                  | [polyester-sdk-python](https://github.com/Fabric-Labs/polyester-sdk-python)         |
+| Developers    | Go SDK                      | [polyester-sdk-go](https://github.com/Fabric-Labs/polyester-sdk-go)                 |
+| Developers    | Rust SDK                    | [polyester-sdk-rust](https://github.com/Fabric-Labs/polyester-sdk-rust)             |

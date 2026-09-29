@@ -1,0 +1,286 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/funding-services
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Funding services · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Funding services
+Funding services
+Copy page
+View as Markdown
+Open in
+All services on this page use the authenticated transport and accept the
+account
+scope field.
+Methods marked
+stream
+return
+() => void
+and take
+onEvent
+(+ optional
+onOpen
+/
+onClose
+/
+onError
+).
+client.deposit
+Method
+Input → Result
+Notes
+createAddress(input, options?)
+chain +
+account?
+→
+DepositAddress | null
+Creates or returns the existing address.
+listAddresses(input?, options?)
+chain?
+,
+account?
+→
+DepositAddress[]
+client.transfers
+Ledger transfer history: every balance movement, regardless of cause.
+Method
+Input → Result
+Notes
+list(input, options?)
+limit?
+, direction, time range, transfer-code and ledger filters,
+pageToken?
+→
+subscribe(input)
+accountId
+→
+stream
+of transfers
+client.internalTransfers
+Method
+Input → Result
+Notes
+create(input, options?)
+destination (root /
+subaccount
+/
+smart account
+), asset, decimal amount →
+CreateInternalTransferResult
+Idempotent: repeat requests return the existing transfer.
+Resolve destinations with
+client.accounts.resolve(...)
+or the address book's
+listTransferDestinations()
+client.tradingWithdraws
+Durable, signed withdrawal intents out of the Trading venue.
+Method
+Input → Result
+Notes
+createToFunding(input, options?)
+asset, decimal amount, destination + signature →
+CreateTradingWithdrawResult
+Stays on Polyester.
+createToExternalChain(input, options?)
+asset, gross decimal amount, destination network + address + signature →
+CreateTradingWithdrawResult
+Leaves via the
+Zipper
+Each intent embeds a ~5-minute deadline, a nonce, and an idempotency key. Signing options:
+walletSigner
+EOA
+sign it
+with
+personal_sign
+payloadSignature
+Related
+Supported chains, assets,
+routes
+, fees, and minimums:
+client.zipper
+and
+catalog.zipper
+See
+Market data services
+and
+Catalog & precision
+Tracking a deposit/withdrawal across chains:
+client.lifecycle
+Deposits & withdrawals
+Guard-signer co-signing for protected actions:
+Account services
+On-chain user operations from the smart account:
+See
+Client configuration
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Previous
+Account services
+On this page
+client.deposit
+client.transfers
+client.internalTransfers
+client.tradingWithdraws
+Related
+Related Topics
+Share this page
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Share
+Copy Link

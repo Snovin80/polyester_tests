@@ -1,0 +1,324 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/public-trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Public trades · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Public trades
+Public trades
+Copy page
+View as Markdown
+Open in
+Public prints for a spot market live on
+client.market_data
+(not
+client.trades
+, which is your
+private fills). No authentication is required. Call
+await client.wait_for_catalogs()
+first;
+quantity decoding fails closed when the market scale is unavailable.
+Methods
+Method
+Summary
+get_trades
+Recent public trades (paginated by match id).
+subscribe_trades
+Live public tape for one symbol.
+Get trades
+result
+=
+await
+client.market_data.get_trades(
+symbol
+=
+"BTC-USDT"
+,
+limit
+=
+20
+)
+for
+t
+in
+result.trades:
+print
+(t.match_id, t.is_buy, t.price, t.qty, t.ts_ns)
+# Continue from a match id cursor when present
+if
+result.next_match_id:
+more
+=
+await
+client.market_data.get_trades(
+symbol
+=
+"BTC-USDT"
+,
+limit
+=
+20
+,
+from_match_id
+=
+int
+(result.next_match_id),
+)
+Field
+Notes
+symbol
+/
+symbol_id
+One required
+limit
+Default
+100
+from_match_id
+Optional cursor
+Subscribe trades
+Handshake completes before return. Consume with
+async for
+subscription
+=
+await
+client.market_data.subscribe_trades(
+symbol
+=
+"BTC-USDT"
+)
+async
+with
+subscription:
+async
+for
+trade
+in
+subscription:
+print
+(trade.price, trade.qty, trade.is_buy)
+break
+MarketTrade shape
+symbol_id
+,
+match_id
+,
+is_buy
+,
+price
+,
+qty
+,
+ts_ns
+MarketTradesResult(trades, next_match_id)
+is_buy
+is a
+bool
+from the wire
+is_buy
+/
+isBuy
+field:
+True
+when the aggressor
+(
+taker
+) side is buy,
+False
+when the aggressor is sell. Python does not decode a separate
+side
+string on
+MarketTrade
+(unlike Rust/Go).
+REST and realtime attach the same hydrated catalog scale to
+qty
+trade quantities using a guessed scale.
+Related
+User trades
+for your private fills
+Market data guide
+Streaming
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Profile
+Next
+Realtime
+On this page
+Methods
+Get trades
+Subscribe trades
+MarketTrade shape
+Related
+Related Topics
+Share this page
+Public trades
+Public trade tape reads and subscribe via market data.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+result = await client.market_data.get_trades(symbol="BTC-USDT", limit=20)
+for t in result.trades:
+    print(t.match_id, t.is_buy, t.price, t.qty, t.ts_ns)
+
+# Continue from a match id cursor when present
+if result.next_match_id:
+    more = await client.market_data.get_trades(
+        symbol="BTC-USDT",
+        limit=20,
+        from_match_id=int(result.next_match_id),
+    )
+
+---
+
+subscription = await client.market_data.subscribe_trades(symbol="BTC-USDT")
+async with subscription:
+    async for trade in subscription:
+        print(trade.price, trade.qty, trade.is_buy)
+        break

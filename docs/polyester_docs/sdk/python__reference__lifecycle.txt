@@ -1,0 +1,291 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/lifecycle
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Lifecycle · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Lifecycle
+Lifecycle
+Copy page
+View as Markdown
+Open in
+client.lifecycle
+correlates multi-step deposit, withdrawal, and transfer flows for operations
+dashboards.
+Method
+Purpose
+list_flows(...)
+Paginated flow summaries
+get_flow(intent_id=..., flow_id=...)
+One flow by intent or flow ID
+get_flow_by_tx(tx_hash=...)
+First matching flow
+list_flows_by_tx(tx_hash=...)
+All matching flows
+subscribe_open_flows(account_id=...)
+Open-flow summaries
+subscribe_flow_detail(flow_id=...)
+One flow's updates
+flows
+=
+await
+client.lifecycle.list_flows(
+limit
+=
+50
+,
+scope
+=
+"all"
+)
+for
+flow
+in
+flows.flows:
+print
+(
+flow.intent_id,
+flow.flow_kind,
+flow.latest_step,
+flow.is_terminal,
+flow.lifecycle_reason,
+)
+if
+flow.zipper_reason
+is
+not
+None
+print
+(
+flow.zipper_reason.reason_id,
+flow.zipper_reason.message,
+flow.zipper_reason.code,
+)
+detail
+=
+await
+client.lifecycle.get_flow(
+intent_id
+=
+"..."
+)
+Each flow summary exposes:
+lifecycle_reason
+unspecified
+,
+zipper_validation_rejected
+, ledger-mirror variants, or
+unknown_reason_<n>
+when the wire
+code is ahead of the SDK catalog).
+zipper_reason
+Zipper
+detail (
+code
+,
+reason_id
+,
+message
+) when Zipper supplied a
+precise rejection. Prefer
+reason_id
+/
+message
+for user-facing copy instead of raw numeric
+codes.
+Page tokens are opaque. Transaction lookup
+lookup_kind
+defaults to
+"any"
+; pass the exact
+transaction hash returned by the relevant chain.
+Singular lookups raise
+PolyesterTransportError
+if a successful response omits the requested flow
+or its required summary; they never return an empty placeholder flow.
+subscribe_open_flows(account_id=...)
+uses a private account channel. Omitting Account ID uses
+the public open-flows channel.
+subscribe_flow_detail
+is public-by-flow-id; flow IDs should still
+be treated as sensitive operational identifiers.
+Lifecycle reports progress, not final ledger availability. Confirm completed funding/trading
+balances before enabling dependent orders.
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Layout
+Next
+Market overview
+On this page
+Related Topics
+Share this page
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+flows = await client.lifecycle.list_flows(limit=50, scope="all")
+for flow in flows.flows:
+    print(
+        flow.intent_id,
+        flow.flow_kind,
+        flow.latest_step,
+        flow.is_terminal,
+        flow.lifecycle_reason,
+    )
+    if flow.zipper_reason is not None:
+        print(
+            flow.zipper_reason.reason_id,
+            flow.zipper_reason.message,
+            flow.zipper_reason.code,
+        )
+
+detail = await client.lifecycle.get_flow(intent_id="...")

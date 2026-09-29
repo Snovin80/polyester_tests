@@ -1,0 +1,112 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/zipper.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+`client.zipper` is the public surface for Zipper, the cross-chain deposit and withdraw layer. It exposes the configuration that drives on-chain funding (supported external chains, unified assets, per-chain asset variants with network fees and minimums, and contract metadata) plus a live stream of route supply. Nothing here is authenticated: the same configuration is served to every caller and feeds `catalog.zipper`.
+> **Prefer the catalog for reads**
+>
+> Most apps never call `client.zipper` directly. The [catalog](https://testnet.polyester.com/docs/sdk/typescript/reference/catalog) bakes this configuration in as a snapshot and keeps it fresh, so `client.catalog.zipper` gives you the same chains, assets, and routes already indexed for lookup. Reach for the service when you want the raw config in one call, or the supply stream.
+## Methods
+| Method                       | Summary                                                     |
+| ---------------------------- | ----------------------------------------------------------- |
+| `getDepositWithdrawConfig`   | Fetch the full deposit and withdraw configuration.          |
+| `subscribeZippedAssetSupply` | Stream live per-route supply updates over a public channel. |
+### `getDepositWithdrawConfig(options?)`
+Fetches the full `DepositWithdrawConfig`: supported external chains, unified assets and their per-chain variants, network fees, minimum deposit and withdraw amounts, and contract metadata. Takes only an optional request-options argument.
+```ts
+const config = await client.zipper.getDepositWithdrawConfig();
+for (const chain of config.chains) {
+console.log(chain.code, chain.name, `${chain.requiredConfirmations} confirmations`);
+}
+const eth = config.assets.find((asset) => asset.asset === "ETH");
+for (const variant of eth?.variants ?? []) {
+console.log(variant.chainId, "network fee", variant.networkFee, "supply", variant.supply);
+}
+```
+#### `DepositWithdrawConfig`
+Amounts are decimal strings; `tsMs` is epoch milliseconds. Read the Polyester chain ID from `environment.chain.id`; it is not a field on this configuration.
+```ts
+import type {
+ZipperAssetConfig,
+ZipperChainConfig,
+ZipperChainContractConfig,
+} from "@polyester/sdk";
+interface DepositWithdrawConfig {
+chains: ZipperChainConfig[];
+assets: ZipperAssetConfig[];
+contracts: ZipperChainContractConfig[];
+tsMs: number; // epoch ms the config was produced
+}
+```
+`ZipperChainConfig` describes one supported external chain:
+```ts
+interface ZipperChainConfig {
+chainId: number;
+code: string;
+name: string;
+nativeChainId: string;
+nativeCurrencySymbol: string;
+explorerUrl: string;
+icon: string;
+requiredConfirmations: number;
+confirmationTimeSeconds: number;
+isCaseSensitive: boolean; // whether addresses on this chain are case-sensitive
+minAddressLength: number;
+maxAddressLength: number;
+}
+```
+`ZipperAssetConfig` is a unified asset plus one `ZipperAssetChainVariant` per chain it lives on. Each variant carries the route-level detail: the source token and its z-token wrapper, the current network fee, per-route deposit and withdraw minimums, and live supply.
+```ts
+interface ZipperAssetConfig {
+asset: string; // unified asset symbol, e.g. "USDC"
+ledgerId: number;
+name: string;
+icon: string;
+quantityScale: number;
+quantityDisplayDecimals: number;
+variants: ZipperAssetChainVariant[];
+uAssetId: string;
+}
+interface ZipperAssetChainVariant {
+zippedAssetId: number; // route id, keys the supply stream
+chainId: number;
+isNativeAsset: boolean;
+networkFee: string; // decimal string
+networkFeeTsSec: number;
+depositMinAmount: string; // decimal string
+withdrawMinAmount: string; // decimal string
+supply: string; // decimal string
+sourceToken: { address: string; decimals: number };
+zToken: { address: string; decimals: number };
+}
+interface ZipperChainContractConfig {
+name: string;
+address: string;
+type: string;
+description: string;
+version: number;
+}
+```
+### `subscribeZippedAssetSupply(input)`
+Streams route supply updates over the public channel and returns an idempotent unsubscribe function. Each event is a batch of `{ zippedAssetId, supply }` updates, where `zippedAssetId` matches a variant's `zippedAssetId` from the config above and `supply` is a decimal string. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.zipper.subscribeZippedAssetSupply({
+onEvent: (batch) => {
+for (const update of batch.updates) {
+console.log("route", update.zippedAssetId, "supply", update.supply);
+}
+},
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+The stream needs the client's realtime connection and catalog scales to decode supply into decimal strings, so it is available on a fully constructed client. Supply figures are ephemeral: pair this stream with a `getDepositWithdrawConfig` (or the catalog) read for the static route metadata, and let the stream keep `supply` current.
+## Related
+- [Deposits and withdrawals guide](https://testnet.polyester.com/docs/sdk/typescript/guides/deposits-and-withdrawals) for the task-oriented walkthrough.
+- [Catalog](https://testnet.polyester.com/docs/sdk/typescript/reference/catalog) for the indexed, always-fresh view of this configuration via `client.catalog.zipper`.
+- [Lifecycle](https://testnet.polyester.com/docs/sdk/typescript/reference/lifecycle) for tracking a deposit or withdraw once it is in flight.
+- [Deposit](https://testnet.polyester.com/docs/sdk/typescript/reference/deposit) and [Balances](https://testnet.polyester.com/docs/sdk/typescript/reference/balances) for the funding surfaces built on this config.
+- [Realtime client](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the subscription handler contract.

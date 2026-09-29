@@ -1,0 +1,350 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+User trades · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+User trades
+User trades
+Copy page
+View as Markdown
+Open in
+client.trades
+is your authenticated trade history and private fill stream. For the public tape,
+see
+Public trades
+(
+client.market_data
+).
+Methods
+Method
+Summary
+list
+Private user trades (
+subaccount_id
+,
+limit
+).
+subscribe
+Stream private fills (
+recv_result()
+).
+List
+Rust’s typed helper currently takes optional
+subaccount
+and limit only, there is no symbol filter
+on this convenience method (unlike Python/Go).
+let
+page
+=
+client
+trades
+list
+(
+None
+,
+Some
+(
+50
+))
+;
+for
+t
+in
+&
+page
+trades {
+println!
+(
+"{} {} {:?} {:?} {} {} {}"
+,
+t
+match_id,
+t
+order_id,
+t
+price,
+t
+qty,
+t
+fee_amount_e18,
+t
+fee_asset,
+t
+fee_is_rebate
+);
+}
+Each
+UserTrade
+includes
+fee_amount_e18
+,
+fee_asset
+,
+referral_share_amount_e18
+, and
+fee_is_rebate
+U128
+) strings in units of
+fee_asset
+fee_asset
+is
+"quote"
+or
+"base"
+(with unknown future enum values preserved as
+"UNKNOWN(<number>)"
+).
+fee_is_rebate
+is sparse:
+true
+means
+fee_amount_e18
+is a rebate
+credit rather than a fee debit (proto3 omits
+false
+).
+When
+fee_asset
+is
+"base"
+on a BUY, convert
+fee_amount_e18
+to the symbol's base quantity
+scale before adjusting fill quantity: subtract for a fee, add for a rebate. Do not assume a BUY's
+gross fill quantity is fully available to sell.
+Subscribe
+Private channel
+private:spot:trades:{account_id}:proto
+API key
++ Account ID. Realtime is
+always compiled; the
+realtime
+Cargo feature is an empty compatibility flag.
+let
+account
+=
+client
+default_account_id
+as_deref
+();
+let
+mut
+sub
+=
+client
+trades
+subscribe
+(
+account
+)
+;
+while
+let
+Some
+(
+trade
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{} {} {:?}"
+,
+trade
+match_id,
+trade
+order_id,
+trade
+price);
+break
+;
+}
+Related
+Orders
+Public trades
+Streaming
+Accounts & balances
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Subaccounts
+Next
+Transfers
+On this page
+Methods
+List
+Subscribe
+Related
+Related Topics
+Share this page
+User trades
+List and stream your private spot fills (not the public tape).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+let page = client.trades.list(None, Some(50)).await?;
+for t in &page.trades {
+    println!(
+        "{} {} {:?} {:?} {} {} {}",
+        t.match_id, t.order_id, t.price, t.qty, t.fee_amount_e18, t.fee_asset, t.fee_is_rebate
+    );
+}
+
+---
+
+let account = client.default_account_id.as_deref();
+let mut sub = client.trades.subscribe(account).await?;
+while let Some(trade) = sub.recv_result().await? {
+    println!("{} {} {:?}", trade.match_id, trade.order_id, trade.price);
+    break;
+}

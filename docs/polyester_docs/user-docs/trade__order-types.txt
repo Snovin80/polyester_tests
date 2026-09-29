@@ -1,0 +1,230 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market Order · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+Market Order
+Copy page
+View as Markdown
+Open in
+A market order attempts to trade immediately at the best available prices within price protection.
+What it does
+A
+market order
+prioritizes an immediate execution attempt. It takes eligible liquidity from the best available price outward until the requested quantity fills or no more liquidity is available within its protection boundary.
+The final average price can differ from the price shown when you submit because the order may fill across several Order Book levels.
+How it works
+Polyester converts a Market order into an immediate-or-cancel order at the accepted price-protection boundary. It matches against eligible liquidity up to that boundary, then cancels any unfilled quantity.
+Completed fills remain final. A canceled remainder does not become an open order.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Market does not mean any price
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Price protection limits how far the order can move through the book. A Market order can fill completely, fill partially, or receive no fill when eligible liquidity is unavailable within that boundary.
+When to use it
+Use it when trading now matters most.
+Choose a Market order when attempting to enter or exit immediately matters more than receiving one exact price.
+Avoid it when you need a firm price boundary.
+Choose a Limit order when you will not buy above or sell below a specific price, especially when visible liquidity is thin.
+Review the Order Book, estimated price impact, minimum received, and current price-protection setting before submitting a larger Market order.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, worth about 1,000 USDT, and entering the market now matters more to you than receiving one exact price. You choose a Market order.
+You submit a Market buy for 0.01 BTC.
+The best eligible ask fills 0.006 BTC at 100,000 USDT.
+The next eligible ask fills the remaining 0.004 BTC at 100,050 USDT.
+The order completes because both prices are within its price-protection boundary.
+Result:
+You buy 0.01 BTC for 1,000.20 USDT before fees, at an average price of 100,020 USDT.
+These are example prices and available quantities. Actual execution depends on live liquidity and the order's price-protection setting.
+What to watch
+Available prices can change between review and execution.
+A larger order can move through several price levels.
+Price protection can leave part or all of the order unfilled.
+Each completed fill receives its own
+maker
+or
+taker
+treatment and fee.
+Use a
+Limit Order
+when a specific price boundary matters more than trading immediately.
+FAQ
+Why was my trade executed at a different price from the one I saw?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Prices and available liquidity can change between placing your order and its execution. Market orders can fill across several price levels within the set slippage limits. Limit orders execute only at your chosen price or better, so a buy may fill at a lower price and a sell at a higher price.
+Related Topics
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Previous
+Funds
+Next
+Limit Order
+On this page
+What it does
+How it works
+When to use it
+Example
+What to watch
+FAQ
+Related Topics
+Share this page
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Share
+Copy Link

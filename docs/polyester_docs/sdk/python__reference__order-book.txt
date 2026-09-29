@@ -1,0 +1,381 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/order-book
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order book · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Order book
+Order book
+Copy page
+View as Markdown
+Open in
+client.orderbook
+reads spot depth snapshots and maintains a stateful live book. It uses the
+public transport, so no authentication is required.
+Levels are
+pairs (decimal / money types), best-first (bids descending, asks
+ascending). Each snapshot carries
+book_seq
+, the backend sequence number used to detect gaps.
+Methods
+Method
+Summary
+get
+Fetch a one-shot depth snapshot.
+create_subscription
+Managed live book (snapshot + sequence-checked deltas).
+subscribe
+Convenience wrapper around
+create_subscription
+subscribe_deltas
+Raw delta stream (no local merge).
+Get
+Fetches a depth snapshot for a symbol and returns
+OrderbookData
+depth
+defaults to
+50
+and is
+snapped to a supported level (
+1, 5, 10, 20, 50, 100, 200, 500, 1000
+).
+book
+=
+await
+client.orderbook.get(
+symbol
+=
+"BTC-USDT"
+,
+depth
+=
+20
+)
+print
+(book.bids[
+0
+], book.asks[
+0
+], book.book_seq)
+Create subscription and subscribe
+Builds a managed live order book: REST snapshot, then Centrifugo deltas with sequence checking.
+Gaps or reconnects trigger a REST refresh so you always see a consistent book. Returns an
+OrderbookSubscription
+(async-iterable).
+One-shot snapshots support depth
+1000
+; managed realtime channels are capped at depth
+500
+sub
+=
+await
+client.orderbook.create_subscription(
+symbol
+=
+"BTC-USDT"
+,
+depth
+=
+50
+,
+bucket
+=
+"1.0"
+,
+# optional local price aggregation
+)
+async
+with
+sub:
+async
+for
+book
+in
+sub:
+print
+(book.bids[
+0
+], book.asks[
+0
+], book.book_seq)
+break
+# Re-bucket without reconnecting
+sub.set_bucket(
+"5.0"
+)
+symbol_id
+is resolved from catalogs when omitted; await
+wait_for_catalogs()
+first if you rely
+on symbol strings. Optional callbacks:
+on_event
+,
+on_open
+,
+on_close
+,
+on_error
+,
+on_sequence_gap
+,
+on_reconnect
+,
+on_snapshot_refresh
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prefer the managed subscription
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+create_subscription
+handles snapshot fetch, sequence gaps, and reconnect refetch.
+Use raw
+subscribe_deltas
+only when you maintain your own book.
+Subscribe deltas
+deltas
+=
+await
+client.orderbook.subscribe_deltas(
+symbol_id
+=
+1
+,
+depth
+=
+50
+)
+async
+with
+deltas:
+async
+for
+delta
+in
+deltas:
+print
+(delta.book_seq_start, delta.book_seq_end)
+break
+Shapes
+OrderbookData
+symbol
+,
+depth
+,
+book_seq
+(string),
+bids
+/
+asks
+as
+OrderbookLevel
+(
+price
+,
+qty
+). Pass
+bucket
+(or call
+set_bucket
+) to aggregate into coarser price buckets;
+None
+/ empty clears bucketing. Bids round down and asks round up, preserving executable spread
+semantics. Malformed snapshots raise
+PolyesterValidationError
+instead of returning corrupted
+data. A malformed delta is rejected atomically and triggers a snapshot refresh without advancing
+the local sequence.
+Related
+Market data guide
+Streaming guide
+Market overview
+Public trades
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Market overview
+Next
+Orders
+On this page
+Methods
+Get
+Create subscription and subscribe
+Subscribe deltas
+Shapes
+Related
+Related Topics
+Share this page
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+book = await client.orderbook.get(symbol="BTC-USDT", depth=20)
+print(book.bids[0], book.asks[0], book.book_seq)
+
+---
+
+sub = await client.orderbook.create_subscription(
+    symbol="BTC-USDT",
+    depth=50,
+    bucket="1.0",  # optional local price aggregation
+)
+async with sub:
+    async for book in sub:
+        print(book.bids[0], book.asks[0], book.book_seq)
+        break
+
+# Re-bucket without reconnecting
+sub.set_bucket("5.0")
+
+---
+
+deltas = await client.orderbook.subscribe_deltas(symbol_id=1, depth=50)
+async with deltas:
+    async for delta in deltas:
+        print(delta.book_seq_start, delta.book_seq_end)
+        break

@@ -1,0 +1,659 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/orders.v1.OrdersService/ModifyOrder
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+orders.v1.OrdersService
+ModifyOrder
+Modifies an existing order using explicit behavior policy.
+Copy URL
+Method
+POST
+Path
+orders.v1.OrdersService/ModifyOrder
+Service
+orders.v1.OrdersService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+orders.v1.OrdersService/ModifyOrder
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersService/ModifyOrder' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"behavior": "AMEND_OR_REPLACE",
+"newAttachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+}
+},
+"newClientOrderId": "cli-ord-20250101-001",
+"newPriceTicks": "5000000",
+"newQtyScaled": "100000",
+"orderId": "9876543210123",
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "6789012345678",
+"symbolId": 1
+}'
+Responses
+"actionTaken": "AMENDED",
+"code": "INVALID_ORDER_STATE",
+"finalOrderId": "9876543210123",
+"oldOrderId": "9876543210123",
+"stopLossTriggerId": "7654321098765",
+"takeProfitTriggerId": "3456789012345",
+"trailingStopTriggerId": "2345678901234",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+orders.v1.ModifyOrderRequest
+Response
+orders.v1.ModifyOrderResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+Target sub-account numeric ID. When omitted, uses caller's root account.
+orderId
+string (fixed64)
+required one of
+> 0
+Order ID as fixed64.
+clientOrderId
+string
+required one of
+1-36 chars
+/^[A-Za…:/-]+$/
+Client order ID to resolve within the caller account.
+one-of
+requestId
+string
+1-64 chars
+/^[A-Za…:/-]+$/
+Idempotency key (required).
+newPriceTicks
+string (int64)
+> 0
+Patch fields (presence-based).
+New limit price in quote units scaled by 1e9. Required for price changes.
+newQtyScaled
+string (int64)
+> 0
+Target total quantity after modify/replace, scaled by the pair's
+base_quantity_scale from GetSpotConfig.
+newAttachedRisk
+object
+Replacement attached-risk policy for the order.
+4 fields
+takeProfit
+object
+Optional take-profit configuration.
+2 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger price in quote units scaled by 1e9.
+child
+object
+required
+Child execution when the threshold is crossed.
+2 fields
+marketIoc
+object
+required one of
+Market child with implicit IOC behavior.
+Edit in JSON
+limitGtc
+object
+required one of
+Resting GTC limit child.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+one-of
+stopLoss
+object
+Optional stop-loss configuration.
+2 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger price in quote units scaled by 1e9.
+child
+object
+required
+Child execution when the threshold is crossed.
+2 fields
+marketIoc
+object
+required one of
+Market child with implicit IOC behavior.
+Edit in JSON
+limitGtc
+object
+required one of
+Resting GTC limit child.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+one-of
+trailingStop
+object
+Optional trailing stop configuration.
+5 fields
+trailingDistanceTicks
+string (int64)
+> 0
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+trailingDistanceBps
+integer (int32)
+> 0, ≤ 10000
+Trailing distance in basis points (1 bp = 0.01%).
+one-of
+maxSlippageTicks
+string (int64)
+> 0
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxSlippageBps
+integer (int32)
+> 0, ≤ 10000
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+one-of
+activationPriceTicks
+string (int64)
+Optional activation price: trailing only starts after this price is
+reached. If omitted, trailing starts immediately after the parent order
+fills. Expressed in quote units scaled by 1e9.
+one-of
+oco
+boolean
+If true, take-profit and the configured stop leg (stop-loss or trailing-stop)
+form an OCO pair: when one fires, the other is canceled.
+Default is false (no mutual cancellation).
+Unset
+False
+True
+behavior
+enum
+must be defined value
+Modify behavior policy.
+MODIFY_BEHAVIOR_UNSPECIFIED is treated as AMEND_OR_REPLACE.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s423" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+AMEND_OR_REPLACE
+newClientOrderId
+string
+max 36 chars
+/^[A-Za…:/-]+$/
+Optional new client order id when replace path is taken.
+symbolId
+integer (int32)
+> 0
+Trading symbol numeric identifier. Required for API-key market policy and
+must match the target order.
+Response
+Form
+JSON
+actionTaken
+enum
+Action applied; unspecified when rejected.
+AMENDED
+REPLACED
+oldOrderId
+string (fixed64)
+Original order ID that was amended or replaced.
+finalOrderId
+string (fixed64)
+Final active order ID; same as old_order_id for amendments.
+code
+string
+Error code if rejected.
+takeProfitTriggerId
+string (uint64)
+Trigger ID for attached take-profit after modification, when configured.
+stopLossTriggerId
+string (uint64)
+Trigger ID for attached stop-loss after modification, when configured.
+trailingStopTriggerId
+string (uint64)
+Trigger ID for attached trailing stop after modification, when configured.
+ts
+string (date-time)
+Server timestamp.
+tsNs
+string (uint64)
+Server timestamp as epoch nanoseconds (for bots).
+Possible errors
+Possible errors: 70
+Key
+Status
+Error
+When
+account-unknown
+400
+Account Unknown
+Account not found.
+api-key-market-deny
+403
+API Key Market Deny
+API key policy does not allow trading this pair.
+api-key-policy-required
+400
+API Key Policy Required
+This API key must have a policy attached before it can be used for trading.
+api-key-root-scope-only
+400
+API Key Root Scope Only
+This API key is scoped to the master account and cannot trade on sub-accounts.
+api-key-subaccount-mismatch
+400
+API Key Subaccount Mismatch
+This API key is scoped to a different sub-account than the one requested.
+api-key-sub-scope-only
+400
+API Key Sub Scope Only
+This API key is scoped to a specific sub-account and cannot trade on the master account.
+api-key-unknown
+400
+API Key Unknown
+API key referenced in the request could not be resolved by the Orders service.
+bad-price
+400
+Bad Price
+Price is invalid.
+bad-qty
+400
+Bad Quantity
+Quantity is invalid.
+bad-request
+400
+Bad Request
+Invalid request payload.
+batch-too-large
+400
+Batch Too Large
+Batch size exceeds the maximum allowed for this operation.
+cancel-request-expired
+400
+Cancel Request Expired
+Cancel request expired before admission. Use a fresh request ID for a new cancellation.
+conflict-duplicate-client-order-id
+409
+Conflict: Duplicate Client Order ID
+Duplicate client order ID.
+conflict-duplicate-client-trigger-id
+409
+Conflict: Duplicate Client Trigger ID
+Duplicate client trigger ID.
+conflict-idempotency-key-reuse
+409
+Conflict: Idempotency Key Reused
+Idempotency key was already used with a different request payload.
+empty-book
+400
+Empty Book
+Market order cannot execute because the book is empty.
+fee-asset-not-allowed
+400
+Fee Source Not Allowed
+Fee source not permitted for this pair/side.
+fok-insufficient-liquidity
+400
+FOK Insufficient Liquidity
+FOK order cannot be fully filled with available liquidity.
+insufficient-funds
+400
+Insufficient Funds
+Insufficient funds.
+internal-error
+500
+Internal Error
+Internal error.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+market-cap-violation
+400
+Market Cap Violation
+Order violates market-cap limits.
+market-halted
+400
+Market Halted
+Market is halted.
+market-price-unavailable
+503
+Market Price Unavailable
+Cannot reserve MARKET BUY because no reference price is available.
+max-quote-debit-too-small
+400
+Max Quote Debit Too Small
+Max quote debit is too small to resolve one valid order step.
+max-slippage-invalid
+400
+Max Slippage Invalid
+Maximum slippage is invalid.
+min-notional
+400
+Min Notional
+Order notional is below the minimum allowed.
+min-qty
+400
+Min Quantity
+Order quantity is below the minimum allowed.
+modification-requires-replace
+400
+Modification Requires Replace
+Modify request in AMEND_ONLY mode requires replace semantics.
+not-found
+404
+Not Found
+Not found.
+order-already-terminal
+400
+Order Already Terminal
+Client order ID refers to an already terminal order.
+order-unknown
+404
+Order Unknown
+Order not found.
+overloaded
+400
+Service Overloaded
+Batch replace admission capacity is temporarily exhausted.
+pair-cancel-only
+400
+Pair Cancel Only
+Pair is in cancel-only mode; only cancellations are allowed.
+pair-delisted
+400
+Pair Delisted
+Pair has been delisted.
+pair-disabled
+400
+Pair Disabled
+Pair is temporarily disabled.
+pair-not-listed-yet
+400
+Pair Not Listed Yet
+Pair is not listed yet.
+pair-post-only
+400
+Pair Post Only
+Pair is in post-only mode; submit with post_only=true.
+pair-reduce-only
+400
+Pair Reduce Only
+Pair is in reduce-only mode; new spot orders are not allowed.
+permission-denied
+403
+Permission Denied
+Permission denied.
+policy-market-deny
+403
+Policy Market Deny
+Sub-account policy does not allow trading this pair.
+policy-max-notional
+400
+Policy Max Notional
+Order notional exceeds the maximum allowed for this sub-account.
+policy-max-open-orders
+400
+Policy Max Open Orders
+Sub-account policy maximum number of open orders has been reached.
+policy-spot-trade-deny
+403
+Spot Trading Denied
+Effective policy does not allow spot trading for this API key or sub-account.
+policy-trading-halted
+400
+Trading Halted
+Trading is halted for this sub-account.
+post-only-cross
+400
+Post-Only Cross
+Post-only order would cross the book.
+post-only-limit-only
+400
+Post-Only Limit Only
+Post-only is only supported for LIMIT orders.
+price-band-violation
+400
+Price Band Violation
+Order price violates price band limits.
+price-tick-size
+400
+Price Tick Size
+Price must align with the tick size.
+qty-step-size
+400
+Quantity Step Size
+Quantity must align with the step size.
+rate-limit-exceeded
+400
+Rate Limit Exceeded
+Order-admission rate limit exceeded.
+reduce-only-blocked
+400
+Reduce-Only Blocked
+Order is blocked by reduce-only constraints.
+request-too-large
+400
+Request Too Large
+Request body too large.
+risk-limit
+400
+Risk Limit Exceeded
+Order would exceed account risk limits.
+role-spot-trade-deny
+403
+Spot Trading Role Denied
+Your role on this sub-account is read-only for spot trading.
+stale-quote
+400
+Stale Quote
+Client reference price is stale relative to server market data.
+subaccount-inactive
+400
+Sub-account Inactive
+Sub-account is inactive (disabled or deleted).
+trailing-distance-invalid
+400
+Trailing Distance Invalid
+Trailing stop distance is invalid.
+trailing-stop-order-type-unsupported
+400
+Trailing Stop Order Type Unsupported
+Trailing stop attached to an order only supports MARKET child orders in v1.
+trigger-cancel-rejected
+400
+Trigger Cancel Rejected
+Trigger cannot be canceled in its current state.
+trigger-not-found
+404
+Trigger Not Found
+Trigger not found.
+trigger-not-modifiable
+400
+Trigger Not Modifiable
+Trigger does not support this lifecycle operation.
+trigger-price-invalid
+400
+Trigger Price Invalid
+Trigger price is invalid.
+trigger-price-source-unsupported
+400
+Trigger Price Source Unsupported
+Trigger price source not supported.
+trigger-status-invalid
+400
+Trigger Status Invalid
+Trigger cannot perform this action in its current status.
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+unavailable
+503
+Service Unavailable
+Service temporarily unavailable.
+unknown-symbol
+400
+Unknown Symbol
+Unknown symbol.
+upstream-error
+502
+Upstream Error
+Upstream error.
+validation-error
+400
+Validation Error
+Request validation failed.
+POST
+orders.v1.OrdersService/ModifyOrder
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s447" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersService/ModifyOrder' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"behavior": "AMEND_OR_REPLACE",
+"newAttachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPriceTicks": "5000000"
+}
+},
+"newClientOrderId": "cli-ord-20250101-001",
+"newPriceTicks": "5000000",
+"newQtyScaled": "100000",
+"orderId": "9876543210123",
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "6789012345678",
+"symbolId": 1
+}'
+Responses
+"actionTaken": "AMENDED",
+"code": "INVALID_ORDER_STATE",
+"finalOrderId": "9876543210123",
+"oldOrderId": "9876543210123",
+"stopLossTriggerId": "7654321098765",
+"takeProfitTriggerId": "3456789012345",
+"trailingStopTriggerId": "2345678901234",
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/orders.v1.OrdersService/ModifyOrder' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "behavior": "AMEND_OR_REPLACE",
+  "newAttachedRisk": {
+    "oco": false,
+    "stopLoss": {
+      "child": {
+        "marketIoc": {}
+      },
+      "triggerPriceTicks": "5000000"
+    },
+    "takeProfit": {
+      "child": {
+        "marketIoc": {}
+      },
+      "triggerPriceTicks": "5000000"
+    }
+  },
+  "newClientOrderId": "cli-ord-20250101-001",
+  "newPriceTicks": "5000000",
+  "newQtyScaled": "100000",
+  "orderId": "9876543210123",
+  "requestId": "request_01J0EXAMPLE",
+  "subaccountId": "6789012345678",
+  "symbolId": 1
+}'
+
+---
+
+{
+  "actionTaken": "AMENDED",
+  "code": "INVALID_ORDER_STATE",
+  "finalOrderId": "9876543210123",
+  "oldOrderId": "9876543210123",
+  "stopLossTriggerId": "7654321098765",
+  "takeProfitTriggerId": "3456789012345",
+  "trailingStopTriggerId": "2345678901234",
+  "ts": "2025-01-01T00:00:00Z",
+  "tsNs": "1735689600000000000"
+}

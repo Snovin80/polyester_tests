@@ -1,0 +1,240 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/twap
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+TWAP · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+svg]:size-3.5">
+/
+TWAP
+TWAP
+Copy page
+View as Markdown
+Open in
+TWAP splits one target quantity into child orders released on a schedule.
+What it does
+A
+time-weighted average price strategy
+divides a target quantity into child orders released across a configured period.
+TWAP reduces dependence on one moment of liquidity. It does not guarantee the market's TWAP benchmark, a better price, or a complete fill.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+TWAP availability depends on configuration
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A visible form or request field does not establish end-to-end support. Use TWAP when the current product flow exposes the strategy and its lifecycle for the active Pair and account.
+How it works
+Setting
+What it controls
+Total quantity
+The complete amount the strategy attempts to trade
+Duration
+How long the release schedule runs
+Slice interval
+The time between child-order attempts
+Child type
+Market-IOC or supported limit-GTC behavior
+Limit price
+The execution boundary when limit children are used
+Each child must independently satisfy current Pair metadata, including quantity, price, and minimum-order rules.
+TWAP creates no upfront trigger-level reservation. Each slice requests and holds the balance it needs when that child is admitted. A later slice can therefore fail even when the parent strategy was accepted.
+The strategy definition and compacted state are persisted and evaluated server-side. Closing the browser does not stop its schedule, so return to
+Order Triggers
+and the child-order views to reconcile progress.
+The first explicit child rejection fails the parent and stops future slices. Children admitted before that failure remain real orders: their completed fills stay final, and any still-working child must be monitored or canceled under its own lifecycle.
+An uncertain transport attempt can be retried under the same slice identity. That reconciliation is different from skipping or retrying a child that admission explicitly rejected.
+When to use it
+Use it when execution should be spread through time.
+TWAP fits a target quantity that should be divided into scheduled attempts instead of entering the market all at once.
+Avoid it when immediate completion or one price matters.
+Choose another order when the entire quantity should execute now or when every fill must respect one fixed limit.
+Monitor the parent for schedule progress and the child orders for actual fills, rejections, and remaining exposure.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, worth about 1,000 USDT, without submitting the entire order at once. You choose TWAP to spread the order across
+10 minutes
+TWAP divides the order into ten 0.001 BTC child orders.
+Polyester attempts one child order each minute.
+Each child passes admission and reserves balance when its turn arrives.
+If the sixth child is rejected, the remaining scheduled children stop. The first five children and any completed fills remain valid.
+Result:
+If all ten child orders complete, you trade 0.01 BTC over the 10-minute schedule. Your average price depends on the price of each fill.
+This is an example schedule. TWAP does not guarantee a benchmark price, a complete fill, or lower fees.
+What to watch
+Market conditions can change between slices.
+A child can partially fill, receive no fill, or fail admission.
+A valid parent does not make every child valid.
+Canceling the parent can race with a child already being released.
+Fees apply to completed child fills, not the planned schedule.
+Related Topics
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Previous
+Iceberg
+Next
+Ladder
+On this page
+What it does
+How it works
+When to use it
+Example
+What to watch
+Related Topics
+Share this page
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Share
+Copy Link

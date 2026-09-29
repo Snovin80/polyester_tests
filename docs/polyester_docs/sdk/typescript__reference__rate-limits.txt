@@ -1,0 +1,507 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/rate-limits
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading rate limits · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Trading rate limits
+Trading rate limits
+Copy page
+View as Markdown
+Open in
+client.tradingRateLimits
+is the trading quota surface: the published policy, and the rules a
+given account is held to.
+Each trading account (root or
+subaccount
+) gets two weighted pools, one for placement and one for
+cancellation. Every
+API key
+and transport on that account draws from the same two, and each pool
+spans every symbol, so a BTC order and an ETH order compete for the same placement capacity.
+Draining placement leaves cancellation untouched, which is what lets you keep pulling orders after
+placement is throttled.
+Neither method reports live consumption; they describe the policy, not what is left in the pool.
+Remaining quota only surfaces on rejection, where
+RateLimitError
+carries the counters and a
+retry wait when the backend reports them. See
+Errors
+costs, and the default per-tier tables are on
+Rate limits
+Quota weights, periods, and bursts are decimal strings so they can exceed JavaScript's safe
+integer range. Timestamps are epoch milliseconds.
+Methods
+Method
+Summary
+getConfig
+Public. Every placement and cancellation rule in the catalog, VIP0 through VIP10.
+getTradingLimits
+Authenticated. The two rules enforced on an account, plus any API-key overlay.
+getConfig(options?)
+Returns the whole catalog as a
+RateLimitConfig
+VIP tier, ordered by policy class then VIP tier ascending. Not paginated, and no credentials are
+required.
+const
+config
+=
+await
+client
+tradingRateLimits
+getConfig
+();
+console
+log
+(
+config
+policyVersion
+,
+new
+Date
+(
+config
+effectiveFrom
+));
+for
+(
+const
+rule
+of
+config
+rules
+) {
+console
+log
+(
+rule
+policyClass
+,
+rule
+vipTier
+,
+rule
+quotaWeight
+,
+rule
+periodMs
+,
+rule
+burstWeight
+);
+}
+Pick the row whose
+vipTier
+matches the account you care about.
+quotaWeight
+is the capacity
+that pool gets each
+periodMs
+, spent by admitted operations at the weight assigned to each, and
+burstWeight
+caps how much of it can go at once.
+RateLimitConfig
+interface
+RateLimitConfig
+policyVersion
+string
+;
+effectiveFrom
+number
+;
+// epoch ms
+rules
+TradingRateLimitRule
+}
+getTradingLimits(input?, options?)
+Fetches
+TradingRateLimits
+for the resolved account.
+rules
+is the account-scoped pair,
+placement first, then cancellation. Input is optional; pass
+account
+to override the default
+(
+"main"
+,
+"active"
+, or
+). See
+Account scoping
+apiKeyRules
+is always an array, and is empty unless you authenticated with an API key. When it is
+non-empty it is also placement then cancellation, and both the account rules and the key rules are
+enforced.
+const
+limits
+=
+await
+client
+tradingRateLimits
+getTradingLimits
+();
+for
+(
+const
+rule
+of
+limits
+rules
+) {
+console
+log
+(
+"account"
+,
+rule
+policyClass
+,
+rule
+quotaWeight
+,
+rule
+burstWeight
+);
+}
+for
+(
+const
+rule
+of
+limits
+apiKeyRules
+) {
+console
+log
+(
+"api key"
+,
+rule
+policyClass
+,
+rule
+quotaWeight
+,
+rule
+burstWeight
+);
+}
+const
+main
+=
+await
+client
+tradingRateLimits
+getTradingLimits
+({ account:
+"main"
+});
+Replaying an already admitted trading request with a replayable
+requestId
+does not charge the
+pool again. After a
+RateLimitError
+, keep that request ID stable. For a single-order create,
+preserve
+clientOrderId
+for reconciliation; retained reuse returns a duplicate conflict instead of
+the earlier result. See
+Error handling
+TradingRateLimits
+interface
+TradingRateLimits
+policyVersion
+string
+;
+effectiveFrom
+number
+;
+rules
+TradingRateLimitRule
+apiKeyRules
+TradingRateLimitRule
+// empty unless an API-key overlay applies
+}
+TradingRateLimitRule
+type
+TradingRateLimitClass
+=
+"unspecified"
+|
+"trading_place"
+|
+"trading_cancel"
+;
+interface
+TradingRateLimitRule
+policyClass
+TradingRateLimitClass
+;
+vipTier
+number
+;
+// VIP tier this row belongs to, integer >= 0
+quotaWeight
+string
+;
+// weighted capacity during each period
+periodMs
+string
+;
+// policy period, milliseconds
+burstWeight
+string
+;
+// max weighted capacity in one burst
+}
+trading_place
+is create, modify, resume, and batch place/replace (per admitted item).
+trading_cancel
+is single cancel, pause,
+cancelAllAfter
+, batch cancel (per item), and
+cancelAll
+"unspecified"
+should not appear on a well-formed catalog row.
+Related
+Errors
+for
+RateLimitError
+and
+RateLimitDetail
+Error handling
+for the retry pattern.
+VIP
+for the tier these rules key off.
+Rate limits
+for pool costs and refill.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Public trades
+Next
+Realtime client
+On this page
+Methods
+getConfig(options?)
+RateLimitConfig
+getTradingLimits(input?, options?)
+TradingRateLimits
+TradingRateLimitRule
+Related
+Related Topics
+Share this page
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const config = await client.tradingRateLimits.getConfig();
+
+console.log(config.policyVersion, new Date(config.effectiveFrom));
+
+for (const rule of config.rules) {
+	console.log(rule.policyClass, rule.vipTier, rule.quotaWeight, rule.periodMs, rule.burstWeight);
+}
+
+---
+
+interface RateLimitConfig {
+	policyVersion: string;
+	effectiveFrom: number; // epoch ms
+	rules: TradingRateLimitRule[];
+}
+
+---
+
+const limits = await client.tradingRateLimits.getTradingLimits();
+
+for (const rule of limits.rules) {
+	console.log("account", rule.policyClass, rule.quotaWeight, rule.burstWeight);
+}
+
+for (const rule of limits.apiKeyRules) {
+	console.log("api key", rule.policyClass, rule.quotaWeight, rule.burstWeight);
+}
+
+const main = await client.tradingRateLimits.getTradingLimits({ account: "main" });
+
+---
+
+interface TradingRateLimits {
+	policyVersion: string;
+	effectiveFrom: number;
+	rules: TradingRateLimitRule[];
+	apiKeyRules: TradingRateLimitRule[]; // empty unless an API-key overlay applies
+}
+
+---
+
+type TradingRateLimitClass = "unspecified" | "trading_place" | "trading_cancel";
+
+interface TradingRateLimitRule {
+	policyClass: TradingRateLimitClass;
+	vipTier: number; // VIP tier this row belongs to, integer >= 0
+	quotaWeight: string; // weighted capacity during each period
+	periodMs: string; // policy period, milliseconds
+	burstWeight: string; // max weighted capacity in one burst
+}

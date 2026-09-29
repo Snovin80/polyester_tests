@@ -1,0 +1,443 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/balances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Balances · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Balances
+Balances
+Copy page
+View as Markdown
+Open in
+client.balances
+reads current ledger balances, balance/equity history, and open holds, and can
+stream live updates. Methods are authenticated and account-scoped (
+account
+/
+sub_account_id
+).
+Balance component fields (
+trading
+,
+funding
+,
+reserved
+,
+available
+) are
+scaled integer
+decimal strings
+(ledger u128), not human floats. Values are
+already scaled integers
+on the
+wire. Format once with
+format_ledger_u128
+(default scale 18) for display. Do
+not
+multiply
+by
+1e18
+again.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Spot orders spend trading balance
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Deposits can
+route
+to
+funding
+or
+trading
+trading
+Moving funding → trading is on-chain / wallet-driven (see the chain helpers), not a ConnectRPC
+balance write. A non-zero funding balance does not by itself let you place spot orders.
+Methods
+Method
+Summary
+list
+Current balances for the account scope.
+get_balance_history
+Columnar balance history over a range.
+get_equity_history
+Columnar equity history over a range.
+list_holds
+Open ledger holds.
+subscribe
+Stream private balance updates.
+List
+Python takes no required request object, optional scope only:
+from
+polyester
+import
+format_ledger_u128
+balances
+=
+await
+client.balances.list()
+for
+b
+in
+balances.balances:
+print
+(
+b.asset_id,
+format_ledger_u128(b.available),
+format_ledger_u128(b.trading),
+format_ledger_u128(b.funding),
+format_ledger_u128(b.reserved),
+)
+# Subaccount override
+sub
+=
+await
+client.balances.list(
+account
+=
+"subaccount_id"
+"123"
+})
+AssetBalance
+Field
+Notes
+asset_id
+Ledger asset id
+trading
+/
+funding
+/
+reserved
+/
+available
+Scaled integer strings
+trading_revision
+Orders trading/reserved/available
+funding_revision
+Orders funding independently
+Get balance history
+history
+=
+await
+client.balances.get_balance_history(
+range
+=
+"30d"
+,
+# 1d, 7d, 30d, 90d, 180d, 365d
+account_codes
+=
+None
+,
+# optional list[int]
+ledger
+=
+0
+,
+)
+print
+(history.bucket, history.points, history.start_ts_sec, history.end_ts_sec)
+for
+series
+in
+history.series:
+print
+(series.asset_id, series.account_code,
+len
+(series.balance_q))
+Get equity history
+equity
+=
+await
+client.balances.get_equity_history(
+range
+=
+"90d"
+,
+group_by
+=
+"asset"
+,
+# or "account"
+)
+print
+(equity.quote_asset, equity.points)
+for
+series
+in
+equity.series:
+print
+(series.asset_symbol
+or
+series.account_name,
+len
+(series.equity_q))
+List holds
+holds
+=
+await
+client.balances.list_holds(
+limit
+=
+50
+,
+reversed
+=
+False
+)
+for
+h
+in
+holds.holds:
+print
+(h.hold_id, h.asset_id, h.amount_reserved, h.expires_at_ns)
+list_holds
+may not be mounted on every environment. A plain gateway 404 maps to
+PolyesterRouteNotFoundError
+; treat that as an unavailable RPC, not as an empty holds result or a
+missing hold.
+Subscribe
+Private channel; needs Account ID. Handshake-before-return; fail-closed overflow.
+from
+polyester
+import
+format_ledger_u128
+sub
+=
+await
+client.balances.subscribe(
+account_id
+=
+account_id)
+async
+with
+sub:
+async
+for
+balance
+in
+sub:
+print
+(balance.asset_id, format_ledger_u128(balance.available))
+break
+Related
+Accounts & balances guide
+Realtime
+Catalog
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Auth
+Next
+Candles
+On this page
+Methods
+List
+AssetBalance
+Get balance history
+Get equity history
+List holds
+Subscribe
+Related
+Related Topics
+Share this page
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+from polyester import format_ledger_u128
+
+balances = await client.balances.list()
+for b in balances.balances:
+    print(
+        b.asset_id,
+        format_ledger_u128(b.available),
+        format_ledger_u128(b.trading),
+        format_ledger_u128(b.funding),
+        format_ledger_u128(b.reserved),
+    )
+
+# Subaccount override
+sub = await client.balances.list(account={"subaccount_id": "123"})
+
+---
+
+history = await client.balances.get_balance_history(
+    range="30d",  # 1d, 7d, 30d, 90d, 180d, 365d
+    account_codes=None,  # optional list[int]
+    ledger=0,
+)
+print(history.bucket, history.points, history.start_ts_sec, history.end_ts_sec)
+for series in history.series:
+    print(series.asset_id, series.account_code, len(series.balance_q))
+
+---
+
+equity = await client.balances.get_equity_history(
+    range="90d",
+    group_by="asset",  # or "account"
+)
+print(equity.quote_asset, equity.points)
+for series in equity.series:
+    print(series.asset_symbol or series.account_name, len(series.equity_q))
+
+---
+
+holds = await client.balances.list_holds(limit=50, reversed=False)
+for h in holds.holds:
+    print(h.hold_id, h.asset_id, h.amount_reserved, h.expires_at_ns)
+
+---
+
+from polyester import format_ledger_u128
+
+sub = await client.balances.subscribe(account_id=account_id)
+async with sub:
+    async for balance in sub:
+        print(balance.asset_id, format_ledger_u128(balance.available))
+        break

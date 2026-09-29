@@ -1,0 +1,28 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/concepts/environments.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Environments
+Testnet endpoints, the environment preset, and URL overrides for the Rust client.
+The Rust SDK ships a public testnet preset, `polyester::POLYESTER_TESTNET_ENVIRONMENT`:
+| Setting       | Testnet                             |
+| ------------- | ----------------------------------- |
+| API URL       | `https://api-testnet.polyester.com` |
+| WebSocket URL | `wss://api-testnet.polyester.com`   |
+| RPC URL       | `https://rpc.polyester.live`        |
+| Chain ID      | `888169`                            |
+| Name          | `polyester-testnet`                 |
+Pass it on `Config.environment` so the API, WebSocket, RPC, and contract pins stay together:
+```rust
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+})?;
+```
+`Config.api_url` / `Config.ws_url` remain as transport overrides. For custom or VPC endpoints, build an environment with `create_polyester_environment` or `PolyesterEnvironment::with_urls`.
+Scripts using `Client::from_env()` set `POLYESTER_ENV=testnet`, and may set `POLYESTER_API_URL` and `POLYESTER_WS_URL` to override endpoints.
+Use the same preset's contract addresses, RPC, and account-abstraction endpoints with the on-chain Funding helpers. See [Chain helpers](https://testnet.polyester.com/docs/sdk/rust/reference/chain) and [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).
+Do not hard-code production URLs until your account team confirms the production API host.
+## Related
+- [Chain helpers](https://testnet.polyester.com/docs/sdk/rust/reference/chain)
+- [Client configuration](https://testnet.polyester.com/docs/sdk/rust/reference/client-configuration)

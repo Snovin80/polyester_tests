@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/internal-transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+`client.InternalTransfers` moves funds between Polyester accounts without touching a chain: from your source scope to another root account, a subaccount, or a smart-account address.
+Transfers are idempotent on `idempotencyKey`: repeat requests with the same key return the existing transfer instead of creating a second one.
+## Methods
+| Method   | Summary                                             |
+| -------- | --------------------------------------------------- |
+| `Create` | Create (or return) an idempotent internal transfer. |
+### Create(...)
+Provide exactly one destination pointer: `destinationAccountID`, `destinationSubaccountID`, or `destinationSmartAccountAddress`.
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/models"
+destSub := "123"
+result, err := client.InternalTransfers.Create(
+ctx,
+2, // assetID
+models.AssetAmountFromDecimal("125.50"),
+"xfer-stable-1",
+nil, nil, // account / subAccountID source scope
+nil, &destSub, nil, // destination (one of three)
+nil, // quantityScale (default ledger 18)
+)
+if err != nil { log.Fatal(err) }
+fmt.Println(result.TransferID, result.RequestID)
+```
+The request always carries canonical fixed-scale-18 `amount_e18`. `quantityScale` describes the input when the amount does not already carry scale metadata. Conversion is exact: overflow and non-exact downscaling are rejected, and the SDK never rounds.
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/go/guides/deposits-and-withdrawals)
+- [Balances](https://testnet.polyester.com/docs/sdk/go/reference/balances)
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/go/reference/withdrawals)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency)

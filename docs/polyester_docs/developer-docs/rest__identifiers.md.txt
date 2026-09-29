@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/rest/identifiers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Identifiers
+How Polyester REST endpoints represent public IDs as base58 strings in URLs and JSON.
+Polyester REST endpoints expose public IDs as short base58 strings. The same identifiers appear in URLs, JSON fields, logs, and support workflows.
+For what public IDs are and why they are opaque, see [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids). This page covers only how they look and behave over REST.
+## Using base58 IDs
+Use IDs exactly as returned:
+```json
+"orderId": "An6UebxCZd"
+}
+```
+You can pass the same values back in REST path, query, or JSON fields:
+```sh
+curl "https://api.polyester.io/v1/spot/orders/An6UebxCZd"
+```
+REST clients should:
+- store IDs as strings
+- compare IDs as exact strings
+- keep the original casing
+- use the base58 value directly in REST requests, URLs, logs, and support workflows
+Base58 is used because the same 64-bit public ID can become a much shorter and cleaner URL segment than its decimal representation.
+> **Do not parse REST IDs as decimal numbers**
+>
+> REST public IDs are base58 strings. Treat them as base58 even when a tool or debug view also shows a decimal value.
+## Crossing to other interfaces
+A raw REST integration should keep the base58 string exactly as returned and never needs to convert it. Conversion only matters when an ID crosses into an interface that carries identifiers as raw 64-bit values; see [ConnectRPC identifiers](https://testnet.polyester.com/docs/developer-docs/connectrpc/identifiers) for that representation.
+> **Keep REST parsing base58-only**
+>
+> Debug tools may accept decimal strings, but public REST fields should stay base58-only so request handling remains predictable.

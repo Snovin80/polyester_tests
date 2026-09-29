@@ -1,0 +1,235 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+Overview
+Copy page
+View as Markdown
+Open in
+A widget is a Trading Screen panel for one job: a chart, the book, the form, or your account activity. In
+Advanced
+, you add widgets from
+Add Widget
+, then drag, resize, float, or group them as tabs.
+Use
+Standard
+when you want the same widgets in a fixed arrangement. Use the pages below when you want the controls inside a specific widget.
+Widgets
+These are the Trading Screen panels you can add, group, and rearrange on
+Advanced
+Polyester Chart
+Read candles, volume, indicators, and drawings in Polyester's native chart. Keep it beside the book, form, and account panels you use on the same market (
+Learn more
+).
+TradingView Chart
+Analyze markets with TradingView Advanced Charts and saved chart preferences. Both charts use Polyester market data, so you can pick the charting tools that fit how you read a market (
+Learn more
+).
+Depth Chart
+See where visible buy and sell liquidity sits around the current market. Use the curves for shape and concentration, then the Order Book for exact prices and amounts (
+Learn more
+).
+Order Book
+Read buy and sell prices, the spread, and visible liquidity for one spot market. Use it when you need exact levels next to the chart and form (
+Learn more
+).
+Market Trades
+Follow recent public executions for the active Pair. This tape is market-level activity, not your personal fill history (
+Learn more
+).
+Order Form
+Choose a side, order type, amount, price, and execution controls. The form uses the selected Pair's rules and the active account's available balance (
+Learn more
+).
+Open Orders
+Monitor working and partial fills, then act on the remaining quantity. Cancel, replace, or wait as the rest of the order works (
+Learn more
+).
+Triggers
+Monitor conditional and staged instructions before they become orders. Use this list for instructions that are waiting on a condition, not for working orders (
+Learn more
+).
+Order History
+Review filled, canceled, expired, and rejected outcomes for this account. Use it for activity attributed to you, not for the public tape (
+Learn more
+).
+Funds
+Compare Unified Trading and Funding balances for the two Assets in the active Pair. Keep those balances beside the form while you size an order (
+Learn more
+).
+Widgets in Advanced layout
+On
+Advanced
+layout, add a widget to the workspace, drag it into place, or float it over the grid.
+View
+Click
+Add Widget
+in a tab header, or open the widget catalog from the workspace toolbar. Search for the panel you want, then drop it onto the screen.
+Drag
+Drag a panel or tab to a new place on the workspace. Drop it beside another group to split the layout, or drop it onto a group to stack it as a tab. You can also move one tab from its current group into another group when you want those widgets together. Layout changes affect presentation only. They do not place, modify, cancel, or settle an order.
+Float
+Click
+Float panel
+to pull a group out of the grid. Move the floating group, then click
+Dock panel
+to put it back.
+Related Topics
+Trading Screen
+Use and customize Polyester's connected workspace for market analysis, order entry, and account activity.
+Previous
+Trading Screen
+Next
+Polyester Chart
+On this page
+Widgets
+Widgets in Advanced layout
+View
+Drag
+Float
+Related Topics
+Share this page
+Overview
+Learn the Trading Screen widgets you can add, group, and rearrange in Advanced layout.
+Share
+Copy Link

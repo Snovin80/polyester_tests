@@ -1,0 +1,675 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/trading
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Trading
+Trading
+Copy page
+View as Markdown
+Open in
+Everything here needs an API-key authenticated
+AsyncPolyester
+client and a policy that allows
+trading. Orders spend
+trading
+balance (not funding). See
+Authentication
+await
+client.wait_for_catalogs()
+Place an order
+result
+=
+await
+client.orders.create(
+symbol
+=
+"BTC-USDT"
+,
+side
+=
+"buy"
+,
+order_type
+=
+"limit"
+,
+tif
+=
+"gtc"
+,
+price
+=
+"64250.5"
+,
+qty
+=
+"0.25"
+,
+post_only
+=
+True
+,
+# limit GTC only
+client_order_id
+=
+"mm-bot-001"
+,
+)
+# Create synthesizes status="accepted" (admission ack). Lifecycle states
+# (working / partial / …) come from list_open / get / subscribe, not create.
+print
+(result.status, result.order_id)
+Field
+Purpose
+client_order_id
+Duplicate guard / correlation (1 to 36 allowed characters)
+post_only
+Reject if the order would take liquidity (limit GTC only)
+tif
+gtc
+,
+ioc
+,
+fok
+attached_risk
+TP / SL / trailing dict on create
+account
+/
+sub_account_id
+Scope override
+Prefer decimal strings or
+Price
+/
+Quantity
+Size and preview deliberately
+Create with exactly one sizing mode: base
+qty
+, or
+max_quote_debit
+, a hard all-in quote budget
+for BUY market and limit IOC orders. Set
+fee_asset
+to
+"quote"
+(default) or
+"base"
+(BUY-only);
+this replaces
+fee_source
+/
+"received"
+submitted maximum quote debit. Use
+await client.orders.preview_order(...)
+with the same create
+arguments for an admissibility check: whether the intent is currently admissible, any typed
+rejection, resolved base size, and a protected price bound when price protection applied.
+Preview does not return fee or quote-debit estimates. Create always re-evaluates the intent.
+Modify / cancel
+await
+client.orders.modify(
+symbol
+=
+"BTC-USDT"
+,
+order_id
+=
+result.order_id,
+new_price
+=
+"64100"
+,
+new_qty
+=
+"0.2"
+,
+request_id
+=
+"mod-1"
+,
+)
+await
+client.orders.cancel(
+client_order_id
+=
+"mm-bot-001"
+)
+preview
+=
+await
+client.orders.cancel_all(
+symbol
+=
+"BTC-USDT"
+,
+dry_run
+=
+True
+)
+await
+client.orders.cancel_all(
+symbol
+=
+"BTC-USDT"
+,
+side
+=
+"buy"
+,
+request_id
+=
+"ca-1"
+)
+Cancellation is an admission acknowledgement. Confirm the order has disappeared from
+list_open
+before releasing local state and retry the same cancel if reconciliation still shows it.
+Client order IDs accept 1 to 36 ASCII letters, digits,
+,
+_
+,
+,
+/
+, and
+-
+use the same character set and accept 1 to 64 characters.
+Modify and replace operations require enough available balance for the replacement order. Leave
+headroom when most of the trading balance is reserved, and reconcile the original order after an
+ambiguous response before deciding whether to retry or cancel and recreate it.
+Batch & dead-man
+# allow_partial is retained for compatibility but ignored on the wire.
+# Always inspect each accepted/rejected item.
+batch
+=
+await
+client.orders.batch_create(
+items
+=
+"symbol"
+"BTC-USDT"
+,
+"side"
+"buy"
+,
+"order_type"
+"limit"
+,
+"tif"
+"gtc"
+,
+"qty"
+"0.01"
+,
+"price"
+"60000"
+,
+"post_only"
+True
+,
+"client_order_id"
+"mm-batch-001"
+,
+}
+],
+request_id
+=
+"batch-create-001"
+,
+)
+print
+(batch.accepted_count, batch.rejected_count)
+await
+client.orders.cancel_all_after(
+timeout_sec
+=
+15
+,
+symbol
+=
+"BTC-USDT"
+)
+Batch size contracts:
+batch_create
+max
+20
+;
+batch_replace
+/
+batch_cancel
+max
+50
+Use
+batch_replace
+for same-symbol quote refresh and poll
+get_batch_replace_status
+with the
+admission
+batch_request_id
+(retry briefly on 404 / not-found). Admission makes predecessor
+order and client IDs stale: immediately use each
+replacement_order_id
+and new client order ID
+from the receipt. A predecessor
+get
+returning
+not_found
+/
+ORDER_UNKNOWN
+is expected. Poll
+phases
+admitted
+,
+working
+,
+rejected
+, and
+terminal
+is_batch_replace_settled(status)
+treats
+working
+,
+rejected
+, and
+terminal
+as reconciled,
+not execution-final;
+working
+means the successor is live. Reuse the same
+request_id
+for an
+ambiguous retry and never replace against a stale predecessor. The API validates these limits; the
+SDK does not preflight the counts. A batch timeout is not proof of no commit; reconcile before retry.
+After fills, prefer
+wait_for_order_trades_complete
+because
+cum_qty
+can lead trade projection.
+For long-running automated trading, treat
+cancel_all_after
+as a continuously renewed dead-man switch:
+Arm it only after startup reconciliation has confirmed open orders.
+Refresh well before
+effective_timeout_sec
+(for example every 5 seconds on a 15-second timer).
+Give each deliberate refresh a new
+request_id
+, but reuse that ID when retrying the same
+ambiguous refresh.
+Verify
+status
+,
+effective_timeout_sec
+, and
+expires_at_ts_ns
+on every response.
+Stop quoting and reconcile if a refresh fails or its deadline becomes uncertain.
+The timer is a last-resort venue control, not a replacement for explicit shutdown cancellation.
+Read + stream
+open_orders
+=
+await
+client.orders.list_open()
+details
+=
+await
+client.orders.get(
+order_id
+=
+result.order_id)
+sub
+=
+await
+client.orders.subscribe(
+account_id
+=
+account_id)
+async
+with
+sub:
+async
+for
+order
+in
+sub:
+print
+(order.status)
+break
+User fills
+fills
+=
+await
+client.trades.list(
+symbol
+=
+"BTC-USDT"
+)
+trade_sub
+=
+await
+client.trades.subscribe(
+account_id
+=
+account_id)
+Standalone triggers
+created
+=
+await
+client.triggers.create(
+symbol
+=
+"BTC-USDT"
+,
+trigger_type
+=
+"stop_loss"
+,
+side
+=
+"sell"
+,
+order_type
+=
+"market"
+,
+tif
+=
+"ioc"
+,
+qty
+=
+"0.1"
+,
+trigger_price
+=
+"60000"
+,
+# trigger_price_source is accepted for compat but ignored (not on wire).
+client_trigger_id
+=
+"sl-1"
+,
+)
+# Create returns status="accepted" (admission). List/filter still use lifecycle
+# labels such as created / armed / running.
+await
+client.triggers.modify(
+trigger_id
+=
+created.trigger_id,
+trigger_price
+=
+"59500"
+)
+await
+client.triggers.pause(
+trigger_id
+=
+created.trigger_id)
+await
+client.triggers.resume(
+trigger_id
+=
+created.trigger_id)
+events
+=
+await
+client.triggers.list_events(
+trigger_id
+=
+created.trigger_id)
+await
+client.triggers.cancel(
+trigger_id
+=
+created.trigger_id)
+Status filters:
+created
+,
+armed
+,
+running
+,
+completed
+,
+cancelled
+,
+failed
+,
+paused
+Unknown values raise.
+Retry safely
+orders.create
+client_order_id
+orders.modify
+/
+cancel_all
+/ batch: pass a stable
+request_id
+triggers.create
+client_trigger_id
+Retry only transport / rate-limit failures, see
+Error handling
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Examples
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Runnable samples:
+polyester-examples-python
+Related
+Orders
+Triggers
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Streaming
+Subscribe to public and private WebSocket Protobuf channels with async iterators, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, lifecycle, and chain helpers.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify failures, retry safely with idempotency keys, and handle realtime overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Python trading system safely.
+Previous
+Market data
+Next
+Streaming
+On this page
+Place an order
+Size and preview deliberately
+Modify / cancel
+Batch & dead-man
+Read + stream
+User fills
+Standalone triggers
+Retry safely
+Related
+Related Topics
+Share this page
+Trading
+Place, modify, cancel, and batch spot orders; use triggers and risk attachments.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.wait_for_catalogs()
+
+---
+
+result = await client.orders.create(
+    symbol="BTC-USDT",
+    side="buy",
+    order_type="limit",
+    tif="gtc",
+    price="64250.5",
+    qty="0.25",
+    post_only=True,  # limit GTC only
+    client_order_id="mm-bot-001",
+)
+# Create synthesizes status="accepted" (admission ack). Lifecycle states
+# (working / partial / …) come from list_open / get / subscribe, not create.
+print(result.status, result.order_id)
+
+---
+
+await client.orders.modify(
+    symbol="BTC-USDT",
+    order_id=result.order_id,
+    new_price="64100",
+    new_qty="0.2",
+    request_id="mod-1",
+)
+
+await client.orders.cancel(client_order_id="mm-bot-001")
+
+preview = await client.orders.cancel_all(symbol="BTC-USDT", dry_run=True)
+await client.orders.cancel_all(symbol="BTC-USDT", side="buy", request_id="ca-1")
+
+---
+
+# allow_partial is retained for compatibility but ignored on the wire.
+# Always inspect each accepted/rejected item.
+batch = await client.orders.batch_create(
+    items=[
+        {
+            "symbol": "BTC-USDT",
+            "side": "buy",
+            "order_type": "limit",
+            "tif": "gtc",
+            "qty": "0.01",
+            "price": "60000",
+            "post_only": True,
+            "client_order_id": "mm-batch-001",
+        }
+    ],
+    request_id="batch-create-001",
+)
+print(batch.accepted_count, batch.rejected_count)
+await client.orders.cancel_all_after(timeout_sec=15, symbol="BTC-USDT")
+
+---
+
+open_orders = await client.orders.list_open()
+details = await client.orders.get(order_id=result.order_id)
+
+sub = await client.orders.subscribe(account_id=account_id)
+async with sub:
+    async for order in sub:
+        print(order.status)
+        break
+
+---
+
+fills = await client.trades.list(symbol="BTC-USDT")
+trade_sub = await client.trades.subscribe(account_id=account_id)
+
+---
+
+created = await client.triggers.create(
+    symbol="BTC-USDT",
+    trigger_type="stop_loss",
+    side="sell",
+    order_type="market",
+    tif="ioc",
+    qty="0.1",
+    trigger_price="60000",
+    # trigger_price_source is accepted for compat but ignored (not on wire).
+    client_trigger_id="sl-1",
+)
+# Create returns status="accepted" (admission). List/filter still use lifecycle
+# labels such as created / armed / running.
+
+await client.triggers.modify(trigger_id=created.trigger_id, trigger_price="59500")
+await client.triggers.pause(trigger_id=created.trigger_id)
+await client.triggers.resume(trigger_id=created.trigger_id)
+events = await client.triggers.list_events(trigger_id=created.trigger_id)
+await client.triggers.cancel(trigger_id=created.trigger_id)

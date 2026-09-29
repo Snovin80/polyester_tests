@@ -1,0 +1,21 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/zipper.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Zipper
+Deposit/withdraw config and related Zipper reads.
+`client.zipper` exposes route configuration and live zipped-asset supply updates.
+```rust
+let config = client.zipper.get_deposit_withdraw_config().await?;
+client.catalogs.hydrate_zipper_config(&config)?;
+```
+With `hydrate_catalogs` enabled, construction inside Tokio hydrates catalogs in the background; otherwise `wait_for_catalogs().await?` starts hydration on the current runtime. `wait_for_catalogs().await?` **errors** when hydration fails (use `catalogs_last_error()` to inspect). Prefer the typed `hydrate_zipper_config` helper; no consumer `serde_json` dependency is required.
+```rust
+let mut sub = client.zipper.subscribe_zipped_asset_supply(true).await?;
+if let Some(batch) = sub.recv_result().await? {
+for update in batch.updates {
+println!("{} {}", update.zipped_asset_id, update.supply);
+}
+}
+```
+With `patch_catalog=true`, supply events update the shared catalog before delivery. The stream is public. Route config is not a fee quote; quote immediately before an on-chain withdrawal and enforce a maximum fee/slippage.

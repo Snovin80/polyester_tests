@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/auth.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Auth
+Auth service helpers including nested profile access.
+`client.auth` is the API-key identity surface. It exposes `me()` and nested `client.auth.profile`.
+```rust
+let me = client.auth.me().await?;
+println!("{} {:?}", me.account_id, me.api_key_id);
+println!("{:?}", me.root_smart_account_address);
+```
+The Account ID is sufficient identity for API-key auth. `username` may be absent/empty; do not reject the identity or substitute `"-"` as though it were required.
+`me.api_key_id` is a base58 public ID for the authenticated key record. Request-signing `Config.api_key_id` and API-key metadata `key_id` values use the `ak_...` credential handle (including key CRUD in session clients that expose it). These identifiers have different representations and roles; do not compare them directly or pass the public ID as the signing handle.
+## Profile identity stream
+The Rust SDK deliberately omits profile get/update/history methods. The API-key-safe operation is:
+```rust
+let mut updates = client.auth.profile.subscribe_identity().await?;
+if let Some(identity) = updates.recv_result().await? {
+println!("{} {}", identity.account_id, identity.username);
+}
+```
+Wallet login, JWT refresh, MFA enrollment, and account resolve are **not** wrapped. API-key callers should configure `default_account_id` explicitly.
+## Related
+- [Authentication](https://testnet.polyester.com/docs/sdk/rust/guides/authentication)
+- [Limitations](https://testnet.polyester.com/docs/sdk/rust/concepts/limitations-and-non-features)

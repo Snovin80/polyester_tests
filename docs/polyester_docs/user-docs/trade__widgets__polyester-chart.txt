@@ -1,0 +1,204 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/polyester-chart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Polyester Chart · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Polyester Chart
+Polyester Chart
+Copy page
+View as Markdown
+Open in
+The Polyester Chart is the native chart built in-house for the Trading Screen.
+It combines historical candles, the current candle, volume, and analysis tools for the active Pair.
+What the widget shows
+Each candle summarizes completed trades during one interval.
+Value
+What it means
+Open
+First execution price in the interval
+High
+Highest execution price in the interval
+Low
+Lowest execution price in the interval
+Close
+Latest or final execution price in the interval
+Volume
+Quantity executed during the interval
+The current candle can change as new trades arrive. Earlier candles represent completed intervals.
+Choose a chart interval
+Select an interval that matches the move you want to study. Short intervals reveal more immediate activity and noise. Longer intervals compress short moves and make broader price structure easier to see.
+The current candle service supports 1 second, 1 minute, 5 minute, 15 minute, 30 minute, 1 hour, 4 hour, 12 hour, 1 day, 1 week, and 1 calendar month intervals. A history request returns 500 candles by default and at most 10,000, with time bounds and pagination for older data. Polyester does not publish a guaranteed candle-retention period.
+Customize the chart's theme and appearance, then add the indicators, drawings, and chart layers that support the analysis. These controls do not place an order, reserve a balance, or create a trigger.
+Charts show public trades, not account activity
+Candles are built from public completed trades. Use
+Open Orders
+and
+Order History
+to confirm activity attributed to the selected account.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Check the latest candle after reconnecting
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Confirm the Pair, interval, latest candle time, and connection state. The chart should reconcile missing history after a gap before it is treated as current.
+Related Topics
+TradingView Chart
+Analyze Polyester markets with TradingView Advanced Charts and your saved chart preferences.
+Order Book
+Read current buy and sell prices, the spread, and visible liquidity for one spot market.
+Market Trades
+Follow recent public executions for the active Pair and see where trading is taking place.
+Previous
+Overview
+Next
+TradingView Chart
+On this page
+What the widget shows
+Choose a chart interval
+Charts show public trades, not account activity
+Related Topics
+Share this page
+Polyester Chart
+Read candles, volume, indicators, and drawings in Polyester's native market chart.
+Share
+Copy Link

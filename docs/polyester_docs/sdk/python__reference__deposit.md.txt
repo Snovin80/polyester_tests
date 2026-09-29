@@ -1,0 +1,34 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/deposit.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+`client.deposit` manages chain deposit addresses. Every method is authenticated and account-scoped (`account` / `sub_account_id`).
+Deposit addresses are per-account and per-chain. Creating an address is idempotent: it returns the existing address when one is already assigned. A deposit flow can target **funding** or **trading**; select and confirm the intended destination in the corresponding chain flow.
+## Methods
+| Method           | Summary                                           |
+| ---------------- | ------------------------------------------------- |
+| `create_address` | Create or return the deposit address for a chain. |
+| `list_addresses` | List deposit addresses for a chain.               |
+### Create address
+```python
+addr = await client.deposit.create_address(chain_id=1)
+print(addr.chain_id, addr.deposit_address)
+```
+The SDK raises `PolyesterTransportError` if a successful response omits or empties the required address; it never fabricates a placeholder address.
+| Field                        | Required | Notes                                |
+| ---------------------------- | -------- | ------------------------------------ |
+| `chain_id`                   | yes      | PolyChain-registered source chain id |
+| `account` / `sub_account_id` | no       | Scope override                       |
+### List addresses
+```python
+listed = await client.deposit.list_addresses(chain_id=1)
+for a in listed.addresses:
+print(a.chain_id, a.deposit_address)
+```
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/python/guides/deposits-and-withdrawals)
+- [Balances](https://testnet.polyester.com/docs/sdk/python/reference/balances)
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/python/reference/withdrawals)
+- [Lifecycle](https://testnet.polyester.com/docs/sdk/python/reference/lifecycle) (if present) for deposit confirmation tracking

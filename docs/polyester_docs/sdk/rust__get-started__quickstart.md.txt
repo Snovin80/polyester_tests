@@ -1,0 +1,81 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/get-started/quickstart.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+About ten minutes on Polyester testnet: public reads, a live stream, then a place-and-cancel with an API key.
+> **Prerequisites**
+>
+> [Install the SDK](https://testnet.polyester.com/docs/sdk/rust/get-started/installation). Create an API key in the Polyester app (**API** in the sidebar). Copy the key id and private key when shown, the private key is only displayed once. Open the key's **Permissions**, enable **Spot trading**, choose the allowed markets, and set a maximum order size that covers this test. Copy your **Account ID** from Profile. The API-key SDK can use an assigned policy but cannot create or assign one.
+1. Create a client
+```rust
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+api_key_id: Some("ak_...".into()),
+api_private_key: Some("...".into()), // 64-char hex from key creation
+default_account_id: Some("...".into()), // Profile → Account ID
+})?;
+```
+2. Wait for catalogs
+Decimal order inputs need spot config scales. Wait before first write:
+```rust
+client.wait_for_catalogs().await?;
+```
+See [Catalog & precision](https://testnet.polyester.com/docs/sdk/rust/concepts/catalog-and-precision).
+3. Read public market data
+```rust
+use polyester::services::ListMarketOverviewOptions;
+let overview = client.market_overview.list(ListMarketOverviewOptions {
+limit: Some(5),
+}).await?;
+for market in overview.markets {
+println!("{} {:?}", market.symbol, market.last_price.as_ref().map(|p| p.as_ticks()));
+}
+```
+4. Stream public trades
+```rust
+let mut sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+if let Some(trade) = sub.recv_result().await? {
+println!("{trade:?}");
+}
+```
+Subscription queues are bounded. If your consumer falls behind, the SDK raises a realtime overflow error and faults the subscription, it does **not** silently drop updates. See [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming).
+5. Place and cancel a limit order
+Your API key policy must allow Spot trading for `BTC-USDT`, and its maximum order size must cover the order below. Spot orders spend **trading** balance. Manage the policy from the key's **Permissions** page in the Polyester app.
+```rust
+use std::time::{SystemTime, UNIX_EPOCH};
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide, CreateTimeInForce};
+use polyester::{Price, Quantity};
+let quantity_scale = client
+let client_order_id = format!(
+"quickstart-{}",
+SystemTime::now()
+);
+let result = client.orders.create(CreateOrderParams {
+symbol: "BTC-USDT".into(),
+side: CreateSide::Buy,
+order_type: CreateOrderType::Limit,
+quantity: Some(Quantity::from_decimal_str(
+"0.001",
+quantity_scale,
+Some("BTC-USDT".into()),
+None,
+)?),
+max_quote_debit_scaled: None,
+price: Some(Price::from_decimal_str("50000", Some("BTC-USDT".into()))?),
+time_in_force: Some(CreateTimeInForce::Gtc),
+client_order_id: Some(client_order_id.clone()),
+subaccount_id: None,
+post_only: Some(true),
+market_client_ref_price: None,
+fee_asset: None,
+self_trade_prevention: None,
+market_max_slippage: None,
+attached_risk: None,
+}).await?;
+println!("{} {}", result.status, result.order_id); // status == "accepted" (admission ack)
+client
+```
+Next: [Authentication](https://testnet.polyester.com/docs/sdk/rust/guides/authentication) and [Trading](https://testnet.polyester.com/docs/sdk/rust/guides/trading).

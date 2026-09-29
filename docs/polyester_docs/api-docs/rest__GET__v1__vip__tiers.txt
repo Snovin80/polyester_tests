@@ -1,0 +1,177 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/vip/tiers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+VIPService
+List VIP Tiers
+List the complete active VIP0 through VIP10 tier catalog.
+Copy URL
+Method
+GET
+Path
+/v1/vip/tiers
+Visibility
+Public endpoint
+GET
+/v1/vip/tiers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/vip/tiers' \
+--header 'Accept: */*'
+Responses
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"retentionThresholdBp": 1,
+"tiers": [
+"aopThresholdUsd": "50000",
+"makerFeeRatePercent": "0.09",
+"takerFeeRatePercent": "0.03",
+"tier": 10,
+"volumeThresholdUsd": "12.3456"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+policyVersion
+string (uint64)
+Positive identifier of the returned VIP policy version.
+Example
+1
+effectiveFrom
+string (date-time)
+UTC time at which this policy version became effective.
+Example
+2025-01-01T00:00:00Z
+retentionThresholdBp
+integer (int32)
+Average portfolio value retention threshold in basis points. One basis
+point is 0.01%; valid values are 1 through 10000.
+Example
+1
+tiers
+object[]
+Complete VIP0 through VIP10 catalog ordered by tier ascending. This is a
+naturally bounded 11-row snapshot and is not paginated.
+5 fields
+tier
+integer (int32)
+Numeric VIP tier in the inclusive range 0 through 10.
+Example
+10
+volumeThresholdUsd
+string
+Rolling 30-day settled spot volume entry threshold in USD, encoded as a
+non-negative base-10 decimal string without separators or a currency
+symbol.
+Example
+12.3456
+aopThresholdUsd
+string
+Rolling 30-day average portfolio value entry threshold in USD, encoded as
+a positive base-10 decimal string without separators or a currency symbol.
+Omitted for VIP0, which has no average portfolio value entry threshold.
+Example
+50000
+makerFeeRatePercent
+string
+Absolute maker fee rate before symbol-specific adjustments, encoded as a
+base-10 percentage string without a percent sign. Values are between
+-100 and 100 inclusive.
+Example
+0.09
+takerFeeRatePercent
+string
+Absolute taker fee rate before symbol-specific adjustments, encoded as a
+non-negative base-10 percentage string without a percent sign. Values are
+between 0 and 100 inclusive.
+Example
+0.03
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/vip/tiers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s352" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/vip/tiers' \
+--header 'Accept: */*'
+Responses
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"retentionThresholdBp": 1,
+"tiers": [
+"aopThresholdUsd": "50000",
+"makerFeeRatePercent": "0.09",
+"takerFeeRatePercent": "0.03",
+"tier": 10,
+"volumeThresholdUsd": "12.3456"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/vip/tiers' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "effectiveFrom": "2025-01-01T00:00:00Z",
+  "policyVersion": "1",
+  "retentionThresholdBp": 1,
+  "tiers": [
+    {
+      "aopThresholdUsd": "50000",
+      "makerFeeRatePercent": "0.09",
+      "takerFeeRatePercent": "0.03",
+      "tier": 10,
+      "volumeThresholdUsd": "12.3456"
+    }
+  ]
+}

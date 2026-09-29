@@ -1,0 +1,145 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/errors.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Every error the SDK raises extends `PolyesterError`, with a stable machine-readable `code` and a `retryable` flag. RPC failures keep the original ConnectRPC error as `cause`. For usage patterns, see the [Error handling guide](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling).
+Unknown protobuf enum values in read responses do not raise `ValidationError`. The affected field decodes as `"unspecified"`, preserving the rest of the response when a newer server adds an enum member that this SDK version does not recognize.
+## Hierarchy
+```text
+PolyesterError                     code                        retryable
+├── TransientError                 TRANSIENT_FAILURE           true
+│   ├── NetworkError               NETWORK_ERROR               true
+│   ├── TimeoutError               TIMEOUT                     true
+│   ├── RateLimitError             RATE_LIMITED                true
+│   └── ServiceUnavailableError    SERVICE_UNAVAILABLE         true
+├── RequestError                   REQUEST_FAILED              false
+│   ├── ValidationError            VALIDATION_FAILED           false
+│   │   ├── StaleQuoteError            STALE_QUOTE
+│   │   └── PolicyScopeMismatchError   POLICY_SCOPE_MISMATCH
+│   ├── ResourceNotFoundError      RESOURCE_NOT_FOUND          false
+│   ├── NotImplementedError        NOT_IMPLEMENTED             false
+│   ├── AlreadyExistsError         ALREADY_EXISTS              false
+│   ├── PermissionError            PERMISSION_DENIED           false
+│   ├── AuthenticationError        UNAUTHENTICATED             false
+│   ├── PreconditionFailedError    PRECONDITION_FAILED         false
+│   │   ├── RevisionConflictError      REVISION_CONFLICT
+│   │   ├── PolicyInUseError           POLICY_IN_USE
+│   │   ├── PolicyLockedError          POLICY_LOCKED
+│   │   ├── SubaccountChallengeInvalidError SUBACCOUNT_CHALLENGE_INVALID
+│   │   └── MfaLastFactorRequiredError MFA_LAST_FACTOR_REQUIRED
+│   ├── ConfigurationError         INVALID_CONFIGURATION       false
+│   ├── MfaRequiredError           MFA_REQUIRED                false
+│   │   ├── MfaEnrollmentRequiredError     MFA_ENROLLMENT_REQUIRED
+│   │   ├── StepUpRequiredError            STEP_UP_REQUIRED
+│   │   └── SessionElevationRequiredError  SESSION_ELEVATION_REQUIRED
+│   └── MfaVerificationError       MFA_VERIFICATION_FAILED     false
+└── InternalServerError            INTERNAL_SERVER_ERROR       false
+```
+## Class notes
+| Class                             | When                                                                                                                                                                             |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TransientError`                  | The request may not have reached the backend, or it was temporarily unable to serve it. Reconcile a single-order create by `clientOrderId`; reuse replayable `requestId` values. |
+| `NetworkError`                    | The request could not be sent or the connection failed mid-flight.                                                                                                               |
+| `TimeoutError`                    | No response before the deadline.                                                                                                                                                 |
+| `RateLimitError`                  | Backend rate limiting. Carries `retryAfterMs?: number` when a safe wait is known and `rateLimit?: RateLimitDetail` when the backend sends quota state.                           |
+| `ServiceUnavailableError`         | Backend overloaded or restarting (502/503/504).                                                                                                                                  |
+| `RequestError`                    | The request itself was rejected; an identical retry fails identically.                                                                                                           |
+| `ValidationError`                 | Input failed validation (client- or server-side).                                                                                                                                |
+| `StaleQuoteError`                 | A submitted market quote exceeded the backend's permitted drift.                                                                                                                 |
+| `ResourceNotFoundError`           | Resource missing or not visible to the caller.                                                                                                                                   |
+| `NotImplementedError`             | The backend does not implement the operation (HTTP 501 or Connect `unimplemented`).                                                                                              |
+| `AlreadyExistsError`              | Duplicate (e.g. a reused `clientOrderId`).                                                                                                                                       |
+| `PermissionError`                 | Authenticated but not allowed.                                                                                                                                                   |
+| `AuthenticationError`             | Missing/expired/invalid credentials.                                                                                                                                             |
+| `PreconditionFailedError`         | System state forbids it (for example insufficient balance).                                                                                                                      |
+| `RevisionConflictError`           | An optimistic-concurrency mutation used a stale resource revision. Refetch and ask the user to review; never retry the same mutation blindly.                                    |
+| `PolicyInUseError`                | A policy cannot be deleted or changed because something still references it.                                                                                                     |
+| `PolicyLockedError`               | A policy is locked and cannot be mutated until unlocked.                                                                                                                         |
+| `SubaccountChallengeInvalidError` | The subaccount authorization expired, was replaced by a newer challenge, was replayed, or is otherwise invalid. Request a fresh one with `subaccounts.createChallenge`.          |
+| `PolicyScopeMismatchError`        | The policy does not belong to the account scope targeted by the request.                                                                                                         |
+| `ConfigurationError`              | The SDK itself is misconfigured (bad environment, missing credentials).                                                                                                          |
+| `MfaRequiredError`                | Umbrella for the three MFA flows below.                                                                                                                                          |
+| `MfaEnrollmentRequiredError`      | User must enroll an MFA factor first.                                                                                                                                            |
+| `StepUpRequiredError`             | Needs a fresh one-use proof; retry with `options.stepUpToken`.                                                                                                                   |
+| `SessionElevationRequiredError`   | Needs a recently MFA-elevated session.                                                                                                                                           |
+| `MfaLastFactorRequiredError`      | The requested deletion would leave the account without an active MFA factor.                                                                                                     |
+| `MfaVerificationError`            | An MFA challenge response was rejected (wrong code, expired challenge, and similar).                                                                                             |
+| `InternalServerError`             | Backend failure or malformed response. Not auto-retryable; mutations may have partially applied.                                                                                 |
+## Catalog errors
+Raised by catalog reads and decimal conversion; they plug into the same tree under `RequestError` / `ValidationError`:
+| Class                          | Code                         | When                                                                       |
+| ------------------------------ | ---------------------------- | -------------------------------------------------------------------------- |
+| `CatalogLookupError`           | `CATALOG_LOOKUP_MISS`        | `require*` lookup for an unknown pair/asset/chain.                         |
+| `CatalogNotReadyError`         | `CATALOG_NOT_READY`          | Direct catalog read before a snapshot exists.                              |
+| `CatalogConversionError`       | `CATALOG_CONVERSION_INVALID` | Invalid decimal, excess precision, or value above a protobuf wire ceiling. |
+| `CatalogValidationFailedError` | `CATALOG_VALIDATION_FAILED`  | Order input violates pair constraints (tick/step/min).                     |
+The catalog classes are exported from `@polyester/sdk/catalogs`; everything else on this page comes from the root export.
+## Structured backend details
+Typed RPC errors expose the first recognized backend rejection as `PolyesterError.detail`. The value is `undefined` when the backend provided no recognized detail. It survives SDK error wrapping, so inspect it directly instead of walking an error's `cause` chain.
+```ts
+import { PolyesterError } from "@polyester/sdk";
+try {
+await client.orders.cancelAll({ symbolIds: [symbolId] });
+} catch (error) {
+if (
+error instanceof PolyesterError &&
+error.detail?.service === "orders" &&
+error.detail.code === "CANCEL_REQUEST_EXPIRED"
+) {
+// The cancellation replay window elapsed; use a fresh requestId.
+}
+}
+```
+For market-order stale quotes, use `error instanceof StaleQuoteError` (imported from `@polyester/sdk`) or inspect an orders detail with code `STALE_QUOTE`.
+For transfer failures, `detail.service` is `"withdraw"` or `"internal_transfer"`, with the service's stable backend error code. Transfer rate-limit details map to `RateLimitError`; temporary withdrawal or internal-transfer dependency failures map to `ServiceUnavailableError`.
+Daily reward claim failures use `detail.service === "claims"`. Claims rate-limit details map to `RateLimitError`; `SERVICE_UNAVAILABLE` and `CLAIM_TEMPORARILY_UNAVAILABLE` map to `ServiceUnavailableError`.
+Order details have `service: "orders"` plus the existing `OrderErrorDetail` fields. Rejected batch-create, batch-replace, and batch-cancel result items continue to expose that optional `error` field.
+`OrderErrorCode` includes policy-specific rejections such as `POLICY_MAX_OPEN_ORDERS`, `SUBACCOUNT_READ_FORBIDDEN`, `POLICY_SPOT_READ_DENY`, `API_KEY_SPOT_READ_DENY`, and `CANCEL_REQUEST_EXPIRED`.
+## Rate-limit details
+`RateLimitError.rateLimit` preserves quota values that may exceed JavaScript's safe integer range:
+```ts
+import type {
+RateLimitFailureReason,
+RateLimitPolicyClass,
+RateLimitRefillModel,
+RateLimitScope,
+} from "@polyester/sdk";
+interface RateLimitDetail {
+reason: RateLimitFailureReason;
+operationId: string;
+policyClass: RateLimitPolicyClass;
+scope: RateLimitScope;
+refillModel: RateLimitRefillModel;
+limit?: string;
+remaining?: string;
+retryAfterMs?: string;
+policyVersion?: string;
+}
+```
+`retryAfterMs` on the error is a number only when conversion is safe or a response header supplies one. Use the string fields in `rateLimit` when exact quota data matters.
+`client.tradingRateLimits` is the discovery API for those trading pools: public catalog via `getConfig`, effective account limits via `getTradingLimits`. See [Trading rate limits](https://testnet.polyester.com/docs/sdk/typescript/reference/rate-limits).
+## Helper functions
+| Function                                                                                                         | Purpose                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isAbortError(err)`                                                                                              | Caller cancellation, including transport cancellation when the caller's signal is aborted; outside the `PolyesterError` tree and never retryable.                                                                                                                                                                            |
+| `isRetryableError(err)`                                                                                          | `true` for `TransientError` subclasses and raw `unavailable` / `deadline_exceeded` / `resource_exhausted` / `aborted` Connect failures.                                                                                                                                                                                      |
+| `isResourceNotFoundError(err)`                                                                                   | Convenience type guard.                                                                                                                                                                                                                                                                                                      |
+| `isRevisionConflictError(err)`                                                                                   | Detect a typed or raw stale-revision failure.                                                                                                                                                                                                                                                                                |
+| `isPolicyInUseError(err)` / `isPolicyLockedError(err)` / `isPolicyScopeMismatchError(err)`                       | Policy mutation guards for unknown error values.                                                                                                                                                                                                                                                                             |
+| `isFreshStepUpRequiredError(err)` / `isSessionElevationRequiredError(err)` / `isMfaEnrollmentRequiredError(err)` | MFA flow guards for unknown error values.                                                                                                                                                                                                                                                                                    |
+| `isMfaLastFactorRequiredError(err)`                                                                              | Detect last-factor MFA requirement for unknown error values.                                                                                                                                                                                                                                                                 |
+| `errorFromHttpStatus(status, message, options?)`                                                                 | Map a plain HTTP status onto the tree (400/422→`ValidationError`, 401→`AuthenticationError`, 412→`PreconditionFailedError`, 429→`RateLimitError`, 501→`NotImplementedError`, …). The SDK applies it to bare HTTP error responses without a Connect body; a bare 404 means a missing route and maps to `NotImplementedError`. |
+| `toPolyesterError(err)` / `connectErrorToPolyesterError(err)`                                                    | Normalize arbitrary/Connect errors into the tree.                                                                                                                                                                                                                                                                            |
+| `createErrorMappingInterceptor()`                                                                                | The interceptor the SDK installs so every RPC failure is typed (exported for custom transports).                                                                                                                                                                                                                             |
+| `normalizeErrorMessage(message)`                                                                                 | Strip Connect's `[code]` prefixes from messages.                                                                                                                                                                                                                                                                             |
+| `formatConnectError(err, fallback)`                                                                              | Human-readable message from any error.                                                                                                                                                                                                                                                                                       |
+| `formatUserFacingError(err, fallback?)`                                                                          | Stable user-facing copy for typed SDK errors; cancellation formats as `"Request canceled."`.                                                                                                                                                                                                                                 |
+## Types
+- `PolyesterErrorCode`: union of every code string above.
+- `PolyesterErrorDetail`: discriminated backend rejection detail for auth, profile, orders, withdrawal, internal transfer, ledger, or market-overview RPC errors.
+- `PolyesterErrorOptions`: `{ cause?: unknown; detail?: PolyesterErrorDetail }` accepted by every constructor.
+- `RateLimitErrorOptions`: adds `retryAfterMs?: number` and `rateLimit?: RateLimitDetail`.
+- `RateLimitDetail`: structured quota state with exact decimal-string counter values.
+- `OrderErrorDetail`: an Orders rejection code, violations, and optional `rateLimit` state.

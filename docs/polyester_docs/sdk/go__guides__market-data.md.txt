@@ -1,0 +1,61 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/market-data.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Every service on this page is public. An unauthenticated client can call them.
+```go
+client, err := polyester.New(polyester.Config{
+Environment:     &polyester.TestnetEnvironment,
+HydrateCatalogs: true,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+```
+Streams use `Messages()` on typed subscriptions. Managed order-book / overview books use `Updates()`.
+## Symbols
+Prefer `"BTC-USDT"`. Resolve via catalogs after `WaitForCatalogs`, or pass `symbolID`.
+## Market overview
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/services"
+overview, err := client.MarketOverview.List(ctx, nil, 50, "", false)
+sub, err := client.MarketOverview.CreateSubscription(ctx, services.MarketOverviewCreateSubscriptionOptions{
+Limit: 50,
+})
+for rows := range sub.Updates() { _ = rows; break }
+```
+## Candles
+Alias: `client.Candles` → `client.MarketData`.
+```go
+symbol := "BTC-USDT"
+result, err := client.Candles.GetCandles(ctx, &symbol, nil, "1h", 200, nil, nil, false)
+sub, err := client.Candles.SubscribeCandles(ctx, &symbol, nil, "1m")
+for c := range sub.Messages() { fmt.Println(c.Close); break }
+```
+Row candle results are newest-first, with an included open candle prepended; use index `0` for latest and reverse/sort by `TsSec` for indicators. Candle columns are oldest-first.
+## Order book
+```go
+book, err := client.Orderbook.Get(ctx, "BTC-USDT", 20)
+sub, err := client.Orderbook.CreateSubscription(ctx, services.CreateSubscriptionOptions{
+Symbol: "BTC-USDT",
+Depth:  50,
+})
+for b := range sub.Updates() { fmt.Println(b.BookSeq); break }
+```
+## Public trades
+```go
+symbol := "BTC-USDT"
+tape, err := client.MarketData.GetTrades(ctx, &symbol, nil, 20, nil)
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+for t := range sub.Messages() { fmt.Println(t.Price); break }
+```
+Private fills are `client.Trades`, not the public tape.
+## Heatmap & chain analytics
+`client.Heatmap` and `client.ChainAnalytics` for L2 heatmap and chain analytics reads.
+> **Streaming model**
+>
+> Centrifugo WebSocket + Protobuf. Details: [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming).
+## Related
+- [Order book](https://testnet.polyester.com/docs/sdk/go/reference/order-book) · [Candles](https://testnet.polyester.com/docs/sdk/go/reference/candles) · [Public trades](https://testnet.polyester.com/docs/sdk/go/reference/public-trades) · [Market overview](https://testnet.polyester.com/docs/sdk/go/reference/market-overview)

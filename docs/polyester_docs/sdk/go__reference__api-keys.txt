@@ -1,0 +1,358 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/api-keys
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+API keys · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+API keys
+API keys
+Copy page
+View as Markdown
+Open in
+client.APIKeys
+lists and streams
+API key
+metadata and generates local Ed25519 keypairs. Methods
+are authenticated and account-scoped.
+Methods (API-key SDK)
+Method
+Summary
+GenerateKeypair
+Local Ed25519 keypair. Never sends the secret.
+List
+List non-revoked keys for the account scope.
+Get
+Fetch one key by
+ak_...
+id.
+Subscribe
+Stream private key updates (
+Messages()
+).
+There is
+no
+Create
+/
+Update
+/
+Delete
+on this SDK. Creating or revoking keys is a
+JWT/session product flow (TypeScript / browser).
+GenerateKeypair()
+pair
+client
+APIKeys
+GenerateKeypair
+()
+// pair.PublicKeyHex / pair.SecretKeyHex, persist secret yourself
+List / Get
+keys
+,
+err
+client
+APIKeys
+List
+(
+ctx
+,
+nil
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+key
+range
+keys
+Keys
+fmt
+Println
+(
+key
+KeyID
+,
+key
+Label
+,
+key
+Status
+)
+}
+one
+,
+err
+client
+APIKeys
+Get
+(
+ctx
+,
+"ak_..."
+)
+if
+one
+!=
+nil
+fmt
+Println
+(
+one
+KeyID
+,
+one
+Status
+)
+}
+Subscribe(ctx, accountID)
+Requires the API-key administration read permission and an Account ID. The method returns only
+after the subscription-token request and Centrifugo handshake succeed.
+sub
+,
+err
+client
+APIKeys
+Subscribe
+(
+ctx
+,
+client
+DefaultAccountID
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+for
+key
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+key
+KeyID
+,
+key
+Status
+)
+break
+}
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Create is JWT/session only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Generate a keypair here, then create the key in the Polyester app or TypeScript client.
+Related
+Authentication guide
+Authentication model
+Related Topics
+Address book
+Saved destinations and whitelist views.
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Address book
+Next
+Auth
+On this page
+Methods (API-key SDK)
+GenerateKeypair()
+List / Get
+Subscribe(ctx, accountID)
+Related
+Related Topics
+Share this page
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+pair := client.APIKeys.GenerateKeypair()
+// pair.PublicKeyHex / pair.SecretKeyHex, persist secret yourself
+
+---
+
+keys, err := client.APIKeys.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, key := range keys.Keys {
+    fmt.Println(key.KeyID, key.Label, key.Status)
+}
+
+one, err := client.APIKeys.Get(ctx, "ak_...")
+if one != nil {
+    fmt.Println(one.KeyID, one.Status)
+}
+
+---
+
+sub, err := client.APIKeys.Subscribe(ctx, client.DefaultAccountID)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for key := range sub.Messages() {
+    fmt.Println(key.KeyID, key.Status)
+    break
+}

@@ -1,0 +1,941 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/api-keys
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+API keys · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+API keys
+API keys
+Copy page
+View as Markdown
+Open in
+client.apiKeys
+manages
+API key
+metadata and the client-generated Ed25519 keypairs that back it.
+Every method is authenticated and account-scoped, so inputs accept an optional
+account
+field
+(
+"main"
+,
+"active"
+, or
+). See
+Authentication
+for how a key becomes a session.
+The secret half of a keypair is generated locally and never leaves your process. You send only the
+public key when you create a key, and you keep the secret to sign requests later. Reusable
+permission policies live under
+client.apiKeys.policies
+Methods
+Method
+Summary
+generateKeypair
+Generate an Ed25519 keypair locally. Never sends the secret.
+create
+Register a key from a public key. May require
+MFA
+step-up.
+list
+List non-revoked keys, newest first.
+get
+Fetch one key by
+ak_...
+key id.
+update
+Patch metadata, status, whitelist, or expiry.
+delete
+Permanently revoke a key.
+subscribe
+Stream live key updates over a private channel.
+generateKeypair()
+Generates an Ed25519 keypair locally and returns both halves as hex strings and byte arrays. This
+call never touches the network. Send
+publicKey.bytes
+to
+create
+, and store
+secretKey
+yourself:
+it is the only copy.
+const
+publicKey
+,
+secretKey
+}
+=
+await
+client
+apiKeys
+generateKeypair
+();
+// Send publicKey.bytes to create(); persist secretKey somewhere safe.
+console
+log
+(
+publicKey
+hex
+);
+// "a1b2c3..."
+create(payload, options?)
+The root account must have accepted the current terms. Use
+client.auth.acceptTerms()
+from an
+interactive JWT session after the user agrees. Missing acceptance produces the typed auth detail
+AUTH_TERMS_NOT_ACCEPTED
+Registers a new API key from a locally generated public key and returns the created
+ApiKey
+, or
+null
+if the backend returns no key. Security-sensitive settings can require a fresh MFA step-up.
+const
+publicKey
+}
+=
+await
+client
+apiKeys
+generateKeypair
+();
+const
+key
+=
+await
+client
+apiKeys
+create
+({
+label:
+"trading bot"
+,
+publicKeyEd25519:
+publicKey
+bytes
+,
+ipWhitelist: [
+"203.0.113.4/32"
+],
+icon:
+"robot"
+,
+color:
+"#4f46e5"
+,
+});
+ApiKeysCreateInput
+Field
+Type
+Required
+Notes
+label
+string
+yes
+Display name for the key.
+publicKeyEd25519
+Uint8Array
+yes
+Public key bytes from
+generateKeypair
+ipWhitelist
+string[]
+no
+CIDR ranges. Defaults to
+(any IP).
+icon
+string
+no
+Icon token for UI display.
+color
+string
+no
+Color token for UI display.
+account
+AccountScope
+no
+Scope override.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Creating a key may require MFA step-up
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+When the account requires it,
+create
+throws a
+StepUpRequiredError
+a fresh step-up challenge, then retry the same call with
+options.stepUpToken
+set to the
+returned token. See
+error handling
+for the
+full pattern, and
+MFA
+for how to run the challenge.
+import
+StepUpRequiredError
+}
+from
+"@polyester/sdk"
+;
+try
+await
+client
+apiKeys
+create
+({ label:
+"trading bot"
+, publicKeyEd25519:
+publicKey
+bytes
+});
+}
+catch
+(
+err
+) {
+if
+(
+err
+instanceof
+StepUpRequiredError
+) {
+const
+stepUpToken
+=
+await
+runStepUpChallenge
+();
+// see the MFA page
+await
+client
+apiKeys
+create
+(
+"trading bot"
+, publicKeyEd25519:
+publicKey
+bytes
+},
+stepUpToken
+}
+);
+}
+else
+throw
+err
+;
+}
+}
+list(params?, options?)
+Returns non-revoked API keys owned by the caller, newest first.
+const
+keys
+=
+await
+client
+apiKeys
+list
+();
+for
+(
+const
+key
+of
+keys
+) {
+console
+log
+(
+key
+keyId
+,
+key
+label
+,
+key
+status
+);
+}
+get(input, options?)
+Fetches one key by its
+ak_...
+key id, or
+null
+when no matching key is returned.
+const
+key
+=
+await
+client
+apiKeys
+get
+({ keyId:
+"ak_9f2c..."
+});
+if
+(
+key
+)
+console
+log
+(
+key
+publicKeyHex
+,
+key
+status
+);
+update(payload, options?)
+Patches mutable metadata,
+active
+/
+disabled
+status, the IP whitelist, and an optional expiry.
+Identify the key by
+keyId
+and pass its latest
+revision
+revision. Revocation is permanent and goes through
+delete
+, not
+update
+// Disable a key and pin an expiry
+await
+client
+apiKeys
+update
+({
+keyId:
+"ak_9f2c..."
+,
+expectedRevision:
+key
+revision
+,
+status:
+"disabled"
+,
+expiresAtIso:
+"2026-01-01T00:00:00Z"
+,
+});
+// Replace the IP whitelist
+await
+client
+apiKeys
+update
+({
+keyId:
+"ak_9f2c..."
+,
+expectedRevision:
+key
+revision
+,
+ipWhitelist: [
+"198.51.100.0/24"
+],
+});
+// Clear the expiry (pass null)
+await
+client
+apiKeys
+update
+({
+keyId:
+"ak_9f2c..."
+,
+expectedRevision:
+key
+revision
+,
+expiresAtIso:
+null
+,
+});
+status
+accepts
+"active"
+or
+"disabled"
+expiresAtIso
+takes an ISO 8601 string, or
+null
+to
+clear a previously set expiry. Omit a field to leave it unchanged.
+If the key changed after it was read, the SDK throws
+RevisionConflictError
+ask the user to review their draft against the latest values; do not retry the stale update.
+delete(input, options?)
+Permanently revokes the key. A revoked key can never authenticate again, so this is not reversible.
+await
+client
+apiKeys
+delete
+({ keyId:
+"ak_9f2c..."
+});
+subscribe(input)
+Streams live API key updates over a private channel. Takes an
+accountId
+plus the standard handler
+fields, and returns an idempotent unsubscribe function. See the
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+apiKeys
+subscribe
+({
+accountId
+,
+onEvent
+key
+)
+=>
+console
+log
+(
+key
+keyId
+,
+key
+status
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+The
+ApiKey
+shape
+list
+,
+get
+,
+create
+,
+update
+, and
+subscribe
+return the same parsed shape. Display timestamps
+are epoch milliseconds.
+updatedAtNs
+is the exact decimal-string freshness token for reconciling
+REST and realtime copies without losing sub-millisecond ordering.
+status
+includes
+"unspecified"
+publicKeyEd25519
+is a
+Uint8Array
+expiresAt
+is an ISO 8601 string when set.
+import
+type
+ApiKey
+}
+from
+"@polyester/sdk"
+;
+Policies
+client.apiKeys.policies
+manages reusable permission templates and their assignment to keys. It
+controls spot-market scopes and allowed actions. A key with no policy has no permissions.
+list
+,
+create
+,
+update
+,
+delete
+, and
+apply
+need an interactive session. An API key gets
+PermissionError: interactive session required
+Actions:
+"trade-spot"
+,
+"internal-transfer"
+,
+"external-withdraw"
+,
+"read-balances"
+,
+"read-spot"
+,
+"read-internal-transfers"
+,
+"read-address-book"
+, and
+"manage-address-book"
+"trade-spot"
+allows every spot order mutation: create, modify, replace, cancel, batch operations,
+live cancel-all, and arming or disabling cancel-all-after. It includes reading spot orders and
+trades and placing or modifying triggers.
+"read-spot"
+allows reading spot orders, trades, and
+subscriptions, plus a cancel-all dry run; it is strictly non-mutating, so cancellation and
+cancel-all-after changes require
+"trade-spot"
+caller can still cancel.
+Method
+Summary
+list
+List policy templates available to the caller.
+get
+Fetch one policy by id (falls back to the default no-op policy).
+create
+Create a policy, optionally assigning it to a key immediately.
+update
+Patch selected fields on an existing policy.
+delete
+Delete a policy that is not in use.
+apply
+Attach a policy to a key, or clear it with
+policyId: null
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+// Create a policy and attach it to a key in one call
+const
+policy
+=
+await
+client
+apiKeys
+policies
+create
+({
+name:
+"read-only"
+,
+spotMarketScope:
+"allowlist"
+,
+spotMarkets: [{
+symbolId
+}],
+actions: [
+"read-balances"
+,
+"read-spot"
+],
+assignToKeyId:
+apiKey
+keyId
+,
+});
+// Or attach an existing policy later
+await
+client
+apiKeys
+policies
+apply
+({ keyId:
+apiKey
+keyId
+, policyId:
+policy
+id
+});
+// Clear a key's policy (back to no permissions)
+await
+client
+apiKeys
+policies
+apply
+({ keyId:
+apiKey
+keyId
+, policyId:
+null
+});
+spotMarketScope: "all"
+permits current and future spot markets and ignores
+spotMarkets
+for
+enforcement.
+"allowlist"
+permits only the listed
+symbolId
+values; an empty allowlist permits no
+market. Each ID must be an integer from 1 through 4,294,967,295.
+Policy updates require the latest policy revision and return the updated policy:
+const
+updatedPolicy
+=
+await
+client
+apiKeys
+policies
+update
+({
+policyId:
+policy
+id
+,
+expectedRevision:
+policy
+revision
+,
+name:
+"restricted trading"
+,
+});
+If the revision is stale, the SDK throws
+RevisionConflictError
+user to review their draft against the latest version; do not retry automatically.
+get
+returns a default no-permissions policy when you pass no id, an empty id, or an unknown id,
+so it never returns
+null
+id
+is
+""
+, and a key with no policy reports
+policyId: ""
+, so keys match policies by ID. Test for a missing policy with
+!apiKey.policyId
+Related
+Authentication
+for signing requests with a key.
+MFA
+for running the step-up challenge that
+create
+may require.
+Subaccounts
+for the policy model this mirrors.
+Error handling
+for
+StepUpRequiredError
+and retries.
+Errors
+for the error type reference.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Address book
+Next
+Auth
+On this page
+Methods
+generateKeypair()
+create(payload, options?)
+ApiKeysCreateInput
+list(params?, options?)
+get(input, options?)
+update(payload, options?)
+delete(input, options?)
+subscribe(input)
+The ApiKey shape
+Policies
+Related
+Related Topics
+Share this page
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { publicKey, secretKey } = await client.apiKeys.generateKeypair();
+
+// Send publicKey.bytes to create(); persist secretKey somewhere safe.
+console.log(publicKey.hex); // "a1b2c3..."
+
+---
+
+const { publicKey } = await client.apiKeys.generateKeypair();
+
+const key = await client.apiKeys.create({
+	label: "trading bot",
+	publicKeyEd25519: publicKey.bytes,
+	ipWhitelist: ["203.0.113.4/32"],
+	icon: "robot",
+	color: "#4f46e5",
+});
+
+---
+
+import { StepUpRequiredError } from "@polyester/sdk";
+
+try {
+	await client.apiKeys.create({ label: "trading bot", publicKeyEd25519: publicKey.bytes });
+} catch (err) {
+	if (err instanceof StepUpRequiredError) {
+		const stepUpToken = await runStepUpChallenge(); // see the MFA page
+		await client.apiKeys.create(
+			{ label: "trading bot", publicKeyEd25519: publicKey.bytes },
+			{ stepUpToken }
+		);
+	} else {
+		throw err;
+	}
+}
+
+---
+
+const keys = await client.apiKeys.list();
+for (const key of keys) {
+	console.log(key.keyId, key.label, key.status);
+}
+
+---
+
+const key = await client.apiKeys.get({ keyId: "ak_9f2c..." });
+if (key) console.log(key.publicKeyHex, key.status);
+
+---
+
+// Disable a key and pin an expiry
+await client.apiKeys.update({
+	keyId: "ak_9f2c...",
+	expectedRevision: key.revision,
+	status: "disabled",
+	expiresAtIso: "2026-01-01T00:00:00Z",
+});
+
+// Replace the IP whitelist
+await client.apiKeys.update({
+	keyId: "ak_9f2c...",
+	expectedRevision: key.revision,
+	ipWhitelist: ["198.51.100.0/24"],
+});
+
+// Clear the expiry (pass null)
+await client.apiKeys.update({
+	keyId: "ak_9f2c...",
+	expectedRevision: key.revision,
+	expiresAtIso: null,
+});
+
+---
+
+await client.apiKeys.delete({ keyId: "ak_9f2c..." });
+
+---
+
+const unsubscribe = client.apiKeys.subscribe({
+	accountId,
+	onEvent: (key) => console.log(key.keyId, key.status),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+import type { ApiKey } from "@polyester/sdk";
+
+---
+
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+
+// Create a policy and attach it to a key in one call
+const policy = await client.apiKeys.policies.create({
+	name: "read-only",
+	spotMarketScope: "allowlist",
+	spotMarkets: [{ symbolId }],
+	actions: ["read-balances", "read-spot"],
+	assignToKeyId: apiKey.keyId,
+});
+
+// Or attach an existing policy later
+await client.apiKeys.policies.apply({ keyId: apiKey.keyId, policyId: policy.id });
+
+// Clear a key's policy (back to no permissions)
+await client.apiKeys.policies.apply({ keyId: apiKey.keyId, policyId: null });
+
+---
+
+const updatedPolicy = await client.apiKeys.policies.update({
+	policyId: policy.id,
+	expectedRevision: policy.revision,
+	name: "restricted trading",
+});

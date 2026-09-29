@@ -1,0 +1,121 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds/internal-transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Internal Transfers
+Move an available balance between Polyester accounts or balance areas.
+Internal transfers move an available balance without leaving Polyester. You can move assets between Funding and Unified Trading, between your Main Account and Subaccounts, or to another Polyester user.
+Because both sides are Polyester accounts, an internal transfer does not use an external chain, deposit address, or Zipper route fee. Open the **[Transfer page](https://testnet.polyester.com/account/transfer)** to get started.
+## Make an internal transfer
+Open **[Transfer](https://testnet.polyester.com/account/transfer)** from the account that holds the balance. Choose a tab, then set the source, destination, Asset, and amount.
+## Between My Accounts
+Use this when both sides belong to you.
+1. Choose From
+Select the sending account and Funding or Unified Trading. The form shows the available balance for that source.
+![Make a transfer Between My Accounts](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/6fcdfabd0d8529aaecaeb086f2c55ed8403740d6e84f53ea48f8a1833cd9cba3/source.webp) Transferring 541.64 USDT from Main Funding to Futures Funding
+2. Choose To
+Select your Main Account or a Subaccount as the destination. Then choose Funding or Unified Trading for that account. From and To each have their own account and balance area. Use the swap control if you want to reverse the direction.
+3. Choose the Asset and amount
+Select the Asset, then enter the amount, use **Max**, or move the percentage slider. Stay within the available balance shown under the slider.
+4. Review and confirm
+Compare From, To, Asset, and amount. Then approve the request in the connected wallet.
+![Wallet signature request for an internal transfer](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/f5fab296ebf88797e9a2a60000463e4273c6f48ca8c836995100845b7041cbfe/source.webp) Using the wallet to confirm the internal transfer
+5. Confirm the completed transfer
+When Ledger Settlement Confirmed completes, check the transferred amount and both balances.
+Interactive
+### USDT Transfer
+Completed
+![USDT](https://testnet.polyester.com/icons/tokens/usdt.svg)
+![ethereum logo](https://testnet.polyester.com/icons/chains/ethereum.svg)
+541.640622 USDT
+Started 15s ago
+From
+Funding
+0x4cce…b657
+To
+Funding
+0x8115…378a
+Overall progress: 100% Completed just now
+#### Steps
+- [Transfer Observed 0x8ac4…5a6a](https://testnet.polyesterscan.com/tx/0x8ac457fa22d1a74251fd77c765990cb87960b459852cbbc5e9b139175ba95a6a)
+- [Ledger Settlement Confirmed 179594…5363](https://testnet.polyesterscan.com/flow/replay%3Aflow_5faVjXZNYF2%3A2)
+Confirming 541.64 USDT transferred from Funding to Unified Trading
+## To Another Polyester User
+Use this when the receiving Main Account or Subaccount belongs to someone else.
+1. Choose From
+Select the sending account and Funding or Unified Trading. The form shows the available balance for that source.
+![Make a transfer To Another Polyester User](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/090444ead5ebbddb775c59d102382e2fb2ff868bcdc571ad54b901d91bd8d6a7/source.webp) Transferring 330.27 USDT to another Polyester user's Trading balance
+2. Find the recipient
+Search by username, account ID, or smart-account address. Compare the resolved label, account type, and complete address with information from the recipient.
+3. Choose Destination Account
+Set the recipient's destination to **Funding** or **Trading**. This chooses where their Unified Asset becomes available.
+4. Choose the Asset and amount
+Select the Asset, then enter the amount, use **Max**, or move the percentage slider. Stay within the available balance shown under the slider.
+5. Review and confirm
+Compare From, To, Destination Account, Asset, and amount. Then approve the request in the connected wallet.
+> **Confirm another user's account before submitting**
+>
+> When transferring to another Polyester user, compare the resolved account label, account type, and complete smart-account address with information from the recipient. A completed transfer cannot be canceled or reversed by Polyester.
+![Wallet signature request for an internal transfer](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/f5fab296ebf88797e9a2a60000463e4273c6f48ca8c836995100845b7041cbfe/source.webp) Using the wallet to confirm the internal transfer
+6. Confirm the completed transfer
+When Ledger Settlement Confirmed completes, check the transferred amount and both balances.
+Interactive
+### USDT Transfer
+Completed
+![USDT](https://testnet.polyester.com/icons/tokens/usdt.svg)
+![ethereum logo](https://testnet.polyester.com/icons/chains/ethereum.svg)
+541.640622 USDT
+Started 15s ago
+From
+Funding
+0x4cce…b657
+To
+Funding
+0x8115…378a
+Overall progress: 100% Completed just now
+#### Steps
+- [Transfer Observed 0x8ac4…5a6a](https://testnet.polyesterscan.com/tx/0x8ac457fa22d1a74251fd77c765990cb87960b459852cbbc5e9b139175ba95a6a)
+- [Ledger Settlement Confirmed 179594…5363](https://testnet.polyesterscan.com/flow/replay%3Aflow_5faVjXZNYF2%3A2)
+Confirming 541.64 USDT transferred from Funding to Unified Trading
+## What happens after you submit
+Submitting the request begins the Transfer Flow. Polyester then moves it through two stages:
+Interactive
+1
+Transfer Observed
+2m ago
+2
+Ledger Settlement Confirmed
+45s ago
+Transfer Flow
+1. Transfer Observed
+Polyester records the internal movement between the selected accounts and balance areas.
+2. Ledger Settlement Confirmed
+The Unified Asset leaves the source Available Balance and appears at the destination. There is no Zipper route fee.
+You can see more details on [Polyester Scan](https://polyesterscan.com/flows).
+![Completed 541.64 USDT Transfer Flow on Polyester Scan](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3f10655195f9ae1be8f465d06f2ccee1f7375c28fe02fc238f8ef16d5ef0faa7/source.webp) Viewing a completed 541.64 USDT Transfer Flow on Polyester Scan
+## Funding and Unified Trading transfer routes
+Every side of an internal transfer identifies both a Polyester account and a balance area. Moving between Funding and Unified Trading changes where the balance can be used. Moving between a Main Account and Subaccount changes which account owns it.
+| FromTo                         | Result                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| FundingFunding                 | Moves an available Funding balance to the destination account's Funding balance             |
+| FundingUnified Trading         | Makes an available Funding balance available in the destination account's Trading balance   |
+| Unified TradingFunding         | Moves an available, unreserved Trading balance to the destination account's Funding balance |
+| Unified TradingUnified Trading | Moves an available Trading balance to the destination account's Trading balance             |
+Funding transfers use the available Funding balance. Unified Trading transfers use **Available Balance**, so open orders and other pending actions can reduce the amount you can move.
+## Track the transfer
+**Transfer submitted** means Polyester accepted the request. Transfer History is the primary record and shows the time, amount, asset, source, destination, Flow ID, and current status.
+![Transfer History with amount, source, destination, and Flow ID](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/cae265d8d3cbffc8bbebf765f03eee030cbaa44e5998f3e92dbf1383d631c513/source.webp) Viewing Transfer History after a 541.64 USDT internal transfer
+Follow the same history record until it reaches a final state and both balances reflect the movement. Do not submit a second transfer while the first result is still unclear.
+Some internal transfers include public Polyester Chain evidence, while others are private balance movements. A missing public Scan record does not mean the internal transfer did not occur; use Transfer History as the account record.
+## Internal Address Book and Transfer Whitelist
+An **[Address Book](https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist)** entry saves another Polyester account so it is easier to find again. Saving a recipient does not automatically authorize transfers to that account.
+If the source account requires the **[Internal Transfer Whitelist](https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist#how-whitelists-protect-your-account)**, the recipient must also have an active whitelist record for that source. Each Main Account and Subaccount has its own saved entries and transfer controls.
+## FAQ
+### Can I transfer to a disabled Subaccount?
+No. A disabled Subaccount rejects new inbound activity until it is active again. [Learn about internal transfers.](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)
+### What is the difference between the transfer options?
+‘Between My Accounts’ moves funds between your Main Accounts, your Subaccounts, and Subaccounts you are a member of, where your permissions allow. ‘To Another Polyester User’ sends funds to a Polyester account resolved from a username, account ID, or smart account address.
+### Do I need to accept an incoming internal transfer?
+No. If you are expecting an incoming internal transfer, the funds will arrive in your Funding Account or Unified Trading Account without any further action from you. [Learn about internal transfers.](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)
+### What does the recipient of an internal transfer see about the sender?
+The recipient's Ledger can show the sending Polyester Account ID or Subaccount ID, its public smart-account address, and the sender's configured username or account label. [Learn about internal transfers.](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)

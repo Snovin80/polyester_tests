@@ -1,0 +1,249 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/mfa-and-recovery-codes
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MFA & Recovery · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Access & Security
+svg]:size-3.5">
+/
+MFA & Recovery
+MFA & Recovery
+Copy page
+View as Markdown
+Open in
+Multi-factor authentication (
+MFA
+) adds another check before sensitive account actions. You can use a passkey or authenticator app and keep recovery codes as a backup.
+Open
+Security
+to see your methods, add another one, or replace a method you no longer use.
+Choose an MFA method
+Passkey
+Authenticator app
+A passkey uses Face ID, Touch ID, a device PIN, or a compatible hardware security key. It is quick to use and resistant to phishing.
+Check whether your passkey syncs across trusted devices or stays only on the device where you created it.
+An authenticator app generates a new six-digit code at regular intervals. Scan the setup QR code once, then enter the current code to finish enrollment.
+Protect the setup QR code and secret. Anyone who copies either can generate valid codes.
+Set up MFA
+1
+Open Security
+Go to
+Security
+and find Multi-Factor Authentication.
+2
+Add your first method
+Choose a passkey or authenticator app and complete the device or code prompt.
+3
+Name the method
+Use a label that helps you recognize the device or authenticator without including a secret.
+4
+Save your recovery codes
+Store the codes somewhere protected and separate from your primary device.
+5
+Add a backup method
+Enroll another method so one lost device does not lock you out of protected actions.
+Recovery codes
+Recovery codes let you complete an MFA challenge when your usual method is unavailable. Each code works once.
+Keep them out of email, chat, screenshots, support tickets, source code, and browser autofill.
+Remove a code from your saved set after using it.
+Regenerating codes replaces the entire previous set.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+New recovery codes replace the old set
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Do not close the new-code window until the replacement codes are stored safely. Every code from the previous set stops working after regeneration.
+Manage your methods
+The Security page shows when each method was added and last used. Rename a method when a clearer label would help, or remove a method you no longer control.
+You cannot remove your final MFA method. Add and test its replacement first, then remove the old method.
+When Polyester asks for MFA
+Polyester automatically requests MFA when an action needs more protection. Some actions accept a recent MFA check, while higher-risk changes ask for a fresh verification tied to that request.
+Examples include changing security settings, managing
+API keys
+, changing whitelists, exporting an embedded
+owner wallet
+, or moving funds under an MFA requirement.
+If verification fails
+Try another enrolled method if one is available.
+For authenticator codes, check that your device time is correct and enter the newest code.
+Use one unused recovery code when your regular methods are unavailable.
+If the prompt is unfamiliar, stop and review
+Sessions & Alerts
+Polyester support never needs your authenticator secret, current code, passkey credential, or recovery code.
+FAQ
+What does multi-factor authentication (MFA) protect if my wallet is already secure?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Your wallet controls your Polyester account. MFA adds a separate verification check before sensitive actions in the app, including but not limited to withdrawals, transfers, and changes to security settings or API keys. You can use a passkey or authenticator app and keep recovery codes as a backup. It adds another layer of protection on top of keeping your wallet and sign-in identity secure.
+Should I choose a passkey or an authenticator app?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Preferably both. Polyester lets you set up more than one MFA method, so you have a backup if one becomes unavailable. A passkey uses your device’s biometrics, a device PIN, or a compatible hardware security key. An authenticator app generates time-based six-digit codes. Choose the combination that fits your devices and security habits.
+Learn about securing your account.
+What if I lose my multi-factor authentication (MFA) method or recovery codes?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester recommends setting up multiple MFA methods. If you lose a method or your recovery codes, use another enrolled method or an unused recovery code to add a replacement method, remove a lost one, or generate new codes. If you lose all MFA methods and recovery codes, Polyester cannot replace or recreate an MFA method or regenerate codes for you. Contact support through the chat icon on Polyester. The team can assist, but recovery is not guaranteed.
+Related Topics
+Sign-In & Ownership
+Understand how your wallet, Google account, or email connects you to your Polyester account.
+Sessions & Alerts
+Manage account sessions, understand security alerts, and respond to unfamiliar activity.
+Address Book & Whitelists
+Save trusted destinations and control where withdrawals and internal transfers can be sent.
+GuardSigner
+Set up and manage the additional signer that protects withdrawal and internal transfer whitelist changes.
+API Keys
+Create API keys, choose what they can access, and keep their private signing keys safe.
+Previous
+Sign-In & Ownership
+Next
+Sessions & Alerts
+On this page
+Choose an MFA method
+Set up MFA
+Recovery codes
+Manage your methods
+When Polyester asks for MFA
+If verification fails
+FAQ
+Related Topics
+Share this page
+MFA & Recovery
+Add a passkey or authenticator app and keep recovery codes available if you lose a method.
+Share
+Copy Link

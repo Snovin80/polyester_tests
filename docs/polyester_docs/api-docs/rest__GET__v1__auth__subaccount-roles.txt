@@ -1,0 +1,259 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/auth/subaccount-roles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+SubaccountRoleService
+List Subaccount Roles
+List every built-in sub-account role and the exact permission definitions used by backend authorization.
+Copy URL
+Method
+GET
+Path
+/v1/auth/subaccount-roles
+Visibility
+Public endpoint
+GET
+/v1/auth/subaccount-roles
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/subaccount-roles' \
+--header 'Accept: */*'
+Responses
+"permissions": [
+"description": "Example configuration for the API playground.",
+"displayName": "value",
+"permission": "READ_SUBACCOUNT",
+"policyAction": "TRADE_SPOT"
+}
+],
+"roles": [
+"assignable": false,
+"description": "Example configuration for the API playground.",
+"displayName": "value",
+"permissions": [
+"READ_SUBACCOUNT"
+],
+"role": "VIEWER"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+permissions
+object[]
+Stable permission metadata in canonical permission order.
+4 fields
+permission
+enum
+Stable permission identifier used by authorization and clients.
+SUBACCOUNT_PERMISSION_READ_SUBACCOUNT
+SUBACCOUNT_PERMISSION_UPDATE_SUBACCOUNT
+SUBACCOUNT_PERMISSION_READ_BALANCES
+SUBACCOUNT_PERMISSION_READ_SPOT
+SUBACCOUNT_PERMISSION_TRADE_SPOT
+SUBACCOUNT_PERMISSION_READ_INTERNAL_TRANSFERS
+SUBACCOUNT_PERMISSION_INTERNAL_TRANSFER
+SUBACCOUNT_PERMISSION_EXTERNAL_WITHDRAW
+SUBACCOUNT_PERMISSION_READ_ADDRESS_BOOK
+SUBACCOUNT_PERMISSION_MANAGE_ADDRESS_BOOK
+SUBACCOUNT_PERMISSION_READ_MEMBERS
+SUBACCOUNT_PERMISSION_MANAGE_MEMBERS
+SUBACCOUNT_PERMISSION_READ_INVITES
+SUBACCOUNT_PERMISSION_MANAGE_INVITES
+SUBACCOUNT_PERMISSION_READ_API_KEYS
+SUBACCOUNT_PERMISSION_MANAGE_API_KEYS
+SUBACCOUNT_PERMISSION_READ_SUBACCOUNT_POLICY
+SUBACCOUNT_PERMISSION_MANAGE_SUBACCOUNT_POLICY
+SUBACCOUNT_PERMISSION_READ_ACTIVITY
+SUBACCOUNT_PERMISSION_READ_ACTIVITY_SECURITY_DETAILS
+SUBACCOUNT_PERMISSION_MANAGE_MEMBER_MFA_REQUIREMENT
+SUBACCOUNT_PERMISSION_CREATE_DEPOSIT_ADDRESS
+SUBACCOUNT_PERMISSION_READ_DEPOSIT_ADDRESSES
+SUBACCOUNT_PERMISSION_READ_GUARD_SIGNER_STATUS
+SUBACCOUNT_PERMISSION_MANAGE_GUARD_SIGNER
+Example
+READ_SUBACCOUNT
+displayName
+string
+Human-readable permission name.
+Example
+value
+description
+string
+Human-readable explanation of the capability and its important boundaries.
+Example
+Example configuration for the API playground.
+policyAction
+enum
+Policy action that can further restrict this permission. Unspecified means
+the permission is controlled by role and request context only.
+TRADE_SPOT
+INTERNAL_TRANSFER
+EXTERNAL_WITHDRAW
+READ_BALANCES
+READ_SPOT
+READ_INTERNAL_TRANSFERS
+READ_ADDRESS_BOOK
+MANAGE_ADDRESS_BOOK
+Example
+TRADE_SPOT
+roles
+object[]
+Built-in roles in display order from Owner through Viewer.
+5 fields
+role
+enum
+Stable built-in role identifier.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+Example
+VIEWER
+displayName
+string
+Human-readable role name.
+Example
+value
+description
+string
+Human-readable summary of the role.
+Example
+Example configuration for the API playground.
+assignable
+boolean
+Whether this role can be assigned to a delegated member.
+Example
+false
+permissions
+enum[]
+Complete role-granted permission set in canonical permission order.
+SUBACCOUNT_PERMISSION_READ_SUBACCOUNT
+SUBACCOUNT_PERMISSION_UPDATE_SUBACCOUNT
+SUBACCOUNT_PERMISSION_READ_BALANCES
+SUBACCOUNT_PERMISSION_READ_SPOT
+SUBACCOUNT_PERMISSION_TRADE_SPOT
+SUBACCOUNT_PERMISSION_READ_INTERNAL_TRANSFERS
+SUBACCOUNT_PERMISSION_INTERNAL_TRANSFER
+SUBACCOUNT_PERMISSION_EXTERNAL_WITHDRAW
+SUBACCOUNT_PERMISSION_READ_ADDRESS_BOOK
+SUBACCOUNT_PERMISSION_MANAGE_ADDRESS_BOOK
+SUBACCOUNT_PERMISSION_READ_MEMBERS
+SUBACCOUNT_PERMISSION_MANAGE_MEMBERS
+SUBACCOUNT_PERMISSION_READ_INVITES
+SUBACCOUNT_PERMISSION_MANAGE_INVITES
+SUBACCOUNT_PERMISSION_READ_API_KEYS
+SUBACCOUNT_PERMISSION_MANAGE_API_KEYS
+SUBACCOUNT_PERMISSION_READ_SUBACCOUNT_POLICY
+SUBACCOUNT_PERMISSION_MANAGE_SUBACCOUNT_POLICY
+SUBACCOUNT_PERMISSION_READ_ACTIVITY
+SUBACCOUNT_PERMISSION_READ_ACTIVITY_SECURITY_DETAILS
+SUBACCOUNT_PERMISSION_MANAGE_MEMBER_MFA_REQUIREMENT
+SUBACCOUNT_PERMISSION_CREATE_DEPOSIT_ADDRESS
+SUBACCOUNT_PERMISSION_READ_DEPOSIT_ADDRESSES
+SUBACCOUNT_PERMISSION_READ_GUARD_SIGNER_STATUS
+SUBACCOUNT_PERMISSION_MANAGE_GUARD_SIGNER
+Example
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/auth/subaccount-roles
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s419" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/auth/subaccount-roles' \
+--header 'Accept: */*'
+Responses
+"permissions": [
+"description": "Example configuration for the API playground.",
+"displayName": "value",
+"permission": "READ_SUBACCOUNT",
+"policyAction": "TRADE_SPOT"
+}
+],
+"roles": [
+"assignable": false,
+"description": "Example configuration for the API playground.",
+"displayName": "value",
+"permissions": [
+"READ_SUBACCOUNT"
+],
+"role": "VIEWER"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/subaccount-roles' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "permissions": [
+    {
+      "description": "Example configuration for the API playground.",
+      "displayName": "value",
+      "permission": "READ_SUBACCOUNT",
+      "policyAction": "TRADE_SPOT"
+    }
+  ],
+  "roles": [
+    {
+      "assignable": false,
+      "description": "Example configuration for the API playground.",
+      "displayName": "value",
+      "permissions": [
+        "READ_SUBACCOUNT"
+      ],
+      "role": "VIEWER"
+    }
+  ]
+}

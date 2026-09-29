@@ -1,0 +1,286 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/appearance
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Appearance · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Preferences
+svg]:size-3.5">
+/
+Appearance
+Appearance
+Copy page
+View as Markdown
+Open in
+Appearance settings let you make Polyester look the way you prefer. Choose a light or dark theme, adjust the overall color tone, select your trading colors, and change the typeface.
+Open
+Personalization
+from the
+in the top nav to make changes. Your preview updates as you choose each option.
+Choose a theme
+Use
+Light
+for a bright interface,
+Dark
+for a darker workspace, or
+System
+to follow your device setting automatically.
+Interactive
+Personalization
+Mode
+Light
+Dark
+System
+Theme
+Polyester
+Trading Palette
+Polyester Classic
+Fonts
+Inter
+Choose a color tone
+Color tone changes the accent colors used throughout Polyester. Choose
+Default
+,
+Warm
+, or
+Blue
+based on what is most comfortable for you.
+Interactive
+Personalization
+Mode
+Theme
+Polyester
+Trading Palette
+Polyester Classic
+Fonts
+Inter
+Polyester
+Polyester Warm
+Polyester Blue
+Sunset Warm
+Midnight Blue
+Choose your trading colors
+Trading colors control how positive and negative price movement appears on charts, tables, and market values. Choose the palette that makes gains and losses easiest for you to recognize.
+Interactive
+Personalization
+Mode
+Theme
+Polyester
+Trading Palette
+Polyester Classic
+Fonts
+Inter
+Polyester Classic
+Default
+Emerald City
+Soft Signal
+Neon Dreams
+Bull & Bear
+Monochrome
+Ocean Fire
+Royal Gold
+Emerald Empire
+Matrix Mint
+Silver & Copper
+Tropical Trader
+Neon Rave
+Diamond Hands
+Forest Fire
+Ocean Sunset
+Ancient Wealth
+Electric Pulse
+Royal Navy
+Steel & Fire
+Midnight Sun
+Mock data only, for preview purposes.
+Written labels and values stay the same when you change colors.
+Choose a typeface
+Select
+Sans-serif
+,
+Serif
+, or
+Mono
+for interface text. Use the preview to compare navigation, prices, and tables before settling on one.
+Interactive
+Personalization
+Mode
+Theme
+Polyester
+Trading Palette
+Polyester Classic
+Fonts
+Inter
+Inter
+Default
+Roboto
+Oxanium
+Geist
+Mono
+JetBrains Mono
+Saving your appearance
+Your choices save automatically in the current browser and apply across its Polyester tabs. Another browser or device can use different appearance settings.
+Related Topics
+Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Language & Region
+Choose how Polyester displays language, dates, times, currencies, and numbers.
+Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Notifications
+Choose which Polyester updates you receive and how they appear.
+Balances
+Hide account amounts on screen without changing the balances themselves.
+Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Previous
+Overview
+Next
+Language & Region
+On this page
+Choose a theme
+Choose a color tone
+Choose your trading colors
+Choose a typeface
+Saving your appearance
+Related Topics
+Share this page
+Appearance
+Choose your theme, colors, and typeface.
+Share
+Copy Link

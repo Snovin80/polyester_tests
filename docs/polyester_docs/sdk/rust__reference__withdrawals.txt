@@ -1,0 +1,496 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Withdrawals · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Withdrawals
+Withdrawals
+Copy page
+View as Markdown
+Open in
+client.withdraw
+creates durable, signed withdrawal intents out of the
+trading
+venue: to
+funding or to an external chain via
+Zipper
+API-key bots should use
+prepare_api_key_to_funding
+or
+prepare_api_key_to_external_chain
+TradingWithdrawIntentPayload
+with Buffa's deterministic protobuf encoder, and sign those exact
+bytes with the Ed25519 API private key configured on
+Client
+Persist
+PreparedTradingWithdraw::request_bytes()
+before the first submission. Restore it with
+PreparedTradingWithdraw::from_request_bytes
+and call
+submit_prepared
+after an ambiguous
+timeout. This preserves the deadline, nonce, amount, destination, idempotency key, and signature.
+Methods (API-key surface)
+Method
+Summary
+prepare_api_key_to_*
+Build and sign a persistable API-key intent.
+submit_prepared
+Submit or retry that exact signed intent.
+create_to_funding
+Trading → funding (stays on Polyester).
+create_to_external_chain
+Trading → external chain via Zipper.
+create_wallet_trading_withdraw
+exists for session/custody products; API-key trading applications typically use
+the API-key helpers above.
+create_api_key_to_funding
+and
+create_api_key_to_external_chain
+provide one-call convenience when the caller accepts persisting retry state separately.
+Create to funding
+use
+polyester
+models
+CreateApiKeyTradingWithdrawParams
+;
+use
+polyester
+types
+AssetAmount
+,
+QuantityDomain
+};
+use
+polyester
+new_trading_withdraw_idempotency_key;
+let
+amount
+=
+AssetAmount
+from_decimal_str
+(
+"100.00"
+,
+2
+,
+QuantityDomain
+LedgerE18
+,
+Some
+(
+2
+))
+?
+;
+let
+idempotency_key
+=
+new_trading_withdraw_idempotency_key
+()
+?
+;
+let
+prepared
+=
+client
+withdraw
+prepare_api_key_to_funding
+(
+CreateApiKeyTradingWithdrawParams
+asset_id
+2
+,
+amount
+,
+destination_address
+String
+new
+(),
+idempotency_key
+,
+amount_scale
+Some
+(
+2
+),
+deadline_ts_sec
+None
+,
+// SDK chooses now + five minutes before signing.
+nonce
+None
+,
+// SDK generates a secure nonce before signing.
+},
+)
+?
+;
+std
+fs
+write
+(
+"prepared-withdraw.bin"
+,
+prepared
+request_bytes
+())
+map_err
+(
+|
+e
+|
+polyester
+Error
+validation
+(
+e
+to_string
+()))
+?
+;
+let
+result
+=
+client
+withdraw
+submit_prepared
+(
+&
+prepared
+)
+;
+println!
+(
+"{}"
+,
+result
+intent_id);
+Create to external chain
+Requires non-empty
+destination_address
+use
+polyester
+models
+CreateApiKeyTradingWithdrawParams
+;
+use
+polyester
+types
+AssetAmount
+,
+QuantityDomain
+};
+use
+polyester
+new_trading_withdraw_idempotency_key;
+let
+external_amount
+=
+AssetAmount
+from_decimal_str
+(
+"100.00"
+,
+2
+,
+QuantityDomain
+LedgerE18
+,
+Some
+(
+2
+))
+?
+;
+let
+external_idempotency_key
+=
+new_trading_withdraw_idempotency_key
+()
+?
+;
+let
+prepared
+=
+client
+withdraw
+prepare_api_key_to_external_chain
+(
+CreateApiKeyTradingWithdrawParams
+asset_id
+2
+,
+amount
+external_amount
+,
+destination_address
+"0x..."
+into
+(),
+idempotency_key
+external_idempotency_key
+,
+amount_scale
+Some
+(
+2
+),
+deadline_ts_sec
+None
+,
+nonce
+None
+,
+},
+1
+,
+// destination_chain_id
+)
+?
+;
+let
+result
+=
+client
+withdraw
+submit_prepared
+(
+&
+prepared
+)
+;
+amount_scale
+describes input precision when
+AssetAmount
+does not already carry a scale; it
+never changes the wire contract. Every
+amount_e18
+is exactly rescaled to 18 decimals. Upscaling
+must not overflow, and downscaling must be exactly divisible; Rust never rounds.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Signature required
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The legacy precomputed-signature methods require non-empty
+payload_signature
+, explicit
+deadline_ts_sec: Some(...)
+, and a non-zero nonce. The SDK never invents or changes a signed
+field after accepting a signature.
+Related
+Deposits & withdrawals guide
+Internal transfers
+Requests & idempotency
+Withdrawals & transfers security
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Whiteboard
+Next
+Zipper
+On this page
+Methods (API-key surface)
+Create to funding
+Create to external chain
+Related
+Related Topics
+Share this page
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::CreateApiKeyTradingWithdrawParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+use polyester::new_trading_withdraw_idempotency_key;
+
+let amount = AssetAmount::from_decimal_str("100.00", 2, QuantityDomain::LedgerE18, Some(2))?;
+let idempotency_key = new_trading_withdraw_idempotency_key()?;
+let prepared = client.withdraw.prepare_api_key_to_funding(
+    CreateApiKeyTradingWithdrawParams {
+        asset_id: 2,
+        amount,
+        destination_address: String::new(),
+        idempotency_key,
+        amount_scale: Some(2),
+        deadline_ts_sec: None, // SDK chooses now + five minutes before signing.
+        nonce: None, // SDK generates a secure nonce before signing.
+    },
+)?;
+std::fs::write("prepared-withdraw.bin", prepared.request_bytes())
+    .map_err(|e| polyester::Error::validation(e.to_string()))?;
+let result = client.withdraw.submit_prepared(&prepared).await?;
+println!("{}", result.intent_id);
+
+---
+
+use polyester::models::CreateApiKeyTradingWithdrawParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+use polyester::new_trading_withdraw_idempotency_key;
+
+let external_amount =
+    AssetAmount::from_decimal_str("100.00", 2, QuantityDomain::LedgerE18, Some(2))?;
+let external_idempotency_key = new_trading_withdraw_idempotency_key()?;
+let prepared = client
+    .withdraw
+    .prepare_api_key_to_external_chain(
+        CreateApiKeyTradingWithdrawParams {
+            asset_id: 2,
+            amount: external_amount,
+            destination_address: "0x...".into(),
+            idempotency_key: external_idempotency_key,
+            amount_scale: Some(2),
+            deadline_ts_sec: None,
+            nonce: None,
+        },
+        1, // destination_chain_id
+    )?;
+let result = client.withdraw.submit_prepared(&prepared).await?;

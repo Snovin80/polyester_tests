@@ -1,0 +1,144 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/tutorials/two-sided-quoting.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+This tutorial extends the single-order trading bot into a two-sided quote cycle. It deliberately keeps strategy math outside the SDK: your strategy chooses valid decimal prices and quantities; the SDK validates, submits, streams, and reconciles them.
+> **Start on a dedicated testnet account**
+>
+> Fund both quote and base trading balances. Keep the write gate disabled until the dry-run plan, prefix cleanup, and dead-man switch have been verified. This is an execution pattern, not a profitable strategy or financial advice.
+## Quote-cycle invariants
+1. Use a fresh, sequence-checked book.
+2. Size bid and ask independently from available quote and base balances.
+3. Give every quote a unique client order ID under a process-owned prefix.
+4. Inspect every batch item; a successful RPC is not an all-items guarantee.
+5. Reconcile open orders before retrying an unknown outcome.
+6. Keep the dead-man switch refreshed while writes are enabled.
+1) Read a quoteable book
+```go
+book, err := client.Orderbook.Get(ctx, "BTC-USDT", 20)
+if err != nil { log.Fatal(err) }
+if len(book.Bids) == 0 || len(book.Asks) == 0 {
+log.Fatal("cannot quote an empty or one-sided book")
+}
+bestBid := book.Bids[0].Price.Format()
+bestAsk := book.Asks[0].Price.Format()
+fmt.Println("book_seq", book.BookSeq, "bid", bestBid, "ask", bestAsk)
+```
+For a long-running bot, use `Orderbook.CreateSubscription` and pause writes during snapshot refresh. Quoting at the displayed best bid and ask is only a teaching baseline. The backend's `PostOnly` validation remains the final protection against a stale quote crossing the book.
+2) Size both sides independently
+```go
+balances, err := client.Balances.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, balance := range balances.Balances {
+available, err := codecs.FormatLedgerU128(balance.Available, codecs.LedgerScale)
+if err != nil { return err }
+reserved, err := codecs.FormatLedgerU128(balance.Reserved, codecs.LedgerScale)
+if err != nil { return err }
+fmt.Println(balance.AssetID, "available", available, "reserved", reserved)
+}
+```
+`Available` and `Reserved` are raw ledger `u128` strings at ledger scale 18. Format once for display, but retain raw values for exact sizing.
+The bid consumes quote balance; the ask consumes base balance. Compute each quantity from the catalog step size, minimum quantity/notional, available balance, and your own inventory cap. Do not mirror one quantity blindly across both sides. The tested sizing functions live in [`polyester-examples-go`](https://github.com/Fabric-Labs/polyester-examples-go).
+3) Submit one bid and one ask
+```go
+symbol := "BTC-USDT"
+tif := "gtc"
+book, err := client.Orderbook.Get(ctx, symbol, 20)
+if err != nil { log.Fatal(err) }
+if len(book.Bids) == 0 || len(book.Asks) == 0 {
+log.Fatal("cannot quote an empty or one-sided book")
+}
+bestBid := book.Bids[0].Price.Format()
+bestAsk := book.Asks[0].Price.Format()
+bidID := fmt.Sprintf("quote-bid-%d", time.Now().UnixNano())
+askID := fmt.Sprintf("quote-ask-%d", time.Now().UnixNano())
+bidPrice := models.PriceFromDecimal(bestBid)
+askPrice := models.PriceFromDecimal(bestAsk)
+created, err := client.Orders.BatchCreate(ctx, nil, []models.CreateOrderRequest{
+Symbol:        &symbol,
+Side:          "buy",
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.001"),
+Price:         &bidPrice,
+PostOnly:      true,
+ClientOrderID: &bidID,
+},
+Symbol:        &symbol,
+Side:          "sell",
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.001"),
+Price:         &askPrice,
+PostOnly:      true,
+ClientOrderID: &askID,
+},
+}, nil, &symbol, nil, false)
+if err != nil { log.Fatal(err) }
+for _, item := range created.Results {
+fmt.Println(item.ClientOrderID, item.Status, item.OrderID, item.Code)
+}
+```
+Replace the demonstration quantities with catalog-aligned, balance-capped values. `BatchCreate` accepts at most 20 items. Inspect `Results`, `AcceptedCount`, and `RejectedCount`; accepted and rejected sides can coexist in one response.
+4) Reconcile the desired quote set
+```go
+open, err := client.Orders.ListOpen(ctx, nil, nil, nil, nil, false, false)
+if err != nil { log.Fatal(err) }
+seen := map[string]bool{}
+for _, order := range open.Orders {
+if strings.HasPrefix(order.ClientOrderID, "quote-") {
+seen[order.ClientOrderID] = true
+fmt.Println(order.ClientOrderID, order.Status, order.LeavesQty)
+}
+}
+fmt.Println("owned open quotes", len(seen))
+```
+After a timeout, never resubmit with new IDs first. List open orders and query the known IDs. Cancel stale or duplicate owned quotes, then place only the missing side. Admission responses and the open-order read model can be briefly out of sync.
+5) Arm the dead-man switch and clean up
+```go
+symbol := "BTC-USDT"
+requestID := fmt.Sprintf("quote-dms-%d", time.Now().UnixNano())
+armed, err := client.Orders.CancelAllAfter(ctx, nil, 30, nil, &symbol, nil, &requestID)
+if err != nil { log.Fatal(err) }
+if armed.Status != "armed" { log.Fatalf("unexpected status %q", armed.Status) }
+open, err := client.Orders.ListOpen(ctx, nil, nil, nil, nil, false, false)
+if err != nil { log.Fatal(err) }
+for _, order := range open.Orders {
+if strings.HasPrefix(order.ClientOrderID, "quote-") {
+quoteID := order.ClientOrderID
+if _, err := client.Orders.Cancel(
+ctx, nil, nil, "eID, &symbol, nil, nil,
+); err != nil {
+var apiErr *sdkerrors.APIError
+if !errors.As(err, &apiErr) ||
+!strings.EqualFold(strings.TrimSpace(apiErr.Code), "not_found") {
+return err
+}
+}
+}
+}
+```
+Refresh the switch well before expiry. During shutdown, stop quote creation first, cancel only owned IDs, confirm they disappear, and leave the switch armed if confirmation fails. Treat `not_found` from an owned targeted cancel as idempotent success because the order may have filled or left the book after listing; propagate every other cancel error. Never substitute account-wide cancel for ownership filtering.
+## Requote policy
+Do not cancel and recreate continuously. Requote only when a deterministic condition is met, such as price drift beyond a configured number of ticks, quantity/inventory change, approaching expiry, or loss of one side. Preserve enough balance headroom for replace behavior and fees.
+Inventory skew belongs in strategy code. A common control is to reduce or disable bids when base inventory is above its ceiling, and reduce or disable asks when it is below its floor. The SDK does not choose those limits for you.
+## Failure decisions
+| Observation                    | Required action                                                              |
+| ------------------------------ | ---------------------------------------------------------------------------- |
+| Post-only rejection            | Refresh the book and compute a new price                                     |
+| Validation error               | Fix input; do not retry unchanged                                            |
+| Timeout/transport interruption | Treat outcome as unknown and reconcile IDs                                   |
+| One batch item rejected        | Keep/reconcile the accepted side; decide whether to replace the missing side |
+| Book gap or reconnect          | Pause writes until the managed snapshot refresh completes                    |
+| Dead-man refresh failure       | Stop new orders and assume expiry cleanup will run                           |
+| Queue overflow                 | Replace the subscription and run a full snapshot reconciliation              |
+## Evidence
+The exact order, batch, book, balance, and dead-man calls above are compiled by the documentation gate. Released-SDK example `07` exercises batch post-only create and cleanup; the long-running Go canary exercises managed books, balance-aware sizing, private order updates, post-only create, cancel, reconciliation, and staleness handling.
+## Related
+- [Build a production trading bot](https://testnet.polyester.com/docs/sdk/go/tutorials/trading-bot)
+- [Orders](https://testnet.polyester.com/docs/sdk/go/reference/orders)
+- [Order book](https://testnet.polyester.com/docs/sdk/go/reference/order-book)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency)
+- [Error handling](https://testnet.polyester.com/docs/sdk/go/guides/error-handling)

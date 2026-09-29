@@ -1,0 +1,246 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/layout
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Layout · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Layout
+Layout
+Copy page
+View as Markdown
+Open in
+client.Layout
+wraps app layout collaboration RPCs: reads, upsert/delete, share links,
+publish/unpublish, version history, and template subscriptions.
+Methods
+Group
+Methods
+Saved layouts
+GetLayouts
+,
+GetLayout
+,
+UpsertLayout
+,
+DeleteLayout
+Share links
+ResolveLayoutShareToken
+,
+CreateLayoutShareLink
+,
+RevokeLayoutShareLink
+Published templates
+ListOwnerPublishedLayouts
+,
+PublishLayout
+,
+UnpublishLayout
+Versions
+ListLayoutTemplateVersions
+,
+GetLayoutTemplateVersion
+Subscriptions
+SetLayoutTemplateSubscription
+,
+DeleteLayoutTemplateSubscription
+,
+ListMyLayoutTemplateSubscriptions
+layouts
+,
+err
+client
+Layout
+GetLayouts
+(
+ctx
+,
+50
+,
+""
+)
+one
+,
+err
+client
+Layout
+GetLayout
+(
+ctx
+,
+"..."
+)
+Methods accept typed scalar arguments plus map-shaped Protobuf data where a layout payload is
+required, and return
+models.ApiData
+pageToken
+This is
+not a supported API-key flow
+interactive app/session, and some deployments may not mount these
+routes
+session client for production layout work.
+Do not retry a raw layout mutation without understanding its revision/idempotency behavior.
+Never let layout availability block trading or risk controls.
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Internal transfers
+Next
+Lifecycle
+On this page
+Methods
+Related Topics
+Share this page
+Layout
+Layout collaboration APIs (reference-only).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+layouts, err := client.Layout.GetLayouts(ctx, 50, "")
+one, err := client.Layout.GetLayout(ctx, "...")

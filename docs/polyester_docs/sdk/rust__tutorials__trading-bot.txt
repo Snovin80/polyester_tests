@@ -1,0 +1,946 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/tutorials/trading-bot
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Build a production trading bot · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Tutorials
+svg]:size-3.5">
+/
+Build a production trading bot
+Build a production trading bot
+Copy page
+View as Markdown
+Open in
+This tutorial builds the operational skeleton of an automated trading system: hydrate exact market constraints,
+consume a sequence-checked book, place uniquely identified
+post-only
+quotes, reconcile ambiguous
+outcomes, arm a dead-man switch, and remove only this process's orders during shutdown.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Dedicated testnet account only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use a dedicated testnet
+API key
+and trading account. Start in observation-only mode. Do not enable
+order writes until the symbol, balance, policy limits, and cleanup behavior are verified. The
+strategy below is intentionally naive and is not financial advice.
+Production invariants
+Invariant
+SDK mechanism
+Failure action
+Never invent precision
+wait_for_catalogs
+, typed
+Price
+/
+Quantity
+Stop quoting until catalogs recover
+Never quote from a gapped book
+orderbook.create_subscription
+Wait for its snapshot refresh
+Never duplicate a logical quote
+Stable
+client_order_id
+per quote attempt
+Reconcile before retrying
+Never treat admission as final state
+list_open
+,
+get
+, private order stream
+Keep local state pending
+Never leave unknown live risk
+cancel_all_after
+plus targeted cancel
+Reconcile all bot-prefixed orders
+Never retry validation unchanged
+Error::Validation
+Correct configuration or input
+1
+Create a client and hydrate catalogs
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+api_key_id
+Some
+(
+std
+env
+var
+(
+"POLYESTER_API_KEY_ID"
+)
+expect
+(
+"API key ID"
+)),
+api_private_key
+Some
+(
+std
+env
+var
+(
+"POLYESTER_API_PRIVATE_KEY"
+)
+expect
+(
+"API private key"
+),
+),
+default_account_id
+Some
+(
+std
+env
+var
+(
+"POLYESTER_ACCOUNT_ID"
+)
+expect
+(
+"account ID"
+),
+),
+Default
+default
+()
+})
+?
+;
+client
+wait_for_catalogs
+()
+;
+Catalog readiness is a hard startup gate. Decimal order helpers must use the backend's actual
+price and quantity scales; a trading system should never fall back to an assumed scale.
+For a subaccount-scoped key, attach an API-key policy that permits ledger reads and the trading
+mutations this bot uses. The key policy is separate from, and intersects with,
+subaccount
+policy.
+2
+Start a managed order book
+use
+polyester
+services
+CreateSubscriptionOptions
+;
+let
+mut
+book_sub
+=
+client
+orderbook
+create_subscription
+(
+CreateSubscriptionOptions
+symbol
+"BTC-USDT"
+into
+(),
+depth
+Some
+(
+20
+),
+Default
+default
+()
+})
+;
+if
+let
+Some
+(
+book
+)
+=
+book_sub
+updates
+()
+recv
+()
+match
+(
+book
+bids
+first
+(),
+book
+asks
+first
+()) {
+(
+Some
+(
+bid
+),
+Some
+(
+ask
+))
+=>
+println!
+(
+"{:?} {:?} {}"
+,
+bid
+price,
+ask
+price,
+book
+book_seq),
+_
+=>
+eprintln!
+(
+"book is not quoteable"
+),
+}
+}
+Use the managed subscription instead of applying raw deltas yourself. It fetches an initial
+snapshot, detects sequence gaps, and refetches after reconnects. Pause quoting whenever the book
+is empty, crossed, stale, or awaiting refresh.
+3
+Size from trading balance and policy limits
+use
+polyester
+proto
+ledger
+read
+v1
+GetBalancesRequest
+;
+let
+balances
+=
+client
+balances
+list
+(
+GetBalancesRequest
+default
+())
+;
+for
+balance
+in
+&
+balances
+balances {
+println!
+(
+"{} available={}"
+,
+balance
+asset_id,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+balance
+available,
+18
+)
+?
+,
+);
+}
+Balance components are raw ledger
+u128
+strings at ledger scale 18. Format them once for display;
+keep the raw values for sizing and accounting.
+Orders reserve
+trading
+balance, not funding balance. Cap each quote by all of:
+available trading balance after existing holds,
+API-key policy maximum order size,
+strategy inventory and notional limits,
+pair minimum quantity/notional and step size.
+Use
+rust_decimal
+and the tested sizing helpers in
+polyester-examples-rust
+, never binary
+floating-point arithmetic.
+4
+Place one uniquely identified post-only quote
+use
+polyester
+models
+CreateOrderParams
+,
+CreateOrderType
+,
+CreateSide
+,
+CreateTimeInForce
+};
+use
+polyester
+Price
+,
+Quantity
+};
+use
+std
+time
+SystemTime
+,
+UNIX_EPOCH
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+client_order_id
+=
+format!
+(
+"trader-buy-{}"
+,
+SystemTime
+now
+()
+duration_since
+(
+UNIX_EPOCH
+)
+expect
+(
+"system clock before Unix epoch"
+)
+as_nanos
+()
+);
+let
+created
+=
+client
+orders
+create
+(
+CreateOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+side
+CreateSide
+Buy
+,
+order_type
+CreateOrderType
+Limit
+,
+quantity
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.001"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+,
+)
+?
+),
+max_quote_debit_scaled
+None
+,
+price
+Some
+(
+Price
+from_decimal_str
+(
+"50000"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+time_in_force
+Some
+(
+CreateTimeInForce
+Gtc
+),
+client_order_id
+Some
+(
+client_order_id
+clone
+()),
+subaccount_id
+None
+,
+post_only
+Some
+(
+true
+),
+market_client_ref_price
+None
+,
+fee_asset
+None
+,
+self_trade_prevention
+None
+,
+market_max_slippage
+None
+,
+attached_risk
+None
+,
+})
+;
+println!
+(
+"admission={} order_id={}"
+,
+created
+status,
+created
+order_id);
+Keep the same ID if you retry the
+same logical quote
+after
+mutation_outcome_unknown()
+rejection means the price would cross; recompute from a fresh book instead of retrying unchanged.
+5
+Arm and refresh the dead-man switch
+let
+armed
+=
+client
+orders
+cancel_all_after
+(
+30
+,
+Some
+(
+"BTC-USDT"
+),
+None
+,
+Some
+(
+"dms-trader-1"
+into
+()))
+;
+assert_eq!
+(
+armed
+status,
+"armed"
+);
+Refresh the switch on a cadence comfortably below its timeout, with a new request ID for each
+refresh. If refresh fails, stop creating orders and assume the backend will cancel them at expiry.
+Disable it only after targeted shutdown cleanup is confirmed.
+6
+Refresh quotes through successor identities
+batch_replace
+records admission, not a final execution outcome. On a successful receipt, predecessor order
+and client IDs are stale. Persist the new client order ID and switch immediately to each
+replacement_order_id
+; a predecessor lookup may return
+not_found
+/
+ORDER_UNKNOWN
+, which is
+expected. Poll
+get_batch_replace_status
+through
+admitted
+,
+working
+,
+rejected
+, and
+terminal
+For a quote-refresh loop, use
+status.is_settled()
+or
+is_batch_replace_settled(&status)
+only to
+decide that every item is
+working
+,
+rejected
+, or
+terminal
+working
+means the successor is
+live, not that execution is final. Persist and reuse the same
+request_id
+after an ambiguous
+retry. Do not send another replacement against a stale predecessor.
+7
+Reconcile instead of guessing
+let
+open
+=
+client
+orders
+list_open
+(
+None
+)
+;
+for
+order
+in
+open
+orders {
+if
+!
+order
+client_order_id
+starts_with
+(
+"trader-"
+) {
+continue
+;
+}
+match
+client
+orders
+cancel_by_client_order_id
+(
+&
+order
+client_order_id,
+Some
+(
+"BTC-USDT"
+),
+None
+)
+Ok
+(
+_
+)
+=>
+Err
+(
+polyester
+Error
+Api
+code
+,
+})
+if
+code
+eq_ignore_ascii_case
+(
+"not_found"
+)
+=>
+Err
+(
+err
+)
+=>
+return
+Err
+(
+err
+),
+}
+}
+After a timeout, reconnect, or process restart, compare bot-prefixed open orders with persisted
+quote intent, cancel stale quotes, and place only missing quotes. Do not use account-wide
+cancel_all
+as bot-ownership cleanup. A targeted cleanup cancel returning
+not_found
+is
+idempotent success: the owned order may have filled or left the book after the snapshot. Every
+other cancel error remains an error. Do not assume a timeout means the create was unapplied.
+8
+Shut down with targeted cleanup
+Use
+tokio::signal::ctrl_c()
+or a Unix signal stream. Stop the quote producer first, call
+book_sub.close()
+, run the same bot-prefix reconciliation shown above under
+tokio::time::timeout
+, then drop the client. If cleanup cannot be confirmed, leave the dead-man
+switch armed and alert an operator.
+Trading API map
+Method
+Important inputs
+Result / stream
+Operational use
+wait_for_catalogs
+none
+readiness or
+Error
+Startup gate for scales and symbol IDs
+balances.list
+GetBalancesRequest
+BalancesList
+Available trading collateral and revisions
+orderbook.get
+symbol, optional depth
+OrderbookData
+One-shot health check or reconciliation snapshot
+orderbook.create_subscription
+CreateSubscriptionOptions
+managed
+orderbook::Subscription
+Sequence-checked best bid/ask and depth
+orders.create
+CreateOrderParams
+admission
+OrderMutationResult
+Place one uniquely identified quote
+orders.modify
+ModifyOrderParams
+with stable request ID
+ModifyOrderResult
+Amend or replace with reserve headroom
+orders.cancel_by_*
+order ID or client order ID, optional routing symbol
+admission result
+Targeted cleanup
+orders.list_open_with
+subaccount, pagination, include flags
+OrdersList
+Restart and timeout reconciliation
+orders.get
+/
+get_with
+order ID or client order ID
+order plus related trades
+Resolve one ambiguous lifecycle
+orders.subscribe
+account ID
+private typed subscription
+Working, partial, terminal transitions
+orders.cancel_all_after
+timeout, optional symbol, request ID
+armed/disabled result
+Dead-man switch
+orders.batch_create
+up to 20 uniquely identified items, request ID
+per-item outcomes and counts
+Submit a quote ladder; reconcile partial outcomes
+orders.batch_replace
+/
+get_batch_replace_status
+/
+batch_cancel
+up to 50 items, request ID
+admission receipt + status phases
+Efficient ladder maintenance
+orders.wait_for_order_trades_complete
+order identity, overall
+Duration
+order plus complete trade projection
+Fee-correct post-fill accounting
+Use the linked reference pages for exact typed fields and return shapes. Treat every mutation
+timeout with
+mutation_outcome_unknown()
+as unresolved until reads or the private stream resolve
+it.
+Tested runnable sources
+Example
+03
+Example
+07
+Example
+10
+The Rust canary: long-running managed book, private order stream, create/cancel cycles, and
+bot-prefix cleanup.
+These live in
+polyester-examples-rust
+and
+polyester-sdk-canaries
+documentation snippets compile against
+polyester-sdk
+0.1.0-alpha.22
+; funded roundtrip and
+realtime heartbeat paths were also executed live for this release.
+Related
+Trading
+Orders
+Requests & idempotency
+Streaming
+Error handling
+Related Topics
+Live market ticker
+Build a snapshot-then-stream Rust market monitor with trades, candles, staleness detection, and clean shutdown.
+Portfolio tracker
+Build a revision-aware Rust account monitor for balances, reservations, open orders, fills, and reconciliation.
+Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+Previous
+Live market ticker
+Next
+Portfolio tracker
+On this page
+Production invariants
+Trading API map
+Tested runnable sources
+Related
+Related Topics
+Share this page
+Build a production trading bot
+Build a resilient Rust quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    api_key_id: Some(std::env::var("POLYESTER_API_KEY_ID").expect("API key ID")),
+    api_private_key: Some(
+        std::env::var("POLYESTER_API_PRIVATE_KEY").expect("API private key"),
+    ),
+    default_account_id: Some(
+        std::env::var("POLYESTER_ACCOUNT_ID").expect("account ID"),
+    ),
+    ..Default::default()
+})?;
+client.wait_for_catalogs().await?;
+
+---
+
+use polyester::services::CreateSubscriptionOptions;
+
+let mut book_sub = client
+    .orderbook
+    .create_subscription(CreateSubscriptionOptions {
+        symbol: "BTC-USDT".into(),
+        depth: Some(20),
+        ..Default::default()
+    })
+    .await?;
+
+if let Some(book) = book_sub.updates().recv().await {
+    match (book.bids.first(), book.asks.first()) {
+        (Some(bid), Some(ask)) => println!("{:?} {:?} {}", bid.price, ask.price, book.book_seq),
+        _ => eprintln!("book is not quoteable"),
+    }
+}
+
+---
+
+use polyester::proto::ledger::read::v1::GetBalancesRequest;
+
+let balances = client.balances.list(GetBalancesRequest::default()).await?;
+for balance in &balances.balances {
+    println!(
+        "{} available={}",
+        balance.asset_id,
+        polyester::codecs::scalars::format_ledger_u128(&balance.available, 18)?,
+    );
+}
+
+---
+
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide, CreateTimeInForce};
+use polyester::{Price, Quantity};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let client_order_id = format!(
+    "trader-buy-{}",
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock before Unix epoch")
+        .as_nanos()
+);
+let created = client
+    .orders
+    .create(CreateOrderParams {
+        symbol: "BTC-USDT".into(),
+        side: CreateSide::Buy,
+        order_type: CreateOrderType::Limit,
+        quantity: Some(Quantity::from_decimal_str(
+            "0.001",
+            quantity_scale,
+            Some("BTC-USDT".into()),
+            None,
+        )?),
+        max_quote_debit_scaled: None,
+        price: Some(Price::from_decimal_str("50000", Some("BTC-USDT".into()))?),
+        time_in_force: Some(CreateTimeInForce::Gtc),
+        client_order_id: Some(client_order_id.clone()),
+        subaccount_id: None,
+        post_only: Some(true),
+        market_client_ref_price: None,
+        fee_asset: None,
+        self_trade_prevention: None,
+        market_max_slippage: None,
+        attached_risk: None,
+    })
+    .await?;
+println!("admission={} order_id={}", created.status, created.order_id);
+
+---
+
+let armed = client
+    .orders
+    .cancel_all_after(30, Some("BTC-USDT"), None, Some("dms-trader-1".into()))
+    .await?;
+assert_eq!(armed.status, "armed");
+
+---
+
+let open = client.orders.list_open(None).await?;
+for order in open.orders {
+    if !order.client_order_id.starts_with("trader-") {
+        continue;
+    }
+    match client
+        .orders
+        .cancel_by_client_order_id(&order.client_order_id, Some("BTC-USDT"), None)
+        .await
+    {
+        Ok(_) => {}
+        Err(polyester::Error::Api { code, .. }) if code.eq_ignore_ascii_case("not_found") => {}
+        Err(err) => return Err(err),
+    }
+}

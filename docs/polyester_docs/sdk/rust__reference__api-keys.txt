@@ -1,0 +1,352 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/api-keys
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+API keys · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+API keys
+API keys
+Copy page
+View as Markdown
+Open in
+client.api_keys
+lists and streams
+API key
+metadata and generates local Ed25519 keypairs.
+Methods are authenticated. Optional
+subaccount_id
+scopes
+list
+Methods (API-key SDK)
+Method
+Summary
+generate_keypair
+Local Ed25519 keypair. Never sends the secret.
+list
+List non-revoked keys (
+Option<subaccount_id>
+).
+get
+Fetch one key by
+ak_...
+id →
+Option<ApiKeySummary>
+subscribe
+Stream private key updates (
+recv_result()
+).
+There is
+no
+create
+/
+update
+/
+delete
+on this SDK. Creating or revoking keys is a
+JWT/session product flow (TypeScript / browser).
+Generate keypair
+let
+pair
+=
+client
+api_keys
+generate_keypair
+();
+// pair.public_key_hex / pair.secret_key_hex, persist secret yourself
+List and get
+let
+keys
+=
+client
+api_keys
+list
+(
+None
+)
+;
+for
+key
+in
+&
+keys
+keys {
+println!
+(
+"{} {} {}"
+,
+key
+key_id,
+key
+label,
+key
+status);
+}
+if
+let
+Some
+(
+one
+)
+=
+client
+api_keys
+get
+(
+"ak_..."
+)
+println!
+(
+"{} {}"
+,
+one
+key_id,
+one
+status);
+}
+The
+key_id
+values on this API-key surface are
+ak_...
+credential handles, matching the value
+used by signing
+Config.api_key_id
+auth.me().api_key_id
+is instead a base58 public ID; do not
+compare it directly with these handles.
+Subscribe
+Requires the API-key administration read permission and an Account ID. The method returns only
+after the subscription-token request and Centrifugo handshake succeed.
+let
+account
+=
+client
+default_account_id
+as_deref
+();
+let
+mut
+sub
+=
+client
+api_keys
+subscribe
+(
+account
+)
+;
+while
+let
+Some
+(
+key
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{} {}"
+,
+key
+key_id,
+key
+status);
+break
+;
+}
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Create is JWT/session only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Generate a keypair here, then create the key in the Polyester app or TypeScript client.
+Related
+Authentication guide
+Authentication model
+Related Topics
+Address book
+Saved destinations and whitelist views.
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Address book
+Next
+Auth
+On this page
+Methods (API-key SDK)
+Generate keypair
+List and get
+Subscribe
+Related
+Related Topics
+Share this page
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+let pair = client.api_keys.generate_keypair();
+// pair.public_key_hex / pair.secret_key_hex, persist secret yourself
+
+---
+
+let keys = client.api_keys.list(None).await?;
+for key in &keys.keys {
+    println!("{} {} {}", key.key_id, key.label, key.status);
+}
+
+if let Some(one) = client.api_keys.get("ak_...").await? {
+    println!("{} {}", one.key_id, one.status);
+}
+
+---
+
+let account = client.default_account_id.as_deref();
+let mut sub = client.api_keys.subscribe(account).await?;
+while let Some(key) = sub.recv_result().await? {
+    println!("{} {}", key.key_id, key.status);
+    break;
+}

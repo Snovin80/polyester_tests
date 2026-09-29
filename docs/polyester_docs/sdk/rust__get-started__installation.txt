@@ -1,0 +1,345 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/get-started/installation
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Installation · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Get started
+svg]:size-3.5">
+/
+Installation
+Installation
+Copy page
+View as Markdown
+Open in
+Install the SDK from crates.io, then verify a public testnet request.
+Install the package
+dependencies
+]
+polyester-sdk
+=
+"0.1.0-alpha.49"
+tokio
+= {
+version
+=
+"1"
+,
+features
+= [
+"full"
+] }
+Private git pins remain supported when you need a specific commit:
+polyester-sdk
+= {
+git
+=
+"https://github.com/Fabric-Labs/polyester-sdk-rust"
+,
+tag
+=
+"v0.1.0a49"
+}
+The package is named
+polyester-sdk
+, but its library target is named
+polyester
+imports it with
+use polyester::...
+, exactly as the examples show. No Cargo rename is required.
+MSRV:
+Rust 1.88+. Realtime and on-chain Funding helpers are always included. Pin Connect/
+buffa
+0.8.x
+as required by the crate.
+crates.io:
+polyester-sdk
+Source (access required):
+Fabric-Labs/polyester-sdk-rust
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Alpha
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The SDK is pre-1.0. Pin an exact version in production. Version
+0.1.0-alpha.49
+(git tag
+v0.1.0a49
+) is the current API-key-only release. Outbound requests send
+User-Agent: polyester-sdk-rust/<version>
+subscriptions with handshake-before-return, and opaque pagination tokens for complete trigger
+list/event scans. Breaking public API changes are called out in the repository changelog.
+Testnet endpoints
+Pass
+polyester::POLYESTER_TESTNET_ENVIRONMENT
+on
+Config.environment
+to target Polyester
+testnet
+Setting
+Testnet
+API
+https://api-testnet.polyester.com
+WebSocket
+wss://api-testnet.polyester.com
+Override with
+Config
+fields, or (scripts only)
+POLYESTER_ENV=testnet
+and
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+via
+Client::from_env()
+Environments
+Verify the install
+Public market data needs no credentials:
+use
+polyester
+Client
+,
+Config
+};
+// public market data only
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+Default
+default
+()
+})
+?
+;
+use
+polyester
+services
+ListMarketOverviewOptions
+;
+let
+overview
+=
+client
+market_overview
+list
+(
+ListMarketOverviewOptions
+limit
+Some
+(
+5
+),
+Default
+default
+()
+})
+;
+for
+market
+in
+overview
+markets {
+println!
+(
+"{} {:?}"
+,
+market
+symbol,
+market
+last_price
+as_ref
+()
+map
+(
+|
+p
+|
+p
+as_ticks
+()));
+}
+If that prints a few markets, you are connected. Next:
+Quickstart
+Contributor live harness (strict)
+CI runs unit, compile-fail, strict-harness, and deterministic local HTTP/WebSocket hardening tests.
+Live integration under
+tests/integration/
+(and the
+a7_strict_live
+harness that shells out to
+it) remains a separate credentialed release gate. Those paths are
+excluded from the crates.io
+package
+— run them from a git checkout of this repository, not from a crates.io download.
+cargo
+test
+--lib
+cargo
+test
+--test
+integration
+--
+--test-threads=1
+Public smoke needs no keys (soft-skips when offline). Credentialed runs need
+POLYESTER_API_KEY_ID
+/
+POLYESTER_API_PRIVATE_KEY
+(usually
+POLYESTER_ACCOUNT_ID
+). Optional
+gates:
+POLYESTER_TEST_MUTATION=1
+,
+POLYESTER_TEST_FUNDED=1
+POLYESTER_TEST_STRICT_LIVE=1
+for release certification so any
+skip:
+path fails instead of
+reporting green.
+Related Topics
+Overview
+Build typed Polyester integrations with the official Rust API-key SDK.
+Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+Previous
+Overview
+Next
+Quickstart
+On this page
+Install the package
+Testnet endpoints
+Verify the install
+Contributor live harness (strict)
+Related Topics
+Share this page
+Installation
+Install the Rust SDK and verify connectivity to Polyester testnet.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+[dependencies]
+polyester-sdk = "0.1.0-alpha.49"
+tokio = { version = "1", features = ["full"] }
+
+---
+
+polyester-sdk = { git = "https://github.com/Fabric-Labs/polyester-sdk-rust", tag = "v0.1.0a49" }
+
+---
+
+use polyester::{Client, Config};
+
+// public market data only
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    ..Default::default()
+})?;
+
+---
+
+use polyester::services::ListMarketOverviewOptions;
+
+let overview = client.market_overview.list(ListMarketOverviewOptions {
+    limit: Some(5),
+    ..Default::default()
+}).await?;
+for market in overview.markets {
+    println!("{} {:?}", market.symbol, market.last_price.as_ref().map(|p| p.as_ticks()));
+}
+
+---
+
+cargo test --lib
+cargo test --test integration -- --test-threads=1

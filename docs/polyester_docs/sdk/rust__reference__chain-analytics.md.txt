@@ -1,0 +1,19 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/chain-analytics.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Chain analytics
+Chain analytics read APIs.
+`client.chain_analytics` provides public time-series reads for Zipper and unified assets.
+| Method                          | Primary identifier |
+| ------------------------------- | ------------------ |
+| `get_zipped_asset_supply`       | zipped asset ID    |
+| `get_zipped_asset_supply_group` | group ID           |
+| `get_unified_asset_balances`    | unified asset ID   |
+```rust
+let series = client
+println!("{}", series.raw);
+let balances = client
+```
+`range_key` selects the server window; `bucket`, `start_ts_sec`, and `end_ts_sec` refine it. Invalid range labels return `Error::Validation`. Responses use `ApiData`/`serde_json::Value` for forward compatibility.
+Do not use analytical aggregation as an order-book or ledger source of truth. Use [Market data](https://testnet.polyester.com/docs/sdk/rust/guides/market-data) and [Balances](https://testnet.polyester.com/docs/sdk/rust/reference/balances).

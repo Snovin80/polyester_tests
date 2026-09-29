@@ -1,0 +1,292 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/polychart/owners/owner_id/published/layers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+PolychartService
+List Owner Published Layers
+List drawing layers the owner has published for discovery.
+Copy URL
+Method
+GET
+Path
+/v1/polychart/owners/{owner_id}/published/layers
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/polychart/owners/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/polychart/owners/1/published/layers' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"layers": [
+"description": "Example configuration for the API playground.",
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+},
+"publishedAtMs": "1",
+"tags": [
+"spot"
+],
+"title": "My Trading Board"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+owner_id
+string (int64)
+required
+Owner account whose published layers should be listed.
+Query parameters
+engineSymbolId
+integer
+Optional market filter.
+limit
+integer
+≤ 500
+Maximum number of layers to return. Defaults to 100 when omitted; maximum
+is 500.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to owner, market filter, and newest-published sort order.
+Response
+Form
+JSON
+layers
+object[]
+Published layers, returned newest-published first.
+5 fields
+layer
+object
+Listed layer metadata.
+11 fields
+ownerId
+string (fixed64)
+Account that owns the layer.
+Example
+1
+layerId
+string (fixed64)
+Layer identifier unique within the owner account.
+Example
+1
+engineSymbolId
+integer (int32)
+Engine symbol identifier for the market this layer belongs to.
+Example
+1
+name
+string
+Human-readable layer name.
+Example
+BTC Support and Resistance
+sortHint
+integer (int32)
+Owner-defined ordering hint for the layer list.
+Example
+1
+colorRgba
+integer (int32)
+Owner-level style defaults.
+Packed layer color in 0xAARRGGBB format.
+Example
+1
+useLayerColor
+boolean
+True when drawings should use the layer color by default.
+Example
+false
+isLocked
+boolean
+True when clients should prevent editing drawings in this layer.
+Example
+false
+isVisible
+boolean
+True when the layer is visible by default.
+Example
+false
+revision
+string (fixed64)
+Monotonic per layer; increments on any committed change to the layer or its drawings.
+Example
+1
+updatedAtMs
+string (fixed64)
+Server-assigned commit timestamp in milliseconds since epoch (UTC).
+Example
+1
+title
+string
+Public display title.
+Example
+My Trading Board
+description
+string
+Public description shown with the layer.
+Example
+Example configuration for the API playground.
+tags
+string[]
+Public tags used for grouping or filtering.
+Example
+publishedAtMs
+string (fixed64)
+Publication time in milliseconds since epoch (UTC).
+Example
+1
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/polychart/owners/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s371" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/polychart/owners/1/published/layers' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"layers": [
+"description": "Example configuration for the API playground.",
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+},
+"publishedAtMs": "1",
+"tags": [
+"spot"
+],
+"title": "My Trading Board"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/polychart/owners/1/published/layers' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "layers": [
+    {
+      "description": "Example configuration for the API playground.",
+      "layer": {
+        "colorRgba": 1,
+        "engineSymbolId": 1,
+        "isLocked": false,
+        "isVisible": false,
+        "layerId": "1",
+        "name": "BTC Support and Resistance",
+        "ownerId": "1",
+        "revision": "1",
+        "sortHint": 1,
+        "updatedAtMs": "1",
+        "useLayerColor": false
+      },
+      "publishedAtMs": "1",
+      "tags": [
+        "spot"
+      ],
+      "title": "My Trading Board"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}

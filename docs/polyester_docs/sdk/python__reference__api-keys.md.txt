@@ -1,0 +1,45 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/api-keys.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+`client.api_keys` lists and streams API key metadata and generates local Ed25519 keypairs. Methods are authenticated and account-scoped (`account` / `sub_account_id`).
+The secret half of a keypair is generated locally and never leaves your process. You send only the public key when creating a key elsewhere (app / TypeScript session client).
+## Methods (API-key SDK)
+| Method             | Summary                                        |
+| ------------------ | ---------------------------------------------- |
+| `generate_keypair` | Local Ed25519 keypair. Never sends the secret. |
+| `list`             | List non-revoked keys for the account scope.   |
+| `get`              | Fetch one key by `ak_...` id.                  |
+| `subscribe`        | Stream private key updates.                    |
+There is **no** `create` / `update` / `delete` on this SDK. Creating or revoking keys is a JWT/session product flow (TypeScript / browser), often with MFA step-up.
+### Generate keypair
+```python
+pair = client.api_keys.generate_keypair()
+# pair.public_key_hex / pair.secret_key_hex, persist secret yourself
+```
+### List and get
+```python
+keys = await client.api_keys.list()
+for key in keys.api_keys:
+print(key.key_id, key.label, key.status)
+one = await client.api_keys.get(key_id="ak_...")
+if one:
+print(one.key_id, one.status, one.revision)
+```
+### Subscribe
+Channel `private:auth:api-keys:{account_id}:proto`. Needs API key + Account ID. The API key must include the API-key administration read permission. The method returns only after the subscription-token request and Centrifugo handshake succeed.
+```python
+sub = await client.api_keys.subscribe(account_id=client.default_account_id)
+async with sub:
+async for key in sub:
+print(key.key_id, key.status)
+break
+```
+> **Create is JWT/session only**
+>
+> Do not invent a create-key call on the Python API-key SDK. Generate a keypair here, then create the key in the Polyester app or TypeScript client.
+## Related
+- [Authentication guide](https://testnet.polyester.com/docs/sdk/python/guides/authentication)
+- [Authentication model](https://testnet.polyester.com/docs/sdk/python/concepts/authentication-model)

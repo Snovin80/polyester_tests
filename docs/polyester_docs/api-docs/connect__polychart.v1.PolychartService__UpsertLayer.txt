@@ -1,0 +1,300 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/polychart.v1.PolychartService/UpsertLayer
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+polychart.v1.PolychartService
+UpsertLayer
+UpsertLayer creates or updates a layer (owner-only).
+Copy URL
+Method
+POST
+Path
+polychart.v1.PolychartService/UpsertLayer
+Service
+polychart.v1.PolychartService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+polychart.v1.PolychartService/UpsertLayer
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/polychart.v1.PolychartService/UpsertLayer' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"expectedRevision": "1",
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+}
+}'
+Responses
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+}
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+polychart.v1.UpsertLayerRequest
+Response
+polychart.v1.UpsertLayerResponse
+Request body
+Form
+JSON
+Example
+layer
+object
+Layer payload to create or update.
+11 fields
+ownerId
+string (fixed64)
+Account that owns the layer.
+layerId
+string (fixed64)
+Layer identifier unique within the owner account.
+engineSymbolId
+integer (int32)
+Engine symbol identifier for the market this layer belongs to.
+name
+string
+Human-readable layer name.
+sortHint
+integer (int32)
+Owner-defined ordering hint for the layer list.
+colorRgba
+integer (int32)
+Owner-level style defaults.
+Packed layer color in 0xAARRGGBB format.
+useLayerColor
+boolean
+True when drawings should use the layer color by default.
+Unset
+False
+True
+isLocked
+boolean
+True when clients should prevent editing drawings in this layer.
+Unset
+False
+True
+isVisible
+boolean
+True when the layer is visible by default.
+Unset
+False
+True
+revision
+string (fixed64)
+Monotonic per layer; increments on any committed change to the layer or its drawings.
+updatedAtMs
+string (fixed64)
+Server-assigned commit timestamp in milliseconds since epoch (UTC).
+expectedRevision
+string (fixed64)
+Expected current layer revision; 0 creates a new layer.
+Response
+Form
+JSON
+layer
+object
+Layer after server-side commit handling.
+11 fields
+ownerId
+string (fixed64)
+Account that owns the layer.
+layerId
+string (fixed64)
+Layer identifier unique within the owner account.
+engineSymbolId
+integer (int32)
+Engine symbol identifier for the market this layer belongs to.
+name
+string
+Human-readable layer name.
+sortHint
+integer (int32)
+Owner-defined ordering hint for the layer list.
+colorRgba
+integer (int32)
+Owner-level style defaults.
+Packed layer color in 0xAARRGGBB format.
+useLayerColor
+boolean
+True when drawings should use the layer color by default.
+isLocked
+boolean
+True when clients should prevent editing drawings in this layer.
+isVisible
+boolean
+True when the layer is visible by default.
+revision
+string (fixed64)
+Monotonic per layer; increments on any committed change to the layer or its drawings.
+updatedAtMs
+string (fixed64)
+Server-assigned commit timestamp in milliseconds since epoch (UTC).
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+polychart.v1.PolychartService/UpsertLayer
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s399" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/polychart.v1.PolychartService/UpsertLayer' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"expectedRevision": "1",
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+}
+}'
+Responses
+"layer": {
+"colorRgba": 1,
+"engineSymbolId": 1,
+"isLocked": false,
+"isVisible": false,
+"layerId": "1",
+"name": "BTC Support and Resistance",
+"ownerId": "1",
+"revision": "1",
+"sortHint": 1,
+"updatedAtMs": "1",
+"useLayerColor": false
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/polychart.v1.PolychartService/UpsertLayer' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "expectedRevision": "1",
+  "layer": {
+    "colorRgba": 1,
+    "engineSymbolId": 1,
+    "isLocked": false,
+    "isVisible": false,
+    "layerId": "1",
+    "name": "BTC Support and Resistance",
+    "ownerId": "1",
+    "revision": "1",
+    "sortHint": 1,
+    "updatedAtMs": "1",
+    "useLayerColor": false
+  }
+}'
+
+---
+
+{
+  "layer": {
+    "colorRgba": 1,
+    "engineSymbolId": 1,
+    "isLocked": false,
+    "isVisible": false,
+    "layerId": "1",
+    "name": "BTC Support and Resistance",
+    "ownerId": "1",
+    "revision": "1",
+    "sortHint": 1,
+    "updatedAtMs": "1",
+    "useLayerColor": false
+  }
+}

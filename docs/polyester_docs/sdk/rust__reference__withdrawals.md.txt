@@ -1,0 +1,71 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+`client.withdraw` creates durable, signed withdrawal intents out of the **trading** venue: to funding or to an external chain via Zipper.
+API-key bots should use `prepare_api_key_to_funding` or `prepare_api_key_to_external_chain`. These methods build every signed field, encode `TradingWithdrawIntentPayload` with Buffa's deterministic protobuf encoder, and sign those exact bytes with the Ed25519 API private key configured on `Client`.
+Persist `PreparedTradingWithdraw::request_bytes()` before the first submission. Restore it with `PreparedTradingWithdraw::from_request_bytes` and call `submit_prepared` after an ambiguous timeout. This preserves the deadline, nonce, amount, destination, idempotency key, and signature.
+## Methods (API-key surface)
+| Method                     | Summary                                      |
+| -------------------------- | -------------------------------------------- |
+| `prepare_api_key_to_*`     | Build and sign a persistable API-key intent. |
+| `submit_prepared`          | Submit or retry that exact signed intent.    |
+| `create_to_funding`        | Trading → funding (stays on Polyester).      |
+| `create_to_external_chain` | Trading → external chain via Zipper.         |
+`create_wallet_trading_withdraw` exists for session/custody products; API-key trading applications typically use the API-key helpers above. `create_api_key_to_funding` and `create_api_key_to_external_chain` provide one-call convenience when the caller accepts persisting retry state separately.
+### Create to funding
+```rust
+use polyester::models::CreateApiKeyTradingWithdrawParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+use polyester::new_trading_withdraw_idempotency_key;
+let amount = AssetAmount::from_decimal_str("100.00", 2, QuantityDomain::LedgerE18, Some(2))?;
+let idempotency_key = new_trading_withdraw_idempotency_key()?;
+let prepared = client.withdraw.prepare_api_key_to_funding(
+CreateApiKeyTradingWithdrawParams {
+asset_id: 2,
+amount,
+destination_address: String::new(),
+idempotency_key,
+amount_scale: Some(2),
+deadline_ts_sec: None, // SDK chooses now + five minutes before signing.
+nonce: None, // SDK generates a secure nonce before signing.
+},
+)?;
+std::fs::write("prepared-withdraw.bin", prepared.request_bytes())
+let result = client.withdraw.submit_prepared(&prepared).await?;
+println!("{}", result.intent_id);
+```
+### Create to external chain
+Requires non-empty `destination_address`. Amount is gross (fees taken from it).
+```rust
+use polyester::models::CreateApiKeyTradingWithdrawParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+use polyester::new_trading_withdraw_idempotency_key;
+let external_amount =
+AssetAmount::from_decimal_str("100.00", 2, QuantityDomain::LedgerE18, Some(2))?;
+let external_idempotency_key = new_trading_withdraw_idempotency_key()?;
+let prepared = client
+CreateApiKeyTradingWithdrawParams {
+asset_id: 2,
+amount: external_amount,
+destination_address: "0x...".into(),
+idempotency_key: external_idempotency_key,
+amount_scale: Some(2),
+deadline_ts_sec: None,
+nonce: None,
+},
+1, // destination_chain_id
+)?;
+let result = client.withdraw.submit_prepared(&prepared).await?;
+```
+`amount_scale` describes input precision when `AssetAmount` does not already carry a scale; it never changes the wire contract. Every `amount_e18` is exactly rescaled to 18 decimals. Upscaling must not overflow, and downscaling must be exactly divisible; Rust never rounds.
+> **Signature required**
+>
+> The legacy precomputed-signature methods require non-empty `payload_signature`, explicit `deadline_ts_sec: Some(...)`, and a non-zero nonce. The SDK never invents or changes a signed field after accepting a signature.
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals)
+- [Internal transfers](https://testnet.polyester.com/docs/sdk/rust/reference/internal-transfers)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/rust/concepts/requests-and-idempotency)
+- [Withdrawals & transfers security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security)

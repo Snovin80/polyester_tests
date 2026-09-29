@@ -1,0 +1,305 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+GuardSigner · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Access & Security
+svg]:size-3.5">
+/
+GuardSigner
+GuardSigner
+Copy page
+View as Markdown
+Open in
+GuardSigner
+is a Polyester-managed additional signer that protects changes to the external withdrawal and internal transfer whitelists for a
+Main Account
+or
+Subaccount
+GuardSigner does not replace your
+owner wallet
+or multi-factor authentication (
+MFA
+). It does not become an owner of your
+smart account
+, approve every transaction, or control your Trading activity. A protected change still needs your authorization.
+Each Main Account and Subaccount has its own GuardSigner. Setting it up for one account does not set it up for another.
+What GuardSigner protects
+GuardSigner approves changes that modify or weaken the selected account's whitelist controls.
+Action
+GuardSigner approval required?
+Add an external withdrawal destination
+Yes
+Remove an external withdrawal destination
+Yes
+Add an internal transfer account
+Yes
+Remove an internal transfer account
+Yes
+Turn off either whitelist requirement
+Yes
+Turn on either whitelist requirement
+No
+You cannot turn on either whitelist requirement until GuardSigner is ready. Turning on a requirement does not require GuardSigner approval or MFA, but GuardSigner must be available if you later turn the requirement off.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+GuardSigner protects the control, not every movement
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground mt-0.5">
+A withdrawal or internal transfer still follows its normal destination check, MFA requirement, and account authorization. GuardSigner provides the additional approval for protected whitelist changes.
+How a protected change is approved
+A protected whitelist change uses separate security layers:
+Fresh MFA verifies that you approved the change in the current Polyester session.
+GuardSigner approves the exact account, action, and whitelist details.
+Your smart account authorizes and submits the on-chain change.
+The GuardSigner approval is valid only for the prepared change. Changing the selected account, action, or destination details requires a new approval.
+GuardSigner approvals, rotation, and private-key export require an owner session and fresh MFA.
+API keys
+cannot request these actions.
+Set up GuardSigner
+You can set up GuardSigner directly from
+Security
+1
+Switch to the account
+Switch to the Main Account or Subaccount you want to protect. The Main Account owner or Subaccount Owner must complete setup. Open
+Security
+for the active account and find the
+GuardSigner wallet
+row.
+2
+Start setup
+Select
+Set up
+Set up GuardSigner
+window, review what GuardSigner protects and select
+Set up
+again.
+3
+Confirm with your wallet
+If you use a connected wallet such as MetaMask, Polyester asks you to confirm the setup in your wallet. Approve the request to register GuardSigner with the active account. An embedded wallet completes this step without a separate wallet prompt.
+4
+Wait for confirmation
+Setup normally completes in less than one minute when your connected wallet is available. If you started setup during a whitelist flow, Polyester continues that flow after setup completes.
+Initial GuardSigner setup does not require MFA. Actions that use GuardSigner do require MFA, so we recommend setting up MFA before you need to make a protected change.
+Rotate the GuardSigner
+Rotation generates a new GuardSigner and replaces the current signer. Rotate GuardSigner if you suspect that your account or GuardSigner private key was exposed.
+Switch to the Main Account or Subaccount whose GuardSigner you want to rotate, then open
+Security
+Select
+Rotate
+under
+Rotate GuardSigner Wallet
+Review the confirmation and select
+Rotate
+again.
+Complete the MFA setup or verification shown by Polyester. Rotation requires MFA.
+Approve the wallet request if Polyester shows one.
+Wait until Polyester confirms that the new signer is active.
+The replacement does not become active until the on-chain rotation is confirmed. Rotation normally completes in less than one minute when your connected wallet is available.
+Export the private key
+Export reveals the private key for the current GuardSigner. Use it only for a deliberate recovery or migration to secure custody.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Export changes the custody boundary
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Anyone with a copy of the key can produce GuardSigner approvals. The key does not become the owner of your smart account, but the additional protection is no longer managed exclusively by Polyester.
+To export:
+Switch to the correct Main Account or Subaccount, then open
+Security
+Select
+Export
+under
+Export GuardSigner Private Key
+Read and accept the warning, then complete fresh MFA.
+Reveal the key and move it directly into secure offline custody.
+Polyester clears the displayed key when the dialog closes.
+Never place the key in source control, logs, chat, analytics, browser storage, screenshots, or unencrypted backups. Polyester support will never ask you to share it.
+Export does not remove or replace the signer registered on-chain. Polyester continues to hold and use the current key after you export it. The export gives you another copy, so Polyester no longer has exclusive control of that key.
+Rotation creates a new key held only by Polyester unless you export the replacement key again. An intentional export does not require immediate rotation, but you should rotate if you suspect that your account or any copy of the key was exposed.
+If a protected change fails
+Confirm that the intended Main Account or Subaccount is active.
+If setup was interrupted, start the whitelist action again and complete the setup prompt.
+If the request failed after MFA, Polyester may ask you to complete fresh MFA before trying again.
+Check the whitelist status after the on-chain transaction confirms before you withdraw or transfer.
+FAQ
+What is GuardSigner?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+GuardSigner is an extra security layer for your Polyester account’s withdrawal and transfer whitelists. It adds a separate approval signature when you add or remove destinations or turn off a whitelist. This prevents bypassing MFA to change those settings directly on-chain.
+Learn about GuardSigner.
+Can GuardSigner help prevent unauthorized withdrawals or transfers?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. With your withdrawal and transfer whitelists enabled, assets can only be sent to destinations you have approved. GuardSigner adds a separate approval to changes to those whitelists, including turning them off. This helps protect against someone changing your settings to redirect your assets.
+Learn about GuardSigner.
+How do I set up GuardSigner?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester manages GuardSigner and sets it up automatically when you enable a withdrawal or transfer whitelist. Once set up, it handles protected changes to both whitelists for that account.
+Learn about GuardSigner.
+How does GuardSigner work with MFA?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+GuardSigner makes MFA part of the on-chain changes to your withdrawal and transfer whitelists. You must complete the required MFA in Polyester before GuardSigner will add its signature. Your wallet’s signature alone is not enough, which prevents bypassing MFA to change your whitelist settings.
+Learn about GuardSigner.
+Can I use GuardSigner for both my Main Account and Subaccounts?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. GuardSigner can protect both your Main Account and your Subaccounts, but each account has its own GuardSigner and separate withdrawal and transfer whitelists. Open the Security settings for each account to complete setup and choose the protections you want enabled.
+Learn about GuardSigner.
+Related Topics
+Address Book & Whitelists
+Save trusted destinations and control where withdrawals and internal transfers can be sent.
+MFA & Recovery
+Add a passkey or authenticator app and keep recovery codes available if you lose a method.
+Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Previous
+Address Book & Whitelists
+Next
+API Keys
+On this page
+What GuardSigner protects
+How a protected change is approved
+Set up GuardSigner
+Rotate the GuardSigner
+Export the private key
+If a protected change fails
+FAQ
+Related Topics
+Share this page
+GuardSigner
+Set up and manage the additional signer that protects withdrawal and internal transfer whitelist changes.
+Share
+Copy Link

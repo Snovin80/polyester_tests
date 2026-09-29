@@ -1,0 +1,49 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/api-keys.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+`client.APIKeys` lists and streams API key metadata and generates local Ed25519 keypairs. Methods are authenticated and account-scoped.
+## Methods (API-key SDK)
+| Method            | Summary                                        |
+| ----------------- | ---------------------------------------------- |
+| `GenerateKeypair` | Local Ed25519 keypair. Never sends the secret. |
+| `List`            | List non-revoked keys for the account scope.   |
+| `Get`             | Fetch one key by `ak_...` id.                  |
+| `Subscribe`       | Stream private key updates (`Messages()`).     |
+There is **no** `Create` / `Update` / `Delete` on this SDK. Creating or revoking keys is a JWT/session product flow (TypeScript / browser).
+### GenerateKeypair()
+```go
+pair := client.APIKeys.GenerateKeypair()
+// pair.PublicKeyHex / pair.SecretKeyHex, persist secret yourself
+```
+### List / Get
+```go
+keys, err := client.APIKeys.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, key := range keys.Keys {
+fmt.Println(key.KeyID, key.Label, key.Status)
+}
+one, err := client.APIKeys.Get(ctx, "ak_...")
+if one != nil {
+fmt.Println(one.KeyID, one.Status)
+}
+```
+### Subscribe(ctx, accountID)
+Requires the API-key administration read permission and an Account ID. The method returns only after the subscription-token request and Centrifugo handshake succeed.
+```go
+sub, err := client.APIKeys.Subscribe(ctx, client.DefaultAccountID)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for key := range sub.Messages() {
+fmt.Println(key.KeyID, key.Status)
+break
+}
+```
+> **Create is JWT/session only**
+>
+> Generate a keypair here, then create the key in the Polyester app or TypeScript client.
+## Related
+- [Authentication guide](https://testnet.polyester.com/docs/sdk/go/guides/authentication)
+- [Authentication model](https://testnet.polyester.com/docs/sdk/go/concepts/authentication-model)

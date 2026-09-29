@@ -1,0 +1,281 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/authentication
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Authentication · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Guides
+Authentication
+Copy page
+View as Markdown
+Open in
+Programmatic access uses
+Ed25519
+API keys
+fetches private realtime tokens for you.
+Recommended: explicit credentials
+from
+polyester
+import
+AsyncPolyester,
+POLYESTER_TESTNET_ENVIRONMENT
+async
+with
+AsyncPolyester(
+environment
+=
+POLYESTER_TESTNET_ENVIRONMENT
+,
+api_key_id
+=
+"ak_..."
+,
+api_private_key
+=
+"..."
+,
+# 64-char hex from key creation
+default_account_id
+=
+"..."
+,
+# Profile → Account ID
+)
+as
+client:
+await
+client.wait_for_catalogs()
+Environment variables
+Read secrets in your process and pass them in:
+import
+os
+from
+polyester
+import
+AsyncPolyester,
+POLYESTER_TESTNET_ENVIRONMENT
+client
+=
+AsyncPolyester(
+environment
+=
+POLYESTER_TESTNET_ENVIRONMENT
+,
+api_key_id
+=
+os.environ[
+"POLYESTER_API_KEY_ID"
+],
+api_private_key
+=
+os.environ[
+"POLYESTER_API_PRIVATE_KEY"
+],
+default_account_id
+=
+os.environ[
+"POLYESTER_ACCOUNT_ID"
+],
+)
+For scripts only,
+AsyncPolyester.from_env()
+/
+Polyester.from_env()
+load the network preset,
+credentials, and Account ID. Set
+POLYESTER_ENV=testnet
+Variable
+Purpose
+POLYESTER_ENV
+Network preset, set to
+testnet
+POLYESTER_API_KEY_ID
+API key id
+POLYESTER_API_PRIVATE_KEY
+64-char hex private key
+POLYESTER_ACCOUNT_ID
+Profile Account ID
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+Optional
+api_url
+/
+ws_url
+overrides
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Never commit secrets
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use placeholders in docs and samples. Store production keys in your secret manager.
+Generate a keypair
+pair
+=
+client.api_keys.generate_keypair()
+# pair.public_key_hex / pair.secret_key_hex, persist secret yourself
+Local key material only via
+generate_keypair()
+client.api_keys
+Creating
+API keys is JWT/session-only (TypeScript / browser), not exposed on this SDK.
+See
+API keys
+Public vs private
+Public market data works with no key.
+Private RPCs and private WebSocket channels need a key
+and
+Account ID.
+Subaccount scope
+Set
+default_sub_account_id
+for default scoping, or pass per-call
+account
+/
+sub_account_id
+where the service supports it.
+Concept:
+Authentication model
+Config:
+Client configuration
+Related Topics
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers and risk attachments.
+Streaming
+Subscribe to public and private WebSocket Protobuf channels with async iterators, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, lifecycle, and chain helpers.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify failures, retry safely with idempotency keys, and handle realtime overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Python trading system safely.
+Previous
+Limitations & non-features
+Next
+Market data
+On this page
+Recommended: explicit credentials
+Environment variables
+Generate a keypair
+Public vs private
+Subaccount scope
+Related Topics
+Share this page
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+
+async with AsyncPolyester(
+    environment=POLYESTER_TESTNET_ENVIRONMENT,
+    api_key_id="ak_...",
+    api_private_key="...",  # 64-char hex from key creation
+    default_account_id="...",  # Profile → Account ID
+) as client:
+    await client.wait_for_catalogs()
+
+---
+
+import os
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+
+client = AsyncPolyester(
+    environment=POLYESTER_TESTNET_ENVIRONMENT,
+    api_key_id=os.environ["POLYESTER_API_KEY_ID"],
+    api_private_key=os.environ["POLYESTER_API_PRIVATE_KEY"],
+    default_account_id=os.environ["POLYESTER_ACCOUNT_ID"],
+)
+
+---
+
+pair = client.api_keys.generate_keypair()
+# pair.public_key_hex / pair.secret_key_hex, persist secret yourself

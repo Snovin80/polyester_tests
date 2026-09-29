@@ -1,0 +1,68 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/streaming.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Realtime uses the **binary Centrifugo Protobuf WebSocket protocol**. Service subscribe helpers return `*realtime.Subscription[T]`. Consume with `Messages()`, **Go has no `Recv()`**.
+The SDK negotiates the `centrifuge-protobuf` WebSocket subprotocol. Both Centrifugo control frames and `:proto` channel publications are binary Protobuf. ConnectRPC's optional JSON wire mode is unrelated and never changes realtime framing.
+Managed order-book / market-overview subscriptions return dedicated types with **`Updates()`**, `SetOnError(...)`, and `Err()`.
+## Contract
+```go
+sub, err := client.Orders.Subscribe(ctx, accountID)
+if err != nil { log.Fatal(err) } // handshake already completed
+defer sub.Close()
+sub.SetOnError(func(err error) {
+log.Printf("realtime interruption: %v", err)
+})
+for order := range sub.Messages() {
+fmt.Println(order.Status, order.OrderID)
+}
+if err := sub.Err(); err != nil {
+// includes *errors.QueueOverflowError when the consumer lagged
+}
+```
+- Subscribe waits for handshake (and private token fetch) before returning.
+- Private channels need API key + Account ID. Hyphenated segments (`api-keys`, `api-policies`) are valid, the SDK’s RFC 3986-preserving query encoding leaves `-` unescaped.
+- Overflow is fail-closed (`*errors.QueueOverflowError`).
+- Reconnect uses capped exponential backoff with per-subscription jitter.
+## What you can stream
+| Stream                                | Method                                                 | Auth              | Consume      |
+| ------------------------------------- | ------------------------------------------------------ | ----------------- | ------------ |
+| Public trades                         | `MarketData.SubscribeTrades`                           | public            | `Messages()` |
+| Candles                               | `MarketData.SubscribeCandles`                          | public            | `Messages()` |
+| Order book (managed)                  | `Orderbook.CreateSubscription`                         | public            | `Updates()`  |
+| Market overview (managed)             | `MarketOverview.CreateSubscription`                    | public            | `Updates()`  |
+| Heatmap                               | `Heatmap.SubscribeLive`                                | public            | `Messages()` |
+| Lifecycle                             | `Lifecycle.SubscribeOpenFlows` / `SubscribeFlowDetail` | public or private | `Messages()` |
+| Zipped-asset supply                   | `Zipper.SubscribeZippedAssetSupply`                    | public            | `Messages()` |
+| Profile identity                      | `Auth.Profile.SubscribeIdentity`                       | public            | `Messages()` |
+| Orders / triggers / trades / balances | matching `Subscribe` helpers                           | private           | `Messages()` |
+| Transfers                             | `Transfers.Subscribe`                                  | private           | `Messages()` |
+| API keys                              | `APIKeys.Subscribe`                                    | private           | `Messages()` |
+| API/subaccount policies               | `Policies.Subscribe*Policies`                          | private           | `Messages()` |
+| Subaccounts / address book            | matching subscribe helpers                             | private           | `Messages()` |
+> **Account-administration streams**
+>
+> Account-administration streams require the corresponding API-key read permission and an Account ID. An HTTP 403 `*errors.AuthError` is non-transient; inspect `Code`, `Context`, and `Endpoint`, then update the key policy before reconnecting.
+## Public trades
+```go
+symbol := "BTC-USDT"
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for trade := range sub.Messages() {
+fmt.Println(trade)
+break
+}
+```
+## Snapshot-then-stream
+Managed order-book subscriptions snapshot via REST, then stream deltas. Sequence gaps trigger a REST snapshot refresh. The create call returns only after the WebSocket handshake and initial snapshot succeed. Prefer these helpers over wiring raw channels yourself.
+Market overview uses the same managed pattern. For entity streams (orders, balances, trades, transfers, triggers), events are **not** a complete starting snapshot: subscribe first, fetch the corresponding list/snapshot, buffer events during the read, then reconcile by entity ID plus version/timestamp. After reconnect, re-read authoritative state before declaring the bot healthy.
+Typed subscriptions do **not** recover missed publications across reconnect (no Centrifugo resume cursor). Poll `sub.TakeResubscribed()` (or watch `sub.Resubscribes()`) after each message and treat a latch as a gap: rebuild from REST before trusting the stream again. A WebSocket read timeout is treated as connection death so half-open sockets reconnect instead of freezing.
+Never quote from raw order-book deltas. Use `Orderbook.CreateSubscription`, which detects gaps and refreshes its snapshot.
+## Overflow
+> **Fail-closed overflow**
+>
+> Slow consumers fault the subscription; updates are not silently dropped. Resubscribe and rebuild authoritative state, a new stream alone does not recover missed entity events.
+Reference: [Realtime](https://testnet.polyester.com/docs/sdk/go/reference/realtime). Session model: [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model).

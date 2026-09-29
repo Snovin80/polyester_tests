@@ -1,0 +1,443 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/social-verification
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Social verification · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Social verification
+Social verification
+Copy page
+View as Markdown
+Open in
+client.socialVerification
+proves that the authenticated caller controls an external social account.
+Every method is authenticated. These calls need a wallet session. An
+API key
+gets
+AuthenticationError
+start
+begins or restarts verification, and
+get
+reports the current status, attempts, and any
+last error. For Twitter, provide a handle and place the returned
+poly_...
+code in the selected
+profile location, then call
+markReady
+to queue the check. For Discord, omit the handle: the
+authenticated bot supplies the provider identity. Discord supports
+"channel"
+and
+"dm"
+methods
+and defaults to
+"channel"
+; it can return an empty
+challengeCode
+when no new challenge is issued.
+Methods
+Method
+Summary
+start
+Begin (or restart) verification and get a challenge code.
+markReady
+Queue the provider check once the code is placed.
+get
+Read the current verification status.
+start(input, options?)
+Begins or restarts verification and returns the
+challengeCode
+, its
+expiresAt
+(about 15 minutes
+out), and the current
+verification
+record. Twitter trims whitespace and strips leading
+characters from its required handle. Discord does not accept a handle.
+const
+challengeCode
+,
+expiresAt
+}
+=
+await
+client
+socialVerification
+start
+({
+provider:
+"twitter"
+,
+handle:
+"@satoshi"
+,
+// stored as "satoshi"
+method:
+"profile"
+,
+// optional, defaults to "profile"
+});
+// Tell the user to place challengeCode in the Twitter profile before it expires.
+console
+log
+(
+challengeCode
+);
+// "poly_..."
+For Discord, let the SDK use the provider default or choose one of its supported methods:
+const
+challengeCode
+}
+=
+await
+client
+socialVerification
+start
+({
+provider:
+"discord"
+,
+method:
+"channel"
+,
+});
+StartVerificationInput
+Field
+Type
+Required
+Notes
+provider
+"twitter" | "discord"
+yes
+The social provider.
+handle
+string
+Twitter
+Required only for Twitter; a leading
+is removed.
+method
+"profile" | "channel" | "dm"
+no
+Twitter supports
+"profile"
+; Discord supports
+"channel"
+or
+"dm"
+Twitter handles must contain 1 to 15 ASCII letters, digits, or underscores. Twitter accepts only
+the
+"profile"
+method. Discord accepts only
+"channel"
+or
+"dm"
+and supplies its identity
+through the authenticated bot.
+markReady(input, options?)
+Queues the provider check after the caller has placed the challenge code. Returns the updated
+verification
+record. Call this once the code is live at the location the method requires.
+const
+verification
+}
+=
+await
+client
+socialVerification
+markReady
+({ provider:
+"twitter"
+});
+console
+log
+(
+verification
+?.
+status
+);
+// e.g. "queued"
+get(input, options?)
+Returns the caller's current verification state for a provider:
+status
+, challenge metadata,
+attempts
+,
+lastError
+, and the
+verifiedAt
+timestamp once it succeeds.
+const
+verification
+}
+=
+await
+client
+socialVerification
+get
+({ provider:
+"twitter"
+});
+if
+(
+verification
+?.
+status
+===
+"verified"
+) {
+console
+log
+(
+"verified at"
+,
+verification
+verifiedAt
+);
+}
+else
+if
+(
+verification
+?.
+status
+===
+"failed"
+) {
+console
+error
+(
+verification
+lastError
+);
+}
+status
+is one of
+"pending_user_action"
+,
+"queued"
+,
+"in_progress"
+,
+"verified"
+,
+"failed"
+,
+"expired"
+, or
+"cancelled"
+get
+after
+markReady
+until the status settles.
+Related
+Profile
+for the account identity these handles attach to.
+Errors
+for the error type reference.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Realtime client
+Next
+Subaccounts
+On this page
+Methods
+start(input, options?)
+StartVerificationInput
+markReady(input, options?)
+get(input, options?)
+Related
+Related Topics
+Share this page
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { challengeCode, expiresAt } = await client.socialVerification.start({
+	provider: "twitter",
+	handle: "@satoshi", // stored as "satoshi"
+	method: "profile", // optional, defaults to "profile"
+});
+
+// Tell the user to place challengeCode in the Twitter profile before it expires.
+console.log(challengeCode); // "poly_..."
+
+---
+
+const { challengeCode } = await client.socialVerification.start({
+	provider: "discord",
+	method: "channel",
+});
+
+---
+
+const { verification } = await client.socialVerification.markReady({ provider: "twitter" });
+console.log(verification?.status); // e.g. "queued"
+
+---
+
+const { verification } = await client.socialVerification.get({ provider: "twitter" });
+if (verification?.status === "verified") {
+	console.log("verified at", verification.verifiedAt);
+} else if (verification?.status === "failed") {
+	console.error(verification.lastError);
+}

@@ -1,0 +1,27 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/zipper.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Zipper
+Deposit/withdraw config and related Zipper reads.
+`client.Zipper` exposes route configuration and live zipped-asset supply updates.
+```go
+config, err := client.Zipper.GetDepositWithdrawConfig(ctx)
+if err != nil { log.Fatal(err) }
+if err := client.Catalogs.HydrateZipperConfig(config); err != nil {
+log.Fatal(err)
+}
+```
+Client construction starts catalog hydration when `HydrateCatalogs` is enabled. `WaitForCatalogs` returns an error when hydration fails (HTTP/transport error, malformed config, or invalid scales). Call `HydrateZipperConfig` directly for an explicit refresh.
+```go
+sub, err := client.Zipper.SubscribeZippedAssetSupply(ctx, true)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for batch := range sub.Messages() {
+for _, update := range batch.Updates {
+fmt.Println(update.ZippedAssetID, update.Supply)
+}
+break
+}
+```
+With `patchCatalog=true`, supply events update the shared catalog before delivery. The stream is public. Route config is not a fee quote; quote immediately before an on-chain withdrawal and enforce a maximum fee/slippage.

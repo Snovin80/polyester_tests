@@ -1,0 +1,1831 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/orders
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Orders · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Orders
+Orders
+Copy page
+View as Markdown
+Open in
+client.orders
+is the spot order surface. Methods are
+async
+and return
+Result<T>
+params (
+CreateOrderParams
+,
+ModifyOrderParams
+, …) with
+Price
+/
+Quantity
+wrappers.
+Create/modify/batch paths wait for catalog hydration when enabled. You can still call
+client.wait_for_catalogs().await?
+before other decimal helpers.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+post_only is limit GTC only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+post_only: Some(true)
+is rejected for market, limit IOC, and limit FOK
+(
+Error::Validation
+).
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+price is limit-only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+price
+on a market create is rejected by the SDK. Use
+market_client_ref_price
+when you need a
+reservation / slippage reference. The server may still accept a stray price if you bypass the SDK.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Create status is admission only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+create
+/
+batch_create
+synthesize
+status: "accepted"
+That is an admission ack, not a lifecycle state. Do not assert
+"created"
+on the create
+response. Use
+list_open
+/
+get
+/
+subscribe
+for working /
+partial / terminal statuses. Spot orders spend
+trading
+balance, not funding.
+There is no
+allow_partial
+argument on Rust
+batch_create
+Methods
+Method
+Summary
+create
+Place a limit or market order (
+CreateOrderParams
+).
+modify
+Patch price / qty / attached risk (
+ModifyOrderParams
+).
+cancel
+/
+cancel_with
+Cancel via proto or
+CancelOrderParams
+cancel_by_client_order_id
+/
+cancel_by_order_id
+Convenience cancels.
+cancel_all
+/
+cancel_all_with
+Bulk cancel (
+dry_run
+).
+cancel_all_after
+Dead-man switch.
+batch_create
+/
+batch_replace
+/
+get_batch_replace_status
+/
+batch_cancel
+Batch mutations and replace status.
+list_open
+/
+list_open_with
+Open orders.
+list_history
+/
+list_history_with
+History.
+get
+/
+get_with
+One order + trades.
+subscribe
+Private order stream (
+recv_result()
+).
+No
+get_details
+, use
+get
+Create
+use
+polyester
+models
+CreateOrderParams
+,
+CreateOrderType
+,
+CreateSide
+,
+CreateTimeInForce
+,
+FeeAsset
+,
+OrderSelfTradePrevention
+,
+};
+use
+polyester
+Price
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+result
+=
+client
+orders
+create
+(
+CreateOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+side
+CreateSide
+Buy
+,
+order_type
+CreateOrderType
+Limit
+,
+quantity
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.25"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+),
+max_quote_debit_scaled
+None
+,
+price
+Some
+(
+Price
+from_decimal_str
+(
+"64250.5"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+time_in_force
+Some
+(
+CreateTimeInForce
+Gtc
+),
+client_order_id
+Some
+(
+"mm-bot-001"
+into
+()),
+subaccount_id
+None
+,
+post_only
+Some
+(
+true
+),
+market_client_ref_price
+None
+,
+fee_asset
+Some
+(
+FeeAsset
+Base
+),
+self_trade_prevention
+Some
+(
+OrderSelfTradePrevention
+ExpireBoth
+),
+market_max_slippage
+None
+,
+attached_risk
+None
+,
+})
+;
+println!
+(
+"{} {}"
+,
+result
+status,
+result
+order_id);
+// status == "accepted"
+client_order_id
+is optional. Pass
+Some(...)
+when you may need to reconcile an uncertain create;
+omit (
+None
+) for one-shot creates. Reuse of a retained ID, including an identical request, returns
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+; it does not replay the earlier result. Reconcile by client
+order ID before deciding whether to resubmit.
+OrdersService::create_params(...)
+builds a
+defaults-filled
+CreateOrderParams
+you can mutate.
+For MARKET orders,
+market_max_slippage
+accepts
+MaxSlippage::Ticks
+or
+MaxSlippage::Bps
+; SELL orders must use
+FeeAsset::Quote
+CreateOrderParams fields
+Field
+Type
+Required
+Contract
+symbol
+String
+yes
+Pair symbol; catalogs provide quantity scale
+side
+CreateSide
+yes
+Buy
+or
+Sell
+order_type
+CreateOrderType
+yes
+Limit
+or
+Market
+quantity
+Option<Quantity>
+one sizing mode
+Exact base quantity; set exactly one of this or
+max_quote_debit_scaled
+max_quote_debit_scaled
+Option<i64>
+one sizing mode
+Hard all-in quote budget for BUY market or limit IOC
+price
+Option<Price>
+limit
+Exact limit price
+time_in_force
+Option<CreateTimeInForce>
+limit
+Gtc
+,
+Ioc
+, or
+Fok
+client_order_id
+Option<String>
+no
+Account-scoped duplicate guard, 1–36 allowed characters
+subaccount_id
+Option<u64>
+no
+Explicit scope override
+post_only
+Option<bool>
+no
+Some(true)
+only for limit GTC
+market_client_ref_price
+Option<Price>
+market
+Client reservation reference
+fee_asset
+Option<FeeAsset>
+no
+Quote
+default or BUY-only
+Base
+self_trade_prevention
+Option<OrderSelfTradePrevention>
+no
+ExpireTaker
+,
+ExpireMaker
+, or
+ExpireBoth
+market_max_slippage
+Option<MaxSlippage>
+market
+Ticks(i32)
+or
+Bps(i32)
+attached_risk
+Option<AttachedRisk>
+no
+Typed TP/SL/trailing policy
+fee_asset
+replaces
+fee_source
+/
+received
+resolved_base_qty
+and, for quote-budget sizing,
+submitted_max_quote_debit_scaled
+client.orders.preview(PreviewOrderParams { ... })
+with the same sizing and fee fields for an
+admissibility check (
+admissible
+, optional typed
+rejection
+, resolved base size, and
+protected_price_bound
+when price protection applied). Preview does not return fee or
+quote-debit estimates. Create always re-evaluates the intent.
+PreviewOrderResult
+exposes:
+admissible
+rejection
+OrderErrorDetail
+with a stable
+code
+label such as
+BAD_QTY
+and
+field-level
+violations
+(
+field_path
+,
+rule_id
+,
+message
+).
+Typed
+resolved_base_qty
+when the service resolved a base size.
+protected_price_bound
+evaluated_at_ms
+Modify
+use
+polyester
+models
+ModifyOrderParams
+;
+use
+polyester
+Price
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+order_id
+=
+"order-id-from-create"
+to_owned
+();
+client
+orders
+modify
+(
+ModifyOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+order_id
+Some
+(
+order_id
+),
+client_order_id
+None
+,
+subaccount_id
+None
+,
+request_id
+Some
+(
+"mod-1"
+into
+()),
+new_price
+Some
+(
+Price
+from_decimal_str
+(
+"64100"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+new_qty
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.2"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+,
+)
+?
+),
+new_attached_risk
+None
+,
+behavior
+None
+,
+new_client_order_id
+None
+,
+})
+;
+Requires exactly one of
+order_id
+/
+client_order_id
+, and at least one of
+new_price
+,
+new_qty
+,
+new_attached_risk
+request_id
+, the SDK generates one for that single
+call; supply a stable value when retrying the same logical modify. See
+Requests & idempotency
+ModifyOrderParams fields
+Field
+Required
+Contract
+symbol
+yes
+Pair symbol used for routing and scale
+order_id
+/
+client_order_id
+exactly one
+Existing order identity
+subaccount_id
+no
+Explicit scope override
+request_id
+no
+SDK generates one when absent; provide and reuse one for retries
+new_price
+/
+new_qty
+/
+new_attached_risk
+at least one
+Desired patch
+behavior
+no
+Backend modify behavior string
+new_client_order_id
+no
+Replacement identity, locally validated
+Cancel by client order ID or order ID
+let
+order_id
+=
+"order-id-from-create"
+;
+client
+orders
+cancel_by_client_order_id
+(
+"mm-bot-001"
+,
+Some
+(
+"BTC-USDT"
+),
+None
+)
+;
+client
+orders
+cancel_by_order_id
+(
+order_id
+,
+None
+)
+;
+Omitting both
+symbol
+and
+symbol_id
+deliberately sends
+symbol_id = 0
+, allowing a targeted
+cancel to
+route
+through the order directory without waiting for catalog hydration. If you supply a
+symbol, the SDK waits for catalog readiness and returns
+Error::Validation
+when it cannot resolve
+that symbol. An explicitly supplied
+symbol_id
+must be non-zero.
+Cancel all
+use
+polyester
+models
+CancelAllOpts
+;
+let
+preview
+=
+client
+orders
+cancel_all_with
+(
+CancelAllOpts
+symbol
+Some
+(
+"BTC-USDT"
+into
+()),
+dry_run
+true
+,
+request_id
+Some
+(
+"ca-preview-1"
+into
+()),
+Default
+default
+()
+})
+;
+println!
+(
+"{}"
+,
+preview
+matched_orders);
+client
+orders
+cancel_all_with
+(
+CancelAllOpts
+symbol
+Some
+(
+"BTC-USDT"
+into
+()),
+dry_run
+false
+,
+side
+Some
+(
+"buy"
+into
+()),
+request_id
+Some
+(
+"ca-1"
+into
+()),
+Default
+default
+()
+})
+;
+If you omit
+request_id
+on
+cancel_all
+/
+cancel_all_with
+/
+cancel_all_after
+, the SDK
+generates one for that single call. Supply a stable value when retrying the same logical bulk
+cancel. Cancellation responses acknowledge that the request was accepted. The order read model can
+lag briefly, so reconcile with
+list_open
+or
+get
+before releasing local state. Retrying the same
+cancel for an order that remains visible is safe.
+For process-owned cleanup, select owned client IDs and cancel them individually. A targeted cancel
+that returns API code
+not_found
+is idempotent success because the order may have filled or left
+the book after the preceding read; every other cancel error remains an error. Do not use
+account-wide
+cancel_all
+as an ownership filter.
+For
+cancel_all_after
+, use
+timeout_sec=0
+to disable or
+10
+–
+120
+to arm. The API enforces this
+range; the Rust SDK currently passes the value through.
+cancel_all
+accepts only backend statuses
+submitted
+/
+dry_run
+;
+cancel_all_after
+accepts
+armed
+/
+disabled
+non-retryable
+Error::ResponseContract
+mutation, reconcile before taking further action.
+Batch create
+use
+polyester
+models
+CreateOrderType
+,
+CreateSide
+,
+CreateTimeInForce
+};
+use
+polyester
+services
+OrdersService
+;
+use
+polyester
+Price
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+mut
+first
+=
+OrdersService
+create_params
+(
+"BTC-USDT"
+,
+CreateSide
+Buy
+,
+CreateOrderType
+Limit
+,
+Quantity
+from_decimal_str
+(
+"0.001"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+,
+Some
+(
+Price
+from_decimal_str
+(
+"50000"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+Some
+(
+"batch-001"
+),
+);
+first
+time_in_force
+=
+Some
+(
+CreateTimeInForce
+Gtc
+);
+first
+post_only
+=
+Some
+(
+true
+);
+let
+mut
+second
+=
+first
+clone
+();
+second
+client_order_id
+=
+Some
+(
+"batch-002"
+into
+());
+second
+price
+=
+Some
+(
+Price
+from_decimal_str
+(
+"49950"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+);
+let
+batch
+=
+client
+orders
+batch_create
+(
+vec!
+first
+,
+second
+],
+None
+,
+Some
+(
+"batch-request-1"
+into
+()))
+;
+println!
+(
+"{}"
+,
+batch
+results
+len
+());
+Batch replace
+use
+polyester
+models
+BatchReplaceItem
+,
+OrderKey
+};
+use
+polyester
+Price
+;
+let
+replace_price
+=
+Price
+from_decimal_str
+(
+"63900"
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+;
+let
+receipt
+=
+client
+orders
+batch_replace
+(
+vec!
+BatchReplaceItem
+key
+OrderKey
+ClientOrderId
+(
+"batch-001"
+into
+()),
+new_price
+Some
+(
+replace_price
+),
+new_qty
+None
+,
+new_attached_risk
+None
+,
+new_client_order_id
+None
+,
+}],
+"BTC-USDT"
+,
+None
+,
+Some
+(
+"batch-replace-1"
+into
+()),
+)
+;
+println!
+(
+"{} {}"
+,
+receipt
+batch_request_id,
+receipt
+status);
+let
+status
+=
+client
+orders
+get_batch_replace_status
+(
+&
+receipt
+batch_request_id,
+None
+)
+;
+println!
+(
+"{} items"
+,
+status
+items
+len
+());
+batch_replace
+is a same-symbol quote refresh only. The write RPC returns a durable admission
+receipt (
+batch_request_id
+, accepted/rejected counts), not a final execution outcome. After successful
+admission, predecessor order and client IDs are stale. Switch immediately to each
+replacement_order_id
+and new client order ID in the receipt. A predecessor
+get
+may return
+not_found
+/
+ORDER_UNKNOWN
+; that is expected. Poll
+get_batch_replace_status
+to reconcile
+admitted
+,
+working
+,
+rejected
+, and
+terminal
+so retry the poll.
+For quote-refresh bots,
+status.is_settled()
+or
+is_batch_replace_settled(&status)
+means every
+item is
+working
+,
+rejected
+, or
+terminal
+execution outcome:
+working
+means the successor is live. Reuse the same
+request_id
+for an ambiguous retry
+and never replace against a stale predecessor.
+Batch size contracts:
+the API declares
+batch_create
+max
+20
+and
+batch_replace
+/
+batch_cancel
+max
+50
+Every successful batch-create response item is either
+accepted
+or
+rejected
+the aggregate counts for create, replace, and cancel batches with their per-item outcomes. A
+malformed or inconsistent success response returns non-retryable
+Error::ResponseContract
+with
+mutation_outcome_unknown() == true
+rejection enums remain visible as
+UNKNOWN_ERROR_CODE(<number>)
+Batch timeouts and reconciliation
+A timeout on a batch mutation is an unknown outcome, not proof that nothing committed. Do not
+blindly resubmit the batch with new identifiers. Give the batch a stable
+request_id
+, give every
+create item a unique
+client_order_id
+, and reconcile every item with
+get
+,
+list_open
+, or order
+history before retrying. Reuse the same
+request_id
+for the same logical attempt, but do not treat
+that ID as a whole-batch atomic replay guarantee: a retry may finish remaining items, replay a
+cached result, or reject stale source items. The SDK sends each call once and does not promise
+server-side atomicity.
+Trade projection after fills
+get
+can report
+cum_qty
+before every fill is visible on the trades list. Prefer
+orders.wait_for_order_trades_complete
+after fills when you need a terminal order whose trade rows
+match
+cum_qty
+GetOrder
+call:
+use
+std
+time
+Duration
+;
+let
+order_id
+=
+"order-id-from-create"
+;
+let
+details
+=
+client
+orders
+wait_for_order_trades_complete
+(
+None
+,
+Some
+(
+order_id
+),
+Duration
+from_secs
+(
+15
+))
+;
+println!
+(
+"{} trades"
+,
+details
+trades
+len
+());
+Market BUY execution quantity can differ from the submitted quantity after venue normalization.
+For cleanup, use the completed trade projection and convert
+fee_amount_e18
+to the symbol's base
+quantity scale for BUY fills whose
+fee_asset
+is
+"base"
+; subtract when
+fee_is_rebate
+is
+false and add when it is true. Sell that net received base quantity, not the requested decimal
+or gross
+cum_qty
+Dead-man's switch
+client
+orders
+cancel_all_after
+(
+15
+,
+Some
+(
+"BTC-USDT"
+),
+None
+,
+Some
+(
+"caa-1"
+into
+()))
+;
+Read orders
+use
+polyester
+models
+ListOrderHistoryOpts
+;
+let
+order_id
+=
+"order-id-from-create"
+;
+let
+open
+=
+client
+orders
+list_open
+(
+None
+)
+;
+let
+hist
+=
+client
+orders
+list_history_with
+(
+ListOrderHistoryOpts
+symbol
+Some
+(
+"BTC-USDT"
+into
+()),
+limit
+Some
+(
+100
+),
+Default
+default
+()
+})
+;
+let
+details
+=
+client
+orders
+get
+(
+None
+,
+Some
+(
+order_id
+),
+None
+)
+;
+let
+_
+=
+(
+open
+,
+hist
+,
+details
+);
+Subscribe
+let
+mut
+sub
+=
+client
+orders
+subscribe
+(
+client
+default_account_id
+as_deref
+())
+;
+while
+let
+Some
+(
+order
+)
+=
+sub
+recv_result
+()
+let
+scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol_id
+(
+order
+symbol_id)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"stream symbol quantity scale is unavailable"
+))
+?
+;
+let
+leaves
+=
+match
+&
+order
+leaves_qty {
+Some
+(
+qty
+)
+=>
+Some
+(
+qty
+format
+(
+Some
+(
+scale
+))
+?
+),
+None
+=>
+None
+,
+};
+println!
+(
+"{} {} {:?}"
+,
+order
+status,
+order
+order_id,
+leaves
+);
+break
+;
+}
+if
+let
+Some
+(
+err
+)
+=
+sub
+err
+() {
+eprintln!
+(
+"subscription ended: {err}"
+);
+}
+Private order payloads may omit quantity scale metadata. Resolve scale from the hydrated catalog by
+symbol_id
+(or the corresponding symbol) before formatting
+orig_qty
+,
+cum_qty
+, or
+leaves_qty
+Identifier constraints
+client_order_id
+and
+new_client_order_id
+accept 1 to 36 characters. Allowed characters are
+ASCII letters, digits,
+,
+_
+,
+,
+/
+, and
+-
+(
+Error::Validation
+) before send. If create omits
+client_order_id
+, the wire value is empty; the
+SDK does not generate one. Mutation request IDs use the same character set, accept 1 to 64
+characters, and are generated when omitted by the relevant mutation method.
+Collateral during replace
+Leave balance headroom when repricing a heavily reserved book. A replacement requires sufficient
+available balance for the new order; do not assume only the incremental collateral difference is
+reserved. Reconcile the original order after an ambiguous response. If necessary, cancel and
+recreate the quote.
+Handshake completes before
+subscribe
+returns. Overflow →
+Error::QueueOverflow
+Attached risk
+Typed
+AttachedRisk
+on create/modify:
+take_profit
+/
+stop_loss
+(
+RiskLeg
+with
+Price
+),
+optional
+trailing_stop
+(
+TrailingDistance::Ticks|Bps
+),
+oco
+Attached risk always evaluates against
+last trade
+RiskLeg::trigger_price_source
+remains as a
+deprecated compatibility field, but supplying
+Some(...)
+returns
+Error::Validation
+because the
+wire contract cannot encode a different source.
+Attached
+TrailingStop
+distance (ticks or bps) and optional max slippage must be
+positive
+TrailingStop::trigger_price_source
+and
+TrailingStop::order_type
+are deprecated compatibility
+fields: the child is always market-IOC, and supplying
+Some(...)
+returns
+Error::Validation
+instead of being silently ignored. On decode, a trailing leg with a missing or non-positive
+distance is omitted (the SDK does not fabricate a zero-distance stop).
+Standalone triggers have their own independently validated trigger semantics.
+Order shape
+order_id
+,
+symbol_id
+,
+client_order_id
+,
+side
+,
+status
+,
+order_type
+,
+tif
+,
+orig_qty
+/
+cum_qty
+/
+leaves_qty
+(
+Option<Quantity>
+),
+price
+/
+avg_px
+(
+Option<Price>
+),
+created_ts_ns
+,
+post_only
+,
+attached_risk
+Related
+Trading guide
+Triggers
+Requests & idempotency
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Order book
+Next
+Policies
+On this page
+Methods
+Create
+CreateOrderParams fields
+Modify
+ModifyOrderParams fields
+Cancel by client order ID or order ID
+Cancel all
+Batch create
+Batch replace
+Batch timeouts and reconciliation
+Trade projection after fills
+Dead-man's switch
+Read orders
+Subscribe
+Identifier constraints
+Collateral during replace
+Attached risk
+Order shape
+Related
+Related Topics
+Share this page
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::{
+    CreateOrderParams, CreateOrderType, CreateSide, CreateTimeInForce,
+    FeeAsset, OrderSelfTradePrevention,
+};
+use polyester::{Price, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let result = client.orders.create(CreateOrderParams {
+    symbol: "BTC-USDT".into(),
+    side: CreateSide::Buy,
+    order_type: CreateOrderType::Limit,
+    quantity: Some(Quantity::from_decimal_str("0.25", quantity_scale, Some("BTC-USDT".into()), None)?),
+    max_quote_debit_scaled: None,
+    price: Some(Price::from_decimal_str("64250.5", Some("BTC-USDT".into()))?),
+    time_in_force: Some(CreateTimeInForce::Gtc),
+    client_order_id: Some("mm-bot-001".into()),
+    subaccount_id: None,
+    post_only: Some(true),
+    market_client_ref_price: None,
+    fee_asset: Some(FeeAsset::Base),
+    self_trade_prevention: Some(OrderSelfTradePrevention::ExpireBoth),
+    market_max_slippage: None,
+    attached_risk: None,
+}).await?;
+println!("{} {}", result.status, result.order_id); // status == "accepted"
+
+---
+
+use polyester::models::ModifyOrderParams;
+use polyester::{Price, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let order_id = "order-id-from-create".to_owned();
+client.orders.modify(ModifyOrderParams {
+    symbol: "BTC-USDT".into(),
+    order_id: Some(order_id),
+    client_order_id: None,
+    subaccount_id: None,
+    request_id: Some("mod-1".into()),
+    new_price: Some(Price::from_decimal_str("64100", Some("BTC-USDT".into()))?),
+    new_qty: Some(Quantity::from_decimal_str(
+        "0.2",
+        quantity_scale,
+        Some("BTC-USDT".into()),
+        None,
+    )?),
+    new_attached_risk: None,
+    behavior: None,
+    new_client_order_id: None,
+}).await?;
+
+---
+
+let order_id = "order-id-from-create";
+client.orders.cancel_by_client_order_id("mm-bot-001", Some("BTC-USDT"), None).await?;
+client.orders.cancel_by_order_id(order_id, None).await?;
+
+---
+
+use polyester::models::CancelAllOpts;
+
+let preview = client.orders.cancel_all_with(CancelAllOpts {
+    symbol: Some("BTC-USDT".into()),
+    dry_run: true,
+    request_id: Some("ca-preview-1".into()),
+    ..Default::default()
+}).await?;
+println!("{}", preview.matched_orders);
+
+client.orders.cancel_all_with(CancelAllOpts {
+    symbol: Some("BTC-USDT".into()),
+    dry_run: false,
+    side: Some("buy".into()),
+    request_id: Some("ca-1".into()),
+    ..Default::default()
+}).await?;
+
+---
+
+use polyester::models::{CreateOrderType, CreateSide, CreateTimeInForce};
+use polyester::services::OrdersService;
+use polyester::{Price, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let mut first = OrdersService::create_params(
+    "BTC-USDT",
+    CreateSide::Buy,
+    CreateOrderType::Limit,
+    Quantity::from_decimal_str("0.001", quantity_scale, Some("BTC-USDT".into()), None)?,
+    Some(Price::from_decimal_str("50000", Some("BTC-USDT".into()))?),
+    Some("batch-001"),
+);
+first.time_in_force = Some(CreateTimeInForce::Gtc);
+first.post_only = Some(true);
+
+let mut second = first.clone();
+second.client_order_id = Some("batch-002".into());
+second.price = Some(Price::from_decimal_str("49950", Some("BTC-USDT".into()))?);
+
+let batch = client
+    .orders
+    .batch_create(vec![first, second], None, Some("batch-request-1".into()))
+    .await?;
+println!("{}", batch.results.len());
+
+---
+
+use polyester::models::{BatchReplaceItem, OrderKey};
+use polyester::Price;
+
+let replace_price = Price::from_decimal_str("63900", Some("BTC-USDT".into()))?;
+let receipt = client
+    .orders
+    .batch_replace(
+        vec![BatchReplaceItem {
+            key: OrderKey::ClientOrderId("batch-001".into()),
+            new_price: Some(replace_price),
+            new_qty: None,
+            new_attached_risk: None,
+            new_client_order_id: None,
+        }],
+        "BTC-USDT",
+        None,
+        Some("batch-replace-1".into()),
+    )
+    .await?;
+println!("{} {}", receipt.batch_request_id, receipt.status);
+let status = client
+    .orders
+    .get_batch_replace_status(&receipt.batch_request_id, None)
+    .await?;
+println!("{} items", status.items.len());
+
+---
+
+use std::time::Duration;
+
+let order_id = "order-id-from-create";
+let details = client
+    .orders
+    .wait_for_order_trades_complete(None, Some(order_id), Duration::from_secs(15))
+    .await?;
+println!("{} trades", details.trades.len());
+
+---
+
+client.orders.cancel_all_after(15, Some("BTC-USDT"), None, Some("caa-1".into())).await?;
+
+---
+
+use polyester::models::ListOrderHistoryOpts;
+
+let order_id = "order-id-from-create";
+let open = client.orders.list_open(None).await?;
+let hist = client.orders.list_history_with(ListOrderHistoryOpts {
+    symbol: Some("BTC-USDT".into()),
+    limit: Some(100),
+    ..Default::default()
+}).await?;
+let details = client.orders.get(None, Some(order_id), None).await?;
+let _ = (open, hist, details);
+
+---
+
+let mut sub = client
+    .orders
+    .subscribe(client.default_account_id.as_deref())
+    .await?;
+while let Some(order) = sub.recv_result().await? {
+    let scale = client
+        .catalogs
+        .base_quantity_scale_for_symbol_id(order.symbol_id)
+        .ok_or_else(|| polyester::Error::validation("stream symbol quantity scale is unavailable"))?;
+    let leaves = match &order.leaves_qty {
+        Some(qty) => Some(qty.format(Some(scale))?),
+        None => None,
+    };
+    println!("{} {} {:?}", order.status, order.order_id, leaves);
+    break;
+}
+if let Some(err) = sub.err() {
+    eprintln!("subscription ended: {err}");
+}

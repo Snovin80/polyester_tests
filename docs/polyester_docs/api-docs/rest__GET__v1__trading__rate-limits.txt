@@ -1,0 +1,254 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/trading/rate-limits
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+RateLimitService
+Get Trading Rate Limits
+Get the effective placement and cancellation limits for the authenticated account target.
+Copy URL
+Method
+GET
+Path
+/v1/trading/rate-limits
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/trading/rate-limits
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/trading/rate-limits' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"apiKeyRules": [
+"burstWeight": "1",
+"periodMs": "1",
+"policyClass": "PLACE",
+"quotaWeight": "1",
+"vipTier": 1
+}
+],
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"rules": [
+"burstWeight": "1",
+"periodMs": "1",
+"policyClass": "PLACE",
+"quotaWeight": "1",
+"vipTier": 1
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+subaccountId
+string
+> 0
+Optional sub-account public identifier.
+Response
+Form
+JSON
+apiKeyRules
+object[]
+API-key-scoped placement and cancellation rules, ordered with placement first and cancellation second. Present only when the caller authenticated with an API key. Both this scope and the account scope are enforced.
+5 fields
+burstWeight
+string
+/^[0-9]+$/
+Maximum weighted capacity that may be consumed in a burst.
+Example
+1
+periodMs
+string
+/^[0-9]+$/
+Policy period duration in milliseconds.
+Example
+1
+policyClass
+enum
+Trading operation family governed by this rule. REST responses contain PLACE or CANCEL.
+PLACE
+CANCEL
+Example
+PLACE
+quotaWeight
+string
+/^[0-9]+$/
+Weighted request capacity available during each policy period. One operation consumes the weight assigned to that operation.
+Example
+1
+vipTier
+integer (int32)
+VIP tier for this rule, in the inclusive range 0 through 10.
+Example
+1
+effectiveFrom
+string (date-time)
+UTC time at which this policy version became effective.
+Example
+2025-01-01T00:00:00Z
+policyVersion
+string
+/^[0-9]+$/
+Positive identifier of the rate-limit policy version used for the returned rules.
+Example
+1
+rules
+object[]
+Account-scoped placement and cancellation rules for the selected account, ordered with placement first and cancellation second.
+5 fields
+burstWeight
+string
+/^[0-9]+$/
+Maximum weighted capacity that may be consumed in a burst.
+Example
+1
+periodMs
+string
+/^[0-9]+$/
+Policy period duration in milliseconds.
+Example
+1
+policyClass
+enum
+Trading operation family governed by this rule. REST responses contain PLACE or CANCEL.
+PLACE
+CANCEL
+Example
+PLACE
+quotaWeight
+string
+/^[0-9]+$/
+Weighted request capacity available during each policy period. One operation consumes the weight assigned to that operation.
+Example
+1
+vipTier
+integer (int32)
+VIP tier for this rule, in the inclusive range 0 through 10.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/trading/rate-limits
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s376" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/trading/rate-limits' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"apiKeyRules": [
+"burstWeight": "1",
+"periodMs": "1",
+"policyClass": "PLACE",
+"quotaWeight": "1",
+"vipTier": 1
+}
+],
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"rules": [
+"burstWeight": "1",
+"periodMs": "1",
+"policyClass": "PLACE",
+"quotaWeight": "1",
+"vipTier": 1
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/trading/rate-limits' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "apiKeyRules": [
+    {
+      "burstWeight": "1",
+      "periodMs": "1",
+      "policyClass": "PLACE",
+      "quotaWeight": "1",
+      "vipTier": 1
+    }
+  ],
+  "effectiveFrom": "2025-01-01T00:00:00Z",
+  "policyVersion": "1",
+  "rules": [
+    {
+      "burstWeight": "1",
+      "periodMs": "1",
+      "policyClass": "PLACE",
+      "quotaWeight": "1",
+      "vipTier": 1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/chain.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Module: `chain` (Python `polyester.chain`, Go `chain`, Rust `polyester::chain`).
+**Not ConnectRPC.** Helpers encode calldata / UserOps for:
+- Funding → Trading (`TradingGateway.deposit`)
+- Funding → external (`FundingAccount.withdrawToChain`) plus Zipper fee quotes
+- Allowlist / guard-related encoders where exposed
+Testnet constants: `POLYESTER_TESTNET_ENVIRONMENT`.
+> **Owner key**
+>
+> Smart-account helpers take a caller-supplied owner EOA private key. Never commit real keys.
+Guide: [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/python/guides/deposits-and-withdrawals).

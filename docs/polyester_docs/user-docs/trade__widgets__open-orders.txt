@@ -1,0 +1,196 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/open-orders
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Open Orders · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Open Orders
+Open Orders
+Copy page
+View as Markdown
+Open in
+Open Orders shows orders that can still affect the market or the selected account.
+A partially filled order can remain open for its unfilled quantity when its instructions allow it.
+What the widget shows
+Use the Pair and side filters to narrow the table. The available columns include status, type, quantity, filled progress, average price, limit price, trade value, time in force, modifiers, and order identifiers.
+Read these values together:
+Quantity
+is the amount originally submitted.
+Filled
+shows how much has already executed.
+Remaining quantity
+is what can still fill or be canceled.
+Status
+shows the current order state in the account view.
+Select a row to view details or use the actions currently available for that order, such as modify or cancel.
+Cancel or modify safely
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A request can race with a fill
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+An order can fill before cancellation, fill partially while its remainder cancels, or reach another final state before a modify request arrives. Wait for the resulting order and balance state before assuming exposure is gone.
+A successful request does not make its outcome immediate. Preserve the order ID and follow the row until the private account view shows the final result.
+Reconcile after a connection gap
+Refresh Open Orders, recent fills, Order Triggers, and Funds. Resume trading only after those private account views agree. Ended orders move to
+Order History
+Related Topics
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Order Triggers
+Monitor conditional and staged instructions before and after they create executable orders.
+Order History
+Review filled, canceled, expired, and rejected order outcomes for the selected account.
+Previous
+Order Form
+Next
+Order Triggers
+On this page
+What the widget shows
+Cancel or modify safely
+Reconcile after a connection gap
+Related Topics
+Share this page
+Open Orders
+Monitor working and partially filled orders, then act on their remaining quantity.
+Share
+Copy Link

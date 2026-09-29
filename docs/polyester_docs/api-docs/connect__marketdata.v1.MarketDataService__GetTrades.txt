@@ -1,0 +1,226 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketdata.v1.MarketDataService/GetTrades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketdata.v1.MarketDataService
+GetTrades
+Retrieve recent public trades for a spot market.
+Results are ordered newest-first and support optional aggressor side,
+inclusive time-range, and opaque keyset pagination filters.
+Copy URL
+Method
+POST
+Path
+marketdata.v1.MarketDataService/GetTrades
+Service
+marketdata.v1.MarketDataService
+Visibility
+Public endpoint
+POST
+marketdata.v1.MarketDataService/GetTrades
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetTrades' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"endTime": "2025-01-01T00:00:00Z",
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"side": "BUY",
+"startTime": "2025-01-01T00:00:00Z",
+"symbolId": 1
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"trades": [
+"isBuy": true,
+"matchId": "100001",
+"priceTicks": "5000000",
+"qtyScaled": "100000",
+"symbolId": 1,
+"tsNs": "1735689600000000000"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketdata.v1.GetTradesRequest
+Response
+marketdata.v1.GetTradesResponse
+Request body
+Form
+JSON
+Example
+symbolId
+integer (int32)
+> 0
+Stable numeric pair id from GetSpotConfig.
+limit
+integer (int32)
+≤ 1000
+Maximum number of trades to return. Defaults to 100 when unset; max 1000.
+startTime
+string (date-time)
+Inclusive lower bound for trade execution time. Must not be more than
+5 minutes in the future.
+endTime
+string (date-time)
+Inclusive upper bound for trade execution time. Must be greater than or
+equal to start_time when both are set, and must not be more than 5 minutes
+in the future.
+side
+enum
+must be defined value
+Optional filter by trade aggressor side. Unspecified returns both sides.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s360" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+BUY
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to symbol, time bounds, side filter, and newest-first sort order.
+Response
+Form
+JSON
+trades
+object[]
+Trades ordered newest-first by execution timestamp, with match_id as a
+tie-breaker.
+6 fields
+symbolId
+integer (int32)
+Stable numeric pair id from GetSpotConfig.
+matchId
+string (uint64)
+Stable trade id within the symbol, suitable for pagination and de-duplication.
+isBuy
+boolean
+True when the taker/aggressor bought the base asset; false when the
+taker/aggressor sold the base asset.
+priceTicks
+string (int64)
+Trade price in quote-asset units scaled by 1e9.
+qtyScaled
+string (int64)
+Traded base-asset quantity scaled by the pair's base_quantity_scale from
+GetSpotConfig.
+tsNs
+string (uint64)
+Trade execution timestamp, in nanoseconds since the Unix epoch (UTC).
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+marketdata.v1.MarketDataService/GetTrades
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s383" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetTrades' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"endTime": "2025-01-01T00:00:00Z",
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"side": "BUY",
+"startTime": "2025-01-01T00:00:00Z",
+"symbolId": 1
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"trades": [
+"isBuy": true,
+"matchId": "100001",
+"priceTicks": "5000000",
+"qtyScaled": "100000",
+"symbolId": 1,
+"tsNs": "1735689600000000000"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetTrades' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "endTime": "2025-01-01T00:00:00Z",
+  "limit": 100,
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "side": "BUY",
+  "startTime": "2025-01-01T00:00:00Z",
+  "symbolId": 1
+}'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "trades": [
+    {
+      "isBuy": true,
+      "matchId": "100001",
+      "priceTicks": "5000000",
+      "qtyScaled": "100000",
+      "symbolId": 1,
+      "tsNs": "1735689600000000000"
+    }
+  ]
+}

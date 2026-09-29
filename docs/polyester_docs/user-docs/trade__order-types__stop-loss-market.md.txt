@@ -1,0 +1,36 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/stop-loss-market.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+A stop-loss market order triggers after a downside condition and then attempts immediate market-style execution.
+## What it does
+A **stop-loss market** trigger watches for a downside condition, then attempts to submit a market-style child order.
+It prioritizes an execution attempt after activation rather than setting one fixed execution price.
+## How it works
+1. **Watch:** Last Price is compared with the configured condition.
+2. **Activate:** the condition is met and Polyester attempts to admit the child order.
+3. **Execute:** the market-IOC child takes eligible liquidity within configured price protection.
+4. **Reconcile:** child orders, fills, and balances establish the final outcome.
+The trigger and child have separate states. An accepted trigger does not prove that the later child is admitted, filled, or settled.
+> **This is not a guaranteed exit**
+>
+> The child can fill across several prices, fill only partially, or receive no fill within current protection and liquidity.
+## When to use it
+- **Use it when an execution attempt matters most.** Stop-Loss Market fits a downside condition where attempting to reduce exposure matters more than one fixed execution price.
+- **Avoid it when a precise exit price must be protected.** Choose Stop-Loss Limit when selling below a defined price would be worse than leaving some or all of the position open.
+Confirm the active market, eligible side, quantity, trigger condition, price source, and price-protection control shown by the current form.
+## Example
+Let's say Bitcoin is currently trading at **100,000 USDT**. You hold **0.01 BTC**, worth about 1,000 USDT, and want to reduce your exposure if the price falls to **95,000 USDT**. Because attempting to exit matters more to you than receiving one exact price, you choose Stop-Loss Market.
+1. A Last Price trade at 95,000 USDT activates the stop.
+2. The best eligible bid can buy 0.006 BTC at 94,900 USDT, so the Market child fills that amount first.
+3. The next eligible bid can buy the remaining 0.004 BTC at 94,850 USDT, completing the order.
+**Result:** You sell the full 0.01 BTC for 948.80 USDT before fees, at an average price of 94,880 USDT.
+*This is example liquidity. A real child order can fill partially or receive no fill when eligible bids do not exist within price protection.*
+## What to watch
+- A gap can move available prices before the child is admitted.
+- Price protection can produce a partial fill or no fill.
+- Balance, policy, or market state can reject the child.
+- Canceling after activation can race with execution.
+- Verify the trigger in [Order Triggers](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-triggers), then verify fills in [Order History](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history).

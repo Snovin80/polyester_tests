@@ -1,0 +1,456 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/ledger.read.v1.LedgerReadService/ListTransfers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+ledger.read.v1.LedgerReadService
+ListTransfers
+List finalized transfer history for an account.
+Supports optional subaccount, asset, ordering, and cursor filters.
+Copy URL
+Method
+POST
+Path
+ledger.read.v1.LedgerReadService/ListTransfers
+Service
+ledger.read.v1.LedgerReadService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+ledger.read.v1.LedgerReadService/ListTransfers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/ledger.read.v1.LedgerReadService/ListTransfers' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"ledger": 1,
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"reversed": false,
+"subaccountId": "6789012345678",
+"transferCode": "DEPOSIT",
+"tsMaxUs": "1",
+"tsMinUs": "1"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"transfers": [
+"accountCode": "FUNDING",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"balanceAfterE18": {
+"hi": "1",
+"lo": "1"
+},
+"destination": {
+"accountId": "7563897446546",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"isDebit": false,
+"linkId": "1",
+"source": {
+"accountId": "7563897446546",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"transferCode": "DEPOSIT",
+"tsUs": "1"
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+ledger.read.v1.ListTransfersRequest
+Response
+ledger.read.v1.ListTransfersResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+Optional sub-account to scope transfers to. If omitted, transfers are
+listed for the authenticated root account derived from the JWT or API key.
+limit
+integer (int32)
+≤ 1000
+Maximum number of transfer rows to return. Defaults to 100 when omitted;
+maximum is 1000.
+reversed
+boolean
+Sort direction. When true, rows are returned newest first; when false,
+rows are returned oldest first.
+Unset
+False
+True
+tsMinUs
+string (uint64)
+Optional lower transfer timestamp bound in microseconds since epoch (UTC),
+inclusive.
+tsMaxUs
+string (uint64)
+Optional upper transfer timestamp bound in microseconds since epoch (UTC),
+inclusive.
+transferCode
+enum
+must be defined value
+Optional filter by transfer reason.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s366" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+DEPOSIT
+ledger
+integer (int32)
+Optional filter by asset ledger.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to the authenticated account, sub-account scope, filters, timestamp
+bounds, and sort direction.
+Response
+Form
+JSON
+transfers
+object[]
+Transfer rows in requested order.
+11 fields
+assetId
+integer (int32)
+Public unified asset ID. Resolve its symbol through the spot configuration
+API. U128 amounts in this row always use a fixed 18-decimal ledger scale.
+amountE18
+object
+Transfer amount at fixed 18-decimal ledger scale.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+transferCode
+enum
+Product reason for this transfer.
+DEPOSIT
+WITHDRAW
+MAKER_FEE
+TAKER_FEE
+INTERNAL_TRANSFER
+TRADE_BASE
+TRADE_QUOTE
+REBATE
+FUNDING_TO_TRADING
+TRADING_TO_FUNDING
+TRADING_WITHDRAW_RESERVE
+FUNDING_USER_TRANSFER
+TRADING_WITHDRAW_REQUEST_FEE
+accountCode
+enum
+Account bucket affected by this transfer.
+FUNDING
+TRADING
+tsUs
+string (uint64)
+Transfer timestamp in microseconds since epoch (UTC).
+balanceAfterE18
+object
+Post-transfer balance at fixed 18-decimal ledger scale.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+isDebit
+boolean
+True when this row is the debit leg; false when it is the credit leg.
+linkId
+string (uint64)
+Correlation ID used to group related transfer legs. Zero when unavailable.
+flowId
+string
+Public lifecycle flow ID when this transfer belongs to a chain lifecycle flow.
+source
+object
+Debit side of the transfer. This relationship is debit-to-credit rather
+than row-relative; use is_debit to determine whether this row is the debit leg.
+4 fields
+kind
+enum
+Display classification for this transfer side.
+FUNDING_ACCOUNT
+TRADING_ACCOUNT
+EXTERNAL_ADDRESS
+PRIVATE_COUNTERPARTY
+FEE_ACCOUNT
+SYSTEM_ACCOUNT
+accountId
+string (fixed64)
+Public root account or subaccount ID when this side is safe to identify. Never
+populated for private counterparties or non-user ledger accounts.
+address
+string
+Address for this side when known. For EXTERNAL_ADDRESS this is an
+external-chain wallet address from lifecycle correlation; for identifiable
+Polyester accounts this is a Polyester smart-account address.
+May be empty until the corresponding lifecycle details are available.
+chainId
+integer (int32)
+PolyChain-registered external network identifier for EXTERNAL_ADDRESS.
+This matches chain.zipper.v1.ChainConfig.chain_id and is not the chain's
+native identifier (for example, an EIP-155 id) or the Polyester chain id.
+destination
+object
+Credit side of the transfer. This relationship is debit-to-credit rather
+than row-relative; use is_debit to determine whether this row is the credit leg.
+4 fields
+kind
+enum
+Display classification for this transfer side.
+FUNDING_ACCOUNT
+TRADING_ACCOUNT
+EXTERNAL_ADDRESS
+PRIVATE_COUNTERPARTY
+FEE_ACCOUNT
+SYSTEM_ACCOUNT
+accountId
+string (fixed64)
+Public root account or subaccount ID when this side is safe to identify. Never
+populated for private counterparties or non-user ledger accounts.
+address
+string
+Address for this side when known. For EXTERNAL_ADDRESS this is an
+external-chain wallet address from lifecycle correlation; for identifiable
+Polyester accounts this is a Polyester smart-account address.
+May be empty until the corresponding lifecycle details are available.
+chainId
+integer (int32)
+PolyChain-registered external network identifier for EXTERNAL_ADDRESS.
+This matches chain.zipper.v1.ChainConfig.chain_id and is not the chain's
+native identifier (for example, an EIP-155 id) or the Polyester chain id.
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 16
+Key
+Status
+Error
+When
+api-key-action-deny
+403
+API Key Policy Denied
+API key policy does not allow this read action.
+api-key-policy-not-found
+404
+API Key Policy Not Found
+API key policy was not found.
+api-key-policy-required
+400
+API Key Policy Required
+API key policy is required for ledger reads.
+api-key-root-scope-only
+400
+API Key Root Scope Only
+This API key is scoped to the root account and cannot read sub-accounts.
+api-key-subaccount-mismatch
+400
+API Key Sub-account Mismatch
+This API key is bound to a different sub-account.
+api-key-unknown
+400
+API Key Unknown
+The authenticated API key has no metadata entry in the API key store.
+ip-not-allowed
+401
+API Key IP Not Allowed
+API key is not authorized from this IP address.
+key-disabled
+401
+API Key Disabled
+API key is disabled.
+key-expired
+401
+API Key Expired
+API key has expired.
+missing-headers
+401
+Missing API Key Headers
+Missing required API key authentication headers.
+role-action-deny
+403
+Role Denied
+Your role does not allow this read action.
+signature-invalid
+401
+Invalid API Key Signature
+API key signature is invalid.
+subaccount-policy-deny
+403
+Sub-account Policy Denied
+Sub-account policy does not allow this read action.
+subaccount-read-forbidden
+403
+Sub-account Read Forbidden
+You do not have permission to read this sub-account.
+timestamp-skew
+400
+API Key Timestamp Skew
+API key timestamp is outside the allowed skew window.
+unauthenticated
+401
+Unauthenticated
+Ledger reads require a valid bearer JWT or signed API-key request.
+POST
+ledger.read.v1.LedgerReadService/ListTransfers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s429" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/ledger.read.v1.LedgerReadService/ListTransfers' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"ledger": 1,
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"reversed": false,
+"subaccountId": "6789012345678",
+"transferCode": "DEPOSIT",
+"tsMaxUs": "1",
+"tsMinUs": "1"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"transfers": [
+"accountCode": "FUNDING",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"balanceAfterE18": {
+"hi": "1",
+"lo": "1"
+},
+"destination": {
+"accountId": "7563897446546",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"isDebit": false,
+"linkId": "1",
+"source": {
+"accountId": "7563897446546",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"transferCode": "DEPOSIT",
+"tsUs": "1"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/ledger.read.v1.LedgerReadService/ListTransfers' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "ledger": 1,
+  "limit": 100,
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "reversed": false,
+  "subaccountId": "6789012345678",
+  "transferCode": "DEPOSIT",
+  "tsMaxUs": "1",
+  "tsMinUs": "1"
+}'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "transfers": [
+    {
+      "accountCode": "FUNDING",
+      "amountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "assetId": 100,
+      "balanceAfterE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "destination": {
+        "accountId": "7563897446546",
+        "address": "0x3333333333333333333333333333333333333333",
+        "chainId": 1,
+        "kind": "FUNDING_ACCOUNT"
+      },
+      "flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+      "isDebit": false,
+      "linkId": "1",
+      "source": {
+        "accountId": "7563897446546",
+        "address": "0x3333333333333333333333333333333333333333",
+        "chainId": 1,
+        "kind": "FUNDING_ACCOUNT"
+      },
+      "transferCode": "DEPOSIT",
+      "tsUs": "1"
+    }
+  ]
+}

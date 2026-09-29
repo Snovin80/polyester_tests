@@ -1,0 +1,392 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/spot/trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrdersService
+Get User Trades
+Retrieve per-user fills with account-bound keyset pagination. Omit optional filters to list the authenticated account's fills. orderId selects one physical order; lineageId selects the logical order across replacements. These filters are mutually exclusive. throughGeneration requires lineageId. Execution and order-state projections are eventually consistent.
+Copy URL
+Method
+GET
+Path
+/v1/spot/trades
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/spot/trades
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/trades?includeTransfers=false&limit=100' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"trades": [
+"executedAt": "2025-01-01T00:00:00Z",
+"fee": "18.446744073709551617",
+"feeAsset": "QUOTE",
+"feeIsRebate": false,
+"isMaker": false,
+"lineage": {
+"generation": 1,
+"id": "2"
+},
+"matchId": "100001",
+"orderId": "5USXJZmk",
+"price": "0.005",
+"qty": "100000",
+"referralShare": "18.446744073709551617",
+"side": "BUY",
+"symbol": "BTC-USDT"
+}
+],
+"transfers": [
+"account": "FUNDING",
+"asset": "100",
+"isDebit": false,
+"matchId": "100001",
+"symbolId": 1,
+"timestamp": "2025-01-01T00:00:00Z",
+"transferCode": "DEPOSIT",
+"txId": "0xabc123"
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+Example
+afterMatchId
+string
+> 0
+Return only durable fills after this per-symbol match ID. Requires symbol.
+endTime
+string (date-time)
+includeTransfers
+boolean
+Include settlement legs linked to matches on this page.
+Unset
+False
+True
+limit
+integer
+1–1000
+lineageId
+string
+> 0
+Logical order ID shared by accepted replacements; mutually exclusive with orderId.
+orderId
+string
+> 0
+Exact physical order ID; mutually exclusive with lineageId.
+pageToken
+string
+max 512 chars
+side
+enum
+must be defined value
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s339-side" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+startTime
+string (date-time)
+subaccountId
+string
+> 0
+symbol
+string
+throughGeneration
+integer
+> 0
+Inclusive generation ceiling; requires lineageId.
+Response
+Form
+JSON
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+trades
+object[]
+Trades ordered by timestamp, symbol, match and physical order, descending. Projection is eventual: an empty page is not proof of order-state reconciliation.
+13 fields
+executedAt
+string (date-time)
+Execution timestamp in nanoseconds since epoch.
+Example
+2025-01-01T00:00:00Z
+fee
+string
+/^[0-9]…9]+)?$/
+Exact fee magnitude in fixed 18-decimal units of fee_asset.
+Example
+18.446744073709551617
+feeAsset
+enum
+Fee asset charged or credited for this fill.
+QUOTE
+BASE
+Example
+QUOTE
+feeIsRebate
+boolean
+Whether this fill earned a rebate instead of paying a fee.
+Example
+false
+isMaker
+boolean
+True if this fill was maker-side.
+Example
+false
+lineage
+object
+Logical-order identity and the generation that executed this fill. Always populated by execution reads; order_id retains its original identity.
+2 fields
+generation
+integer (int32)
+One-based replacement generation, distinct from per-order state version.
+Example
+1
+id
+string
+/^[1-9A…m-z]+$/
+Stable logical-order ID: the first generation's public order ID. Replace preserves this ID; an independent new order starts a new lineage.
+Example
+2
+matchId
+string
+/^[0-9]+$/
+Match identifier (monotonic per symbol).
+Example
+100001
+orderId
+string
+/^[1-9A…m-z]+$/
+Order identifier as fixed64.
+Example
+5USXJZmk
+price
+string
+/^[0-9]…9]+)?$/
+Execution price in quote units scaled by 1e9.
+Example
+0.005
+qty
+string
+/^[0-9]…9]+)?$/
+Executed quantity scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id.
+Example
+100000
+referralShare
+string
+/^[0-9]…9]+)?$/
+Exact referral share magnitude in fixed 18-decimal units of fee_asset.
+Example
+18.446744073709551617
+side
+enum
+Fill side.
+BUY
+SELL
+Example
+BUY
+symbol
+string
+Trading symbol numeric identifier.
+Example
+BTC-USDT
+transfers
+object[]
+Settlement legs for matches represented on this page, when requested.
+8 fields
+account
+string
+Account bucket affected by this transfer leg.
+Example
+FUNDING
+asset
+string
+Asset identifier for the transferred asset.
+Example
+100
+isDebit
+boolean
+True when the transfer debits the account; false when it credits the account.
+Example
+false
+matchId
+string
+/^[0-9]+$/
+Match identifier that linked this transfer to an execution, scoped by symbol_id.
+Example
+100001
+symbolId
+integer (int32)
+Market of the execution; together with match_id identifies its match.
+Example
+1
+timestamp
+string (date-time)
+Transfer timestamp in nanoseconds since epoch (UTC).
+Example
+2025-01-01T00:00:00Z
+transferCode
+string
+Product reason for this transfer leg.
+Example
+DEPOSIT
+txId
+string
+Transfer transaction identifier.
+Example
+0xabc123
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/spot/trades
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s405" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/trades?includeTransfers=false&limit=100' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"trades": [
+"executedAt": "2025-01-01T00:00:00Z",
+"fee": "18.446744073709551617",
+"feeAsset": "QUOTE",
+"feeIsRebate": false,
+"isMaker": false,
+"lineage": {
+"generation": 1,
+"id": "2"
+},
+"matchId": "100001",
+"orderId": "5USXJZmk",
+"price": "0.005",
+"qty": "100000",
+"referralShare": "18.446744073709551617",
+"side": "BUY",
+"symbol": "BTC-USDT"
+}
+],
+"transfers": [
+"account": "FUNDING",
+"asset": "100",
+"isDebit": false,
+"matchId": "100001",
+"symbolId": 1,
+"timestamp": "2025-01-01T00:00:00Z",
+"transferCode": "DEPOSIT",
+"txId": "0xabc123"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/spot/trades?includeTransfers=false&limit=100' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "trades": [
+    {
+      "executedAt": "2025-01-01T00:00:00Z",
+      "fee": "18.446744073709551617",
+      "feeAsset": "QUOTE",
+      "feeIsRebate": false,
+      "isMaker": false,
+      "lineage": {
+        "generation": 1,
+        "id": "2"
+      },
+      "matchId": "100001",
+      "orderId": "5USXJZmk",
+      "price": "0.005",
+      "qty": "100000",
+      "referralShare": "18.446744073709551617",
+      "side": "BUY",
+      "symbol": "BTC-USDT"
+    }
+  ],
+  "transfers": [
+    {
+      "account": "FUNDING",
+      "asset": "100",
+      "isDebit": false,
+      "matchId": "100001",
+      "symbolId": 1,
+      "timestamp": "2025-01-01T00:00:00Z",
+      "transferCode": "DEPOSIT",
+      "txId": "0xabc123"
+    }
+  ]
+}

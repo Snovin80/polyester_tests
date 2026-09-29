@@ -1,0 +1,456 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/triggers.v1.TriggersService/CreateTrigger
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+triggers.v1.TriggersService
+CreateTrigger
+Create a standalone trigger (stop order, TWAP, ladder).
+Copy URL
+Method
+POST
+Path
+triggers.v1.TriggersService/CreateTrigger
+Service
+triggers.v1.TriggersService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+triggers.v1.TriggersService/CreateTrigger
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/CreateTrigger' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678",
+"trigger": {
+"clientTriggerId": "9155001234567",
+"feeAsset": "QUOTE",
+"qtyScaled": "100000",
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"side": "BUY",
+"triggerPriceTicks": "5000000"
+},
+"symbolId": 1
+}
+}'
+Responses
+"acceptedAt": "2025-01-01T00:00:00Z",
+"acceptedAtTsNs": "1735689600000000000",
+"clientTriggerId": "9155001234567",
+"triggerId": "9155001234567"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+triggers.v1.CreateTriggerRequest
+Response
+triggers.v1.CreateTriggerResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+Target sub-account. When omitted, uses the caller's root account.
+trigger
+object
+required
+Trigger to admit.
+10 fields
+symbolId
+integer (int32)
+> 0
+Stable numeric pair ID from GetSpotConfig.
+qtyScaled
+string (int64)
+> 0
+Total quantity scaled by the pair's base_quantity_scale.
+feeAsset
+enum
+must be defined value
+Fee asset for BUY children. SELL children must use QUOTE.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s366" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+QUOTE
+selfTradePreventionMode
+enum
+must be defined value
+Child self-trade prevention mode. Defaults to EXPIRE_MAKER.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s368" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+EXPIRE_MAKER
+clientTriggerId
+string
+min 1 chars
+Client-provided trigger ID for idempotency.
+stopLoss
+object
+required one of
+Standalone stop-loss.
+3 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger threshold in quote units scaled by 1e9.
+side
+enum
+must be defined value
+Child order side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s378" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+BUY
+child
+object
+required
+Child execution.
+4 fields
+marketIoc
+object
+required one of
+Market child with implicit IOC behavior.
+Edit in JSON
+limitGtc
+object
+required one of
+Resting GTC limit child, optionally post-only.
+2 fields
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+postOnly
+boolean
+Reject instead of taking liquidity.
+Unset
+False
+True
+one-of
+limitIoc
+object
+required one of
+Immediate-or-cancel limit child.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+limitFok
+object
+required one of
+Fill-or-kill limit child.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+takeProfit
+object
+required one of
+Standalone take-profit.
+3 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger threshold in quote units scaled by 1e9.
+side
+enum
+must be defined value
+Child order side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s413" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+child
+object
+required
+Child execution.
+4 fields
+marketIoc
+object
+required one of
+Market child with implicit IOC behavior.
+Edit in JSON
+limitGtc
+object
+required one of
+Resting GTC limit child, optionally post-only.
+2 fields
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+postOnly
+boolean
+Reject instead of taking liquidity.
+Unset
+False
+True
+one-of
+limitIoc
+object
+required one of
+Immediate-or-cancel limit child.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+limitFok
+object
+required one of
+Fill-or-kill limit child.
+1 field
+priceTicks
+string (int64)
+> 0
+Limit price in quote units scaled by 1e9.
+one-of
+trailingStop
+object
+required one of
+SELL market-IOC trailing stop.
+6 fields
+trailingDistanceTicks
+string (int64)
+required one of
+> 0
+Distance as a price delta in 1e-9 quote-unit ticks.
+trailingDistanceBps
+integer (int32)
+required one of
+> 0, ≤ 10000
+Distance in basis points (1 bp = 0.01%).
+one-of
+activationPriceTicks
+string (int64)
+> 0
+Optional activation price in quote units scaled by 1e9.
+maxSlippageTicks
+string (int64)
+> 0
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxSlippageBps
+integer (int32)
+> 0, ≤ 10000
+Maximum slippage in basis points (1 bp = 0.01%).
+one-of
+side
+enum
+must be defined value
+Child order side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s458" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+twap
+object
+required one of
+TWAP strategy.
+5 fields
+side
+enum
+must be defined value
+Child side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s464" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+durationMs
+string (int64)
+Total execution duration in milliseconds.
+sliceIntervalMs
+string (int64)
+Interval between slices in milliseconds.
+marketIoc
+object
+required one of
+Server-priced market IOC slices.
+2 fields
+maxSlippageTicks
+string (int64)
+> 0
+Positive maximum absolute price delta per slice in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxSlippageBps
+integer (int32)
+> 0, ≤ 10000
+Maximum adverse price movement per slice in basis points (1 bp = 0.01%).
+one-of
+limitGtc
+object
+required one of
+Limit GTC slices with cancel-before-next behavior.
+1 field
+priceTicks
+string (int64)
+> 0
+Slice limit price in quote units scaled by 1e9.
+one-of
+ladder
+object
+required one of
+LINEAR limit-GTC ladder.
+5 fields
+side
+enum
+must be defined value
+Child side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s486" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+priceMinTicks
+string (int64)
+> 0
+Minimum generated level price in quote units scaled by 1e9.
+priceMaxTicks
+string (int64)
+> 0
+Maximum generated level price in quote units scaled by 1e9.
+levels
+integer (int32)
+2–100
+Number of linearly distributed levels.
+postOnly
+boolean
+Reject each level instead of taking liquidity.
+Unset
+False
+True
+Response
+Form
+JSON
+triggerId
+string (fixed64)
+Assigned trigger ID.
+clientTriggerId
+string
+Echoed client trigger ID.
+acceptedAt
+string (date-time)
+Time creation admission completed.
+acceptedAtTsNs
+string (uint64)
+Admission completion time in nanoseconds since epoch (UTC).
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+triggers.v1.TriggersService/CreateTrigger
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s513" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/CreateTrigger' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678",
+"trigger": {
+"clientTriggerId": "9155001234567",
+"feeAsset": "QUOTE",
+"qtyScaled": "100000",
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"side": "BUY",
+"triggerPriceTicks": "5000000"
+},
+"symbolId": 1
+}
+}'
+Responses
+"acceptedAt": "2025-01-01T00:00:00Z",
+"acceptedAtTsNs": "1735689600000000000",
+"clientTriggerId": "9155001234567",
+"triggerId": "9155001234567"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/CreateTrigger' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "subaccountId": "6789012345678",
+  "trigger": {
+    "clientTriggerId": "9155001234567",
+    "feeAsset": "QUOTE",
+    "qtyScaled": "100000",
+    "selfTradePreventionMode": "EXPIRE_MAKER",
+    "stopLoss": {
+      "child": {
+        "marketIoc": {}
+      },
+      "side": "BUY",
+      "triggerPriceTicks": "5000000"
+    },
+    "symbolId": 1
+  }
+}'
+
+---
+
+{
+  "acceptedAt": "2025-01-01T00:00:00Z",
+  "acceptedAtTsNs": "1735689600000000000",
+  "clientTriggerId": "9155001234567",
+  "triggerId": "9155001234567"
+}

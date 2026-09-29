@@ -1,0 +1,236 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/gasless-transactions
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Gas Abstraction · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Chain
+svg]:size-3.5">
+/
+Gas Abstraction
+Gas Abstraction
+Copy page
+View as Markdown
+Open in
+Gas abstraction
+lets you use supported Polyester features on
+Polyester Chain
+without holding or spending
+$P
+The action still executes on-chain and uses gas. Sponsorship simply means Polyester pays that cost for you.
+How sponsorship works
+Polyester prepares the supported action for your active Safe
+smart account
+The smart-account client packages it as a
+UserOperation
+A
+bundler
+prepares and submits the operation.
+A
+paymaster
+sponsors the
+$P
+required for the eligible action.
+Your owner credential authorizes the operation.
+ERC-4337 EntryPoint validates it, and your Safe executes the protocol call.
+The paymaster pays gas but does not authorize the action or own your Safe. Your owner credential and the Safe's rules remain the authorization boundary.
+What Polyester sponsors
+Sponsorship covers the Polyester Chain gas used by current user-facing product actions, including eligible Funding movements, withdrawals, internal transfers, deposit-routing changes, and account-control updates.
+It can also cover the first eligible action for a counterfactual Safe. In that case, the same UserOperation deploys the Safe and executes the action.
+You do not need to acquire
+$P
+for these supported product flows.
+Costs outside Chain sponsorship
+Cost
+Covered by Polyester Chain gas sponsorship?
+Supported Polyester Chain product gas
+Yes
+Gas paid by your external wallet when sending a deposit
+No
+Zipper
+deposit or withdrawal fee
+No
+Spot trading fee
+No
+Activity performed later on an external destination chain
+No
+Zipper fees are charged for moving assets between chains, while trading fees apply to completed fills. They are separate from the
+$P
+used to execute a Polyester Chain contract call.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Sponsored gas is not the same as no fees
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Polyester pays the
+$P
+required for supported Chain actions. External-chain gas, Zipper fees, and trading fees remain separate.
+Gas sponsorship and account ownership
+The bundler and paymaster help submit your action, but neither becomes an owner of your account. They cannot replace your owner credential, bypass your Safe, or ignore your account permissions and security controls.
+See
+Smart Account
+for the owner and Safe relationship and
+Deposit & Withdrawal Fees
+for charges outside Chain sponsorship.
+FAQ
+Do I need to hold a native Polyester Chain token to use the exchange?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. Polyester covers the gas fees for supported actions on Polyester Chain. You can use the exchange without acquiring a separate gas token. Trading fees and deposit or withdrawal fees still apply, and your external wallet may need the sending network’s native asset to pay for a deposit transaction.
+Related Topics
+Overview
+See how Polyester Chain supports your account, assets, and public on-chain activity.
+Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Validators
+See how Polyester Chain validators secure blocks and how other approval roles remain separate.
+RPC Nodes
+Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+Previous
+Smart Account
+Next
+Validators
+On this page
+How sponsorship works
+What Polyester sponsors
+Costs outside Chain sponsorship
+Gas sponsorship and account ownership
+FAQ
+Related Topics
+Share this page
+Gas Abstraction
+See how Polyester sponsors gas for your supported Polyester Chain actions.
+Share
+Copy Link

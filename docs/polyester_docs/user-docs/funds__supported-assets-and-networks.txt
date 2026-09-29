@@ -1,0 +1,449 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Supported Assets · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Funds
+svg]:size-3.5">
+/
+Supported Assets
+Supported Assets
+Copy page
+View as Markdown
+Open in
+This page lists all
+Unified Assets
+available for deposit and withdrawal, along with the networks they support. Browse the directory to explore Polyester’s supported assets and chains, including the requirements for each
+route
+Unified Assets
+Total Unified Assets
+28
+Total Networks
+16
+Asset Routes
+31
+zSupply
+$
+114.7M
+View By Asset
+View By Chain
+Asset
+Chains
+uToken address
+zSupply
+AVAX
+Avalanche
+0x51ae…81595
+852.2K
+AVAX
+BCH
+Bitcoin Cash
+0xa97c…6abe9
+27K
+BCH
+BNB
+BNB
+0x84f2…1178d
+15.6K
+BNB
+BTC
+Bitcoin
+0x4bac…8703d
+150.84
+BTC
+DOGE
+Dogecoin
+0xf94a…5f736
+128M
+DOGE
+ETC
+Ethereum Classic
+0x9979…4fba4
+874.7K
+ETC
+ETH
+Ethereum
+0x4f5b…3d7f0
+4.7K
+ETH
+HYPE
+Hyperliquid
+0x0649…43126
+90.3K
+HYPE
+LTC
+Litecoin
+0xf709…2491f
+120.6K
+LTC
+POL
+Polygon
+0x356c…480d6
+77M
+POL
+SOL
+Solana
+0x62a2…be979
+205.8K
+SOL
+tAVAX
+Avalanche Testnet
+0x4ef9…893d4
+11.99
+tAVAX
+tBCH
+Bitcoin Cash Testnet
+0x753e…26e04
+0.10
+tBCH
+tBNB
+BNB Testnet
+0x4468…90a4c
+3.45
+tBNB
+tBTC
+Bitcoin Testnet
+0x8c57…5804b
+0.16
+tBTC
+tDOGE
+Dogecoin Testnet
+0x8c5a…15f30
+1.1K
+tDOGE
+tETC
+Ethereum Classic Testnet
+0x0c00…f4c52
+11.09
+tETC
+tETH
+Ethereum Testnet
+0x2d77…2bb48
+116.55
+tETH
+tHYPE
+Hyperliquid Testnet
+0x7722…ea684
+0.67
+tHYPE
+tLTC
+Litecoin Testnet
+0xcd73…a5b7d
+0.31
+tLTC
+tPOL
+Polygon Testnet
+0xc31a…55419
+14.39
+tPOL
+TRX
+Tron
+0xff5b…5a09c
+35.5M
+TRX
+tSOL
+Solana Testnet
+0x6197…a760e
+37.51
+tSOL
+tTRX
+Tron Testnet
+0xabc4…60e46
+17.6K
+tTRX
+tXRP
+Ripple Testnet
+0x7590…2ec26
+252.59
+tXRP
+USDC
+USD Coin
+0x1773…9d5fb
+50.6M
+USDC
+USDT
+Tether USD
+0xca41…b8787
+64M
+USDT
+XRP
+Ripple
+0x449a…a5fea
+6.8M
+XRP
+View in Polyester Scan
+Chain
+Supported assets
+Block confirmations
+Est. confirmation time
+Arbitrum Sepolia
+1
+~1 min
+Avalanche Fuji Testnet
+1
+2s
+Base Sepolia
+1
+~1 min
+Bitcoin Cash Testnet
+1
+~2 min
+Bitcoin Testnet
+1
+~2 min
+BNB Smart Chain Testnet
+1
+50s
+Dogecoin Testnet
+5
+50s
+Ethereum Classic Testnet
+1
+~1 min
+Ethereum Sepolia
++11
+1
+~1 min
+HyperEVM Testnet
+4
+4s
+Litecoin Testnet
+1
+50s
+Polygon PoS Testnet
+6
+12s
+Ripple Testnet
+1
+30s
+Robinhood Testnet
+3
+6s
+Solana Devnet
+1
+~1 min
+Tron Nile
+1
+~1 min
+View in Polyester Scan
+How to read this table
+Use
+View By Asset
+to group routes by asset, or
+View By Chain
+to see every asset supported on a chain. Expand any row for its route details.
+Field
+Meaning
+Source address
+The asset contract on the external chain, or Native when no contract is required.
+Zipped Asset
+address
+The
+Polyester Chain
+contract for that asset-and-chain route.
+Network fee
+The fee currently listed for the route.
+Deposit minimum and withdrawal minimum
+The smallest listed amount for each action.
+Confirmations required
+The minimum number of block confirmations listed for the route.
+Average deposit time
+An estimate based on the route's confirmation requirement.
+Assets with the same symbol are combined only when Polyester maps them to the same Unified Asset.
+Timing is an estimate and can vary with chain conditions.
+FAQ
+Which assets and networks are supported on Polyester?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester supports most major assets and blockchains for deposits, withdrawals, and trading. Examples include native BTC on Bitcoin, XRP on the XRP Ledger, BCH on Bitcoin Cash, and DOGE on Dogecoin. See the
+Supported Assets
+table in the user docs for the full list and details for each asset and network.
+Can I deposit or withdraw fiat?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. Polyester does not currently support deposits or withdrawals through banks or cards. For a full list of what you can deposit or withdraw, visit
+Supported Assets
+in the user docs.
+Is there a minimum deposit amount?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. Each asset and network has its own minimum deposit amount. You can see the applicable minimum during the
+deposit flow
+or find all minimums on the
+Supported Assets
+page.
+Why is a deposit or withdrawal network temporarily unavailable?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A supported network can be temporarily unavailable because of network issues, service pauses, or security checks. Withdrawals also depend on sufficient assets being available on the destination network. You can check Deposit or Withdraw for another supported network that works with your sending or receiving wallet.
+Is there a minimum withdrawal amount?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. Each asset and network has its own minimum withdrawal amount. You can see the applicable minimum during the
+withdrawal flow
+or find all minimums on the
+Supported Assets
+page.
+If one network is paused, can I still trade or use other networks?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A pause affecting one deposit or withdrawal network does not automatically stop trading or other networks. If the trading services remain available, you can continue trading assets already in your
+Unified Trading Account
+Supported Assets
+in the user docs for any asset or network interruptions.
+Related Topics
+Unified Assets
+Learn how Polyester turns chain-specific deposits into one account balance you can trade, transfer, or withdraw.
+Funding Account
+Learn how the Funding Account keeps on-chain balances ready to deposit, transfer, trade, or withdraw.
+Trading Account
+Learn how the Trading Account manages available and reserved balances for trading, borrowing, transfers, and withdrawals.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Withdraw Funds
+Withdraw an available Polyester balance to an external wallet on a supported chain.
+Internal Transfers
+Move an available balance between Polyester accounts or balance areas.
+Previous
+Unified Assets
+Next
+Funding Account
+On this page
+How to read this table
+FAQ
+Related Topics
+Share this page
+Supported Assets
+Deposit and withdraw Unified Assets on supported networks. Expand a row for fees, minimums, and confirmation time.
+Share
+Copy Link

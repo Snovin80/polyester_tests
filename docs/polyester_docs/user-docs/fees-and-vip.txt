@@ -1,0 +1,323 @@
+Источник: https://testnet.polyester.com/docs/user-docs/fees-and-vip
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading Fees · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Fees & VIP
+Trading Fees
+Copy page
+View as Markdown
+Open in
+Polyester charges a trading fee whenever a spot order fills. Your fee rate depends on your
+VIP tier
+and whether the fill is classified as
+maker
+or
+taker
+There is no fee to place or cancel an order that does not fill.
+Spot trading fee schedule
+VIP tier
+Maker fee
+Taker fee
+VIP 0
+0.1%
+0.15%
+VIP 1
+0.08%
+0.135%
+VIP 2
+0.065%
+0.12%
+VIP 3
+0.05%
+0.105%
+VIP 4
+0.04%
+0.09%
+VIP 5
+0.03%
+0.08%
+VIP 6
+0.02%
+0.07%
+VIP 7
+0.015%
+0.06%
+VIP 8
+0.0125%
+0.055%
+VIP 9
+0.01%
+0.05%
+VIP 10
+0.005%
+0.045%
+Fees are calculated from the value of each completed fill. If an order fills in several parts, the applicable fee is calculated separately for each fill.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Your VIP tier determines your rate
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+This table shows each tier's base rate. Symbol-specific adjustments, rewards, and referral discounts
+can lower your effective rate. Authenticated API clients can call
+GET /v1/spot/fee-rates
+for exact
+rates by symbol. See
+VIP Tiers
+to learn how your tier is
+determined and how to progress to the next level.
+Maker and taker fees
+Role
+When it applies
+Maker
+Your order rests on the order book before another order fills against it.
+Taker
+Your order fills immediately against liquidity already resting on the order book.
+A limit order can be both: any quantity that fills immediately pays the taker rate, while quantity that rests and fills later pays the maker rate.
+Maker rebates
+Polyester supports maker rebates: a negative maker fee credits your account when an eligible maker order fills. Exact maker rebate rates are coming soon and will be published here.
+Choose how your fee is paid
+Most exchanges decide the fee asset for you. On Polyester, an eligible buy order lets you choose
+Quote
+or
+Received
+from the
+Fee Source
+selector in the Order Form. Your choice appears again when you review the order.
+Quote
+pays the fee with the
+quote asset
+you are spending. When buying BTC/USDT, the fee is paid in USDT.
+Received
+deducts the fee from the
+base asset
+you receive. When buying BTC/USDT, the fee is paid in BTC.
+The percentage rate does not change. The fee is calculated in the selected asset:
+Fee source
+Calculation
+Effect on a buy order
+Quote
+Fill value in the quote asset × fee rate
+You spend slightly more quote asset and receive the full base quantity.
+Received
+Base quantity received × fee rate
+You spend the entered quote amount and receive slightly less base asset.
+Let's say Bitcoin is currently trading at
+$100,000
+and you buy
+$1,000 of BTC
+at a
+0.08%
+fee rate.
+With
+Quote
+, the fee is
+0.80 USDT
+With
+Received
+, the fee is
+0.000008 BTC
+Sell-order fees are deducted from the quote asset received from the sale. For example, selling 0.01 BTC for 1,000 USDT at a 0.08% rate returns 999.20 USDT after the 0.80 USDT fee.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Fee Source is available on eligible buy orders
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Quote is the default. The Received option appears only when the selected market and order support paying with the base asset you receive.
+Referral discounts and rewards
+Referral codes affect positive trading fees in two different ways:
+Who receives the benefit
+Benefit
+What it applies to
+Referred trader
+4% lower trading fees
+Positive maker or taker fees on eligible fills
+Referrer
+15% of the referred user's paid trading fees
+The fee remaining after the referred trader's discount
+The referral benefit is calculated from the trading fee, not the order's full value.
+Let's say a referred trader completes a
+$1,000
+fill at a
+0.08%
+fee rate:
+The standard trading fee is
+0.80 USDT
+The 4% referral discount saves the trader
+0.032 USDT
+The referred trader pays
+0.768 USDT
+The referrer earns 15% of that paid fee, or
+0.1152 USDT
+Referral discounts and rewards apply only when a positive trading fee is charged. They do not
+create a negative fee or maker rebate.
+See
+Referrals
+for referral eligibility, links, rewards, and account-level reporting.
+FAQ
+What is the difference between maker and taker?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A maker order rests in the order book and adds liquidity, typically achieved through limit orders. A taker order executes against liquidity in the book, typically consumed by market orders.
+See trading fees.
+What fees does Polyester charge?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester charges fees for trading, deposits, and withdrawals. Trading fees occur when an order fills. Deposits and withdrawals have minimal fees that cover network gas costs and include a small service fee for moving assets into or out of the platform.
+What are the trading fees on Polyester?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Trading fees depend on your VIP tier and whether you are a maker or a taker. Fees apply to the amount of the order that fills. See
+Trading Fees
+in our user docs for the current rates.
+Related Topics
+VIP Tiers
+See how rolling spot volume or average account equity determines your Polyester VIP tier.
+Deposit & Withdrawal Fees
+View current deposit and withdrawal fees for each supported asset and chain.
+Previous
+Quick Swap
+Next
+VIP Tiers
+On this page
+Spot trading fee schedule
+Maker and taker fees
+Maker rebates
+Choose how your fee is paid
+Referral discounts and rewards
+FAQ
+Related Topics
+Share this page
+Trading Fees
+View spot rates, maker rebates, referral benefits, and the assets you can use to pay trading fees.
+Share
+Copy Link

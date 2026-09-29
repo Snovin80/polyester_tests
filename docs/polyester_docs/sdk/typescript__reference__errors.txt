@@ -1,0 +1,637 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/errors
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Errors · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Errors
+Errors
+Copy page
+View as Markdown
+Open in
+Every error the SDK raises extends
+PolyesterError
+, with a stable machine-readable
+code
+and a
+retryable
+flag. RPC failures keep the original ConnectRPC error as
+cause
+see the
+Error handling guide
+Unknown protobuf enum values in read responses do not raise
+ValidationError
+decodes as
+"unspecified"
+, preserving the rest of the response when a newer server adds an enum
+member that this SDK version does not recognize.
+Hierarchy
+PolyesterError                     code                        retryable
+├── TransientError                 TRANSIENT_FAILURE           true
+│   ├── NetworkError               NETWORK_ERROR               true
+│   ├── TimeoutError               TIMEOUT                     true
+│   ├── RateLimitError             RATE_LIMITED                true
+│   └── ServiceUnavailableError    SERVICE_UNAVAILABLE         true
+├── RequestError                   REQUEST_FAILED              false
+│   ├── ValidationError            VALIDATION_FAILED           false
+│   │   ├── StaleQuoteError            STALE_QUOTE
+│   │   └── PolicyScopeMismatchError   POLICY_SCOPE_MISMATCH
+│   ├── ResourceNotFoundError      RESOURCE_NOT_FOUND          false
+│   ├── NotImplementedError        NOT_IMPLEMENTED             false
+│   ├── AlreadyExistsError         ALREADY_EXISTS              false
+│   ├── PermissionError            PERMISSION_DENIED           false
+│   ├── AuthenticationError        UNAUTHENTICATED             false
+│   ├── PreconditionFailedError    PRECONDITION_FAILED         false
+│   │   ├── RevisionConflictError      REVISION_CONFLICT
+│   │   ├── PolicyInUseError           POLICY_IN_USE
+│   │   ├── PolicyLockedError          POLICY_LOCKED
+│   │   ├── SubaccountChallengeInvalidError SUBACCOUNT_CHALLENGE_INVALID
+│   │   └── MfaLastFactorRequiredError MFA_LAST_FACTOR_REQUIRED
+│   ├── ConfigurationError         INVALID_CONFIGURATION       false
+│   ├── MfaRequiredError           MFA_REQUIRED                false
+│   │   ├── MfaEnrollmentRequiredError     MFA_ENROLLMENT_REQUIRED
+│   │   ├── StepUpRequiredError            STEP_UP_REQUIRED
+│   │   └── SessionElevationRequiredError  SESSION_ELEVATION_REQUIRED
+│   └── MfaVerificationError       MFA_VERIFICATION_FAILED     false
+└── InternalServerError            INTERNAL_SERVER_ERROR       false
+Class notes
+Class
+When
+TransientError
+The request may not have reached the backend, or it was temporarily unable to serve it. Reconcile a single-order create by
+clientOrderId
+; reuse replayable
+requestId
+values.
+NetworkError
+The request could not be sent or the connection failed mid-flight.
+TimeoutError
+No response before the deadline.
+RateLimitError
+Backend rate limiting. Carries
+retryAfterMs?: number
+when a safe wait is known and
+rateLimit?: RateLimitDetail
+when the backend sends quota state.
+ServiceUnavailableError
+Backend overloaded or restarting (502/503/504).
+RequestError
+The request itself was rejected; an identical retry fails identically.
+ValidationError
+Input failed validation (client- or server-side).
+StaleQuoteError
+A submitted market quote exceeded the backend's permitted drift.
+ResourceNotFoundError
+Resource missing or not visible to the caller.
+NotImplementedError
+The backend does not implement the operation (HTTP 501 or Connect
+unimplemented
+).
+AlreadyExistsError
+Duplicate (e.g. a reused
+clientOrderId
+).
+PermissionError
+Authenticated but not allowed.
+AuthenticationError
+Missing/expired/invalid credentials.
+PreconditionFailedError
+System state forbids it (for example insufficient balance).
+RevisionConflictError
+An optimistic-concurrency mutation used a stale resource revision. Refetch and ask the user to review; never retry the same mutation blindly.
+PolicyInUseError
+A policy cannot be deleted or changed because something still references it.
+PolicyLockedError
+A policy is locked and cannot be mutated until unlocked.
+SubaccountChallengeInvalidError
+The
+subaccount
+authorization expired, was replaced by a newer challenge, was replayed, or is otherwise invalid. Request a fresh one with
+subaccounts.createChallenge
+PolicyScopeMismatchError
+The policy does not belong to the account scope targeted by the request.
+ConfigurationError
+The SDK itself is misconfigured (bad environment, missing credentials).
+MfaRequiredError
+Umbrella for the three
+MFA
+flows below.
+MfaEnrollmentRequiredError
+User must enroll an MFA factor first.
+StepUpRequiredError
+Needs a fresh one-use proof; retry with
+options.stepUpToken
+SessionElevationRequiredError
+Needs a recently MFA-elevated session.
+MfaLastFactorRequiredError
+The requested deletion would leave the account without an active MFA factor.
+MfaVerificationError
+An MFA challenge response was rejected (wrong code, expired challenge, and similar).
+InternalServerError
+Backend failure or malformed response. Not auto-retryable; mutations may have partially applied.
+Catalog errors
+Raised by catalog reads and decimal conversion; they plug into the same tree under
+RequestError
+/
+ValidationError
+Class
+Code
+When
+CatalogLookupError
+CATALOG_LOOKUP_MISS
+require*
+lookup for an unknown pair/asset/chain.
+CatalogNotReadyError
+CATALOG_NOT_READY
+Direct catalog read before a snapshot exists.
+CatalogConversionError
+CATALOG_CONVERSION_INVALID
+Invalid decimal, excess precision, or value above a protobuf wire ceiling.
+CatalogValidationFailedError
+CATALOG_VALIDATION_FAILED
+Order input violates pair constraints (tick/step/min).
+The catalog classes are exported from
+; everything else on this page
+comes from the root export.
+Structured backend details
+Typed RPC errors expose the first recognized backend rejection as
+PolyesterError.detail
+undefined
+when the backend provided no recognized detail.
+It survives SDK error wrapping, so inspect it directly instead of walking an error's
+cause
+chain.
+import
+PolyesterError
+}
+from
+"@polyester/sdk"
+;
+try
+await
+client
+orders
+cancelAll
+({ symbolIds: [
+symbolId
+] });
+}
+catch
+(
+error
+) {
+if
+(
+error
+instanceof
+PolyesterError
+&&
+error
+detail
+?.
+service
+===
+"orders"
+&&
+error
+detail
+code
+===
+"CANCEL_REQUEST_EXPIRED"
+) {
+// The cancellation replay window elapsed; use a fresh requestId.
+}
+}
+For market-order stale quotes, use
+error instanceof StaleQuoteError
+(imported from
+) or inspect an orders detail with code
+STALE_QUOTE
+For transfer failures,
+detail.service
+is
+"withdraw"
+or
+"internal_transfer"
+, with the
+service's stable backend error code. Transfer rate-limit details map to
+RateLimitError
+; temporary
+withdrawal or internal-transfer dependency failures map to
+ServiceUnavailableError
+Daily reward claim failures use
+detail.service === "claims"
+RateLimitError
+;
+SERVICE_UNAVAILABLE
+and
+CLAIM_TEMPORARILY_UNAVAILABLE
+map to
+ServiceUnavailableError
+Order details have
+service: "orders"
+plus the existing
+OrderErrorDetail
+fields. Rejected
+batch-create, batch-replace, and batch-cancel result items continue to expose that optional
+error
+field.
+OrderErrorCode
+includes policy-specific rejections such as
+POLICY_MAX_OPEN_ORDERS
+,
+SUBACCOUNT_READ_FORBIDDEN
+,
+POLICY_SPOT_READ_DENY
+,
+API_KEY_SPOT_READ_DENY
+, and
+CANCEL_REQUEST_EXPIRED
+Rate-limit details
+RateLimitError.rateLimit
+preserves quota values that may exceed JavaScript's safe integer range:
+import
+type
+RateLimitFailureReason
+,
+RateLimitPolicyClass
+,
+RateLimitRefillModel
+,
+RateLimitScope
+,
+}
+from
+"@polyester/sdk"
+;
+interface
+RateLimitDetail
+reason
+RateLimitFailureReason
+;
+operationId
+string
+;
+policyClass
+RateLimitPolicyClass
+;
+scope
+RateLimitScope
+;
+refillModel
+RateLimitRefillModel
+;
+limit
+?:
+string
+;
+remaining
+?:
+string
+;
+retryAfterMs
+?:
+string
+;
+policyVersion
+?:
+string
+;
+}
+retryAfterMs
+on the error is a number only when conversion is safe or a response header supplies
+one. Use the string fields in
+rateLimit
+when exact quota data matters.
+client.tradingRateLimits
+is the discovery API for those trading pools: public catalog via
+getConfig
+, effective account limits via
+getTradingLimits
+Trading rate limits
+Helper functions
+Function
+Purpose
+isAbortError(err)
+Caller cancellation, including transport cancellation when the caller's signal is aborted; outside the
+PolyesterError
+tree and never retryable.
+isRetryableError(err)
+true
+for
+TransientError
+subclasses and raw
+unavailable
+/
+deadline_exceeded
+/
+resource_exhausted
+/
+aborted
+Connect failures.
+isResourceNotFoundError(err)
+Convenience type guard.
+isRevisionConflictError(err)
+Detect a typed or raw stale-revision failure.
+isPolicyInUseError(err)
+/
+isPolicyLockedError(err)
+/
+isPolicyScopeMismatchError(err)
+Policy mutation guards for unknown error values.
+isFreshStepUpRequiredError(err)
+/
+isSessionElevationRequiredError(err)
+/
+isMfaEnrollmentRequiredError(err)
+MFA flow guards for unknown error values.
+isMfaLastFactorRequiredError(err)
+Detect last-factor MFA requirement for unknown error values.
+errorFromHttpStatus(status, message, options?)
+Map a plain HTTP status onto the tree (400/422→
+ValidationError
+, 401→
+AuthenticationError
+, 412→
+PreconditionFailedError
+, 429→
+RateLimitError
+, 501→
+NotImplementedError
+, …). The SDK applies it to bare HTTP error responses without a Connect body; a bare 404 means a missing
+route
+and maps to
+NotImplementedError
+toPolyesterError(err)
+/
+connectErrorToPolyesterError(err)
+Normalize arbitrary/Connect errors into the tree.
+createErrorMappingInterceptor()
+The interceptor the SDK installs so every RPC failure is typed (exported for custom transports).
+normalizeErrorMessage(message)
+Strip Connect's
+prefixes from messages.
+formatConnectError(err, fallback)
+Human-readable message from any error.
+formatUserFacingError(err, fallback?)
+Stable user-facing copy for typed SDK errors; cancellation formats as
+"Request canceled."
+Types
+PolyesterErrorCode
+PolyesterErrorDetail
+withdrawal, internal transfer, ledger, or market-overview RPC errors.
+PolyesterErrorOptions
+accepted by every
+constructor.
+RateLimitErrorOptions
+retryAfterMs?: number
+and
+rateLimit?: RateLimitDetail
+RateLimitDetail
+OrderErrorDetail
+rateLimit
+state.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Deposit
+Next
+Fees
+On this page
+Hierarchy
+Class notes
+Catalog errors
+Structured backend details
+Rate-limit details
+Helper functions
+Types
+Related Topics
+Share this page
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+PolyesterError                     code                        retryable
+├── TransientError                 TRANSIENT_FAILURE           true
+│   ├── NetworkError               NETWORK_ERROR               true
+│   ├── TimeoutError               TIMEOUT                     true
+│   ├── RateLimitError             RATE_LIMITED                true
+│   └── ServiceUnavailableError    SERVICE_UNAVAILABLE         true
+├── RequestError                   REQUEST_FAILED              false
+│   ├── ValidationError            VALIDATION_FAILED           false
+│   │   ├── StaleQuoteError            STALE_QUOTE
+│   │   └── PolicyScopeMismatchError   POLICY_SCOPE_MISMATCH
+│   ├── ResourceNotFoundError      RESOURCE_NOT_FOUND          false
+│   ├── NotImplementedError        NOT_IMPLEMENTED             false
+│   ├── AlreadyExistsError         ALREADY_EXISTS              false
+│   ├── PermissionError            PERMISSION_DENIED           false
+│   ├── AuthenticationError        UNAUTHENTICATED             false
+│   ├── PreconditionFailedError    PRECONDITION_FAILED         false
+│   │   ├── RevisionConflictError      REVISION_CONFLICT
+│   │   ├── PolicyInUseError           POLICY_IN_USE
+│   │   ├── PolicyLockedError          POLICY_LOCKED
+│   │   ├── SubaccountChallengeInvalidError SUBACCOUNT_CHALLENGE_INVALID
+│   │   └── MfaLastFactorRequiredError MFA_LAST_FACTOR_REQUIRED
+│   ├── ConfigurationError         INVALID_CONFIGURATION       false
+│   ├── MfaRequiredError           MFA_REQUIRED                false
+│   │   ├── MfaEnrollmentRequiredError     MFA_ENROLLMENT_REQUIRED
+│   │   ├── StepUpRequiredError            STEP_UP_REQUIRED
+│   │   └── SessionElevationRequiredError  SESSION_ELEVATION_REQUIRED
+│   └── MfaVerificationError       MFA_VERIFICATION_FAILED     false
+└── InternalServerError            INTERNAL_SERVER_ERROR       false
+
+---
+
+import { PolyesterError } from "@polyester/sdk";
+
+try {
+	await client.orders.cancelAll({ symbolIds: [symbolId] });
+} catch (error) {
+	if (
+		error instanceof PolyesterError &&
+		error.detail?.service === "orders" &&
+		error.detail.code === "CANCEL_REQUEST_EXPIRED"
+	) {
+		// The cancellation replay window elapsed; use a fresh requestId.
+	}
+}
+
+---
+
+import type {
+	RateLimitFailureReason,
+	RateLimitPolicyClass,
+	RateLimitRefillModel,
+	RateLimitScope,
+} from "@polyester/sdk";
+
+interface RateLimitDetail {
+	reason: RateLimitFailureReason;
+	operationId: string;
+	policyClass: RateLimitPolicyClass;
+	scope: RateLimitScope;
+	refillModel: RateLimitRefillModel;
+	limit?: string;
+	remaining?: string;
+	retryAfterMs?: string;
+	policyVersion?: string;
+}

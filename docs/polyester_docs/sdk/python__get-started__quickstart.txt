@@ -1,0 +1,373 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/get-started/quickstart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Quickstart · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Get started
+svg]:size-3.5">
+/
+Quickstart
+Quickstart
+Copy page
+View as Markdown
+Open in
+About ten minutes on Polyester testnet: public reads, a live stream, then a place-and-cancel
+with an
+API key
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prerequisites
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Install the SDK
+app (
+API
+in the sidebar). Copy the key id and private key when shown, the private key is
+only displayed once. Open the key's
+Permissions
+, enable
+Spot trading
+, choose the allowed
+markets, and set a maximum order size that covers this test. Copy your
+Account ID
+from Profile.
+The API-key SDK can use an assigned policy but cannot create or assign one.
+1
+Create a client
+from
+polyester
+import
+AsyncPolyester,
+POLYESTER_TESTNET_ENVIRONMENT
+async
+with
+AsyncPolyester(
+environment
+=
+POLYESTER_TESTNET_ENVIRONMENT
+,
+api_key_id
+=
+"ak_..."
+,
+api_private_key
+=
+"..."
+,
+# 64-char hex from key creation
+default_account_id
+=
+"..."
+,
+# Profile → Account ID
+)
+as
+client:
+Python ships
+async
+(
+AsyncPolyester
+) and
+sync
+(
+Polyester
+) clients with the same service tree. Prefer async for bots with streams.
+2
+Wait for catalogs
+Decimal order inputs need spot config scales. Wait before first write:
+await
+client.wait_for_catalogs()
+See
+Catalog & precision
+3
+Read public market data
+import
+asyncio
+from
+polyester
+import
+AsyncPolyester,
+POLYESTER_TESTNET_ENVIRONMENT
+async
+def
+main
+() ->
+None
+async
+with
+AsyncPolyester(
+environment
+=
+POLYESTER_TESTNET_ENVIRONMENT
+)
+as
+client:
+overview
+=
+await
+client.market_overview.list(
+limit
+=
+5
+)
+for
+market
+in
+overview.markets:
+print
+(market.symbol, market.last_price)
+asyncio.run(main())
+4
+Stream public trades
+subscription
+=
+await
+client.market_data.subscribe_trades(
+symbol
+=
+"BTC-USDT"
+)
+async
+with
+subscription:
+async
+for
+trade
+in
+subscription:
+print
+(trade.price.ticks
+if
+trade.price
+else
+None
+)
+break
+Subscription queues are bounded. If your consumer falls behind, the SDK raises a realtime
+overflow error and faults the subscription, it does
+not
+silently drop updates. See
+Streaming
+5
+Place and cancel a limit order
+Your API key policy must allow Spot trading for
+BTC-USDT
+, and its maximum order size must cover
+the order below. Spot orders spend
+trading
+balance. Manage the policy from the key's
+Permissions
+page in the Polyester app.
+from
+uuid
+import
+uuid4
+client_order_id
+=
+f
+"quickstart-
+uuid4().hex[:
+20
+]
+}
+"
+result
+=
+await
+client.orders.create(
+symbol
+=
+"BTC-USDT"
+,
+side
+=
+"buy"
+,
+order_type
+=
+"limit"
+,
+tif
+=
+"gtc"
+,
+qty
+=
+"0.001"
+,
+price
+=
+"50000"
+,
+post_only
+=
+True
+,
+client_order_id
+=
+client_order_id,
+)
+print
+(result.status, result.order_id)
+# status == "accepted" (admission ack)
+await
+client.orders.cancel(
+client_order_id
+=
+client_order_id)
+Next:
+Authentication
+and
+Trading
+Related Topics
+Overview
+Build typed Polyester integrations with the official Python API-key SDK.
+Installation
+Install the Python SDK and verify connectivity to Polyester testnet.
+Previous
+Installation
+Next
+Architecture
+On this page
+Related Topics
+Share this page
+Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+
+async with AsyncPolyester(
+    environment=POLYESTER_TESTNET_ENVIRONMENT,
+    api_key_id="ak_...",
+    api_private_key="...",  # 64-char hex from key creation
+    default_account_id="...",  # Profile → Account ID
+) as client:
+    ...
+
+---
+
+await client.wait_for_catalogs()
+
+---
+
+import asyncio
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+
+async def main() -> None:
+    async with AsyncPolyester(environment=POLYESTER_TESTNET_ENVIRONMENT) as client:
+        overview = await client.market_overview.list(limit=5)
+        for market in overview.markets:
+            print(market.symbol, market.last_price)
+
+asyncio.run(main())
+
+---
+
+subscription = await client.market_data.subscribe_trades(symbol="BTC-USDT")
+async with subscription:
+    async for trade in subscription:
+        print(trade.price.ticks if trade.price else None)
+        break
+
+---
+
+from uuid import uuid4
+
+client_order_id = f"quickstart-{uuid4().hex[:20]}"
+result = await client.orders.create(
+    symbol="BTC-USDT",
+    side="buy",
+    order_type="limit",
+    tif="gtc",
+    qty="0.001",
+    price="50000",
+    post_only=True,
+    client_order_id=client_order_id,
+)
+print(result.status, result.order_id)  # status == "accepted" (admission ack)
+
+await client.orders.cancel(client_order_id=client_order_id)

@@ -1,0 +1,39 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/matching.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Matching
+See how your eligible order receives priority and becomes one or more fills.
+**Matching** decides which eligible buy and sell orders trade, at what price, and for how much. It begins after **[Admission](https://testnet.polyester.com/docs/user-docs/polyengine/admission)** accepts your order and reserves the balance it may use.
+Each trading pair has its own order book. Deposits from different supported chains trade through the same unified asset, so the source chain does not create a separate market.
+## Price comes first, then time
+PolyEngine gives priority in two steps:
+1. **Best price first.** Buyers receive the lowest eligible sell price, while sellers receive the highest eligible buy price.
+2. **Earlier order first.** When several orders share the same price, the order that arrived earlier receives priority.
+Your limit price is the worst price you accept, not necessarily the price you receive. A buy can fill at its limit price or lower, and a sell can fill at its limit price or higher.
+## Maker and taker fills
+The order already resting on the book is the **maker**. The incoming order that trades against it is the **taker**. The applicable maker fee, maker rebate, or taker fee is calculated for each fill.
+Maker or taker status belongs to the fill, not permanently to the order. A limit order can take liquidity immediately and later provide liquidity with its remaining amount. **Post-only** prevents that mixed result by rejecting a limit order that would immediately trade as a taker.
+See **[Trading Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees)** for fee and rebate rates.
+## Partial fills and remaining amounts
+One order can trade against several orders or prices. Each match creates a separate fill, and Polyester combines those fills to show your total filled amount and average execution price.
+What happens to the unfilled amount depends on the instruction:
+| Instruction                   | What happens to the unfilled amount                                        |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| **Good Til Canceled (GTC)**   | It remains on the order book until it fills or you cancel it.              |
+| **Immediate Or Cancel (IOC)** | It is canceled after all immediately available matches complete.           |
+| **Fill Or Kill (FOK)**        | The entire order fills immediately or no part of it fills.                 |
+| **Market**                    | It trades immediately within price protection, then cancels any remainder. |
+FOK checks the eligible liquidity across the complete order book, not only the rows currently visible in the Order Book widget.
+## Prevent self-trading
+Self-trade prevention applies when two orders from the same Polyester Account ID would otherwise match:
+- **Expire Maker** cancels the resting order.
+- **Expire Taker** cancels the incoming order.
+- **Expire Both** cancels both orders.
+When you do not choose a mode, Polyester uses **Expire Maker**. Different Subaccounts have different account IDs, so orders from two Subaccounts can match normally even when they belong to the same Main Account.
+## Canceling a working order
+A working order remains active if you close your browser, sign out, or lose your connection. It continues following its price, priority, and time-in-force instructions until it fills, is canceled, or otherwise ends.
+A fill can complete while your cancellation is being processed. Any completed fill remains final, while only the amount still open is canceled.
+> **Every fill moves to Settlement**
+>
+> Matching creates the price, amount, maker and taker roles, and order references for each fill. **[Settlement](https://testnet.polyester.com/docs/user-docs/polyengine/settlement)** then applies the asset, fee, rebate, and balance changes to your account.

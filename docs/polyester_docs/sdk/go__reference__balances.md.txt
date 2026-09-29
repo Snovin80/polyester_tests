@@ -1,0 +1,60 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+`client.Balances` reads ledger balances. Amounts are **already scaled integer** decimal strings (ledger u128). Format once for display with `codecs.FormatLedgerU128(raw, codecs.LedgerScale)` (scale 18). Do **not** multiply by `1e18` again.
+> **Spot orders spend trading balance**
+>
+> Deposits can route to **funding** or **trading**. Spot orders and holds use **trading**. Funding → trading is on-chain / wallet-driven, not a ConnectRPC balance write.
+## Methods
+| Method              | Signature notes                    |
+| ------------------- | ---------------------------------- |
+| `List`              | `List(ctx, account, subAccountID)` |
+| `GetBalanceHistory` | range key + optional account codes |
+| `GetEquityHistory`  | range + `groupBy`                  |
+| `ListHolds`         | limit + reversed                   |
+| `Subscribe`         | private stream → `Messages()`      |
+### List
+Unlike TypeScript/Python request objects, Go takes explicit scope args:
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/codecs"
+list, err := client.Balances.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, b := range list.Balances {
+available, err := codecs.FormatLedgerU128(b.Available, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+trading, err := codecs.FormatLedgerU128(b.Trading, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+funding, err := codecs.FormatLedgerU128(b.Funding, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+fmt.Println(b.AssetID, available, trading, funding)
+}
+subID := "123"
+subList, err := client.Balances.List(ctx, nil, &subID)
+```
+`AssetBalance` fields: `AssetID`, `Trading`, `Funding`, `Reserved`, `Available`, `TradingRevision`, `FundingRevision`.
+### History / holds
+```go
+hist, err := client.Balances.GetBalanceHistory(ctx, nil, "30d", nil, 0, nil)
+eq, err := client.Balances.GetEquityHistory(ctx, nil, "90d", nil, nil, "asset")
+holds, err := client.Balances.ListHolds(ctx, nil, nil, 50, false)
+```
+Ranges: `1d`, `7d`, `30d`, `90d`, `180d`, `365d`. `groupBy`: `"account"` or `"asset"`. `BalanceHistorySeries.BalanceQ` is `[]uint64`, matching the unsigned protobuf field across its full range. `AccountCode` is the raw signed `int32` enum value, so an unknown future code cannot wrap into a large unsigned value.
+`ListHolds` may be unmounted in a given environment. In that case the SDK returns `*errors.RouteNotFoundError`; do not classify that deployment routing state as an empty holds list or an SDK decode failure.
+### Subscribe
+```go
+sub, err := client.Balances.Subscribe(ctx, accountID)
+defer sub.Close()
+for bal := range sub.Messages() {
+available, err := codecs.FormatLedgerU128(bal.Available, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+fmt.Println(bal.AssetID, available)
+break
+}
+if err := sub.Err(); err != nil { log.Printf("balance stream ended: %v", err) }
+```
+## Related
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/go/guides/accounts-and-balances)
+- [Realtime](https://testnet.polyester.com/docs/sdk/go/reference/realtime)

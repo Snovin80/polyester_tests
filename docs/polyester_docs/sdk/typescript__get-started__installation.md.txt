@@ -1,0 +1,36 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/get-started/installation.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Installation
+Install the SDK, check runtime requirements, and verify your setup with a first request.
+## Install the package
+`@polyester/sdk` is public on npm:
+```bash
+npm install @polyester/sdk
+# or
+bun add @polyester/sdk
+# or
+pnpm add @polyester/sdk
+```
+Pre-1.0 versioning: compatible changes bump the patch, breaking changes bump the minor. Pin with `^0.26.0` if you only want patch updates inside `0.26.x`.
+Source lives in [polyester-sdk-typescript](https://github.com/Fabric-Labs/polyester-sdk-typescript).
+## Requirements
+- Runtime: anything with `fetch` and WebCrypto. Node.js 20+, Bun, Deno, Cloudflare Workers, and evergreen browsers all work.
+- Module system: ESM only (`"type": "module"`).
+- TypeScript 5+ with `"moduleResolution": "bundler"` or `"nodenext"` so subpath exports resolve (`@polyester/sdk/account-signer`, and the others).
+Trading withdrawal nonces require `crypto.getRandomValues`. Generated order mutation request IDs require `crypto.randomUUID` or `crypto.getRandomValues`; callers may supply an explicit `requestId`. Missing secure randomness throws `ConfigurationError`.
+The SDK talks HTTP APIs over ConnectRPC and realtime over Centrifugo WebSockets. Streams work in any long-lived runtime, browser or server. The one place they do not belong is a framework SSR render pass. See [Streaming](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming).
+## Verify the install
+This example connects to testnet with the `POLYESTER_TESTNET_ENVIRONMENT` preset. Market data needs no credentials:
+```ts
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+const client = new PolyesterClient({ environment: POLYESTER_TESTNET_ENVIRONMENT });
+await client.catalog.ensureReady();
+const { markets } = await client.marketOverview.list({ limit: 5 });
+for (const market of markets) {
+const symbol = client.catalog.market.requirePairSymbolBySymbolId(market.symbolId);
+console.log(symbol, market.lastPrice);
+}
+```
+If that prints a few markets and prices, you are connected. Next up: [Quickstart](https://testnet.polyester.com/docs/sdk/typescript/get-started/quickstart).

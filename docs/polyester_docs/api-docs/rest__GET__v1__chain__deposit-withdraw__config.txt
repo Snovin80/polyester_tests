@@ -1,0 +1,434 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/chain/deposit-withdraw/config
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+ZipperService
+Get Deposit & Withdraw Config
+Retrieve the supported chains and unified assets for Zipper-powered deposit and withdraw flows.
+Copy URL
+Method
+GET
+Path
+/v1/chain/deposit-withdraw/config
+Visibility
+Public endpoint
+GET
+/v1/chain/deposit-withdraw/config
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/chain/deposit-withdraw/config' \
+--header 'Accept: */*'
+Responses
+"assets": [
+"asset": "USDT",
+"icon": "💰",
+"ledgerId": 1,
+"name": "Tether USD",
+"quantityDisplayDecimals": 8,
+"quantityScale": 8,
+"uAssetId": "100",
+"variants": [
+"chainId": 1,
+"depositMinAmount": "123.45",
+"isNativeAsset": false,
+"networkFee": "0.001",
+"sourceAddress": "0x4444444444444444444444444444444444444444",
+"sourceDecimals": 1,
+"supply": "1",
+"withdrawMinAmount": "123.45",
+"zippedAssetId": 100,
+"ztokenAddress": "0x6666666666666666666666666666666666666666",
+"ztokenDecimals": 1
+}
+]
+}
+],
+"chains": [
+"chainId": 1,
+"code": "ETH",
+"confirmationTimeSeconds": 1,
+"explorerUrl": "https://etherscan.io",
+"icon": "💰",
+"isCaseSensitive": false,
+"maxAddressLength": 1,
+"minAddressLength": 1,
+"name": "Ethereum",
+"nativeChainId": "1",
+"nativeCurrencySymbol": "ETH",
+"requiredConfirmations": 1
+}
+],
+"contracts": [
+"address": "0x3333333333333333333333333333333333333333",
+"description": "Trading account gateway contract.",
+"name": "TradingGateway",
+"type": "TRADING_GATEWAY",
+"version": 1
+}
+],
+"tsSec": 1735689600
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+assets
+object[]
+Supported unified assets ordered by asset code, each with compatible chain routes.
+8 fields
+asset
+string
+Unified Polyester asset code used inside Funding/Trading (for example: "USDT").
+Example
+USDT
+icon
+string
+Optional icon reference for the unified asset.
+Example
+💰
+ledgerId
+integer (int32)
+Public unified asset id.
+Example
+1
+name
+string
+Human-friendly unified asset display name.
+Example
+Tether USD
+quantityDisplayDecimals
+integer (int32)
+UI display precision for the unified asset.
+Example
+8
+quantityScale
+integer (int32)
+Integer scale for unified-asset quantities (0..18). A scale of 8 means one whole asset is represented as 100000000 in supply_q and other quantity_scale-based fields.
+Example
+8
+uAssetId
+string
+On-chain uAsset id for the unified asset.
+Example
+100
+variants
+object[]
+Supported chain-specific deposit/withdraw variants for this unified asset.
+11 fields
+chainId
+integer (int32)
+Chain that this asset belongs to.
+Example
+1
+depositMinAmount
+string
+Minimum deposit amount for this variant as a human-readable string in zToken units.
+Example
+123.45
+isNativeAsset
+boolean
+True when the asset is the native gas/token of the source chain.
+Example
+false
+networkFee
+string
+Latest known network fee for this chain asset variant as a human-readable string in zToken units, with insignificant trailing zeroes trimmed.
+Example
+0.001
+sourceAddress
+string
+Source-chain token contract, mint, or native sentinel address.
+Example
+0x4444444444444444444444444444444444444444
+sourceDecimals
+integer (int32)
+Source-chain token decimals.
+Example
+1
+supply
+string
+/^[0-9]…9]+)?$/
+Latest zToken supply for this chain asset variant, expressed in whole-token units.
+Example
+1
+withdrawMinAmount
+string
+Minimum withdraw amount for this variant as a human-readable string in zToken units.
+Example
+123.45
+zippedAssetId
+integer (int32)
+Canonical zipped asset route id.
+Example
+100
+ztokenAddress
+string
+Polyester zToken contract address for this chain asset variant.
+Example
+0x6666666666666666666666666666666666666666
+ztokenDecimals
+integer (int32)
+zToken decimals on Polyester chain.
+Example
+1
+chains
+object[]
+Supported chains ordered by chain code.
+12 fields
+chainId
+integer (int32)
+PolyChain-registered chain id used across Zipper and lifecycle events.
+Example
+1
+code
+string
+Stable machine-friendly chain key (for example: "ethereum", "solana").
+Example
+ETH
+confirmationTimeSeconds
+integer (int32)
+Estimated average confirmation time in seconds when known.
+Example
+1
+explorerUrl
+string
+Optional block explorer base URL for links.
+Example
+https://etherscan.io
+icon
+string
+Optional icon reference for UI display.
+Example
+💰
+isCaseSensitive
+boolean
+True when source-chain addresses must preserve letter case.
+Example
+false
+maxAddressLength
+integer (int32)
+Inclusive maximum source-chain address length for validation.
+Example
+1
+minAddressLength
+integer (int32)
+Inclusive minimum source-chain address length for validation.
+Example
+1
+name
+string
+Human-friendly display name.
+Example
+Ethereum
+nativeChainId
+string
+Native source-chain network identifier when useful for wallet or explorer integrations. For EVM chains this is the EIP-155 chain id; non-EVM chains may omit this and should be identified by `chain_id` and `code`.
+Example
+1
+nativeCurrencySymbol
+string
+Native gas token symbol for this chain (for example: ETH, BTC, SOL).
+Example
+ETH
+requiredConfirmations
+integer (int32)
+Default required source-chain confirmations when known.
+Example
+1
+contracts
+object[]
+Active Polyester-chain contracts ordered by contract name.
+5 fields
+address
+string
+EVM contract address on Polyester chain.
+Example
+0x3333333333333333333333333333333333333333
+description
+string
+Optional human-readable description.
+Example
+Trading account gateway contract.
+name
+string
+Stable contract key for client lookups.
+Example
+TradingGateway
+type
+string
+Optional product-facing contract category, when known.
+Example
+TRADING_GATEWAY
+version
+integer (int32)
+Active contract version for this name. Versions increase when the address changes, allowing clients to identify the exact contract revision in use.
+Example
+1
+tsSec
+integer (int64)
+Snapshot generation timestamp (seconds since epoch, UTC).
+Example
+1735689600
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/chain/deposit-withdraw/config
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s362" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/chain/deposit-withdraw/config' \
+--header 'Accept: */*'
+Responses
+"assets": [
+"asset": "USDT",
+"icon": "💰",
+"ledgerId": 1,
+"name": "Tether USD",
+"quantityDisplayDecimals": 8,
+"quantityScale": 8,
+"uAssetId": "100",
+"variants": [
+"chainId": 1,
+"depositMinAmount": "123.45",
+"isNativeAsset": false,
+"networkFee": "0.001",
+"sourceAddress": "0x4444444444444444444444444444444444444444",
+"sourceDecimals": 1,
+"supply": "1",
+"withdrawMinAmount": "123.45",
+"zippedAssetId": 100,
+"ztokenAddress": "0x6666666666666666666666666666666666666666",
+"ztokenDecimals": 1
+}
+]
+}
+],
+"chains": [
+"chainId": 1,
+"code": "ETH",
+"confirmationTimeSeconds": 1,
+"explorerUrl": "https://etherscan.io",
+"icon": "💰",
+"isCaseSensitive": false,
+"maxAddressLength": 1,
+"minAddressLength": 1,
+"name": "Ethereum",
+"nativeChainId": "1",
+"nativeCurrencySymbol": "ETH",
+"requiredConfirmations": 1
+}
+],
+"contracts": [
+"address": "0x3333333333333333333333333333333333333333",
+"description": "Trading account gateway contract.",
+"name": "TradingGateway",
+"type": "TRADING_GATEWAY",
+"version": 1
+}
+],
+"tsSec": 1735689600
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/chain/deposit-withdraw/config' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "assets": [
+    {
+      "asset": "USDT",
+      "icon": "💰",
+      "ledgerId": 1,
+      "name": "Tether USD",
+      "quantityDisplayDecimals": 8,
+      "quantityScale": 8,
+      "uAssetId": "100",
+      "variants": [
+        {
+          "chainId": 1,
+          "depositMinAmount": "123.45",
+          "isNativeAsset": false,
+          "networkFee": "0.001",
+          "sourceAddress": "0x4444444444444444444444444444444444444444",
+          "sourceDecimals": 1,
+          "supply": "1",
+          "withdrawMinAmount": "123.45",
+          "zippedAssetId": 100,
+          "ztokenAddress": "0x6666666666666666666666666666666666666666",
+          "ztokenDecimals": 1
+        }
+      ]
+    }
+  ],
+  "chains": [
+    {
+      "chainId": 1,
+      "code": "ETH",
+      "confirmationTimeSeconds": 1,
+      "explorerUrl": "https://etherscan.io",
+      "icon": "💰",
+      "isCaseSensitive": false,
+      "maxAddressLength": 1,
+      "minAddressLength": 1,
+      "name": "Ethereum",
+      "nativeChainId": "1",
+      "nativeCurrencySymbol": "ETH",
+      "requiredConfirmations": 1
+    }
+  ],
+  "contracts": [
+    {
+      "address": "0x3333333333333333333333333333333333333333",
+      "description": "Trading account gateway contract.",
+      "name": "TradingGateway",
+      "type": "TRADING_GATEWAY",
+      "version": 1
+    }
+  ],
+  "tsSec": 1735689600
+}

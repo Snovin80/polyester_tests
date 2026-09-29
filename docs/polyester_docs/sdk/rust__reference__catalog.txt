@@ -1,0 +1,325 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/catalog
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Catalog · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Catalog
+Catalog
+Copy page
+View as Markdown
+Open in
+client.catalogs
+is an
+Arc<CatalogManager>
+Config.hydrate_catalogs: true
+(default), a
+client constructed inside Tokio starts
+background hydration
+of spot config and
+deposit-withdraw config. If it is constructed before entering Tokio,
+wait_for_catalogs().await?
+starts the attempt on the current runtime.
+client
+wait_for_catalogs
+()
+;
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Fail-closed readiness
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+wait_for_catalogs
+waits for or starts the hydration attempt (or returns immediately when
+hydration is disabled).
+If hydration fails
+(HTTP/transport error, malformed config, invalid
+scales/IDs, empty names, or duplicate/conflicting identities),
+it returns
+Err
+; it does
+not
+succeed after a failed attempt. Inspect
+client.catalogs_last_error()
+for the most recent failure. You can also call
+client.hydrate_catalogs().await?
+explicitly for a refresh. A rejected refresh does not partially
+replace the previous valid snapshot. Scale
+0
+is valid and distinct from
+None
+Manual hydrate / lookups
+client
+wait_for_catalogs
+()
+;
+let
+symbol_id
+=
+client
+catalogs
+symbol_id_for_symbol
+(
+"BTC-USDT"
+);
+let
+scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+);
+let
+buckets
+=
+client
+catalogs
+orderbook_price_buckets_for_symbol
+(
+"BTC-USDT"
+);
+// Optional typed Zipper hydrate (no consumer serde_json dependency)
+if
+let
+Ok
+(
+config
+)
+=
+client
+zipper
+get_deposit_withdraw_config
+()
+client
+catalogs
+hydrate_zipper_config
+(
+&
+config
+)
+?
+;
+}
+Manager APIs mirror Go/Python: hydrate spot/
+zipper
+, symbol id, base quantity scale, orderbook
+price buckets, ledger id / asset scales, zipper supply patch. Scales above
+MAX_PROTOCOL_SCALE
+(36) and IDs that do not fit
+u32
+are rejected.
+Subscribe helpers that accept a symbol string (for example
+market_data.subscribe_trades
+) require
+hydration so the symbol resolves to an id.
+Method
+Notes
+hydrate_spot_config_json
+/
+hydrate_zipper_config
+Replace snapshots (
+Result
+)
+symbol_id_for_symbol
+Option<u32>
+base_quantity_scale_for_symbol
+/
+…_symbol_id
+Option<u32>
+(no invented 8)
+orderbook_price_buckets_for_symbol
+price bucket strings
+ledger_id_for_asset
+/
+quantity_scale_for_zipped_asset_id
+Zipper-backed
+patch_zipper_supply
+Live supply patches
+There is no TypeScript-style
+catalog.orders.validateSpotOrderDecimalInput
+helper. Invalid
+precision typically fails as
+Error::Validation
+or
+Error::Api
+Related
+Catalog & precision
+Orders
+Errors
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Candles
+Next
+Chain helpers
+On this page
+Manual hydrate / lookups
+Related
+Related Topics
+Share this page
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+client.wait_for_catalogs().await?;
+
+---
+
+client.wait_for_catalogs().await?;
+
+let symbol_id = client.catalogs.symbol_id_for_symbol("BTC-USDT");
+let scale = client.catalogs.base_quantity_scale_for_symbol("BTC-USDT");
+let buckets = client.catalogs.orderbook_price_buckets_for_symbol("BTC-USDT");
+
+// Optional typed Zipper hydrate (no consumer serde_json dependency)
+if let Ok(config) = client.zipper.get_deposit_withdraw_config().await {
+    client.catalogs.hydrate_zipper_config(&config)?;
+}

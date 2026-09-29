@@ -1,0 +1,171 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/limitations-and-non-features
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Limitations & non-features · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Limitations & non-features
+Limitations & non-features
+Copy page
+View as Markdown
+Open in
+Python, Go, and Rust are
+API-key SDKs
+trading surface. They do
+not
+replace the TypeScript browser client.
+Not available here
+Capability
+Use instead
+Wallet / browser login
+TypeScript SDK
+Session
+MFA
+enrollment / challenges
+TypeScript SDK
+Account resolve / lookup
+TypeScript / session clients
+SBE WebSocket
+SBE getting started
+FIX Classic / FIX-SBE
+FIX Classic
+,
+FIX-SBE
+Subaccount
+MFA
+requirement flags
+(policy) may still appear on API-key policy APIs, that is
+not the same as performing MFA challenges in this SDK.
+Easy to miss
+On-chain
+Funding → Trading
+and
+Funding → external
+via the
+chain
+module (not
+ConnectRPC). See
+Deposits & withdrawals
+Collaboration wrappers (polychart / layout / whiteboard / social verification) may appear in
+the client tree, but live API-key access is limited: whiteboard and social verification are
+JWT/session-only, and some layout/polychart endpoints may be unmounted. Treat them as
+non-features for automated trading bots. Thin
+reference
+pages exist for discovery only.
+Client aliases and sync/async differences, see
+Architecture
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Capability matrix
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Compare languages:
+SDK capability matrix
+Transports:
+connectivity matrix
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Environments
+Testnet endpoints and how to point the client at another deployment.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Previous
+Requests & idempotency
+Next
+Authentication
+On this page
+Not available here
+Easy to miss
+Related Topics
+Share this page
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Share
+Copy Link

@@ -1,0 +1,230 @@
+Источник: https://testnet.polyester.com/docs/user-docs/help-and-support.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# FAQs
+Search answers to common questions about Polyester.
+Search by question or answer, or choose a category.
+## Introduction
+### What is Polyester?
+Polyester is a decentralized spot and lending exchange built on Polyester Chain. It supports deposits from Bitcoin, XRP Ledger, Bitcoin Cash, and most other major blockchains. The platform combines sub-millisecond order-book trading, lending pools, cross-chain withdrawals, advanced APIs, and customizable workspaces in one unified exchange. [About Polyester](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester)
+### What blockchain is Polyester built on?
+Polyester runs on Polyester Chain, its own EVM-compatible Layer 1 blockchain purpose-built for exchange infrastructure. Running on a dedicated chain allows Polyester to optimize performance for trading and lending, and sponsor gas fees to reduce costs for users while maintaining a high-performance environment. It also enables Polyester to unify external blockchains and their assets into a single chain through Zipper, bringing cross-chain liquidity together into one coherent trading ecosystem.
+### Where should I start if this is my first time using Polyester?
+The Start Here section in the user docs is a great way to begin. It guides you through signing in with a wallet, Google, or email, protecting your access, and making your first deposit and trade. Follow them in order for a step-by-step introduction to Polyester.
+## Eligibility
+### Does Polyester require KYC?
+No. Polyester does not require identity verification to use the platform. All you (or your AI agent) need is a supported crypto wallet, Google account, or email to create an account, deposit, trade, and withdraw. [About account requirements](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester)
+### Are there country restrictions, including for U.S. users?
+U.S. users are allowed to use Polyester. Restrictions apply to certain jurisdictions and persons. See our [Terms of Service](https://testnet.polyester.com/terms-of-service) for the full eligibility requirements and restrictions.
+## Accounts, ownership, and privacy
+### How does privacy work on Polyester?
+Your trading activity on Polyester’s matching engine, including your Unified Trading Account balances, orders, and trading history, is private. Funding Account balances, deposits, withdrawals, and on-chain transfers are publicly viewable on PolyesterScan. Public market data shows completed trades without exposing which Polyester account placed each order. [About privacy on Polyester](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester)
+### Which wallets can I use to create an account?
+The Create Account screen supports MetaMask, Rabby, and Phantom directly. WalletConnect can connect another compatible desktop or mobile wallet. The selected wallet address becomes the owner credential for the Main Account. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Who creates the wallet when I use Google or email?
+Turnkey creates and secures the embedded non-custodial owner wallet. Google verifies your selected Google account, while email sign-in verifies access to your selected inbox. You use that Turnkey wallet to create or sign back into your Polyester Main Account. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Who controls my wallet and assets when I use Polyester?
+You own your Polyester smart account and control the wallet that authorizes it. Polyester does not hold or control that wallet’s private keys. Your deposited assets remain yours, while their custody and movement are handled through Polyester’s account systems and Zipper. This applies whether you connect an existing wallet or use an embedded wallet created through Google or email.
+### Where are my private keys stored?
+With MetaMask, Rabby, Phantom, or WalletConnect, the private keys remain with you and your connected wallet. With Google or email, Turnkey stores the encrypted private key and decrypts it only inside secure enclaves for authorized signing. Polyester does not receive the raw private key in either path. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### What’s the difference between the wallet I use to connect / sign in and my Polyester Smart Wallet?
+The wallet you use to connect / sign in owns and controls your Polyester Smart Wallet, which is your Polyester account on the blockchain. Connecting / signing in establishes a session but does not move funds or make transactions by itself. You remain in control of the assets in your Funding Account and Unified Trading Account. [Account access and ownership](https://testnet.polyester.com/docs/user-docs/account/access-and-security/sign-in-and-ownership)
+### Does every account get a smart account?
+Yes. Every Main Account and Subaccount receives its own smart account. This smart account represents your Polyester account on-chain, while your owner credentials control it. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Can I link another wallet or sign-in method to my existing account?
+Not currently. Your Polyester account is tied to its owner wallet. Signing in with a different wallet address, Google account, or email address will sign you into a different account instead of adding another way to access the existing one.
+### Are my deposited assets held in my MetaMask or other connected wallet?
+No. Your connected wallet lets you sign in and authorize a transaction, but it does not hold the assets you deposit in Polyester. Your original assets are held through Zipper’s custody system, while the corresponding balances appear in your Funding Account or Unified Trading Account. You manage those balances through Polyester.
+### Can I give another person or bot access to trading and nothing else?
+Yes. For a team member, give them the Trader role on a Subaccount. For a bot, create an API key for the chosen Main Account or Subaccount with trading permissions enabled. To keep access limited to trading and nothing else, make sure to turn off all withdrawal and transfer permissions. You can further restrict a team member or bot to specific markets and trading actions in the respective permissions sections.
+### What can I verify independently on the blockchain, and where can I see it?
+Polyester has its own blockchain explorer, Polyester Scan. It lets you inspect transactions, public contract data, and the on-chain stages of deposits, withdrawals, and transfers. You can check Zipped Asset supplies and their source-chain backing, and follow links to the relevant network’s explorer to inspect the underlying transfers. Your private Trading balances, orders, and fills are not published as part of those blockchain records.
+### Why do I see a different account after signing in?
+Every unique wallet address, Google account, or email address signs into a specific Polyester account. If you see an unexpected account, you may have used a wallet or identity other than the one linked to the account you expected. If you are certain you signed in correctly, check the account selector to make sure you’re viewing your Main Account rather than a Subaccount.
+## Subaccounts
+### Does every Subaccount have its own deposit address?
+Yes. Every Main Account and Subaccount receives its own deposit addresses so incoming assets can be credited to the correct account. [Learn about Subaccounts.](https://testnet.polyester.com/docs/user-docs/subaccounts/subaccounts-overview)
+### Are Trading balances shared between accounts?
+No. Each Main Account and Subaccount has its own Unified Trading Account, balances, Orders, and Fills. Check the active account before trading or transferring Assets. [Learn about Trading.](https://testnet.polyester.com/docs/user-docs/funds/trading-account)
+### Can I separate trading strategies or team members into different accounts?
+Yes. Create Subaccounts under your Main Account to separate strategies, team members, or trading bots. Each Subaccount has its own Funding and Trading balances, orders, members, permissions, API keys, withdrawal and transfer whitelists, and activity records.
+### Can I transfer to a disabled Subaccount?
+No. A disabled Subaccount rejects new inbound activity until it is active again. [Learn about internal transfers.](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)
+## Balances and assets
+### What is a Zipped Asset?
+A Zipped Asset, or zAsset, represents an asset from a specific source blockchain on Polyester Chain. It is backed one-to-one by the original asset held on that source chain. For example, USDT deposited from Ethereum and USDT deposited from Solana create separate Zipped Assets, each tied to its original network. [Learn about Zipper.](https://testnet.polyester.com/docs/user-docs/zipper/overview)
+### What is a Unified Asset?
+A Unified Asset, or uAsset, combines compatible Zipped Assets into one balance in your Polyester account. For example, supported USDT deposits from Ethereum and Solana contribute to the same USDT balance, which you can use in your Funding Account or Unified Trading Account. Only deposit routes that Polyester recognizes as the same asset are combined. [Learn about Unified Assets.](https://testnet.polyester.com/docs/user-docs/funds/unified-assets)
+### Why are my Funding Account and Unified Trading Account separate?
+Your Funding Account holds on-chain balances for deposits, withdrawals, and transfers. Your Unified Trading Account manages the balances used for orders, fills, and borrowing. Assets kept in Funding are not used for lending or as collateral and are not exposed to liquidation. You stay in control of how much you move between Trading and Funding. Internal transfers happen in seconds.
+### Why do deposits from different networks appear as one balance?
+Polyester combines equivalent assets deposited through supported networks into one Unified Asset balance. For example, USDT deposited through Ethereum and Solana contributes to the same USDT balance on Polyester, so you do not need to manage separate balances for each network. Zipper keeps each network’s backing and withdrawal route separate.
+### Does Polyester treat tokens from different networks as the same unified asset if they have the same symbol?
+No. Tokens are combined only when Polyester recognizes their supported deposit routes as the same Unified Asset. A matching name or symbol by itself would not be enough. See [Unified Assets](https://testnet.polyester.com/docs/user-docs/funds/unified-assets) in the user docs.
+### Why is Available Balance lower than Total Balance?
+Part of your balance is reserved for activity already in progress. Unfilled portions of orders, pending withdrawals, and pending transfers can reduce Available Balance while leaving Total Balance unchanged. Trading uses only the Available Balance in your Unified Trading Account. [Learn about Trading.](https://testnet.polyester.com/docs/user-docs/funds/trading-account)
+### Why can’t I withdraw my full balance?
+You can withdraw your Available Balance at any time, although funds reserved for open orders or pending activity cannot be withdrawn. Once you close all open orders and complete any other pending transactions, the reservations will be released and your Available Balance will equal your Total Balance in both your Funding Account and Unified Trading Account.
+### When do funds reserved for an order become available again?
+Unused reserved funds become available instantly when the order is filled, canceled, expires, or otherwise ends. If the order fills, the traded amount is settled and the asset you receive becomes available.
+### Can I trade directly from my Funding Account?
+No. You must first transfer the amount you want to trade from your Funding Account to your Unified Trading Account before placing orders. [Learn about Trading](https://testnet.polyester.com/docs/user-docs/funds/trading-account).
+### Why did the displayed value of my account change when my token balances did not?
+Your account’s displayed value uses each asset’s Index Price, a reference price based on prices and trading volumes across multiple exchanges. When those prices change, your account value can rise or fall even if your token quantities stay the same.
+## Deposits and withdrawals
+### Which assets and networks are supported on Polyester?
+Polyester supports most major assets and blockchains for deposits, withdrawals, and trading. Examples include native BTC on Bitcoin, XRP on the XRP Ledger, BCH on Bitcoin Cash, and DOGE on Dogecoin. See the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) table in the user docs for the full list and details for each asset and network. [Supported assets and networks](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks)
+### Can I deposit from another exchange as well as from a wallet?
+Yes. You can send supported assets from another exchange to your Polyester deposit address. Make sure the withdrawal network on the sending exchange matches the deposit network you selected in Polyester. For example, if you select ETH on Base in Polyester, withdraw ETH over the Base network from the other exchange. Copy the address from Polyester’s Deposit screen and include any memo or destination tag shown.
+### Can I deposit or withdraw fiat?
+No. Polyester does not currently support deposits or withdrawals through banks or cards. For a full list of what you can deposit or withdraw, visit [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) in the user docs.
+### How do I deposit funds, and where will they appear?
+Open Deposit, choose the asset and network, and copy your unique deposit address. You must send your funds to the address shown on this screen, using the selected network. Do not use your non-custodial wallet address or your Polyester smart wallet address as the deposit destination. Sending funds to either of those addresses does not move them into Zipper or fund your exchange account. Once your deposit is processed, the funds will appear in your Funding Account or Unified Trading Account, depending on your Default Deposit Destination setting.
+### Does every Deposit have to go through Funding first?
+No. Completed deposits can be credited to either your Funding Account or Unified Trading Account. For your Main Account, choose the default destination under Deposit Routing on the [Security settings page](https://testnet.polyester.com/account/settings/security). For a Subaccount, open Subaccounts, select the Subaccount, and go to its Security tab to find Deposit Routing.
+### Can I reuse a deposit address I saved earlier?
+Yes. Your deposit address is assigned to you and does not rotate for that specific asset and network. We still recommend visiting the Deposit page regularly to confirm that your saved details are correct.
+### Is there a minimum deposit amount?
+Yes. Each asset and network has its own minimum deposit amount. You can see the applicable minimum during the deposit flow or find all minimums on the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) page.
+### How long does a deposit take?
+Deposit times depend on the blockchain you are depositing from and its current network conditions. Your deposit will be credited after the required confirmations have been completed. An estimated deposit time is shown during the deposit flow.
+### Why is my deposit still pending after the source network shows it as confirmed?
+The source network can show a transaction as confirmed before it meets Polyester’s confirmation requirements. Zipper must then verify and process the deposit before the balance is credited. Confirmation requirements vary with the network, transfer amount, and current conditions. You can track your deposit’s progress in the deposit history table on the Deposit page, or view the full flow in Polyester Scan.
+### Why can the amount credited differ from the amount I sent?
+Any applicable deposit fee is deducted before the deposit is credited to your account. It is charged in the asset you deposit, separately from the network fee paid by the sending wallet. Check the deposit history table on the Deposit page for the deposit amount, fee, and final credited amount.
+### What should I do if I deposit the wrong asset, use the wrong network, or miss a required memo?
+Contact support through the chat icon in Polyester. Include your transaction ID, the asset and network used, the amount, the receiving address, and any memo or destination tag. Do not send another transfer to try to fix the first one. The team can investigate, but recovery is not guaranteed.
+### Can I deposit on one network and withdraw on another?
+Yes, and this makes Polyester an effective bridge for moving assets between supported networks. You can deposit an asset through one supported network and withdraw it through another without making a trade. For example, you can deposit USDC on Ethereum and withdraw USDC on Solana when both networks are available and funded. [How unified assets work](https://testnet.polyester.com/docs/user-docs/funds/deposit-assets)
+### Why is a deposit or withdrawal network temporarily unavailable?
+A supported network can be temporarily unavailable because of network issues, service pauses, or security checks. Withdrawals also depend on sufficient assets being available on the destination network. You can check Deposit or Withdraw for another supported network that works with your sending or receiving wallet.
+### Can I withdraw directly from my Unified Trading Account?
+Yes. Select Unified Trading as the source for your withdrawal. Polyester automatically moves the funds through the Funding Account to Zipper. Only your available balance in the Unified Trading Account can be withdrawn. Funds reserved for open orders or other pending actions must be released first if you want to withdraw them.
+### Is there a minimum withdrawal amount?
+Yes. Each asset and network has its own minimum withdrawal amount. You can see the applicable minimum during the withdrawal flow or find all minimums on the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) page.
+### How long does a withdrawal take?
+Withdrawal times depend on the destination blockchain and its current network conditions. The receiving wallet or exchange may also require confirmations before showing the funds as available. You can track your withdrawal’s progress in the withdrawal history table on the Withdraw page.
+### What happens to my funds if a withdrawal fails?
+If a withdrawal fails before external delivery, the withdrawal amount can be returned, although fees already charged may not be refunded. For withdrawals from Unified Trading, returned funds go back to the same Trading Account. If delivery is still uncertain, the funds may remain reserved until the outcome is resolved. Check the withdrawal history table on the Withdraw page for its status.
+## Transfers
+### What is the difference between the transfer options?
+‘Between My Accounts’ moves funds between your Main Accounts, your Subaccounts, and Subaccounts you are a member of, where your permissions allow. ‘To Another Polyester User’ sends funds to a Polyester account resolved from a username, account ID, or smart account address.
+### Do I need to accept an incoming internal transfer?
+No. If you are expecting an incoming internal transfer, the funds will arrive in your Funding Account or Unified Trading Account without any further action from you. [Learn about internal transfers.](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)
+### What does the recipient of an internal transfer see about the sender?
+The recipient's Ledger can show the sending Polyester Account ID or Subaccount ID, its public smart-account address, and the sender's configured username or account label. [Learn about internal transfers.](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)
+## Orders and trading
+### Does Polyester use an order book or liquidity pools?
+Polyester uses its own order books for spot trading. Buy and sell orders are matched in a dedicated market for each trading pair. You deposit your funds into your Polyester account before trading, rather than swapping directly from your wallet through an AMM. [About spot trading](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester)
+### What is the difference between maker and taker?
+A maker order rests in the order book and adds liquidity, typically achieved through limit orders. A taker order executes against liquidity in the book, typically consumed by market orders. [See trading fees.](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees)
+### Does an order confirmation mean my trade is complete?
+No. An order confirmation means Polyester received your request. It does not mean the order has filled. The order may fill completely, fill partially, remain open, or be canceled, depending on its instructions and available liquidity. Check its status and completed trades in Order History to see what actually executed.
+### Where do the assets go from a completed trade?
+The received asset appears in your Unified Trading Account. It can immediately support another eligible order or be returned to your Funding Account. [Learn about first deposit and trade.](https://testnet.polyester.com/docs/user-docs/start/first-deposit-and-trade)
+### Why was my order rejected even though I have enough funds?
+An order must meet the market’s size and price rules, your account’s permissions, and any conditions attached to the order type. Your available Trading balance must also cover the order and any applicable fees. The rejection message identifies the reason so you can correct it before trying again.
+### Why has my order not filled, or filled only partially?
+An order fills only when matching buy or sell orders are available within its price limits. For orders at the same price in the order book, those placed earlier have priority. A partial fill means only part of your requested amount has traded. The remainder may stay open or be canceled, depending on your order type and settings.
+### Why was my trade executed at a different price from the one I saw?
+Prices and available liquidity can change between placing your order and its execution. Market orders can fill across several price levels within the set slippage limits. Limit orders execute only at your chosen price or better, so a buy may fill at a lower price and a sell at a higher price.
+### Can an order still fill after I request cancellation?
+Yes. There is a very small window where an order can still fill while your cancellation request is processing. This is called a race condition. Cancellation applies only to the unfilled portion and cannot reverse a trade that has already completed. Check the final order status and completed trades to see how much filled and how much was canceled.
+### Will my orders keep running if I close the browser or lose my connection?
+Yes. Polyester manages your active orders independently of your browser. They continue according to their instructions if you close the browser, sign out, or lose your connection. When you return, Open Orders and Order History show which orders are still active and which have filled or ended.
+### Can anyone list a trading pair on Polyester?
+No. The Polyester team currently handles trading-pair listings. To suggest a new pair, submit feedback through the customer support tool and let us know which pair you’d like to see listed.
+## Fees and VIP
+### What fees does Polyester charge?
+Polyester charges fees for trading, deposits, and withdrawals. Trading fees occur when an order fills. Deposits and withdrawals have minimal fees that cover network gas costs and include a small service fee for moving assets into or out of the platform. [About fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees)
+### What are the trading fees on Polyester?
+Trading fees depend on your VIP tier and whether you are a maker or a taker. Fees apply to the amount of the order that fills. See [Trading Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees) in our user docs for the current rates. [Trading fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees)
+### What are the deposit, withdrawal, and transfer fees on Polyester?
+Deposit and withdrawal fees depend on the asset and network. They cover network gas costs plus a small service fee and are charged in the asset you move. Any network fee you pay to send a deposit from an external wallet is separate. Internal transfers within Polyester are free. Polyester sponsors the gas for transactions on Polyester Chain. See the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) table in the user docs for current deposit and withdrawal fees.
+### Do I need to hold a native Polyester Chain token to use the exchange?
+No. Polyester covers the gas fees for supported actions on Polyester Chain. You can use the exchange without acquiring a separate gas token. Trading fees and deposit or withdrawal fees still apply, and your external wallet may need the sending network’s native asset to pay for a deposit transaction.
+### Why do fees or minimums differ between networks?
+Each network has its own transaction costs and transfer requirements. Polyester sets fees and minimums for each asset and network, and fees can change as gas costs and asset prices change. See [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) in the user docs for the current fees and minimums for each network.
+### How do I increase my VIP tier to qualify for lower trading fees?
+Polyester offers lower trading fees through its VIP tiers, which are based on your trading volume or average account equity. You only need to meet one requirement, and the higher qualifying tier applies to your Main Account and its Subaccounts. See [VIP Tiers](https://testnet.polyester.com/docs/user-docs/fees-and-vip/vip-tiers) in the user docs for the current qualification requirements.
+## Security and account recovery
+### What does multi-factor authentication (MFA) protect if my wallet is already secure?
+Your wallet controls your Polyester account. MFA adds a separate verification check before sensitive actions in the app, including but not limited to withdrawals, transfers, and changes to security settings or API keys. You can use a passkey or authenticator app and keep recovery codes as a backup. It adds another layer of protection on top of keeping your wallet and sign-in identity secure.
+### Should I choose a passkey or an authenticator app?
+Preferably both. Polyester lets you set up more than one MFA method, so you have a backup if one becomes unavailable. A passkey uses your device’s biometrics, a device PIN, or a compatible hardware security key. An authenticator app generates time-based six-digit codes. Choose the combination that fits your devices and security habits. [Learn about securing your account.](https://testnet.polyester.com/docs/user-docs/start/secure-account)
+### Will the team ever ask for my private key, recovery phrase, or verification code?
+No. The team will never ask for your private key, recovery phrase, login or MFA codes, recovery codes, or API private key. Never share these in messages or support tickets. The Polyester team will never send you an unexpected private message. Treat these messages as phishing attempts and exercise caution.
+### What if I lose my multi-factor authentication (MFA) method or recovery codes?
+Polyester recommends setting up multiple MFA methods. If you lose a method or your recovery codes, use another enrolled method or an unused recovery code to add a replacement method, remove a lost one, or generate new codes. If you lose all MFA methods and recovery codes, Polyester cannot replace or recreate an MFA method or regenerate codes for you. Contact support through the chat icon on Polyester. The team can assist, but recovery is not guaranteed.
+### What should I do if I suspect the wallet, Google account, or email I use to access my Polyester account has been compromised?
+If you suspect the wallet, Google account, or email you use to sign in has been compromised but you can still sign in to your original Polyester account, act quickly to protect your assets. From a trusted device, create a new Polyester account with a different, secure sign-in identity. Account creation is free. Move your available assets to the new account as soon as possible. If you cannot sign in or complete a transfer, contact support through the chat icon in your new account. The team can investigate, but recovery is not guaranteed.
+### What happens if I lose access to my sign-in method?
+Recovery options depend on your sign-in method. For Google or email, use your provider’s recovery steps to restore access. If you previously exported your Turnkey wallet’s seed phrase or private key, you can import it into a supported wallet on a secure device and connect to the same Polyester account. For an external wallet, use its recovery phrase or private key to restore it on a secure device and connect again. If you cannot regain access to the wallet that owns your account, Polyester cannot replace it with another wallet. MFA methods and recovery codes do not restore wallet access or change ownership of your Polyester account. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Can I export the wallet created when I signed up with Google or email?
+Yes. You can export the seed phrase or private key for the embedded wallet created by Turnkey when you signed up with Google or email. Exporting it is not required to use Polyester. Keep it as a secure offline backup. Anyone with this information can control your Turnkey wallet and therefore your Polyester account. So never share it, including with support.
+### Where can I find Polyester's security audits, and what do they cover?
+Visit [Audits](https://testnet.polyester.com/docs/user-docs/reference/audits) in the user docs for published reports from Trail of Bits and Pashov Audit Group. These reviews cover Zipper Protocol. Each report identifies the code and version reviewed, the scope of the assessment, its findings, and the remediation reviewed during that engagement.
+## GuardSigner and whitelists
+### What is GuardSigner?
+GuardSigner is an extra security layer for your Polyester account’s withdrawal and transfer whitelists. It adds a separate approval signature when you add or remove destinations or turn off a whitelist. This prevents bypassing MFA to change those settings directly on-chain. [Learn about GuardSigner.](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer)
+### Can GuardSigner help prevent unauthorized withdrawals or transfers?
+Yes. With your withdrawal and transfer whitelists enabled, assets can only be sent to destinations you have approved. GuardSigner adds a separate approval to changes to those whitelists, including turning them off. This helps protect against someone changing your settings to redirect your assets. [Learn about GuardSigner.](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer)
+### How do I set up GuardSigner?
+Polyester manages GuardSigner and sets it up automatically when you enable a withdrawal or transfer whitelist. Once set up, it handles protected changes to both whitelists for that account. [Learn about GuardSigner.](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer)
+### How does GuardSigner work with MFA?
+GuardSigner makes MFA part of the on-chain changes to your withdrawal and transfer whitelists. You must complete the required MFA in Polyester before GuardSigner will add its signature. Your wallet’s signature alone is not enough, which prevents bypassing MFA to change your whitelist settings. [Learn about GuardSigner.](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer)
+### Can I use GuardSigner for both my Main Account and Subaccounts?
+Yes. GuardSigner can protect both your Main Account and your Subaccounts, but each account has its own GuardSigner and separate withdrawal and transfer whitelists. Open the Security settings for each account to complete setup and choose the protections you want enabled. [Learn about GuardSigner.](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer)
+### Does adding an Address Book entry automatically allow transfers or withdrawals to that entry?
+No. The Address Book lets you save destinations without whitelisting them. The whitelist toggle is off by default when adding an entry. Turn it on to approve the destination for internal transfers or withdrawals, depending on the entry type. You can also do this later by editing the entry. When the relevant whitelist is enabled, you can only transfer or withdraw to whitelisted destinations. [Learn about securing your account.](https://testnet.polyester.com/docs/user-docs/start/secure-account)
+### What is the difference between MFA and an on-chain whitelist?
+MFA adds a verification step before sensitive actions are performed, including but not limited to changes to whitelist settings. An on-chain whitelist limits withdrawals or internal transfers to destinations you have approved, but you must have MFA enabled to use the whitelist. [Learn about securing your account.](https://testnet.polyester.com/docs/user-docs/start/secure-account)
+## Service status and interruptions
+### Should I submit an order, transfer, or withdrawal again if I don’t receive a confirmation?
+Not immediately. Your request may still be processing, or its confirmation may be delayed. Give the page a moment to update, then look for the request in Open Orders, Order History, or the appropriate transfer or withdrawal history table. If the outcome remains unclear, contact support before submitting again to avoid a duplicate request.
+### If one network is paused, can I still trade or use other networks?
+A pause affecting one deposit or withdrawal network does not automatically stop trading or other networks. If the trading services remain available, you can continue trading assets already in your Unified Trading Account. Deposits and withdrawals can use other supported networks that are available for the selected asset. Check [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) in the user docs for any asset or network interruptions.
+## Developers and automated trading
+### Can I use an application programming interface (API) for trading bots or high-frequency trading?
+Yes. PolyEngine is designed for high-throughput, low-latency trading, including automated strategies and market making. Polyester’s APIs let bots read market data, place and manage orders, and track balances and fills. Create an API key for the chosen Main Account or Subaccount with the permissions your bot needs.
+### Where should I start with the APIs and software development kits (SDKs)?
+Start with [API Docs](https://testnet.polyester.com/docs/developer-docs) to explore the available requests, parameters, and responses. For installation instructions and code examples, choose TypeScript, Python, Go, or Rust in [SDK Docs](https://testnet.polyester.com/docs/sdk). If you’re working on an integration and have questions, join our Discord and ask the team in the API Support channel.
+### Do manual trades and trading bots use the same balances and order books?
+Yes. When manual trades and bots use the same Main Account or Subaccount, they draw from the same available balance in its Unified Trading Account. Their orders enter the same order books as everyone else. Funds reserved for one order are unavailable for another. Use separate Subaccounts if you want to keep strategy balances separate.
+### Can I deploy an application or smart contract on Polyester Chain?
+During testnet, contract deployment on Polyester Chain is restricted to Polyester’s own protocol and application contracts. Third-party developers cannot deploy their own smart contracts during this phase. You can still build applications and trading integrations that connect to Polyester through its APIs and SDKs.
+## Community, updates, and support
+### Where should I go for account support, bug reports, or product feedback?
+You’ll need a Polyester account to create a ticket. After signing in, click the chat box icon in the lower-right corner of the app and follow the instructions to submit support requests, bug reports, or feedback. You can track your previously submitted tickets in My Submissions.
+### What information should I include when reporting a problem?
+Describe what you were trying to do, what happened, and what you expected. Include the steps to reproduce the problem if applicable, the approximate time and time zone, your device and browser, and any relevant order or transaction ID. Screenshots or a short recording can help. Never include passwords, private keys, recovery phrases, login or MFA codes, recovery codes, or API private keys.
+### Where can I follow announcements and product updates?
+Visit [Announcements](https://testnet.polyester.com/updates) on the Polyester website for official news and details about platform updates. You can also follow [@polyester on X](https://x.com/polyester) and join our Discord to keep up with the latest announcements and changelogs.
+### How can I contact the team about a partnership or business inquiry?
+Submit a partnership or business inquiry through the customer support tool. You’ll need a Polyester account to create an inquiry. Include all relevant details, and the team will get back to you.
+### Where can I find official brand assets, and what may I use them for?
+Submit a partnership request through the customer support tool to ask for official logos and brand-use guidance. Include how and where you intend to use them so the team can advise you appropriately.
+### How can I suggest a question that is missing from this FAQ?
+Use the chat box icon in the lower-right corner of the app to submit your suggestion as feedback. Include the question you would like answered and any context that would help us understand it.
+## Testnet
+### What is the Polyester testnet for?
+Testnet is an environment where you can try Polyester before it launches on mainnet. It’s a chance to learn how the platform works, practice trading, and help improve Polyester by reporting bugs and sharing feedback. You use paper assets or testnet assets only. No real funds are involved.
+### Who can join the testnet, and is an invitation required?
+Everyone is welcome to join Polyester testnet, and no invitation is required. You only need to connect your X and Discord accounts if you want to claim paper assets. Otherwise, you can use supported assets from external test networks. See our [Terms of Service](https://testnet.polyester.com/terms-of-service) for eligibility requirements and restrictions.
+### Where do I start, and what do I need to use the testnet?
+Start by creating a Polyester account with a supported wallet, Google, or email. If you want to claim paper assets, connect your Discord and X accounts to your Polyester account. You don’t need an existing crypto wallet if you sign up with Google or email. The [Start Here](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester) section of the user docs guides you through protecting your account and making your first deposit and trade.
+### What are paper assets for Polyester’s testnet?
+Paper assets are practice assets created by the Polyester team for testnet trading. They have no real monetary value and let you try the platform without using real funds. They are different from assets issued on external test networks, such as Bitcoin Testnet, which you obtain separately and deposit into Polyester.
+### How do I obtain paper assets?
+Connect your X and Discord accounts to your Polyester account to become eligible to claim paper assets daily. Look for the claim pop-up on your dashboard. Claimed paper assets will be transferred to your trading account.
+### Do I need to connect and verify my Discord account to participate in testnet?
+No. Connecting your Discord account to your Polyester account is only required to claim paper assets. If you don’t want to use paper assets, you can obtain supported assets from external test networks through the [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) page in the user docs, then deposit them into Polyester.
+### Do I need to connect and verify my X account to participate in testnet?
+No. Connecting your X account to your Polyester account is only required to claim paper assets. If you don’t want to use paper assets, you can obtain supported assets from external test networks through the [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) page in the user docs, then deposit them into Polyester.
+### Do I need real money to use the testnet, and do test balances have real value?
+No. Polyester testnet uses paper assets and supported external testnet assets. These assets are for testing and have no real monetary value. Use testnet assets only when making a testnet deposit.
+### How do I obtain and deposit assets from external test networks?
+A faucet is a website that provides testnet assets. Visit [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) in the user docs to find faucets for supported assets and networks. After receiving the assets in your wallet, open Deposit in Polyester, choose the matching asset and test network, and send them to the deposit address shown. These faucets are operated by third parties, not Polyester. The links are provided for reference.
+### What features can I test now?
+You can trade spot markets, manage your orders, deposit, withdraw, and transfer. You can also customize your trading workspace with widgets, manage sub-accounts, configure account security, create API keys for trading tools, and track transactions on PolyesterScan.

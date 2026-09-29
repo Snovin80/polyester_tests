@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Confirmation Requirements
+See the confirmation requirements and estimated deposit times for supported chains.
+Polyester waits for the required number of chain confirmations before continuing a deposit or withdrawal.
+| Chain                                                                                                                             | Confirmations required | Estimated confirmation time |
+| --------------------------------------------------------------------------------------------------------------------------------- | ---------------------: | --------------------------: |
+| [Arbitrum Sepolia](https://testnet.polyesterscan.com/supported-chain/arbitrum-sepolia "Arbitrum Sepolia")                         |                1 block |                  \~1 minute |
+| [Avalanche C Fuji](https://testnet.polyesterscan.com/supported-chain/avalanche-c-fuji "Avalanche C Fuji")                         |                1 block |                  \~1 minute |
+| [Base Sepolia](https://testnet.polyesterscan.com/supported-chain/base-sepolia "Base Sepolia")                                     |                1 block |                  \~1 minute |
+| [Bitcoin Cash Testnet](https://testnet.polyesterscan.com/supported-chain/bitcoincash-testnet "Bitcoin Cash Testnet")              |                1 block |                 \~2 minutes |
+| [Bitcoin Testnet](https://testnet.polyesterscan.com/supported-chain/bitcoin-testnet3 "Bitcoin Testnet")                           |                1 block |                 \~2 minutes |
+| [BNB Smart Chain Testnet](https://testnet.polyesterscan.com/supported-chain/bsc-testnet "BNB Smart Chain Testnet")                |                1 block |                  50 seconds |
+| [Dogecoin Testnet](https://testnet.polyesterscan.com/supported-chain/doge-testnet "Dogecoin Testnet")                             |               5 blocks |                  50 seconds |
+| [Ethereum Classic Testnet](https://testnet.polyesterscan.com/supported-chain/ethereum-classic-testnet "Ethereum Classic Testnet") |                1 block |                  \~1 minute |
+| [Ethereum Sepolia](https://testnet.polyesterscan.com/supported-chain/ethereum-sepolia "Ethereum Sepolia")                         |                1 block |                  \~1 minute |
+| [HyperEVM Testnet](https://testnet.polyesterscan.com/supported-chain/hyperevm-testnet "HyperEVM Testnet")                         |                1 block |                  \~1 minute |
+| [Litecoin Testnet](https://testnet.polyesterscan.com/supported-chain/litecoin-testnet "Litecoin Testnet")                         |                1 block |                  50 seconds |
+| [Polygon Amoy](https://testnet.polyesterscan.com/supported-chain/polygon-amoy "Polygon Amoy")                                     |                1 block |                  \~1 minute |
+| [Ripple Testnet](https://testnet.polyesterscan.com/supported-chain/ripple-testnet "Ripple Testnet")                               |                1 block |                  30 seconds |
+| [Robinhood Testnet](https://testnet.polyesterscan.com/supported-chain/robinhood-testnet "Robinhood Testnet")                      |                1 block |                  \~1 minute |
+| [Solana Devnet](https://testnet.polyesterscan.com/supported-chain/solana-devnet "Solana Devnet")                                  |                1 block |                  \~1 minute |
+| [Tron Nile](https://testnet.polyesterscan.com/supported-chain/tron-nile "Tron Nile")                                              |                1 block |                  \~1 minute |
+Times are estimates and can change with chain conditions.

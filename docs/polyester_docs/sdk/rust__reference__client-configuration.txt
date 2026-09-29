@@ -1,0 +1,362 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/client-configuration
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Client configuration · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Client configuration
+Client configuration
+Copy page
+View as Markdown
+Open in
+Build a client with
+Client::new(Config { ... })
+POLYESTER_TESTNET_ENVIRONMENT
+on
+environment
+to target testnet; other defaults suit API-key trading applications. Unary
+ConnectRPC responses are limited to 4 MiB after decompression.
+Recommended constructor
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+api_key_id
+Some
+(
+"ak_..."
+into
+()),
+api_private_key
+Some
+(
+"..."
+into
+()),
+// 64-char hex from key creation
+default_account_id
+Some
+(
+"..."
+into
+()),
+// Profile → Account ID
+// api_url / ws_url come from environment (api-testnet.polyester.com)
+// hydrate_catalogs: true,
+// timeout: Duration::from_secs(10),
+Default
+default
+()
+})
+?
+;
+client
+wait_for_catalogs
+()
+;
+Config fields
+Field
+Default
+Notes
+environment
+pass
+Some(POLYESTER_TESTNET_ENVIRONMENT.clone())
+API, WebSocket, RPC, and contract pins
+api_key_id
+/
+api_private_key
+None
+Required for private RPCs / private WS
+api_url
+from
+environment
+(
+https://api-testnet.polyester.com
+)
+ConnectRPC base override
+ws_url
+from
+environment
+(
+wss://api-testnet.polyester.com
+)
+Centrifugo WebSocket override
+default_account_id
+None
+Private channel scoping
+default_sub_account_id
+None
+Default trading scope
+timeout
+10s
+Connect and realtime-token deadline
+wire_format
+binary
+Transport wire format
+hydrate_catalogs
+true
+Fail-closed spot +
+Zipper
+hydrate
+default_sub_account_id
+is the client configuration field and must reuse the canonical public
+base58 string returned by
+subaccount
+APIs. Canonical base58 can be all digits, such as
+"5"
+, so
+never reinterpret the string as decimal. Use a numeric
+subaccount_id
+only in request or proto
+fields that are actually typed as an integer and only when you already have that typed value. The
+root
+default_account_id
+is a different string identifier used for private realtime channels.
+Config.api_key_id
+is the
+ak_...
+credential handle used for request signing. It is not the
+base58 public ID reported by
+auth.me().api_key_id
+; do not compare or substitute those values.
+There is no
+client.candles
+alias, use
+client.market_data
+client.withdraw
+From environment
+Client::from_env()
+loads:
+POLYESTER_API_KEY_ID
+POLYESTER_API_PRIVATE_KEY
+POLYESTER_ACCOUNT_ID
+POLYESTER_ENV
+(set to
+testnet
+)
+POLYESTER_API_URL
+(optional override)
+POLYESTER_WS_URL
+(optional override)
+Unlike Python/Go
+from_env
+/
+FromEnv
+, Rust
+does
+pick up API and WebSocket URL env vars.
+Prefer explicit
+Config
+in production.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Catalog readiness
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Call
+client.wait_for_catalogs().await?
+before decimal order writes that need symbol
+scales. Subscribe helpers that resolve symbols also need hydration. If the client was
+constructed outside a Tokio runtime, this call starts hydration on the current runtime. The wait
+fails if either required catalog cannot be hydrated or validated.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Retries are application-controlled
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The SDK does not automatically retry unary calls. Retry only transport and rate-limit failures
+with backoff and stable idempotency keys. Reconcile mutation outcomes before retrying.
+Related
+Authentication
+Catalog
+Realtime
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Chain analytics
+Next
+Deposit
+On this page
+Recommended constructor
+Config fields
+From environment
+Related
+Related Topics
+Share this page
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    api_key_id: Some("ak_...".into()),
+    api_private_key: Some("...".into()), // 64-char hex from key creation
+    default_account_id: Some("...".into()), // Profile → Account ID
+    // api_url / ws_url come from environment (api-testnet.polyester.com)
+    // hydrate_catalogs: true,
+    // timeout: Duration::from_secs(10),
+    ..Default::default()
+})?;
+client.wait_for_catalogs().await?;

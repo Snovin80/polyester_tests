@@ -1,0 +1,62 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/market-data.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Unary market-data calls are public. Realtime is always included; the legacy `realtime` Cargo feature is a no-op compatibility flag. Subscribe helpers usually need hydrated catalogs for symbol resolution. There is no `client.candles` alias, use `client.market_data`.
+```rust
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+hydrate_catalogs: true,
+})?;
+client.wait_for_catalogs().await?;
+```
+Typed streams use `recv().await`. Managed order-book / overview books use `updates().recv().await`.
+## Symbols
+Prefer `"BTC-USDT"`. Call `wait_for_catalogs().await?` before symbol-string subscribe helpers.
+## Market overview
+```rust
+use polyester::services::{ListMarketOverviewOptions, MarketOverviewCreateSubscriptionOptions};
+let overview = client.market_overview.list(Some(50)).await?;
+println!("{} markets", overview.markets.len());
+let mut sub = client
+limit: Some(50),
+})
+while let Some(rows) = sub.updates().recv().await { let _ = rows; break; }
+```
+## Candles
+```rust
+let result = client.market_data.get_candles("BTC-USDT", "1h", Some(200)).await?;
+let mut live = client.market_data.subscribe_candles("BTC-USDT", "1m").await?;
+while let Some(c) = live.recv_result().await? { println!("{}", c.close); break; }
+```
+Row candle results are newest-first, with an included open candle prepended; use `.first()` for latest and reverse/sort by `ts_sec` for indicators. Candle columns are oldest-first.
+## Order book
+```rust
+use polyester::services::CreateSubscriptionOptions;
+let book = client.orderbook.get("BTC-USDT", Some(20)).await?;
+let mut sub = client
+symbol: "BTC-USDT".into(),
+depth: Some(50),
+})
+while let Some(b) = sub.updates().recv().await { println!("{}", b.book_seq); break; }
+```
+## Public trades
+```rust
+let tape = client.market_data.get_trades("BTC-USDT", Some(20)).await?;
+let mut sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+while let Some(t) = sub.recv_result().await? { println!("{:?}", t.price); break; }
+```
+Private fills are `client.trades`, not the public tape.
+## Heatmap & chain analytics
+`client.heatmap` and `client.chain_analytics` for L2 heatmap and chain analytics reads.
+> **Streaming model**
+>
+> Centrifugo WebSocket + Protobuf. Details: [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming).
+## Related
+- [Order book](https://testnet.polyester.com/docs/sdk/rust/reference/order-book)
+- [Candles](https://testnet.polyester.com/docs/sdk/rust/reference/candles)
+- [Public trades](https://testnet.polyester.com/docs/sdk/rust/reference/public-trades)
+- [Market overview](https://testnet.polyester.com/docs/sdk/rust/reference/market-overview)

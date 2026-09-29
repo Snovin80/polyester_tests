@@ -1,0 +1,152 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/market-order-price-protection.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market Order Price Protection
+Understand market-order slippage overrides, pair defaults, client reference drift, execution boundaries, and stale-quote errors.
+Polyester market orders use immediate-or-cancel execution with a price boundary. They can fill immediately at available prices within that boundary, while any unfilled quantity is canceled.
+The boundary is calculated from a reference price and a slippage tolerance. A request can provide its own tolerance, or it can omit the tolerance and use the Pair's configured default.
+> **The pair default is not a maximum**
+>
+> An explicit slippage value replaces the Pair default. Polyester does not reduce an explicit value to the default and does not reject it merely because it is higher than the default.
+## How the execution boundary is calculated
+1. Choose the reference price
+If the request includes a client reference price and Polyester has a usable server reference, the two are checked for excessive drift. Without a client reference, Polyester uses its server reference. If neither is available, the order is rejected.
+The server reference is an admission-time estimate derived from current order-book or recent-trade data. It can include a safety margin and is not guaranteed to equal the best bid or ask displayed by a market-data feed at the same instant.
+2. Choose the slippage tolerance
+The request can provide slippage in basis points or as an absolute price delta in ticks. If neither is provided, Polyester uses the Pair's side-specific default. A Pair value of `0` selects the platform fallback rather than zero tolerance.
+3. Calculate the protected price
+A buy receives a maximum execution price. A sell receives a minimum execution price.
+4. Execute immediately or cancel
+The order fills only against prices within the protected boundary. Any remaining quantity is canceled because market orders use immediate-or-cancel behavior.
+For basis-point protection:
+| Side | Protected boundary                                  |
+| ---- | --------------------------------------------------- |
+| Buy  | `reference price * (1 + max slippage bps / 10,000)` |
+| Sell | `reference price * (1 - max slippage bps / 10,000)` |
+Fractional-tick adjustments round outward so the boundary never grants less tolerance than requested. A buy boundary rounds upward and a sell boundary rounds downward, making the effective boundary up to one price tick more permissive than the exact percentage.
+### Example: explicit 6% slippage
+`600` basis points equals `6%`. With a reference price of `100`:
+| Side | Result                                     |
+| ---- | ------------------------------------------ |
+| Buy  | May fill up to a protected price of `106`  |
+| Sell | May fill down to a protected price of `94` |
+The `600` bps value is used unchanged even if the Pair default is lower.
+## Explicit values, defaults, and limits
+| Request                     | Behavior                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| Positive `maxSlippageBps`   | Uses the request value instead of the Pair default                                   |
+| Positive `maxSlippageTicks` | Uses the absolute tick delta instead of basis points                                 |
+| Neither field supplied      | Uses the side-specific Pair default, or the platform fallback when that value is `0` |
+| Both fields supplied        | Rejected because they are alternatives in the same choice                            |
+`maxSlippageBps` accepts values from `1` through `10,000`:
+```text
+1 bp      = 0.01%
+600 bps   = 6%
+10,000 bps = 100%
+```
+Values outside that range are rejected as `MAX_SLIPPAGE_INVALID`. Values inside the range are not silently resized.
+> **100% slippage is accepted**
+>
+> A request with `maxSlippageBps = 10000` is valid. For a buy, the protected boundary is twice the reference price. For a sell, the boundary is clamped to the minimum positive price of one price tick. Integrations should apply their own stricter policy when 100% tolerance is not acceptable.
+## Read the current Pair policy
+Pair policy is returned by `MarketDataService.GetSpotConfig`. Read these fields for the selected Pair instead of hardcoding current defaults:
+| Pair field                     | Meaning                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| `defaultMarketSlippageBpsBuy`  | Default basis-point tolerance when a buy omits slippage                                     |
+| `defaultMarketSlippageBpsSell` | Default basis-point tolerance when a sell omits slippage                                    |
+| `maxClientRefDriftBps`         | Maximum accepted drift between a supplied client reference and Polyester's server reference |
+The default slippage fields are fallback values, not ceilings on client overrides.
+> **A value of 0 selects a platform fallback**
+>
+> If any of these Pair policy fields is `0`, Polyester does not apply zero tolerance. It uses the corresponding platform fallback. Treat `0` as "not explicitly configured for this Pair," not as the effective tolerance.
+The TypeScript SDK catalog exposes these values as percentages: `defaultMarketSlippagePctBuy`, `defaultMarketSlippagePctSell`, and `maxClientRefDriftPct`. Use the raw `GetSpotConfig` response when an integration needs the basis-point field names shown above.
+## Client reference drift
+A client reference price records the price the client used for a preview or trading decision. When both client and server references are available, Polyester calculates:
+```text
+drift bps = absolute(client reference - server reference) * 10,000 / server reference
+```
+For example, client reference `105` and server reference `100` produce `500` bps, or `5%`, of drift. If drift exceeds `maxClientRefDriftBps`, the order is rejected as `STALE_QUOTE`.
+> **The drift check requires a server reference**
+>
+> If Polyester cannot establish a usable server reference, it cannot perform the drift comparison. When the request includes a client reference, that value is still used to calculate the protected boundary. Integrations should not rely on `STALE_QUOTE` as the only safeguard when current server-side pricing may be unavailable.
+`maxClientRefDriftBps` does not:
+- cap the request's slippage value
+- replace `maxSlippageBps`
+- apply when the request omits a client reference price
+> **Drift and slippage can compound**
+>
+> The slippage boundary is calculated from the accepted client reference, not directly from the server reference. If the Pair allows 5% client-reference drift and the request allows 6% slippage, a buy boundary can reach approximately 11.3% above the server reference. A sell boundary can reach approximately 10.7% below it.
+The compounded bounds in that example are:
+```text
+buy:  1.05 * 1.06 = 1.113
+sell: 0.95 * 0.94 = 0.893
+```
+If an integration intends to enforce a total distance from current market data, it must account for both the permitted reference drift and the requested slippage. The server reference itself may differ from a simultaneously observed best bid or ask, so it should not be treated as an interchangeable top-of-book price.
+## Request fields by interface
+Send either basis-point slippage or tick slippage, not both.
+## REST JSON
+Send the REST body to `POST /v1/orders`. REST accepts decimal strings for quantity and the optional client reference:
+```json
+"order": {
+"symbol": "BTC-USDT",
+"side": "BUY",
+"baseQty": "0.25",
+"clientOrderId": "market-buy-001",
+"marketIoc": {
+"maxSlippageBps": 600,
+"clientRefPrice": "100.000000"
+}
+}
+}
+```
+## ConnectRPC ProtoJSON
+Send the ProtoJSON body to `POST /orders.v1.OrdersService/CreateOrder`. ConnectRPC uses scaled integer values. This example assumes an 8-decimal base-quantity scale:
+```json
+"order": {
+"symbol": "BTC-USDT",
+"side": "BUY",
+"baseQtyScaled": "25000000",
+"clientOrderId": "market-buy-001",
+"marketIoc": {
+"maxSlippageBps": 600,
+"clientRefPriceTicks": "100000000"
+}
+}
+}
+```
+## Protobuf
+```protobuf
+order {
+symbol: "BTC-USDT"
+side: BUY
+base_qty_scaled: 25000000
+client_order_id: "market-buy-001"
+market_ioc {
+max_slippage_bps: 600
+client_ref_price_ticks: 100000000
+}
+}
+```
+For tick-based protection, replace `maxSlippageBps` with `maxSlippageTicks`, or `max_slippage_bps` with `max_slippage_ticks` in protobuf source fields. Price ticks use a fixed 1e-6 quote-unit scale. `baseQtyScaled` uses the Pair's base-quantity scale from `GetSpotConfig`. See [Scaled Integers](https://testnet.polyester.com/docs/developer-docs/connectrpc/scaled-integers).
+For a BUY market IOC, clients can send `maxQuoteDebit` in REST or `max_quote_debit_scaled` in protobuf instead of a base quantity. This value is a hard, all-in quote debit limit. Polyester resolves and returns the gross base quantity before execution. A quote fee counts toward the limit, while a base fee reduces the base amount received. See [Order Sizing](https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing).
+`OrdersService.PreviewOrder` accepts the same nested `OrderIntent` as create and returns the resolved quantity and price boundary without creating an order or reservation. It also checks current available balance and returns a typed admission result. Preview does not inspect future order-book depth or guarantee execution. See [Preview Order](https://testnet.polyester.com/docs/developer-docs/shared-concepts/preview-order).
+Official SDKs expose the same controls through language-specific order inputs. See the applicable SDK [Orders reference](https://testnet.polyester.com/docs/sdk/typescript/reference/orders) for its field names and types.
+## Error behavior
+| Condition                                                                          | Stable code                | ConnectRPC code      | Meaning                                                                                                 |
+| ---------------------------------------------------------------------------------- | -------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- |
+| `maxSlippageBps` is outside `1` to `10,000`, or `maxSlippageTicks` is not positive | `MAX_SLIPPAGE_INVALID`     | `InvalidArgument`    | The requested tolerance is invalid                                                                      |
+| REST supplies both slippage alternatives                                           | `VALIDATION_ERROR`         | `InvalidArgument`    | Send either basis points or ticks; protobuf clients cannot encode both because the fields are a `oneof` |
+| Client reference drift exceeds Pair policy                                         | `STALE_QUOTE`              | `FailedPrecondition` | The supplied reference is stale relative to current server market data                                  |
+| No client reference or usable server reference is available                        | `MARKET_PRICE_UNAVAILABLE` | `FailedPrecondition` | Polyester cannot establish a price from which to calculate the boundary                                 |
+`STALE_QUOTE` is returned to the caller with the message:
+```text
+Client reference price is stale relative to server market data.
+```
+The rejection can also appear as the order's terminal reason in order-state and realtime updates.
+## Integration guidance
+- Fetch and refresh Pair policy rather than treating current defaults as permanent constants.
+- Send the same client reference used to show the user an execution preview.
+- Choose an application-level maximum below 100% when the integration requires a stricter risk policy.
+- Treat `STALE_QUOTE` as a signal to refresh market data and obtain a new trading decision. Do not blindly retry the unchanged order.
+- Do not retry `MAX_SLIPPAGE_INVALID` or request-validation errors unchanged. Correct the request before sending it again.

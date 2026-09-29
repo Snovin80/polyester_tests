@@ -1,0 +1,197 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/audits
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Audits · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Audits
+Audits
+Copy page
+View as Markdown
+Open in
+Published security reviews are listed below.
+Product
+Reviewer
+Date
+Report
+Zipper
+Protocol
+Trail of Bits
+May 5, 2025
+Open security review
+Zipper Protocol
+Pashov Audit Group
+May 2025
+Open security review
+Each report describes the code, version, scope, findings, and remediation reviewed during that engagement.
+FAQ
+Where can I find Polyester's security audits, and what do they cover?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Visit
+Audits
+in the user docs for published reports from Trail of Bits and Pashov Audit Group. These reviews cover Zipper Protocol. Each report identifies the code and version reviewed, the scope of the assessment, its findings, and the remediation reviewed during that engagement.
+Related Topics
+Confirmation Requirements
+See the confirmation requirements and estimated deposit times for supported chains.
+Testnet Faucets
+Claim testnet Assets from faucets that do not require a mainnet balance.
+Faucet Backups
+Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+Polyester Contracts
+Open official Polyester Chain contract deployments in Polyester Scan.
+Official Links
+Open official Polyester products, documentation, support, community, and developer resources.
+Glossary
+Search definitions for Polyester product and trading terms.
+LLMs.txt
+Open Polyester documentation as a plain-text resource for language models and other tools.
+Previous
+Polyester Contracts
+Next
+Official Links
+On this page
+FAQ
+Related Topics
+Share this page
+Audits
+Open published security reviews for Polyester and Zipper.
+Share
+Copy Link

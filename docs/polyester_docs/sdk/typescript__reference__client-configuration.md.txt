@@ -1,0 +1,110 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/client-configuration.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+## `PolyesterClient`
+```ts
+new PolyesterClient(config: PolyesterClientConfig)
+```
+| Option            | Type                                           | Default             | Description                                                                                                            |
+| ----------------- | ---------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `environment`     | `PolyesterEnvironment`                         | required            | Endpoints + chain config. See [Environments](https://testnet.polyester.com/docs/sdk/typescript/concepts/environments). |
+| `auth`            | `JwtAuthProvider \| ApiKeyEd25519AuthProvider` | none                | Credentials for authenticated services and private realtime channels.                                                  |
+| `interceptors`    | `Interceptor[]`                                | `[]`                | ConnectRPC interceptors applied to every request.                                                                      |
+| `wireFormat`      | `"binary" \| "json"`                           | `"binary"`          | Connect wire format. Use `json` for human-readable debugging.                                                          |
+| `realtime`        | `PolyesterRealtimeAuthConfig`                  | derived from `auth` | Override `getAuthHeaders` / `hasAuth` for WebSocket auth.                                                              |
+| `catalogSnapshot` | `CatalogSnapshot`                              | none                | Initial reference-data snapshot (e.g. from SSR).                                                                       |
+| `catalogCell`     | `CatalogSnapshotCell`                          | none                | External (optionally reactive) snapshot storage.                                                                       |
+| `catalog`         | `ClientCatalog`                                | none                | Fully managed catalog instance. Mutually exclusive with the two above.                                                 |
+| `transports`      | `Transports`                                   | none                | Advanced: inject Connect transports (mocks/custom stacks). Skips built-in auth/error interceptors.                     |
+| `realtimeClient`  | `PolyesterRealtime`                            | none                | Advanced: inject a realtime implementation. Skips Centrifuge construction.                                             |
+Properties: one lazy getter per service (`auth`, `accounts`, `apiKeys`, `subaccounts`, `candles`, `chainAnalytics`, `marketData`, `marketOverview`, `orderbook`, `heatmap`, `lifecycle`, `trades`, `orders`, `triggers`, `balances`, `transfers`, `internalTransfers`, `tradingWithdraws`, `deposit`, `addressBook`, `guardSigner`, `socialVerification`, `whiteboard`, `zipper`, `mfa`, `vip`, `fees`, `tradingRateLimits`, `claims`), plus `realtime` (the shared `RealtimeClient`) and `catalog` (the `ClientCatalog`). (`whiteboard` is a collaboration service peripheral to trading and has no dedicated reference page.)
+The constructor validates configuration at runtime. Invalid environments, unsupported wire formats, or combining `catalog` with `catalogSnapshot` or `catalogCell` throw `ConfigurationError`.
+### Auth providers
+```ts
+interface JwtAuthProvider {
+kind: "jwt";
+getToken: () => string | null | Promise
+;
+}
+interface ApiKeyEd25519AuthProvider {
+kind: "api-key-ed25519";
+getKeyId: () => string | null | Promise
+;
+getSecretKey: () => Uint8Array | null | Promise
+; // 32-byte secret
+}
+```
+The SDK reads `getToken()` for every HTTP request and realtime authentication check. Keep it cheap and return the current credential, including `null` after logout.
+## `PolyesterBrowserClient`
+```ts
+new PolyesterBrowserClient(config: PolyesterBrowserClientConfig)
+```
+Extends the base config (minus `auth`, which it manages) with:
+| Option          | Type                                                         | Default   | Description                                                                        |
+| --------------- | ------------------------------------------------------------ | --------- | ---------------------------------------------------------------------------------- |
+| `accountSigner` | `AccountSigner \| () => AccountSigner \| null \| Promise
+` | none      | The signer used for login; factories resolve lazily.                               |
+| `tokenStorage`  | `AuthTokenStorage`                                           | in-memory | Where the JWT lives. `createCookieAuthTokenStorage()` persists across reloads/SSR. |
+Additional members: `auth` is narrowed to `AccountSignerAuthService` (login/logout/sessions/events, see the [Auth reference](https://testnet.polyester.com/docs/sdk/typescript/reference/auth)), and `setAccountSigner(signer | null)` swaps the signer at runtime.
+Token storage implementations:
+```ts
+createMemoryAuthTokenStorage(initialToken?)
+createCookieAuthTokenStorage({ cookieName?, path?, secure?, sameSite? })
+```
+On public hosts, cookie names stay stable. Browser storage scopes the bearer and display-session cookies by port on loopback, `.localhost`, and RFC1918 private IPv4 hosts, including default HTTP (`80`) and HTTPS (`443`) ports, so local and LAN apps cannot read or overwrite each other's sessions.
+## `PolyesterServerClient`
+```ts
+new PolyesterServerClient(config: PolyesterServerClientConfig)
+```
+Extends the base config with:
+| Option                                    | Type                    | Default | Description                                                                 |
+| ----------------------------------------- | ----------------------- | ------- | --------------------------------------------------------------------------- |
+| `session`                                 | `ServerSessionSnapshot` | empty   | Display-only session data parsed from cookies.                              |
+| `useDisplaySessionActiveAccountAsDefault` | `boolean`               | `false` | Treat the display session's active account as the default subaccount scope. |
+Members: `session`, `hasAuthProvider`, `hasBearerToken`, `hasUsableBearerToken`, `hasDisplaySession`, and `verifySession(): Promise
+`, where `null` means unauthenticated and every other failure throws.
+### Factories
+```ts
+createPolyesterServerClientFromRequest({ environment, request, ...baseOptions });
+createPolyesterServerClientFromCookies({ environment, cookies, ...baseOptions });
+```
+Both parse the session cookies, attach a JWT provider when a valid bearer token is present, and return a configured `PolyesterServerClient`. `cookies` may be a `Request`, a string record, or a synchronous `.get(name)` store returning a string or `{ value: string }`; await asynchronous framework helpers before passing their store. A `Request` derives the cookie location from its URL. For a local framework store, pass `cookieLocation` with its `hostname`, `port`, and `protocol` so the factory reads the matching port-scoped bearer and display cookies. `parseSessionCookie(cookies, environment, { cookieLocation?, tokenCookieName? })` lives in `@polyester/sdk/server-session` and returns the `bearerToken` alongside display data. The root export provides `POLYESTER_AUTH_TOKEN_COOKIE_NAME` and `POLYESTER_SESSION_COOKIE_NAME`. Both server factories accept `tokenCookieName` when browser token storage uses a custom `cookieName`; pass its base name, without a port suffix. The root helper `resolveAuthCookieName(name, location?)` computes the matching name from an `AuthCookieLocation` (`hostname`, `port`, `protocol`), defaulting to the browser location when available. On a server, supply the location for local requests. Local ports default to `80` for HTTP and `443` for HTTPS; local reads do not fall back to unsuffixed cookies.
+The display-session base name is `polyester_session_4`; use the constant rather than hard-coding its name. Version 4 resets display sessions created with the previous fingerprint format.
+## Request options
+Every service method takes an options object as its last parameter:
+```ts
+interface PolyesterRequestOptions {
+signal?: AbortSignal; // cancel the request
+}
+interface PolyesterMutationOptions extends PolyesterRequestOptions {
+stepUpToken?: string | null; // MFA fresh step-up proof (sent as X-Auth-Step-Up)
+}
+```
+Reads take `PolyesterRequestOptions`; mutations take `PolyesterMutationOptions`.
+## Environments
+```ts
+POLYESTER_TESTNET_ENVIRONMENT: PolyesterEnvironment
+createPolyesterEnvironment(params: CreatePolyesterEnvironmentParams): PolyesterEnvironment
+```
+See [Environments](https://testnet.polyester.com/docs/sdk/typescript/concepts/environments) for the full parameter reference and validation rules.
+## Package entry points
+| Entry point                     | Runtime exports                                                                                                                                                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@polyester/sdk`                | `PolyesterClient`, `PolyesterBrowserClient`, `PolyesterServerClient`, server-client factories, environments, token storage, the full error tree, EVM/time utilities, and all service input/output **types**        |
+| `@polyester/sdk/account-signer` | `createPolyesterAccountSigner`                                                                                                                                                                                     |
+| `@polyester/sdk/smart-account`  | `createPolyesterSmartAccount`, `createPolyesterSmartAccountClient`, `predictPolyesterSmartAccountAddress`, `sendPolyesterUserOperation`, `waitForPolyesterUserOperationReceipt`, `warmPolyesterSmartAccountClient` |
+| `@polyester/sdk/catalogs`       | `createPolyesterCatalog`, `buildCatalogSnapshot`, `createCatalogSnapshotReader`, `patchZipperCatalogSupply`, unknown-asset helpers, catalog types                                                                  |
+| `@polyester/sdk/server-session` | `parseSessionCookie`, `emptyServerSessionSnapshot`, `isJwtValid`                                                                                                                                                   |
+| `@polyester/sdk/errors`         | Error classes and helpers (same exports as the root package)                                                                                                                                                       |
+| `@polyester/sdk/unstable/gen`   | Generated protobuf types and Connect service descriptors                                                                                                                                                           |
+## Utilities (root export)
+| Function                                                                                       | Purpose                                              |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `isEvmAddress` / `isEvmAddressStrict` / `checksumEvmAddress`                                   | Address validation and EIP-55 checksumming           |
+| `evmHexToBytes` / `evmUtf8ToHex` / `evmUtf8ToBytes` / `keccak256Hex`                           | Hex/byte/hash helpers                                |
+| `isAbortError(err)`                                                                            | Detect caller-initiated aborts                       |
+| `isRetryableError(err)` / `isResourceNotFoundError(err)` / `formatConnectError(err, fallback)` | Error triage helpers                                 |
+| `columnarTimestampSecAt` / `expandColumnarTimestampsSec`                                       | Work with columnar time windows from chart endpoints |

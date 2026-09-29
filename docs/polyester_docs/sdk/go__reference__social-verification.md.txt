@@ -1,0 +1,14 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/social-verification.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Social verification
+Social verification APIs (reference-only).
+`client.SocialVerification` contains protocol wrappers for `Start`, `MarkReady`, and `Get`.
+```go
+state, err := client.SocialVerification.Get(ctx, "twitter")
+if err != nil { log.Fatal(err) }
+fmt.Println(state.Raw)
+```
+These are interactive identity/session flows and are not supported for normal API-key API-key trading credentials. Correctly configured environments may return an auth error; use the Polyester app or TypeScript session client.
+The wrappers remain for protocol coverage and return `models.ApiData`. Do not make trading startup depend on them, and do not interpret an unavailable social route as a trading-auth failure.

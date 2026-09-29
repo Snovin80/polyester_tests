@@ -1,0 +1,329 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketdata.v1.MarketDataService/GetSpotConfig
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketdata.v1.MarketDataService
+GetSpotConfig
+Retrieve a cacheable snapshot of spot assets and pairs, including precision and trading constraints.
+Copy URL
+Method
+POST
+Path
+marketdata.v1.MarketDataService/GetSpotConfig
+Service
+marketdata.v1.MarketDataService
+Visibility
+Public endpoint
+POST
+marketdata.v1.MarketDataService/GetSpotConfig
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetSpotConfig' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"assets": [
+"asset": "BTC",
+"ledgerId": 1,
+"marketDataVolumeScale": 123456,
+"name": "Bitcoin",
+"quantityDisplayDecimals": 8,
+"quantityScale": 8
+}
+],
+"pairs": [
+"allowBuyFeeFromBase": false,
+"baseAsset": "BTC",
+"baseQuantityScale": 8,
+"defaultMarketSlippageBpsBuy": 1,
+"defaultMarketSlippageBpsSell": 1,
+"delistingAt": "2025-01-01T00:00:00Z",
+"listingAt": "2025-01-01T00:00:00Z",
+"marketdata": {
+"orderbookPriceBuckets": [
+0.1
+]
+},
+"maxClientRefDriftBps": 1,
+"minNotionalQuote": "10",
+"minQtyBase": "0.0001",
+"quoteAsset": "USDT",
+"quoteQuantityScale": 6,
+"referencePriceScale": 5000000,
+"status": "PAIR_STATUS_ENABLED",
+"stepSize": "0.0001",
+"symbol": "BTC-USDT",
+"symbolId": 1,
+"tickSize": "0.01"
+}
+],
+"tsSec": "1735689600"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketdata.v1.GetSpotConfigRequest
+Response
+marketdata.v1.GetSpotConfigResponse
+Response
+Form
+JSON
+assets
+object[]
+Assets ordered by asset code in ascending alphabetical order.
+6 fields
+asset
+string
+Asset code, e.g. "USDT" or "BTC".
+ledgerId
+integer (int32)
+Stable numeric asset id used by account, balance, and order APIs.
+name
+string
+Human-friendly display name, e.g. "Bitcoin".
+quantityDisplayDecimals
+integer (int32)
+Suggested decimal precision for displaying user-facing asset amounts.
+quantityScale
+integer (int32)
+Integer scale for quantities and balances in this asset (0..18).
+A scale of 8 means one whole asset is represented as 100000000 in scaled
+integer fields such as qty_scaled.
+marketDataVolumeScale
+integer (int32)
+Integer scale for public candle and market-overview base volume (0..18).
+pairs
+object[]
+Pairs ordered by symbol in ascending alphabetical order.
+19 fields
+symbolId
+integer (int32)
+Stable numeric pair id used by low-latency ConnectRPC requests and streams.
+symbol
+string
+Trading pair symbol, e.g. "BTC-USDT".
+baseAsset
+string
+Base asset code. For BTC-USDT, this is "BTC".
+quoteAsset
+string
+Quote asset code. For BTC-USDT, this is "USDT".
+tickSize
+string
+Minimum allowed price increment as a decimal string in quote-asset units.
+Prices use 9 decimal places in scaled integer fields; for example "0.01"
+means orders must be priced in 0.01 quote-asset increments.
+stepSize
+string
+Minimum allowed quantity increment as a decimal string in base-asset units.
+minNotionalQuote
+string
+Minimum order notional as a decimal string in quote-asset units.
+minQtyBase
+string
+Minimum order quantity as a decimal string in base-asset units.
+allowBuyFeeFromBase
+boolean
+Whether BUY order fees may be paid from the base asset instead of the
+spent quote asset when the order request selects the base fee asset.
+baseQuantityScale
+integer (int32)
+Quantity scale for base-asset amounts in this pair.
+quoteQuantityScale
+integer (int32)
+Quantity scale for quote-asset amounts in this pair.
+marketdata
+object
+Market-data display settings for this pair.
+1 field
+orderbookPriceBuckets
+number[]
+Suggested order book aggregation bucket sizes in quote-asset price units,
+e.g. 0.01, 0.1, 1, or 10.
+listingAt
+string (date-time)
+Scheduled listing timestamp. When unset, the pair has no explicit future
+listing time.
+delistingAt
+string (date-time)
+Scheduled delisting timestamp. When unset, the pair has no explicit
+delisting time.
+status
+enum
+Current trading status.
+PAIR_STATUS_ENABLED
+PAIR_STATUS_DISABLED
+PAIR_STATUS_CANCEL_ONLY
+PAIR_STATUS_POST_ONLY
+PAIR_STATUS_REDUCE_ONLY
+defaultMarketSlippageBpsBuy
+integer (int32)
+Default MARKET order slippage cap for BUY orders, in basis points
+(1 bp = 0.01%). A request-level slippage setting can override this value.
+defaultMarketSlippageBpsSell
+integer (int32)
+Default MARKET order slippage cap for SELL orders, in basis points
+(1 bp = 0.01%). A request-level slippage setting can override this value.
+maxClientRefDriftBps
+integer (int32)
+Maximum allowed drift between client reference price and server reference
+price for MARKET orders, in basis points (1 bp = 0.01%), when client
+reference pricing is used.
+referencePriceScale
+integer (int32)
+Integer scale for composite reference prices in candle responses (0..18).
+Primary market and execution prices use the fixed scale 9.
+tsSec
+string (uint64)
+Snapshot generation timestamp, in seconds since the Unix epoch (UTC).
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+marketdata.v1.MarketDataService/GetSpotConfig
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s374" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetSpotConfig' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"assets": [
+"asset": "BTC",
+"ledgerId": 1,
+"marketDataVolumeScale": 123456,
+"name": "Bitcoin",
+"quantityDisplayDecimals": 8,
+"quantityScale": 8
+}
+],
+"pairs": [
+"allowBuyFeeFromBase": false,
+"baseAsset": "BTC",
+"baseQuantityScale": 8,
+"defaultMarketSlippageBpsBuy": 1,
+"defaultMarketSlippageBpsSell": 1,
+"delistingAt": "2025-01-01T00:00:00Z",
+"listingAt": "2025-01-01T00:00:00Z",
+"marketdata": {
+"orderbookPriceBuckets": [
+0.1
+]
+},
+"maxClientRefDriftBps": 1,
+"minNotionalQuote": "10",
+"minQtyBase": "0.0001",
+"quoteAsset": "USDT",
+"quoteQuantityScale": 6,
+"referencePriceScale": 5000000,
+"status": "PAIR_STATUS_ENABLED",
+"stepSize": "0.0001",
+"symbol": "BTC-USDT",
+"symbolId": 1,
+"tickSize": "0.01"
+}
+],
+"tsSec": "1735689600"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetSpotConfig' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "assets": [
+    {
+      "asset": "BTC",
+      "ledgerId": 1,
+      "marketDataVolumeScale": 123456,
+      "name": "Bitcoin",
+      "quantityDisplayDecimals": 8,
+      "quantityScale": 8
+    }
+  ],
+  "pairs": [
+    {
+      "allowBuyFeeFromBase": false,
+      "baseAsset": "BTC",
+      "baseQuantityScale": 8,
+      "defaultMarketSlippageBpsBuy": 1,
+      "defaultMarketSlippageBpsSell": 1,
+      "delistingAt": "2025-01-01T00:00:00Z",
+      "listingAt": "2025-01-01T00:00:00Z",
+      "marketdata": {
+        "orderbookPriceBuckets": [
+          0.1
+        ]
+      },
+      "maxClientRefDriftBps": 1,
+      "minNotionalQuote": "10",
+      "minQtyBase": "0.0001",
+      "quoteAsset": "USDT",
+      "quoteQuantityScale": 6,
+      "referencePriceScale": 5000000,
+      "status": "PAIR_STATUS_ENABLED",
+      "stepSize": "0.0001",
+      "symbol": "BTC-USDT",
+      "symbolId": 1,
+      "tickSize": "0.01"
+    }
+  ],
+  "tsSec": "1735689600"
+}

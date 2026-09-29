@@ -1,0 +1,152 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/identifiers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Identifiers · ConnectRPC & Protobuf
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+ConnectRPC & Protobuf
+Getting started
+Identifiers
+Scaled Integers
+Protobuf contracts
+WebSocket Protobuf
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+ConnectRPC & Protobuf
+svg]:size-3.5">
+/
+Identifiers
+Identifiers
+Copy page
+View as Markdown
+Open in
+Polyester Protobuf contracts commonly declare public IDs as
+fixed64
+values, carrying the
+underlying unsigned 64-bit value in compact typed payloads.
+For what public IDs are and why they are opaque, see
+Public IDs
+and behave over ConnectRPC and Protobuf.
+Using fixed64 IDs
+Public ID fields declared as
+fixed64
+carry the underlying unsigned 64-bit value. Always follow
+the field type in the published contract; not every identifier uses
+fixed64
+message
+Trade
+fixed64
+order_id
+=
+1
+;
+uint32
+symbol_id
+=
+2
+;
+uint64
+qty_scaled
+=
+3
+;
+}
+In generated clients, use the type your language SDK gives you for 64-bit integers. In JSON debug
+mode, protobuf tools often show 64-bit integer fields as decimal strings:
+"orderId"
+"72623859790382856"
+}
+JSON debug output shows the fixed64 value as a decimal string because JSON has no native 64-bit
+integer type. In binary protobuf, the same values are encoded as fixed-width 64-bit fields. This
+keeps hot paths compact and avoids extra string parsing in clients that already use typed protobuf
+contracts.
+Using an integer field instead of a string also reduces payload size, especially in large list
+responses, order history, trade history, realtime-style snapshots, and other payloads that repeat
+many IDs. If your integration cares about smaller payloads and lower transport overhead, prefer
+ConnectRPC with binary protobuf.
+Displaying and converting IDs
+If a directly generated ConnectRPC client also renders user-facing URLs or labels, convert its
+fixed64
+values to base58 in the display layer. Official SDKs can expose a normalized
+representation instead, so follow the selected SDK's documented types. For example, the TypeScript
+SDK returns base58 public-ID strings to application code even when its underlying transport is
+ConnectRPC.
+Conversion is needed only when an ID crosses between a raw ConnectRPC field and a base58 surface
+such as REST or URLs (see
+REST identifiers
+). Base58
+An6UebxCZd
+and decimal
+72623859790382856
+are two representations of the same unsigned 64-bit public ID. A custom
+converter must reject invalid Base58 characters and values larger than
+uint64
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public IDs are not credentials
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Public IDs are safe to expose as identifiers, but access to private resources still requires valid
+authentication and authorization.
+Previous
+Getting started
+Next
+Scaled Integers
+On this page
+Using fixed64 IDs
+Displaying and converting IDs
+Share this page
+Identifiers
+How Polyester ConnectRPC contracts represent public IDs as fixed64 values in typed payloads.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+message Trade {
+  fixed64 order_id = 1;
+  uint32 symbol_id = 2;
+  uint64 qty_scaled = 3;
+}
+
+---
+
+{
+	"orderId": "72623859790382856"
+}

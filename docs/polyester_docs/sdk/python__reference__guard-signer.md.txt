@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/guard-signer.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Guard signer
+Guard signer approval helpers.
+`client.guard_signer` manages the server-side guard signer used to approve protected funding account-control actions.
+| Method                                           | Purpose                    |
+| ------------------------------------------------ | -------------------------- |
+| `get_status(...)`                                | Current guard wallet state |
+| `create_wallet(...)`                             | Provision a guard wallet   |
+| `sign_protected_action(action=..., ...)`         | One approval               |
+| `batch_sign_protected_actions(actions=..., ...)` | Multiple approvals         |
+| `rotate_wallet(...)`                             | Rotate guard material      |
+| `export_wallet(...)`                             | Export operation result    |
+```python
+status = await client.guard_signer.get_status()
+approval = await client.guard_signer.sign_protected_action(
+action="add_allowed_external_destinations",
+external_polychain_chain_id=6,
+external_addresses=["0x..."],
+)
+```
+The exact action determines which of `external_polychain_chain_id`, `external_addresses`, `internal_addresses`, or `whitelist_required` is required. These are authenticated control-plane mutations; do not retry them blindly and do not log approval payloads or exported key material.
+A guard approval does not submit an on-chain transaction. Feed it into the matching [Chain helper](https://testnet.polyester.com/docs/sdk/python/reference/chain) flow and verify the receipt/final state.

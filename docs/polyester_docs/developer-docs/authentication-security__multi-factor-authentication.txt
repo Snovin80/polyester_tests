@@ -1,0 +1,276 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security/multi-factor-authentication
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Multi-Factor Authentication · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Authentication & Security
+svg]:size-3.5">
+/
+Multi-Factor Authentication
+Multi-Factor Authentication
+Copy page
+View as Markdown
+Open in
+Polyester uses multi-factor authentication (
+MFA
+) to protect interactive sessions. Routine requests
+use the session token created at login. Sensitive operations require stronger proof: either a recent
+MFA-elevated session or a fresh, single-use step-up.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Use passkeys when available
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Passkeys are fast and phishing-resistant. TOTP remains available when passkeys are not supported.
+Factors
+Passkeys
+use WebAuthn and a device credential such as Face ID, Touch ID, Windows Hello, a
+laptop PIN, or a hardware security key.
+TOTP
+uses a time-based code from an authenticator app.
+Recovery codes
+are one-time backup credentials. Store them offline or in a password manager.
+The first enrolled factor creates the account's recovery codes. Adding another factor requires
+proof from an existing factor. After TOTP or passkey enrollment succeeds, replace the current bearer
+token with the returned
+access_token
+session
+and
+access_token_expires_at
+Session assurance
+Requirement
+Client credential
+Validity
+Primary session
+Bearer token created at login
+Routine authenticated access
+Recent MFA session
+MFA-elevated bearer token
+30 minutes from MFA completion
+Fresh step-up
+Separate
+step_up_token
+sent in
+X-Auth-Step-Up
+One protected action
+A fresh step-up is bound to the interactive account and session. The proof is not reusable, but
+successful verification also returns an independent MFA-elevated
+access_token
+for subsequent
+Recent MFA requirements.
+Completing a challenge
+When an endpoint requires a fresh proof:
+Call
+MFAService/BeginMFAChallenge
+with
+MFA_CHALLENGE_PURPOSE_FRESH_STEP_UP
+Verify the challenge with TOTP, a passkey, or a recovery code.
+Replace the current bearer token with the returned
+access_token
+Retry the original request with the returned
+step_up_token
+in
+X-Auth-Step-Up
+For endpoints that accept a recent MFA session, use
+MFA_CHALLENGE_PURPOSE_SESSION_ELEVATION
+instead and replace the bearer token with the returned
+MFA-elevated
+access_token
+session
+,
+access_token
+, and
+access_token_expires_at
+step_up_token
+and
+step_up_expires_at
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Step-up tokens are single-use
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Send the token only with the protected operation and do not reuse it across requests.
+Endpoint reference
+The following tables describe the current production policy by API method. The REST and ConnectRPC
+references provide the transport-specific paths.
+Recent MFA session required
+Area
+Methods
+Notes
+Address book entries
+CreateAddressBookEntry
+UpdateAddressBookEntry
+DeleteAddressBookEntry
+CopyAddressBookEntry
+With an enrolled factor, MFA completed within the previous 30 minutes satisfies the requirement.
+When no factor is enrolled, address-book entry mutations do not prompt for MFA. After enrollment,
+elevate the session again when its recent-MFA window expires.
+Fresh step-up required
+Area
+Methods
+Notes
+API keys
+CreateApiKey
+UpdateApiKey
+DeleteApiKey
+Creating a key also requires MFA enrollment. Every API key update is protected.
+Subaccount
+policies
+CreateSubaccountPolicy
+UpdateSubaccountPolicy
+DeleteSubaccountPolicy
+SetSubaccountPolicy
+Setting a policy includes attaching or clearing it.
+API key policies
+CreateApiPolicy
+UpdateApiPolicy
+DeleteApiPolicy
+SetApiKeyPolicy
+Creating and assigning a policy in one request uses one proof.
+MFA security
+DeleteMFAFactor
+RegenerateRecoveryCodes
+The last factor cannot be deleted. Regeneration invalidates previous recovery codes.
+Subaccount members
+InviteSubaccountMember
+UpdateSubaccountMemberRole
+—
+Guard approvals
+SignProtectedAction
+BatchSignProtectedActions
+Required for supported external and internal whitelist mutations. A batch needs one when any item is protected.
+Guard wallet
+RotateGuardSignerWallet
+ExportGuardSignerWallet
+Both require MFA enrollment.
+Conditional requirements
+Area
+Methods
+Rule
+Factor enrollment
+BeginTOTPEnrollment
+BeginPasskeyEnrollment
+Fresh step-up is required when the account already has a factor. The first factor is exempt.
+Finish enrollment
+FinishTOTPEnrollment
+FinishPasskeyEnrollment
+Additional-factor enrollment must follow a begin request that validated step-up. Successful completion returns a new MFA-elevated access token.
+Member MFA policy
+SetSubaccountMemberMFARequirement
+Disabling
+require_member_mfa
+requires fresh step-up. Enabling it does not.
+Remove member
+RemoveSubaccountMember
+Removing another member requires fresh step-up. Leaving the subaccount yourself does not.
+Respond to invite
+RespondSubaccountInvite
+Accepting requires enrollment and Recent MFA when
+require_member_mfa=true
+Wallet withdrawal
+CreateWalletTradingWithdraw
+Root-owner Trading-to-Funding and root-owner withdrawals to explicitly whitelisted external destinations accept a recent MFA session. Delegated and other interactive movements require fresh step-up. An existing idempotent intent requires no new proof.
+Internal transfer
+CreateInternalTransfer
+Root-owner same-owner transfers and root-owner transfers to explicitly whitelisted destinations accept a recent MFA session. Delegated and other interactive transfers require fresh step-up. API key requests are exempt.
+Similar endpoints that do not require MFA
+CreateTradingWithdraw
+is API-key-only. It requires a signed payload and the relevant policy
+permission.
+API-key-authenticated internal transfers do not use interactive MFA.
+CreateGuardSignerWallet
+and
+GetGuardSignerStatus
+do not require MFA.
+Read-only API key, policy, address-book, destination, and whitelist methods do not require MFA.
+Order placement, amendment, and cancellation do not require MFA.
+API key sessions cannot satisfy an interactive MFA requirement. Where an API key is not explicitly
+exempt, the endpoint rejects that session type.
+See
+Withdrawals and Transfers Security
+for the complete money-movement model.
+MFA, signatures, and whitelists
+These controls solve different problems:
+MFA confirms that the interactive user is present.
+A wallet or API key signature binds the asset, amount, source, destination, nonce, and expiry.
+A whitelist limits where funds may move.
+Protected money-movement flows can require more than one of these checks.
+Related Topics
+Ed25519 API Keys
+Create Ed25519 API keys and sign private Polyester API requests with the required canonical format.
+API key replay protection
+Understand signed-request freshness, replay rejection, and operation idempotency when using Ed25519 API keys.
+Guard Signer
+How clients initialize Guard Signer and request approval for protected Funding Account whitelist actions.
+Withdrawals and transfer security
+Understand authentication, MFA, signatures, policies, and whitelist checks for Trading withdrawals and internal transfers.
+API key IP allowlists
+Restrict Ed25519 API keys to approved IPv4 and IPv6 source networks.
+Previous
+API key replay protection
+Next
+Guard Signer
+On this page
+Factors
+Session assurance
+Completing a challenge
+Endpoint reference
+Recent MFA session required
+Fresh step-up required
+Conditional requirements
+Similar endpoints that do not require MFA
+MFA, signatures, and whitelists
+Related Topics
+Share this page
+Multi-Factor Authentication
+How Polyester MFA works: TOTP, passkeys, recovery codes, elevated sessions, and fresh step-up for high-risk actions.
+Share
+Copy Link

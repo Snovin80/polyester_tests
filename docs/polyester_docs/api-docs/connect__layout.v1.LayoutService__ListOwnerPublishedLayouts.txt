@@ -1,0 +1,231 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/layout.v1.LayoutService/ListOwnerPublishedLayouts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+layout.v1.LayoutService
+ListOwnerPublishedLayouts
+ListOwnerPublishedLayouts lists listed/published layouts for an owner (profile/gallery surfaces).
+Copy URL
+Method
+POST
+Path
+layout.v1.LayoutService/ListOwnerPublishedLayouts
+Service
+layout.v1.LayoutService
+Visibility
+Public endpoint
+POST
+layout.v1.LayoutService/ListOwnerPublishedLayouts
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/layout.v1.LayoutService/ListOwnerPublishedLayouts' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"limit": 100,
+"ownerId": "1",
+"pageToken": "eyJvZmZzZXQiOjEwMH0"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"templates": [
+"description": "Example configuration for the API playground.",
+"isListed": false,
+"latestVersion": 1,
+"publishedAtMs": "1",
+"tags": [
+"spot"
+],
+"template": {
+"ownerId": "1",
+"templateId": "1"
+},
+"title": "My Trading Board",
+"updatedAtMs": "1"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+layout.v1.ListOwnerPublishedLayoutsRequest
+Response
+layout.v1.ListOwnerPublishedLayoutsResponse
+Request body
+Form
+JSON
+Example
+ownerId
+string (fixed64)
+Owner whose published layouts should be listed.
+limit
+integer (int32)
+≤ 500
+Maximum number of templates to return. Defaults to 100 when omitted;
+maximum is 500.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to owner and newest-published sort order.
+Response
+Form
+JSON
+templates
+object[]
+Published templates for the owner, returned newest-published first.
+8 fields
+template
+object
+Template identifier.
+2 fields
+ownerId
+string (fixed64)
+Viewer that owns the template.
+templateId
+string (fixed64)
+Template identifier unique within the owner.
+title
+string
+Public display title.
+description
+string
+Public description shown with the template.
+tags
+string[]
+Public tags used for grouping or filtering.
+isListed
+boolean
+True when the template appears in discovery listings.
+latestVersion
+integer (int32)
+Latest immutable version number for this template.
+publishedAtMs
+string (fixed64)
+Initial publication time in milliseconds since epoch (UTC).
+updatedAtMs
+string (fixed64)
+Last metadata update time in milliseconds since epoch (UTC).
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+layout.v1.LayoutService/ListOwnerPublishedLayouts
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s377" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/layout.v1.LayoutService/ListOwnerPublishedLayouts' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"limit": 100,
+"ownerId": "1",
+"pageToken": "eyJvZmZzZXQiOjEwMH0"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"templates": [
+"description": "Example configuration for the API playground.",
+"isListed": false,
+"latestVersion": 1,
+"publishedAtMs": "1",
+"tags": [
+"spot"
+],
+"template": {
+"ownerId": "1",
+"templateId": "1"
+},
+"title": "My Trading Board",
+"updatedAtMs": "1"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/layout.v1.LayoutService/ListOwnerPublishedLayouts' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "limit": 100,
+  "ownerId": "1",
+  "pageToken": "eyJvZmZzZXQiOjEwMH0"
+}'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "templates": [
+    {
+      "description": "Example configuration for the API playground.",
+      "isListed": false,
+      "latestVersion": 1,
+      "publishedAtMs": "1",
+      "tags": [
+        "spot"
+      ],
+      "template": {
+        "ownerId": "1",
+        "templateId": "1"
+      },
+      "title": "My Trading Board",
+      "updatedAtMs": "1"
+    }
+  ]
+}

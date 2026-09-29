@@ -1,0 +1,470 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/candles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Candles · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Candles
+Candles
+Copy page
+View as Markdown
+Open in
+client.market_data
+reads and streams public spot OHLCV data. No authentication is required.
+There is no
+client.candles
+alias; use
+market_data
+The service calls this value
+interval
+in convenience methods and
+timeframe
+in
+GetCandlesOpts
+; they represent the same candle duration. Supported aliases are
+1s
+,
+1m
+,
+5m
+,
+15m
+,
+30m
+,
+1h
+,
+4h
+,
+12h
+,
+1d
+,
+1w
+, and
+1mo
+min1
+and
+MIN_1
+are also accepted.
+The current Rust
+GetCandlesOpts
+does not expose the wire-level
+include_reference
+field. Do not
+rely on requesting reference candles through this SDK version.
+OHLCV fields are decimal strings. Candle times are epoch
+seconds
+(
+ts_sec
+).
+Row results are ordered
+newest-first
+at index
+0
+; never use
+as the latest candle. Reverse or sort row results by
+ts_sec
+before feeding them to chronological indicators. The columns API is
+oldest-first
+Methods
+Method
+Summary
+get_candles
+Fetch candles (
+symbol
+,
+interval
+,
+limit
+).
+get_candles_with
+Full options (
+GetCandlesOpts
+).
+get_candles_columns
+Columnar wire form decoded to rows.
+get_current_candle
+Latest candle as
+Option<Candle>
+(
+None
+when no rows exist).
+subscribe_candles
+Stream live row candles (
+recv_result()
+).
+Get candles
+use
+polyester
+models
+GetCandlesOpts
+;
+let
+result
+=
+client
+market_data
+get_candles
+(
+"BTC-USDT"
+,
+"1h"
+,
+Some
+(
+200
+))
+;
+if
+let
+Some
+(
+latest
+)
+=
+result
+candles
+first
+() {
+println!
+(
+"{} {} {}"
+,
+latest
+ts_sec,
+latest
+close,
+latest
+volume);
+}
+let
+mut
+chronological
+=
+result
+candles
+clone
+();
+chronological
+reverse
+();
+// Feed chronological (oldest-first) to rolling indicators.
+let
+ranged
+=
+client
+market_data
+get_candles_with
+(
+GetCandlesOpts
+symbol
+Some
+(
+"BTC-USDT"
+into
+()),
+timeframe
+"1h"
+into
+(),
+limit
+Some
+(
+200
+),
+include_incomplete
+false
+,
+Default
+default
+()
+})
+;
+Get candle columns
+Same
+GetCandlesOpts
+; columnar response decoded into
+CandlesResult
+rows.
+The SDK verifies that every OHLCV column has exactly one value per timestamp and returns
+Error::Transport
+if the response is misaligned.
+Get current candle
+let
+candle
+Option
+<
+_
+>
+=
+client
+market_data
+get_current_candle
+(
+"BTC-USDT"
+,
+"1m"
+)
+;
+Subscribe candles
+Requires hydrated catalogs so
+symbol
+resolves to an id.
+client
+wait_for_catalogs
+()
+;
+let
+mut
+sub
+=
+client
+market_data
+subscribe_candles
+(
+"BTC-USDT"
+,
+"1m"
+)
+;
+while
+let
+Some
+(
+candle
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{} {} {}"
+,
+candle
+ts_sec,
+candle
+timeframe,
+candle
+close);
+break
+;
+}
+Candle
+does not expose an
+is_closed
+field. Treat streamed candles as updates for their
+ts_sec
+and
+timeframe
+bucket; a later update for the same bucket supersedes the earlier value.
+Related
+Market data guide
+Streaming
+Order book
+Public trades
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Balances
+Next
+Catalog
+On this page
+Methods
+Get candles
+Get candle columns
+Get current candle
+Subscribe candles
+Related
+Related Topics
+Share this page
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::GetCandlesOpts;
+
+let result = client
+    .market_data
+    .get_candles("BTC-USDT", "1h", Some(200))
+    .await?;
+if let Some(latest) = result.candles.first() {
+    println!("{} {} {}", latest.ts_sec, latest.close, latest.volume);
+}
+
+let mut chronological = result.candles.clone();
+chronological.reverse();
+// Feed chronological (oldest-first) to rolling indicators.
+
+let ranged = client
+    .market_data
+    .get_candles_with(GetCandlesOpts {
+        symbol: Some("BTC-USDT".into()),
+        timeframe: "1h".into(),
+        limit: Some(200),
+        include_incomplete: false,
+        ..Default::default()
+    })
+    .await?;
+
+---
+
+let candle: Option<_> = client.market_data.get_current_candle("BTC-USDT", "1m").await?;
+
+---
+
+client.wait_for_catalogs().await?;
+let mut sub = client.market_data.subscribe_candles("BTC-USDT", "1m").await?;
+while let Some(candle) = sub.recv_result().await? {
+    println!("{} {} {}", candle.ts_sec, candle.timeframe, candle.close);
+    break;
+}

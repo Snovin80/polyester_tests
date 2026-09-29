@@ -1,0 +1,1383 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/chain/flows/flow_id
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LifecycleReadService
+Get Flow By Id
+Retrieve one lifecycle flow by public flow id.
+Copy URL
+Method
+GET
+Path
+/v1/chain/flows/{flow_id}
+Visibility
+Public endpoint
+GET
+/v1/chain/flows/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/chain/flows/flow_7YWHMfk9JZeLMgZauHuiSxhI' \
+--header 'Accept: */*'
+Responses
+"flow": {
+"fromLiveState": false,
+"observedSteps": [
+"activities": [
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"approveCount": 1,
+"currentConfirmations": 1,
+"kind": "MINTED",
+"ledgerTransferId": "9155001234568",
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"lifecycleSource": "RELAYER",
+"occurredAtUnixMs": "1",
+"rejectCount": 1,
+"requiredApprovals": 1,
+"requiredConfirmations": 1,
+"requiredRejections": 1,
+"sequence": 1,
+"txRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"validatorCount": 1,
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+],
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"approveCount": 1,
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"blockTimeMovingAverageMs": "1",
+"currentConfirmations": 1,
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"lifecycleSource": "RELAYER",
+"milestoneTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"occurredAtUnixMs": "1",
+"polyesterChainId": 1,
+"rejectCount": 1,
+"requestFee": {
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"recipientAddress": "0x3333333333333333333333333333333333333333",
+"status": "LOCKED"
+},
+"requiredApprovals": 1,
+"requiredConfirmations": 1,
+"requiredRejections": 1,
+"sequence": 1,
+"step": "SOURCE",
+"validatorCount": 1,
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+],
+"summary": {
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"currentProgress": {
+"approveCount": 1,
+"currentConfirmations": 1,
+"currentStepExpectedDurationMs": "1",
+"currentStepStartedAtUnixMs": "1",
+"rejectCount": 1,
+"requiredApprovals": 1,
+"requiredConfirmations": 1,
+"requiredRejections": 1,
+"validatorCount": 1
+},
+"currentStep": "SOURCE",
+"currentStepSequence": 1,
+"destinationAddress": "0x3333333333333333333333333333333333333333",
+"destinationDomain": "EXTERNAL_CHAIN",
+"estimatedCompletionUnixMs": "1",
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"flowKind": "DEPOSIT",
+"isOpen": false,
+"isTerminal": false,
+"lastActivityAtUnixMs": "1",
+"latestLifecycleSource": "RELAYER",
+"latestTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"ownerAccountId": "7563897446546",
+"polyesterChainId": 1,
+"progressTimeline": [
+"expectedDurationMs": "1",
+"sequence": 1,
+"status": "COMPLETED",
+"step": "SOURCE"
+}
+],
+"requestFee": {
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"recipientAddress": "0x3333333333333333333333333333333333333333",
+"status": "LOCKED"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"sourceAddress": "0x4444444444444444444444444444444444444444",
+"sourceDomain": "EXTERNAL_CHAIN",
+"sourceTxHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"startedAtUnixMs": "1",
+"terminalAtUnixMs": "1",
+"txOccurrenceIndex": "1",
+"updatedAtUnixMs": "1",
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+}
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+flow_id
+string
+required
+6-64 chars
+/^flow_…m-z]+$/
+Public, URL-safe lifecycle identifier returned by list/search responses.
+Response
+Form
+JSON
+flow
+object
+Lifecycle flow detail for the requested intent id.
+3 fields
+summary
+object
+Compact flow summary for headers and list-style display.
+29 fields
+ownerAccountId
+string (fixed64)
+Public account identifier for the root account or subaccount the flow belongs to.
+Example
+7563897446546
+smartAccountAddress
+string
+Smart-account address for the account the flow belongs to. This is the
+stable address selector equivalent of `owner_account_id`; do not derive it
+from source or destination display addresses.
+Example
+0x2222222222222222222222222222222222222222
+flowId
+string
+Public, URL-safe lifecycle identifier for display, URLs, and user search.
+Example
+flow_7YWHMfk9JZeLMgZauHuiSxhI
+flowKind
+enum
+Product flow family.
+KIND_DEPOSIT
+KIND_WITHDRAW
+KIND_TRANSFER
+Example
+DEPOSIT
+currentStep
+enum
+Current user-facing progress step for this flow. This may be derived from
+the flow state before a matching factual observed step exists.
+FLOW_STEP_SOURCE
+FLOW_STEP_TRANSFER
+FLOW_STEP_REQUEST
+FLOW_STEP_VALIDATION
+FLOW_STEP_EXECUTION
+FLOW_STEP_BRIDGE_FULFILLMENT
+FLOW_STEP_DROPPED
+FLOW_STEP_FAILED
+FLOW_STEP_REFUNDED
+FLOW_STEP_FULFILLING
+FLOW_STEP_SETTLEMENT
+Example
+SOURCE
+assetIds
+object
+Asset identifiers involved in the flow.
+2 fields
+zippedAssetId
+integer (int32)
+Zipped asset identifier for the chain-specific asset mapping row. This is
+the canonical id from `chain_zipped_assets`, which already represents the
+source-chain asset metadata plus its mapped zToken relationship when
+relevant.
+Example
+100
+unifiedAssetId
+integer (int32)
+Unified asset identifier for the uAsset used by funding or trading flows
+when relevant. This is the canonical Polyester asset identity used by
+FundingAccount, TradingGateway, Lending, and other downstream product
+domains.
+Example
+100
+polyesterChainId
+integer (int32)
+Polyester Chain id associated with this flow when known.
+Example
+1
+amountE18
+object
+Gross principal amount for the flow in 18-decimal unified asset units.
+Request fees are exposed separately in request_fee. Specific fulfillment
+steps may carry a net movement amount when the step represents external
+delivery.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+Example
+1
+lo
+string (fixed64)
+Least significant 64 bits.
+Example
+1
+requestFee
+object
+Request-scoped fee details when a fee applies and should be visible for the
+current step.
+4 fields
+assetIds
+object
+Asset identities for the fee asset.
+2 fields
+zippedAssetId
+integer (int32)
+Zipped asset identifier for the chain-specific asset mapping row. This is
+the canonical id from `chain_zipped_assets`, which already represents the
+source-chain asset metadata plus its mapped zToken relationship when
+relevant.
+Example
+100
+unifiedAssetId
+integer (int32)
+Unified asset identifier for the uAsset used by funding or trading flows
+when relevant. This is the canonical Polyester asset identity used by
+FundingAccount, TradingGateway, Lending, and other downstream product
+domains.
+Example
+100
+amountE18
+object
+On-chain request fee in 18-decimal units of the fee asset identified by
+asset_ids. Separate from gross flow amount_e18 on summaries.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+Example
+1
+lo
+string (fixed64)
+Least significant 64 bits.
+Example
+1
+recipientAddress
+string
+Fee recipient address when settled on chain.
+Example
+0x3333333333333333333333333333333333333333
+status
+enum
+Current state of the fee snapshot.
+REQUEST_FEE_STATUS_LOCKED
+REQUEST_FEE_STATUS_SETTLED
+Example
+LOCKED
+sourceTxHash
+string
+First observed source transaction hash for the flow when known.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+txOccurrenceIndex
+string (uint64)
+Stable occurrence discriminator within a transaction. For source-chain
+deposits this is the batched leg index; for on-chain facts it is the log or
+equivalent per-tx occurrence index when available.
+Example
+1
+sourceAddress
+string
+Source address to show for the overall flow. For internal transfers this is
+the source smart account address.
+Example
+0x4444444444444444444444444444444444444444
+destinationAddress
+string
+Destination address to show for the overall flow. For internal transfers
+this is the destination smart account address.
+Example
+0x3333333333333333333333333333333333333333
+latestTxRef
+string
+Latest transaction reference associated with the current visible state.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+sourceDomain
+enum
+Product domain where the overall flow starts. Use with
+`destination_domain` for route labels such as Funding to Trading.
+DOMAIN_EXTERNAL_CHAIN
+DOMAIN_ZIPPER
+DOMAIN_FUNDING
+DOMAIN_TRADING
+DOMAIN_LENDING
+Example
+EXTERNAL_CHAIN
+destinationDomain
+enum
+Product domain where the overall flow ends or currently settles. Do not
+derive route labels from per-step settlement activity.
+DOMAIN_EXTERNAL_CHAIN
+DOMAIN_ZIPPER
+DOMAIN_FUNDING
+DOMAIN_TRADING
+DOMAIN_LENDING
+Example
+EXTERNAL_CHAIN
+latestLifecycleSource
+enum
+Provenance of the latest meaningful lifecycle activity reflected in this
+summary. This is not necessarily the source of the entire flow.
+SOURCE_RELAYER
+SOURCE_POLYESTER_CHAIN
+SOURCE_EXECUTOR
+SOURCE_LEDGER
+Example
+RELAYER
+lifecycleReason
+enum
+Product-facing reason for failed, dropped, or otherwise notable flows.
+ZIPPER_VALIDATION_REJECTED
+ZIPPER_EXECUTION_REJECTED
+ZIPPER_WITHDRAW_EXECUTION_FAILED
+ZIPPER_DEPOSIT_REFUND_FAILED
+LEDGER_MIRROR_REJECTED
+LEDGER_MIRROR_TRANSFER_EXCEEDS_CREDITS
+LEDGER_MIRROR_TRANSFER_EXISTS
+LEDGER_MIRROR_PENDING_TRANSFER_NOT_FOUND
+LEDGER_MIRROR_TRANSFER_ID_ALREADY_FAILED
+TRADING_WITHDRAW_POLICY_DENIED
+TRADING_WITHDRAW_CONTRACT_REVERTED
+TRADING_WITHDRAW_EXECUTION_FAILED
+Example
+ZIPPER_VALIDATION_REJECTED
+zipperReason
+object
+Specific reason details when a notable outcome has a catalog entry.
+3 fields
+code
+enum
+Stable code assigned to the specific outcome.
+DEPOSIT_WAIT_EXPIRED
+DEPOSIT_AMOUNT_INVALID
+DEPOSIT_AMOUNT_BELOW_MINIMUM
+DEPOSIT_AMOUNT_NOT_ABOVE_FEE
+DEPOSIT_NET_AMOUNT_BELOW_MINIMUM
+EVM_DEPOSIT_SOURCE_TX_INVALID
+EVM_DEPOSIT_SOURCE_TX_ZERO
+EVM_DEPOSIT_SOURCE_TX_NOT_FOUND
+EVM_DEPOSIT_SOURCE_TX_REVERTED
+EVM_DEPOSIT_TRANSFER_MISMATCH
+UTXO_DEPOSIT_TRANSACTION_MISMATCH
+BTC_DEPOSIT_TRANSACTION_MISMATCH
+BCH_DEPOSIT_TRANSACTION_MISMATCH
+DOGE_DEPOSIT_TRANSACTION_MISMATCH
+LTC_DEPOSIT_TRANSACTION_MISMATCH
+UTXO_DEPOSIT_SOURCE_IS_DEPOSIT_ADDRESS
+SOLANA_DEPOSIT_SIGNATURE_INVALID
+SOLANA_DEPOSIT_TRANSACTION_FAILED
+SOLANA_DEPOSIT_TRANSFER_MISMATCH
+XRP_DEPOSIT_SOURCE_HASH_INDEX_INVALID
+XRP_DEPOSIT_SOURCE_ADDRESS_INVALID
+XRP_DEPOSIT_ADDRESS_INVALID
+XRP_DEPOSIT_PAYMENT_MISMATCH
+REJECTION_UNMAPPED
+WITHDRAWAL_AMOUNT_INVALID
+WITHDRAWAL_AMOUNT_BELOW_MINIMUM
+WITHDRAWAL_ASSET_INVALID
+WITHDRAWAL_SENDER_INVALID
+WITHDRAWAL_DESTINATION_INVALID
+WITHDRAWAL_ASSET_UNAVAILABLE
+EVM_WITHDRAWAL_DESTINATION_INVALID
+BTC_WITHDRAWAL_DESTINATION_INVALID
+BCH_WITHDRAWAL_DESTINATION_INVALID
+DOGE_WITHDRAWAL_DESTINATION_INVALID
+LTC_WITHDRAWAL_DESTINATION_INVALID
+SOLANA_WITHDRAWAL_DESTINATION_INVALID
+XRP_WITHDRAWAL_CLASSIC_ADDRESS_INVALID
+XRP_WITHDRAWAL_DESTINATION_TAG_INVALID
+WITHDRAWAL_LIQUIDITY_INSUFFICIENT
+COMPLIANCE_HIGH_RISK_ADDRESS
+REQUEST_VERIFICATION_REJECTED
+REJECTED
+ERROR_UNMAPPED
+ERROR_NETWORK_UNSUPPORTED
+ERROR_REQUEST_PROCESSING_FAILED
+ERROR_REQUEST_VERIFICATION_FAILED
+ERROR_RESULT_SUBMISSION_FAILED
+ERROR_STATUS_UNKNOWN
+Example
+DEPOSIT_WAIT_EXPIRED
+reasonId
+string
+Stable reason identifier suitable for localization lookup.
+Example
+value
+message
+string
+User-displayable English explanation of the outcome.
+Example
+value
+startedAtUnixMs
+string (uint64)
+First observed business timestamp in milliseconds since epoch (UTC).
+Example
+1
+updatedAtUnixMs
+string (uint64)
+Last summary update timestamp in milliseconds since epoch (UTC).
+Example
+1
+terminalAtUnixMs
+string (uint64)
+Terminal timestamp in milliseconds since epoch (UTC), or zero while open.
+Example
+1
+lastActivityAtUnixMs
+string (uint64)
+Timestamp used for list ordering in milliseconds since epoch (UTC).
+Example
+1
+isOpen
+boolean
+True when the flow is still progressing.
+Example
+false
+isTerminal
+boolean
+True when the flow reached a final state.
+Example
+false
+currentStepSequence
+integer (int32)
+One-based sequence of `current_step` in `progress_timeline`.
+Example
+1
+currentProgress
+object
+Progress data for the current visible step when the flow is open.
+9 fields
+currentStepStartedAtUnixMs
+string (uint64)
+Timestamp when the current visible step started, in milliseconds since epoch
+(UTC).
+Example
+1
+currentStepExpectedDurationMs
+string (uint64)
+Expected duration for the current visible step in milliseconds.
+Example
+1
+currentConfirmations
+integer (int32)
+Current source confirmation count when confirmations apply.
+Example
+1
+requiredConfirmations
+integer (int32)
+Required source confirmation count when confirmations apply.
+Example
+1
+approveCount
+integer (int32)
+Current approval count when validation applies.
+Example
+1
+rejectCount
+integer (int32)
+Current rejection count when validation applies.
+Example
+1
+validatorCount
+integer (int32)
+Validator set size when validation applies.
+Example
+1
+requiredApprovals
+integer (int32)
+Approval count required for the current validation step.
+Example
+1
+requiredRejections
+integer (int32)
+Rejection count that would fail the current validation step.
+Example
+1
+progressTimeline
+object[]
+Progress-bar timeline for list/header UI. This timeline may include a
+current derived step that is ahead of the latest factual observed step.
+4 fields
+sequence
+integer (int32)
+One-based sequence within the expected timeline.
+Example
+1
+step
+enum
+Visible lifecycle step.
+FLOW_STEP_SOURCE
+FLOW_STEP_TRANSFER
+FLOW_STEP_REQUEST
+FLOW_STEP_VALIDATION
+FLOW_STEP_EXECUTION
+FLOW_STEP_BRIDGE_FULFILLMENT
+FLOW_STEP_DROPPED
+FLOW_STEP_FAILED
+FLOW_STEP_REFUNDED
+FLOW_STEP_FULFILLING
+FLOW_STEP_SETTLEMENT
+Example
+SOURCE
+status
+enum
+Progress status for this timeline item.
+TIMELINE_STATUS_COMPLETED
+TIMELINE_STATUS_CURRENT
+TIMELINE_STATUS_PLANNED
+Example
+COMPLETED
+expectedDurationMs
+string (uint64)
+Expected duration of this visible step in milliseconds, derived from recent
+observed timing data for the same flow type.
+Example
+1
+estimatedCompletionUnixMs
+string (uint64)
+Estimated Unix completion timestamp in milliseconds.
+Example
+1
+observedSteps
+object[]
+Factual visible steps observed for this flow, ordered by sequence. Open
+flows may have `summary.current_step` ahead of the last observed step.
+20 fields
+sequence
+integer (int32)
+One-based observed step sequence for display and audit.
+Example
+1
+step
+enum
+Business-facing observed step.
+FLOW_STEP_SOURCE
+FLOW_STEP_TRANSFER
+FLOW_STEP_REQUEST
+FLOW_STEP_VALIDATION
+FLOW_STEP_EXECUTION
+FLOW_STEP_BRIDGE_FULFILLMENT
+FLOW_STEP_DROPPED
+FLOW_STEP_FAILED
+FLOW_STEP_REFUNDED
+FLOW_STEP_FULFILLING
+FLOW_STEP_SETTLEMENT
+Example
+SOURCE
+assetIds
+object
+Asset identifiers involved in this step.
+2 fields
+zippedAssetId
+integer (int32)
+Zipped asset identifier for the chain-specific asset mapping row. This is
+the canonical id from `chain_zipped_assets`, which already represents the
+source-chain asset metadata plus its mapped zToken relationship when
+relevant.
+Example
+100
+unifiedAssetId
+integer (int32)
+Unified asset identifier for the uAsset used by funding or trading flows
+when relevant. This is the canonical Polyester asset identity used by
+FundingAccount, TradingGateway, Lending, and other downstream product
+domains.
+Example
+100
+polyesterChainId
+integer (int32)
+Polyester Chain id associated with this step when known.
+Example
+1
+amountE18
+object
+Amount represented by this step in 18-decimal unified asset units. Steps
+may carry the actual net movement amount when fees have already been taken.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+Example
+1
+lo
+string (fixed64)
+Least significant 64 bits.
+Example
+1
+requestFee
+object
+Request-scoped fee details when a fee applies to this step.
+4 fields
+assetIds
+object
+Asset identities for the fee asset.
+2 fields
+zippedAssetId
+integer (int32)
+Zipped asset identifier for the chain-specific asset mapping row. This is
+the canonical id from `chain_zipped_assets`, which already represents the
+source-chain asset metadata plus its mapped zToken relationship when
+relevant.
+Example
+100
+unifiedAssetId
+integer (int32)
+Unified asset identifier for the uAsset used by funding or trading flows
+when relevant. This is the canonical Polyester asset identity used by
+FundingAccount, TradingGateway, Lending, and other downstream product
+domains.
+Example
+100
+amountE18
+object
+On-chain request fee in 18-decimal units of the fee asset identified by
+asset_ids. Separate from gross flow amount_e18 on summaries.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+Example
+1
+lo
+string (fixed64)
+Least significant 64 bits.
+Example
+1
+recipientAddress
+string
+Fee recipient address when settled on chain.
+Example
+0x3333333333333333333333333333333333333333
+status
+enum
+Current state of the fee snapshot.
+REQUEST_FEE_STATUS_LOCKED
+REQUEST_FEE_STATUS_SETTLED
+Example
+LOCKED
+milestoneTxRef
+string
+Transaction reference most relevant to this step.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+lifecycleSource
+enum
+Source that produced this visible step.
+SOURCE_RELAYER
+SOURCE_POLYESTER_CHAIN
+SOURCE_EXECUTOR
+SOURCE_LEDGER
+Example
+RELAYER
+lifecycleReason
+enum
+Product-facing reason for failed, dropped, or otherwise notable steps.
+ZIPPER_VALIDATION_REJECTED
+ZIPPER_EXECUTION_REJECTED
+ZIPPER_WITHDRAW_EXECUTION_FAILED
+ZIPPER_DEPOSIT_REFUND_FAILED
+LEDGER_MIRROR_REJECTED
+LEDGER_MIRROR_TRANSFER_EXCEEDS_CREDITS
+LEDGER_MIRROR_TRANSFER_EXISTS
+LEDGER_MIRROR_PENDING_TRANSFER_NOT_FOUND
+LEDGER_MIRROR_TRANSFER_ID_ALREADY_FAILED
+TRADING_WITHDRAW_POLICY_DENIED
+TRADING_WITHDRAW_CONTRACT_REVERTED
+TRADING_WITHDRAW_EXECUTION_FAILED
+Example
+ZIPPER_VALIDATION_REJECTED
+zipperReason
+object
+Specific reason details when a notable outcome has a catalog entry.
+3 fields
+code
+enum
+Stable code assigned to the specific outcome.
+DEPOSIT_WAIT_EXPIRED
+DEPOSIT_AMOUNT_INVALID
+DEPOSIT_AMOUNT_BELOW_MINIMUM
+DEPOSIT_AMOUNT_NOT_ABOVE_FEE
+DEPOSIT_NET_AMOUNT_BELOW_MINIMUM
+EVM_DEPOSIT_SOURCE_TX_INVALID
+EVM_DEPOSIT_SOURCE_TX_ZERO
+EVM_DEPOSIT_SOURCE_TX_NOT_FOUND
+EVM_DEPOSIT_SOURCE_TX_REVERTED
+EVM_DEPOSIT_TRANSFER_MISMATCH
+UTXO_DEPOSIT_TRANSACTION_MISMATCH
+BTC_DEPOSIT_TRANSACTION_MISMATCH
+BCH_DEPOSIT_TRANSACTION_MISMATCH
+DOGE_DEPOSIT_TRANSACTION_MISMATCH
+LTC_DEPOSIT_TRANSACTION_MISMATCH
+UTXO_DEPOSIT_SOURCE_IS_DEPOSIT_ADDRESS
+SOLANA_DEPOSIT_SIGNATURE_INVALID
+SOLANA_DEPOSIT_TRANSACTION_FAILED
+SOLANA_DEPOSIT_TRANSFER_MISMATCH
+XRP_DEPOSIT_SOURCE_HASH_INDEX_INVALID
+XRP_DEPOSIT_SOURCE_ADDRESS_INVALID
+XRP_DEPOSIT_ADDRESS_INVALID
+XRP_DEPOSIT_PAYMENT_MISMATCH
+REJECTION_UNMAPPED
+WITHDRAWAL_AMOUNT_INVALID
+WITHDRAWAL_AMOUNT_BELOW_MINIMUM
+WITHDRAWAL_ASSET_INVALID
+WITHDRAWAL_SENDER_INVALID
+WITHDRAWAL_DESTINATION_INVALID
+WITHDRAWAL_ASSET_UNAVAILABLE
+EVM_WITHDRAWAL_DESTINATION_INVALID
+BTC_WITHDRAWAL_DESTINATION_INVALID
+BCH_WITHDRAWAL_DESTINATION_INVALID
+DOGE_WITHDRAWAL_DESTINATION_INVALID
+LTC_WITHDRAWAL_DESTINATION_INVALID
+SOLANA_WITHDRAWAL_DESTINATION_INVALID
+XRP_WITHDRAWAL_CLASSIC_ADDRESS_INVALID
+XRP_WITHDRAWAL_DESTINATION_TAG_INVALID
+WITHDRAWAL_LIQUIDITY_INSUFFICIENT
+COMPLIANCE_HIGH_RISK_ADDRESS
+REQUEST_VERIFICATION_REJECTED
+REJECTED
+ERROR_UNMAPPED
+ERROR_NETWORK_UNSUPPORTED
+ERROR_REQUEST_PROCESSING_FAILED
+ERROR_REQUEST_VERIFICATION_FAILED
+ERROR_RESULT_SUBMISSION_FAILED
+ERROR_STATUS_UNKNOWN
+Example
+DEPOSIT_WAIT_EXPIRED
+reasonId
+string
+Stable reason identifier suitable for localization lookup.
+Example
+value
+message
+string
+User-displayable English explanation of the outcome.
+Example
+value
+currentConfirmations
+integer (int32)
+Current source confirmation count when confirmations apply.
+Example
+1
+requiredConfirmations
+integer (int32)
+Required source confirmation count when confirmations apply.
+Example
+1
+approveCount
+integer (int32)
+Current approval count when validation applies.
+Example
+1
+rejectCount
+integer (int32)
+Current rejection count when validation applies.
+Example
+1
+validatorCount
+integer (int32)
+Validator set size when validation applies.
+Example
+1
+requiredApprovals
+integer (int32)
+Approval count required for this validation step.
+Example
+1
+requiredRejections
+integer (int32)
+Rejection count that would fail this validation step.
+Example
+1
+occurredAtUnixMs
+string (uint64)
+Step occurrence timestamp in milliseconds since epoch (UTC).
+Example
+1
+blockTimeMovingAverageMs
+string (uint64)
+Source-chain block time moving average in milliseconds when known.
+Example
+1
+activities
+object[]
+Nested activity rows for expandable UI detail. The top-level step remains
+one visible lifecycle stage while activities expose the underlying on-chain
+evidence that advanced it.
+16 fields
+sequence
+integer (int32)
+Sequence of the underlying activity within the flow.
+Example
+1
+txRef
+string
+Transaction reference associated with this activity.
+Example
+0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890
+occurredAtUnixMs
+string (uint64)
+Activity occurrence timestamp in milliseconds since epoch (UTC).
+Example
+1
+lifecycleSource
+enum
+Source that produced this activity.
+SOURCE_RELAYER
+SOURCE_POLYESTER_CHAIN
+SOURCE_EXECUTOR
+SOURCE_LEDGER
+Example
+RELAYER
+lifecycleReason
+enum
+Product-facing reason for notable activity states.
+ZIPPER_VALIDATION_REJECTED
+ZIPPER_EXECUTION_REJECTED
+ZIPPER_WITHDRAW_EXECUTION_FAILED
+ZIPPER_DEPOSIT_REFUND_FAILED
+LEDGER_MIRROR_REJECTED
+LEDGER_MIRROR_TRANSFER_EXCEEDS_CREDITS
+LEDGER_MIRROR_TRANSFER_EXISTS
+LEDGER_MIRROR_PENDING_TRANSFER_NOT_FOUND
+LEDGER_MIRROR_TRANSFER_ID_ALREADY_FAILED
+TRADING_WITHDRAW_POLICY_DENIED
+TRADING_WITHDRAW_CONTRACT_REVERTED
+TRADING_WITHDRAW_EXECUTION_FAILED
+Example
+ZIPPER_VALIDATION_REJECTED
+zipperReason
+object
+Specific reason details when a notable outcome has a catalog entry.
+3 fields
+code
+enum
+Stable code assigned to the specific outcome.
+DEPOSIT_WAIT_EXPIRED
+DEPOSIT_AMOUNT_INVALID
+DEPOSIT_AMOUNT_BELOW_MINIMUM
+DEPOSIT_AMOUNT_NOT_ABOVE_FEE
+DEPOSIT_NET_AMOUNT_BELOW_MINIMUM
+EVM_DEPOSIT_SOURCE_TX_INVALID
+EVM_DEPOSIT_SOURCE_TX_ZERO
+EVM_DEPOSIT_SOURCE_TX_NOT_FOUND
+EVM_DEPOSIT_SOURCE_TX_REVERTED
+EVM_DEPOSIT_TRANSFER_MISMATCH
+UTXO_DEPOSIT_TRANSACTION_MISMATCH
+BTC_DEPOSIT_TRANSACTION_MISMATCH
+BCH_DEPOSIT_TRANSACTION_MISMATCH
+DOGE_DEPOSIT_TRANSACTION_MISMATCH
+LTC_DEPOSIT_TRANSACTION_MISMATCH
+UTXO_DEPOSIT_SOURCE_IS_DEPOSIT_ADDRESS
+SOLANA_DEPOSIT_SIGNATURE_INVALID
+SOLANA_DEPOSIT_TRANSACTION_FAILED
+SOLANA_DEPOSIT_TRANSFER_MISMATCH
+XRP_DEPOSIT_SOURCE_HASH_INDEX_INVALID
+XRP_DEPOSIT_SOURCE_ADDRESS_INVALID
+XRP_DEPOSIT_ADDRESS_INVALID
+XRP_DEPOSIT_PAYMENT_MISMATCH
+REJECTION_UNMAPPED
+WITHDRAWAL_AMOUNT_INVALID
+WITHDRAWAL_AMOUNT_BELOW_MINIMUM
+WITHDRAWAL_ASSET_INVALID
+WITHDRAWAL_SENDER_INVALID
+WITHDRAWAL_DESTINATION_INVALID
+WITHDRAWAL_ASSET_UNAVAILABLE
+EVM_WITHDRAWAL_DESTINATION_INVALID
+BTC_WITHDRAWAL_DESTINATION_INVALID
+BCH_WITHDRAWAL_DESTINATION_INVALID
+DOGE_WITHDRAWAL_DESTINATION_INVALID
+LTC_WITHDRAWAL_DESTINATION_INVALID
+SOLANA_WITHDRAWAL_DESTINATION_INVALID
+XRP_WITHDRAWAL_CLASSIC_ADDRESS_INVALID
+XRP_WITHDRAWAL_DESTINATION_TAG_INVALID
+WITHDRAWAL_LIQUIDITY_INSUFFICIENT
+COMPLIANCE_HIGH_RISK_ADDRESS
+REQUEST_VERIFICATION_REJECTED
+REJECTED
+ERROR_UNMAPPED
+ERROR_NETWORK_UNSUPPORTED
+ERROR_REQUEST_PROCESSING_FAILED
+ERROR_REQUEST_VERIFICATION_FAILED
+ERROR_RESULT_SUBMISSION_FAILED
+ERROR_STATUS_UNKNOWN
+Example
+DEPOSIT_WAIT_EXPIRED
+reasonId
+string
+Stable reason identifier suitable for localization lookup.
+Example
+value
+message
+string
+User-displayable English explanation of the outcome.
+Example
+value
+currentConfirmations
+integer (int32)
+Current source confirmation count when confirmations apply.
+Example
+1
+requiredConfirmations
+integer (int32)
+Required source confirmation count when confirmations apply.
+Example
+1
+approveCount
+integer (int32)
+Current approval count when validation applies.
+Example
+1
+rejectCount
+integer (int32)
+Current rejection count when validation applies.
+Example
+1
+validatorCount
+integer (int32)
+Validator set size when validation applies.
+Example
+1
+kind
+enum
+Activity kind for display grouping.
+ACTIVITY_MINTED
+ACTIVITY_FUNDING
+ACTIVITY_TRADING
+Example
+MINTED
+requiredApprovals
+integer (int32)
+Approval count required for this activity.
+Example
+1
+requiredRejections
+integer (int32)
+Rejection count that would fail this activity.
+Example
+1
+amountE18
+object
+Amount posted by the underlying movement represented by this activity, in
+18-decimal unified asset units. This may be a net movement amount for
+fee-bearing fulfillment activity.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+Example
+1
+lo
+string (fixed64)
+Least significant 64 bits.
+Example
+1
+ledgerTransferId
+string
+Ledger transfer identifier for ledger-sourced settlement activities.
+Example
+9155001234568
+fromLiveState
+boolean
+True when this detail was served from live in-memory state rather than
+historical terminal state.
+Example
+false
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/chain/flows/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s662" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/chain/flows/flow_7YWHMfk9JZeLMgZauHuiSxhI' \
+--header 'Accept: */*'
+Responses
+"flow": {
+"fromLiveState": false,
+"observedSteps": [
+"activities": [
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"approveCount": 1,
+"currentConfirmations": 1,
+"kind": "MINTED",
+"ledgerTransferId": "9155001234568",
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"lifecycleSource": "RELAYER",
+"occurredAtUnixMs": "1",
+"rejectCount": 1,
+"requiredApprovals": 1,
+"requiredConfirmations": 1,
+"requiredRejections": 1,
+"sequence": 1,
+"txRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"validatorCount": 1,
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+],
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"approveCount": 1,
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"blockTimeMovingAverageMs": "1",
+"currentConfirmations": 1,
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"lifecycleSource": "RELAYER",
+"milestoneTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"occurredAtUnixMs": "1",
+"polyesterChainId": 1,
+"rejectCount": 1,
+"requestFee": {
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"recipientAddress": "0x3333333333333333333333333333333333333333",
+"status": "LOCKED"
+},
+"requiredApprovals": 1,
+"requiredConfirmations": 1,
+"requiredRejections": 1,
+"sequence": 1,
+"step": "SOURCE",
+"validatorCount": 1,
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+],
+"summary": {
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"currentProgress": {
+"approveCount": 1,
+"currentConfirmations": 1,
+"currentStepExpectedDurationMs": "1",
+"currentStepStartedAtUnixMs": "1",
+"rejectCount": 1,
+"requiredApprovals": 1,
+"requiredConfirmations": 1,
+"requiredRejections": 1,
+"validatorCount": 1
+},
+"currentStep": "SOURCE",
+"currentStepSequence": 1,
+"destinationAddress": "0x3333333333333333333333333333333333333333",
+"destinationDomain": "EXTERNAL_CHAIN",
+"estimatedCompletionUnixMs": "1",
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"flowKind": "DEPOSIT",
+"isOpen": false,
+"isTerminal": false,
+"lastActivityAtUnixMs": "1",
+"latestLifecycleSource": "RELAYER",
+"latestTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+"ownerAccountId": "7563897446546",
+"polyesterChainId": 1,
+"progressTimeline": [
+"expectedDurationMs": "1",
+"sequence": 1,
+"status": "COMPLETED",
+"step": "SOURCE"
+}
+],
+"requestFee": {
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetIds": {
+"unifiedAssetId": 100,
+"zippedAssetId": 100
+},
+"recipientAddress": "0x3333333333333333333333333333333333333333",
+"status": "LOCKED"
+},
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"sourceAddress": "0x4444444444444444444444444444444444444444",
+"sourceDomain": "EXTERNAL_CHAIN",
+"sourceTxHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+"startedAtUnixMs": "1",
+"terminalAtUnixMs": "1",
+"txOccurrenceIndex": "1",
+"updatedAtUnixMs": "1",
+"zipperReason": {
+"code": "DEPOSIT_WAIT_EXPIRED",
+"message": "value",
+"reasonId": "value"
+}
+}
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/chain/flows/flow_7YWHMfk9JZeLMgZauHuiSxhI' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "flow": {
+    "fromLiveState": false,
+    "observedSteps": [
+      {
+        "activities": [
+          {
+            "amountE18": {
+              "hi": "1",
+              "lo": "1"
+            },
+            "approveCount": 1,
+            "currentConfirmations": 1,
+            "kind": "MINTED",
+            "ledgerTransferId": "9155001234568",
+            "lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+            "lifecycleSource": "RELAYER",
+            "occurredAtUnixMs": "1",
+            "rejectCount": 1,
+            "requiredApprovals": 1,
+            "requiredConfirmations": 1,
+            "requiredRejections": 1,
+            "sequence": 1,
+            "txRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+            "validatorCount": 1,
+            "zipperReason": {
+              "code": "DEPOSIT_WAIT_EXPIRED",
+              "message": "value",
+              "reasonId": "value"
+            }
+          }
+        ],
+        "amountE18": {
+          "hi": "1",
+          "lo": "1"
+        },
+        "approveCount": 1,
+        "assetIds": {
+          "unifiedAssetId": 100,
+          "zippedAssetId": 100
+        },
+        "blockTimeMovingAverageMs": "1",
+        "currentConfirmations": 1,
+        "lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+        "lifecycleSource": "RELAYER",
+        "milestoneTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+        "occurredAtUnixMs": "1",
+        "polyesterChainId": 1,
+        "rejectCount": 1,
+        "requestFee": {
+          "amountE18": {
+            "hi": "1",
+            "lo": "1"
+          },
+          "assetIds": {
+            "unifiedAssetId": 100,
+            "zippedAssetId": 100
+          },
+          "recipientAddress": "0x3333333333333333333333333333333333333333",
+          "status": "LOCKED"
+        },
+        "requiredApprovals": 1,
+        "requiredConfirmations": 1,
+        "requiredRejections": 1,
+        "sequence": 1,
+        "step": "SOURCE",
+        "validatorCount": 1,
+        "zipperReason": {
+          "code": "DEPOSIT_WAIT_EXPIRED",
+          "message": "value",
+          "reasonId": "value"
+        }
+      }
+    ],
+    "summary": {
+      "amountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "assetIds": {
+        "unifiedAssetId": 100,
+        "zippedAssetId": 100
+      },
+      "currentProgress": {
+        "approveCount": 1,
+        "currentConfirmations": 1,
+        "currentStepExpectedDurationMs": "1",
+        "currentStepStartedAtUnixMs": "1",
+        "rejectCount": 1,
+        "requiredApprovals": 1,
+        "requiredConfirmations": 1,
+        "requiredRejections": 1,
+        "validatorCount": 1
+      },
+      "currentStep": "SOURCE",
+      "currentStepSequence": 1,
+      "destinationAddress": "0x3333333333333333333333333333333333333333",
+      "destinationDomain": "EXTERNAL_CHAIN",
+      "estimatedCompletionUnixMs": "1",
+      "flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+      "flowKind": "DEPOSIT",
+      "isOpen": false,
+      "isTerminal": false,
+      "lastActivityAtUnixMs": "1",
+      "latestLifecycleSource": "RELAYER",
+      "latestTxRef": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+      "lifecycleReason": "ZIPPER_VALIDATION_REJECTED",
+      "ownerAccountId": "7563897446546",
+      "polyesterChainId": 1,
+      "progressTimeline": [
+        {
+          "expectedDurationMs": "1",
+          "sequence": 1,
+          "status": "COMPLETED",
+          "step": "SOURCE"
+        }
+      ],
+      "requestFee": {
+        "amountE18": {
+          "hi": "1",
+          "lo": "1"
+        },
+        "assetIds": {
+          "unifiedAssetId": 100,
+          "zippedAssetId": 100
+        },
+        "recipientAddress": "0x3333333333333333333333333333333333333333",
+        "status": "LOCKED"
+      },
+      "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+      "sourceAddress": "0x4444444444444444444444444444444444444444",
+      "sourceDomain": "EXTERNAL_CHAIN",
+      "sourceTxHash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+      "startedAtUnixMs": "1",
+      "terminalAtUnixMs": "1",
+      "txOccurrenceIndex": "1",
+      "updatedAtUnixMs": "1",
+      "zipperReason": {
+        "code": "DEPOSIT_WAIT_EXPIRED",
+        "message": "value",
+        "reasonId": "value"
+      }
+    }
+  }
+}

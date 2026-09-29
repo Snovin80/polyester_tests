@@ -1,0 +1,239 @@
+Источник: https://testnet.polyester.com/docs/user-docs/zipper
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Zipper
+Overview
+Copy page
+View as Markdown
+Open in
+Zipper
+is Polyester's decentralized asset-wrapping protocol, built specifically to bring external liquidity onto
+Polyester Chain
+Zipper is designed to support native assets from virtually any blockchain architecture. The resulting assets are issued on Polyester Chain for use across the Polyester Exchange, lending markets, and the broader Polyester ecosystem.
+This lets you deposit through one supported chain and later withdraw through another compatible chain without managing wrapped tokens or an external bridge yourself.
+How deposits work
+You send a supported asset to the deposit address assigned to your account for the selected chain.
+Zipper waits for the external transfer to reach the required confirmations.
+Zipper validators independently confirm the chain, asset, amount, and receiving account through a two-thirds (2/3) quorum.
+Polyester creates the route-specific
+Zipped Asset
+, or
+zAsset
+, on Polyester Chain.
+Your account receives the matching
+Unified Asset
+, or
+uAsset
+, in Funding or Trading based on your deposit settings.
+Each
+Main Account
+and
+Subaccount
+has its own deposit addresses, so Zipper can credit the correct account automatically.
+How withdrawals work
+You choose a Unified Asset, destination chain, amount, and address.
+Zipper selects the exact supported
+route
+and reserves the amount and route fee.
+Validators approve the request, and the Cubist-protected
+vault
+prepares the external transaction.
+The route-specific Zipped Asset is locked before the external asset leaves the vault.
+The custody system releases the external asset and Zipper follows the destination transaction to
+finality
+You can withdraw an available balance from Funding or Trading through the supported
+withdrawal flow
+Zipped Assets and Unified Assets
+A
+Zipped Asset
+identifies one exact source chain and asset on Polyester Chain. Bitcoin becomes Zipped Bitcoin, or zBTC. USDT deposited from Ethereum, Solana, and Base creates three separate Polyester Chain ERC-20 Zipped Assets, each backed one-to-one by the exact USDT held on its originating chain.
+A
+Unified Asset
+brings compatible Zipped Assets together as one account-facing balance. This is the asset you see in Funding, transfer to Trading, and use across Polyester.
+Only routes that Polyester explicitly connects share a Unified Asset. Matching ticker symbols alone do not make two assets equivalent.
+Routes, fees, and availability
+Every route defines its chain, asset contract, minimum amount, confirmation requirement, custody path, and fee. The configured route fee is an absolute amount in the asset being deposited or withdrawn, not a percentage.
+The same base route fee applies to deposits and withdrawals on that route. Fees are calculated to cover the source chain's gas costs while keeping the amount charged to you as low as possible. They can change as chain costs and asset values change.
+Availability can differ by chain because every supported asset and source chain has its own external supply.
+Explore Zipper
+Asset Lifecycle
+explains the complete deposit and withdrawal journey.
+Vaults
+explains deposit addresses, external custody, source-chain supply, and withdrawal liquidity.
+Validators
+explains independent request checks, quorum approval, and progressive decentralization.
+Security
+explains validator quorum, security screening for OFAC sanctions and transaction risk, Cubist TEE vaults, finality, and duplicate prevention.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+The complete route defines the asset
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Zipper uses the selected chain and exact asset contract, not only the ticker symbol. Native, wrapped, and externally bridged versions remain separate unless Polyester explicitly supports and maps them.
+FAQ
+What is a Zipped Asset?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A Zipped Asset, or zAsset, represents an asset from a specific source blockchain on Polyester Chain. It is backed one-to-one by the original asset held on that source chain. For example, USDT deposited from Ethereum and USDT deposited from Solana create separate Zipped Assets, each tied to its original network.
+Learn about Zipper.
+Related Topics
+Asset Lifecycle
+Follow your asset from an external deposit to a Polyester balance and back to an external chain.
+Vaults
+See how Zipper deposit addresses, custody vaults, and route inventory support deposits and withdrawals.
+Validators
+See how Zipper validators independently review asset movements and how participation expands as the protocol matures.
+Security
+See how Zipper protects deposits, withdrawals, custody, and Zipped Asset supply.
+Previous
+Escape Hatch
+Next
+Asset Lifecycle
+On this page
+How deposits work
+How withdrawals work
+Zipped Assets and Unified Assets
+Routes, fees, and availability
+Explore Zipper
+FAQ
+Related Topics
+Share this page
+Overview
+See how Zipper moves supported assets between external chains and your Polyester account.
+Share
+Copy Link

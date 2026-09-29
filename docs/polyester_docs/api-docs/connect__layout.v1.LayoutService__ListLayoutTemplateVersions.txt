@@ -1,0 +1,185 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/layout.v1.LayoutService/ListLayoutTemplateVersions
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+layout.v1.LayoutService
+ListLayoutTemplateVersions
+List available versions for a template (metadata only).
+Copy URL
+Method
+POST
+Path
+layout.v1.LayoutService/ListLayoutTemplateVersions
+Service
+layout.v1.LayoutService
+Visibility
+Public endpoint
+POST
+layout.v1.LayoutService/ListLayoutTemplateVersions
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/layout.v1.LayoutService/ListLayoutTemplateVersions' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"limit": 100,
+"ownerId": "1",
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"templateId": "1"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"versions": [
+"changelog": "Initial public release.",
+"createdAtMs": "1",
+"version": 1
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+layout.v1.ListLayoutTemplateVersionsRequest
+Response
+layout.v1.ListLayoutTemplateVersionsResponse
+Request body
+Form
+JSON
+Example
+ownerId
+string (fixed64)
+Viewer that owns the template.
+templateId
+string (fixed64)
+Template identifier.
+limit
+integer (int32)
+≤ 500
+Maximum number of versions to return. Defaults to 100 when omitted; maximum
+is 500.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to owner, template, and newest-version sort order.
+Response
+Form
+JSON
+versions
+object[]
+Template versions, returned newest version first.
+3 fields
+version
+integer (int32)
+Immutable template version number.
+changelog
+string
+Optional release notes for this version.
+createdAtMs
+string (fixed64)
+Version creation time in milliseconds since epoch (UTC).
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+layout.v1.LayoutService/ListLayoutTemplateVersions
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s375" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/layout.v1.LayoutService/ListLayoutTemplateVersions' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"limit": 100,
+"ownerId": "1",
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"templateId": "1"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"versions": [
+"changelog": "Initial public release.",
+"createdAtMs": "1",
+"version": 1
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/layout.v1.LayoutService/ListLayoutTemplateVersions' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "limit": 100,
+  "ownerId": "1",
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "templateId": "1"
+}'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "versions": [
+    {
+      "changelog": "Initial public release.",
+      "createdAtMs": "1",
+      "version": 1
+    }
+  ]
+}

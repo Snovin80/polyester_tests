@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/user-docs/referrals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Invite friends to Polyester, earn a share of their trading fees, and track every referral from one dashboard.
+Polyester Referrals rewards you for bringing friends to trade on Polyester. Your friend receives **4% off eligible trading fees**, while you earn **15% of the trading fees they pay**. They save, and you earn.
+The **[Referrals page](https://testnet.polyester.com/account/referrals)** gives you everything you need to create custom links, understand where new traders come from, follow every reward, and automatically convert earnings into the asset you want to hold.
+![Referrals page with invite copy, lifetime stats, and Reward Ledger](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3cb21a13866250595b18865c1abd6c06ee1cfa0c920c0a2cecea6095cb342349/source.webp)
+## How referrals work
+Create a link from the Referrals page and share it wherever you connect with traders. Polyester handles the attribution, applies your friend's discount, and records your share whenever they pay an eligible trading fee.
+1. Create a referral link
+Use **Create new referral link**, give it a recognizable name based on where you plan to share it, and copy the URL. ![Referral Link selector with named YouTube, Twitter, Instagram, Discord, and Substack links](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/158533c400a824319e6f2c498deff6b054757974cb2566ec11430ec8df5e6f56/source.webp) ![Create Referral Link dialog with a private label and optional custom code](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/5c439480da1e6cc647cdfb71c94eb9f8ac1a6755c9f2c1eb51acaa337be20975/source.webp)
+2. Invite a friend
+Share the link directly or publish it for your audience. When someone creates a Polyester account through your referral link, Polyester automatically attributes that account to you. Someone with an existing Polyester account can enter your referral code to be attributed to you. If their account already has a different referral code, they can replace it with yours.
+3. Your friend saves on fees
+Your friend receives 4% off every eligible positive spot trading fee.
+4. You earn a fee share
+You receive 15% of the discounted fee your friend pays. Each reward appears in your Reward Ledger, ready to track, convert, or claim.
+## Create multiple referral links
+Create and name separate links for social posts, communities, campaigns, or individual invitations. Every link uses your referral ID, while its name makes the source easy to recognize. Switch between links from the **Referral Link** selector.
+At VIP 1, you can set a custom code for a link. You can only set that code once, and it cannot be changed afterward.
+![Reach VIP 1 to unlock a custom code for a referral link](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/839c04a5c496299a8e4bb0011a5d15798ce15a23eab7d980f343ad86144a36e9/source.webp)
+When a custom code is unlocked, the selected link shows that you can set one.
+![Custom referral code unlocked for the selected link](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3f551b5bd7a6cd9d5bf1885ae4b727dff170a90990da9e57b4666f2652d7da13/source.webp)
+Referral Analytics attributes users, trading volume, and rewards to the link each trader used. This lets you compare audiences without creating separate referral accounts.
+## Granular reward tracking
+The Reward Ledger records the link, eligible fee event, reward asset, amount, and status behind each earning. Rewards first appear in the asset used to pay the trading fee, giving you a complete history from the original trade to the amount you receive.
+See [Referral Rewards](https://testnet.polyester.com/docs/user-docs/referrals/fees) for the complete discount and reward calculation.
+## Dynamic reward payouts
+Choose the asset you want to receive and how often rewards should be converted. Polyester can keep rewards in their original assets or convert available rewards into one selected payout asset at the interval you set.
+For example, you can automatically convert USDT rewards into SOL instead of managing each reward asset separately. Each payout conversion remains visible in the Reward Ledger.

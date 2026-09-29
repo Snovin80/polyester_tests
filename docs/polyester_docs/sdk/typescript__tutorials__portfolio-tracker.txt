@@ -1,0 +1,580 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/tutorials/portfolio-tracker
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Portfolio tracker · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Tutorials
+svg]:size-3.5">
+/
+Portfolio tracker
+Portfolio tracker
+Copy page
+View as Markdown
+Open in
+This tutorial builds a read-only portfolio view for a signed-in Polyester user: current balances,
+equity over time, and live balance updates. It also shows how account scoping works and how a
+server hands its work off to the browser so the client starts warm.
+Plan on about fifteen minutes. It assumes you already have an authenticated client. If you do not,
+start with
+API Keys
+1
+Authenticate
+Any authenticated client works. A bot or backend uses an API key; a web app uses a wallet-backed
+browser session. This example uses an API key so it can run as a script.
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+evmHexToBytes
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+auth: {
+kind:
+"api-key-ed25519"
+,
+getKeyId
+=>
+process
+env
+POLYESTER_API_KEY_ID
+??
+null
+,
+getSecretKey
+=>
+evmHexToBytes
+(
+process
+env
+POLYESTER_API_SECRET_HEX
+??
+"0x"
+),
+},
+});
+const
+me
+=
+await
+client
+auth
+me
+();
+console
+log
+(
+"tracking portfolio for"
+,
+me
+username
+);
+A key with no policy can call
+auth.me
+and then fail on
+balances.list
+with
+PermissionError: API key policy is required for ledger reads.
+Attach a policy that includes
+read-balances
+(see
+API Keys
+).
+2
+Read current balances
+balances.list
+returns one row per asset, with trading, funding, reserved, and available amounts
+as decimal strings.
+const
+balances
+=
+await
+client
+balances
+list
+();
+for
+(
+const
+b
+of
+balances
+) {
+console
+log
+(
+b
+);
+// per-asset balances as exact decimal strings
+}
+Because balances are decimal strings, feed them straight into a decimal library for totals rather
+than parsing to
+number
+3
+Scope to a subaccount
+Almost every authenticated read accepts an optional
+account
+field. Omit it to use the active
+account, or target a specific one.
+await
+client
+balances
+list
+();
+// active account (main, unless a resolver says otherwise)
+await
+client
+balances
+list
+({ account:
+"main"
+});
+// force the main account
+await
+client
+balances
+list
+({ account: {
+subaccountId
+} });
+// a specific subaccount
+List the user's
+subaccounts
+to build a switcher:
+import
+PermissionError
+}
+from
+"@polyester/sdk"
+;
+const
+subaccounts
+}
+=
+await
+client
+subaccounts
+list
+();
+for
+(
+const
+sub
+of
+subaccounts
+) {
+try
+const
+subBalances
+=
+await
+client
+balances
+list
+({ account: { subaccountId:
+sub
+id
+} });
+console
+log
+(
+sub
+label
+,
+subBalances
+length
+,
+"assets"
+);
+}
+catch
+(
+err
+) {
+if
+(
+err
+instanceof
+PermissionError
+) {
+console
+log
+(
+sub
+label
+,
+"skipped (this key cannot read subaccounts)"
+);
+continue
+;
+}
+throw
+err
+;
+}
+}
+A root-scoped API key can list subaccounts but cannot read their balances. Use a browser session,
+or a key created on that subaccount.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Authorization stays server-side
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The
+account
+field expresses intent. The backend independently verifies that the
+authenticated caller may access that account, so a read never leaks another user's data.
+4
+Chart equity over time
+Equity and balance history come back columnar (parallel arrays), which is what charting libraries
+want. Both take a fixed range rather than custom timestamps.
+const
+equity
+=
+await
+client
+balances
+getEquityHistory
+({
+range:
+"7d"
+,
+groupBy:
+"asset"
+,
+});
+const
+balanceHistory
+=
+await
+client
+balances
+getBalanceHistory
+({
+range:
+"7d"
+,
+accountCodes: [
+"trading"
+,
+"funding"
+],
+});
+Use one of
+"1d"
+,
+"7d"
+,
+"30d"
+,
+"90d"
+,
+"180d"
+, or
+"365d"
+the selected
+startTsSec
+and
+endTsSec
+5
+Stream live balance updates
+Subscribe to keep the view current. Every balance change arrives as a parsed row.
+const
+unsubscribe
+=
+client
+balances
+subscribe
+({
+accountId:
+me
+accountId
+,
+onEvent
+balance
+)
+=>
+updateRow
+(
+balance
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+"balance stream error"
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+6
+Hydrate the browser from the server (web apps)
+In a web app you can render the portfolio without a flash of loading state by handing two things
+from the server to the browser: the auth display state and the catalog snapshot.
+// server: build a per-request client from cookies, then bake the catalog into the page
+import
+createPolyesterServerClientFromRequest
+}
+from
+"@polyester/sdk"
+;
+const
+serverClient
+=
+createPolyesterServerClientFromRequest
+({
+environment
+,
+request
+});
+await
+serverClient
+catalog
+ensureReady
+();
+const
+snapshot
+=
+serverClient
+catalog
+snapshot
+();
+// browser: start the client warm, then restore the session
+const
+client
+=
+new
+PolyesterBrowserClient
+({
+environment
+, catalogSnapshot:
+snapshot
+});
+client
+auth
+hydrateAuthState
+({
+mainAccountId
+,
+username
+,
+activeAccountId
+});
+await
+client
+auth
+restoreSession
+();
+See
+Server-side usage
+for the full handoff.
+Where to go next
+Accounts & balances guide
+for scoping,
+subaccounts, and policies.
+Balances reference
+for every field and result shape.
+Transfers
+to show where each balance change came from.
+Related Topics
+Live market ticker
+Stream tickers, candles, and a live order book with no authentication, using the shared realtime contract.
+Build a trading bot
+A complete testnet market-making bot, from API key to a live quoting loop with idempotent orders, reconnects, and graceful shutdown.
+Previous
+Build a trading bot
+Next
+Accounts
+On this page
+Where to go next
+Related Topics
+Share this page
+Portfolio tracker
+Read balances and equity history, scope requests to subaccounts, and stream live balance updates for an authenticated user.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT, evmHexToBytes } from "@polyester/sdk";
+
+const client = new PolyesterClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	auth: {
+		kind: "api-key-ed25519",
+		getKeyId: () => process.env.POLYESTER_API_KEY_ID ?? null,
+		getSecretKey: () => evmHexToBytes(process.env.POLYESTER_API_SECRET_HEX ?? "0x"),
+	},
+});
+
+const me = await client.auth.me();
+console.log("tracking portfolio for", me.username);
+
+---
+
+const balances = await client.balances.list();
+for (const b of balances) {
+	console.log(b); // per-asset balances as exact decimal strings
+}
+
+---
+
+await client.balances.list(); // active account (main, unless a resolver says otherwise)
+await client.balances.list({ account: "main" }); // force the main account
+await client.balances.list({ account: { subaccountId } }); // a specific subaccount
+
+---
+
+import { PermissionError } from "@polyester/sdk";
+
+const { subaccounts } = await client.subaccounts.list();
+for (const sub of subaccounts) {
+	try {
+		const subBalances = await client.balances.list({ account: { subaccountId: sub.id } });
+		console.log(sub.label, subBalances.length, "assets");
+	} catch (err) {
+		if (err instanceof PermissionError) {
+			console.log(sub.label, "skipped (this key cannot read subaccounts)");
+			continue;
+		}
+		throw err;
+	}
+}
+
+---
+
+const equity = await client.balances.getEquityHistory({
+	range: "7d",
+	groupBy: "asset",
+});
+
+const balanceHistory = await client.balances.getBalanceHistory({
+	range: "7d",
+	accountCodes: ["trading", "funding"],
+});
+
+---
+
+const unsubscribe = client.balances.subscribe({
+	accountId: me.accountId,
+	onEvent: (balance) => updateRow(balance),
+	onError: (ctx) => console.error("balance stream error", ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+// server: build a per-request client from cookies, then bake the catalog into the page
+import { createPolyesterServerClientFromRequest } from "@polyester/sdk";
+
+const serverClient = createPolyesterServerClientFromRequest({ environment, request });
+await serverClient.catalog.ensureReady();
+const snapshot = serverClient.catalog.snapshot();
+
+// browser: start the client warm, then restore the session
+const client = new PolyesterBrowserClient({ environment, catalogSnapshot: snapshot });
+client.auth.hydrateAuthState({ mainAccountId, username, activeAccountId });
+await client.auth.restoreSession();

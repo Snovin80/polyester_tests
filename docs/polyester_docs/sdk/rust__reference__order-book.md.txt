@@ -1,0 +1,56 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/order-book.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+`client.orderbook` reads spot depth snapshots and maintains a stateful live book. It uses the public transport, so no authentication is required. Realtime support is always compiled; the `realtime` Cargo feature is only an empty compatibility flag.
+Levels are price/qty pairs, best-first (bids descending, asks ascending). Each snapshot carries `book_seq`, the backend sequence number used to detect gaps.
+## Methods
+| Method                | Summary                                                 |
+| --------------------- | ------------------------------------------------------- |
+| `get`                 | Fetch a one-shot depth snapshot.                        |
+| `create_subscription` | Managed live book (snapshot + sequence-checked deltas). |
+| `subscribe_deltas`    | Raw delta stream (no local merge).                      |
+There is no separate `subscribe` convenience alias, use `create_subscription`.
+### Get
+Fetches a depth snapshot and returns `OrderbookData`. Pass `Some(depth)` for an explicit level (`1, 5, 10, 20, 50, 100, 200, 500, 1000`). `None` / `0` leaves depth unspecified (reported as 50).
+```rust
+let book = client.orderbook.get("BTC-USDT", Some(20)).await?;
+println!("{:?} {:?} {}", book.bids.first(), book.asks.first(), book.book_seq);
+```
+### Create subscription
+Builds a managed live order book: REST snapshot, then Centrifugo deltas with sequence checking. Gaps trigger a REST refresh. Returns `orderbook::Subscription`. Consume with `updates().recv().await` (not `TypedSubscription::recv`).
+```rust
+use polyester::services::CreateSubscriptionOptions;
+let mut sub = client
+symbol: "BTC-USDT".into(),
+depth: Some(50),
+bucket: Some("1.0".into()),
+})
+while let Some(book) = sub.updates().recv().await {
+println!("{} {}", book.book_seq, book.bids.len());
+break;
+}
+sub.set_bucket("5.0")?; // validates and re-aggregates without reconnecting
+sub.close();
+```
+`symbol_id` is resolved from catalogs when omitted; call `wait_for_catalogs().await?` first if you rely on symbol strings. One-shot snapshots support depth `1000`; managed realtime channels are capped at depth `500`. Buckets must be positive price increments. Bids round down and asks round up, so aggregation never displays an ask below its executable price or narrows the visible spread artificially. Malformed snapshots or checked-arithmetic overflow return `Error::Validation` instead of panicking, wrapping, or producing levels with missing fields. A malformed delta is rejected atomically and triggers a snapshot refresh without advancing the local sequence.
+> **Prefer the managed subscription**
+>
+> `create_subscription` handles snapshot fetch, sequence gaps, and reconnect refetch.
+### Subscribe deltas
+Returns `TypedSubscription
+`. Prefer `recv_result().await` so terminal errors are not separated from stream closure.
+```rust
+let mut deltas = client.orderbook.subscribe_deltas(1, Some(50)).await?;
+while let Some(delta) = deltas.recv_result().await? {
+println!("{:?}", delta);
+break;
+}
+```
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/rust/guides/market-data)
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)
+- [Market overview](https://testnet.polyester.com/docs/sdk/rust/reference/market-overview)
+- [Public trades](https://testnet.polyester.com/docs/sdk/rust/reference/public-trades)

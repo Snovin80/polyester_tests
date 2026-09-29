@@ -1,0 +1,55 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/client-configuration.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Build a client with `Client::new(Config { ... })`. Pass `POLYESTER_TESTNET_ENVIRONMENT` on `environment` to target testnet; other defaults suit API-key trading applications. Unary ConnectRPC responses are limited to 4 MiB after decompression.
+## Recommended constructor
+```rust
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+api_key_id: Some("ak_...".into()),
+api_private_key: Some("...".into()), // 64-char hex from key creation
+default_account_id: Some("...".into()), // Profile → Account ID
+// api_url / ws_url come from environment (api-testnet.polyester.com)
+// hydrate_catalogs: true,
+// timeout: Duration::from_secs(10),
+})?;
+client.wait_for_catalogs().await?;
+```
+## Config fields
+| Field                            | Default                                                  | Notes                                  |
+| -------------------------------- | -------------------------------------------------------- | -------------------------------------- |
+| `environment`                    | pass `Some(POLYESTER_TESTNET_ENVIRONMENT.clone())`       | API, WebSocket, RPC, and contract pins |
+| `api_key_id` / `api_private_key` | `None`                                                   | Required for private RPCs / private WS |
+| `api_url`                        | from `environment` (`https://api-testnet.polyester.com`) | ConnectRPC base override               |
+| `ws_url`                         | from `environment` (`wss://api-testnet.polyester.com`)   | Centrifugo WebSocket override          |
+| `default_account_id`             | `None`                                                   | Private channel scoping                |
+| `default_sub_account_id`         | `None`                                                   | Default trading scope                  |
+| `timeout`                        | `10s`                                                    | Connect and realtime-token deadline    |
+| `wire_format`                    | binary                                                   | Transport wire format                  |
+| `hydrate_catalogs`               | `true`                                                   | Fail-closed spot + Zipper hydrate      |
+`default_sub_account_id` is the client configuration field and must reuse the canonical public base58 string returned by subaccount APIs. Canonical base58 can be all digits, such as `"5"`, so never reinterpret the string as decimal. Use a numeric `subaccount_id` only in request or proto fields that are actually typed as an integer and only when you already have that typed value. The root `default_account_id` is a different string identifier used for private realtime channels.
+`Config.api_key_id` is the `ak_...` credential handle used for request signing. It is not the base58 public ID reported by `auth.me().api_key_id`; do not compare or substitute those values.
+There is no `client.candles` alias, use `client.market_data`. Withdraw lives on `client.withdraw`.
+## From environment
+`Client::from_env()` loads:
+- `POLYESTER_API_KEY_ID`
+- `POLYESTER_API_PRIVATE_KEY`
+- `POLYESTER_ACCOUNT_ID`
+- **`POLYESTER_ENV`** (set to `testnet`)
+- **`POLYESTER_API_URL`** (optional override)
+- **`POLYESTER_WS_URL`** (optional override)
+Unlike Python/Go `from_env` / `FromEnv`, Rust **does** pick up API and WebSocket URL env vars. Prefer explicit `Config` in production.
+> **Catalog readiness**
+>
+> Call `client.wait_for_catalogs().await?` before decimal order writes that need symbol scales. Subscribe helpers that resolve symbols also need hydration. If the client was constructed outside a Tokio runtime, this call starts hydration on the current runtime. The wait fails if either required catalog cannot be hydrated or validated.
+> **Retries are application-controlled**
+>
+> The SDK does not automatically retry unary calls. Retry only transport and rate-limit failures with backoff and stable idempotency keys. Reconcile mutation outcomes before retrying.
+## Related
+- [Authentication](https://testnet.polyester.com/docs/sdk/rust/guides/authentication)
+- [Catalog](https://testnet.polyester.com/docs/sdk/rust/reference/catalog)
+- [Realtime](https://testnet.polyester.com/docs/sdk/rust/reference/realtime)

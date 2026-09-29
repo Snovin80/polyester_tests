@@ -1,0 +1,345 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds/funding-account
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Funding Account · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Funds
+svg]:size-3.5">
+/
+Funding Account
+Funding Account
+Copy page
+View as Markdown
+Open in
+The
+Funding Account
+is where you manage Assets before they enter Trading and after they leave it. It receives deposits, holds available balances, and supports transfers and withdrawals on
+Polyester Chain
+Each
+Main Account
+and
+Subaccount
+has its own Funding Account. Switching the active account changes the balances and activity you see, so check the selected account first if an expected Asset appears to be missing.
+What the Funding Account does
+Funding keeps the movement of Assets simple while preserving the on-chain records underneath each balance.
+Holds balances on-chain.
+Funding Account balances and their activity are recorded on Polyester Chain.
+Combines
+Zipped Assets
+into
+Unified Assets
+Compatible Zipped Assets contribute to one Unified Asset balance, even when they entered through different source chains.
+Keeps accounts separate.
+Every Main Account and Subaccount has its own balances, history, and security controls.
+Keeps Assets outside Lending risk.
+Assets in Funding do not count as collateral and are not exposed to liquidation. After you transfer an eligible Asset to Trading and use it as collateral, it can support borrowing and may be liquidated if the account no longer meets its margin requirements.
+How Assets reach Funding
+When you make a deposit, Polyester handles the cross-chain steps as part of one connected flow:
+1
+Deposit an Asset
+Send the Asset using the address, network, and memo or destination tag shown by Polyester.
+Deposit Funds
+Learn more about depositing funds.
+2
+Zipper verifies the deposit
+After the required source-chain confirmations,
+Zipper
+creates the matching source-chain-specific Zipped Asset on Polyester Chain.
+3
+Zipper sends the Asset to Funding
+Zipper automatically sends the Zipped Asset to Funding, where it remains as on-chain backing and Polyester credits the matching Unified Asset balance.
+4
+Choose what happens next
+Keep the balance in Funding, transfer it, move it to Trading, or withdraw it through an available destination
+route
+Polyester automatically handles zipping and unzipping as part of deposits and withdrawals. You choose the Asset, chain, amount, and destination when required; there is no separate wrapping step to manage.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+You never need to hold or manage a Zipped Asset in MetaMask, Phantom, or another external wallet. Zipper sends it directly to the Funding Account controlled by your smart wallet, and Polyester credits the matching Unified Asset balance.
+Example: Combine Ethereum and Solana USDT in Funding
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Suppose your account receives 100
+USDT
+through
+Ethereum
+and 50
+USDT
+through
+Solana
+Zipper creates 100 Ethereum zUSDT and 50 Solana zUSDT. Funding will display them as one 150
+USDT
+Unified Asset balance because Polyester explicitly maps both routes to the same Asset.
+The two Zipped Asset supplies remain separate. Each keeps its own source-chain backing and withdrawal route even though the Funding Account presents one balance for everyday use.
+By contrast, Coinbase BTC (cbBTC) on
+Base
+and native
+BTC
+from the
+Bitcoin Network
+remain separate Assets and appear as separate balances. Polyester does not merge Assets simply because one is designed to track the value of another.
+Unification is based on Polyester's configured route mapping, not on a matching ticker. A native, wrapped, or externally bridged token only joins a Unified Asset when Polyester explicitly recognizes that route as an equivalent Asset.
+Read your balance
+The Assets table shows the Unified Asset balances held in the selected Funding Account. Use Balance to see how much of each Unified Asset is available, and use Equity and Allocation to understand its estimated value within the account.
+Field
+What it tells you
+Total Equity
+The estimated current value of all Funding balances in the selected account, calculated from their
+Index Prices
+Balance History
+How that estimated value changed during the selected period. Index Price changes can move the chart without moving an Asset.
+Balance
+The quantity of the Unified Asset held in Funding.
+Equity
+The estimated current value of that Asset balance, calculated from its Index Price.
+Allocation
+The Asset's share of the total displayed Funding equity.
+Actions
+The deposit, withdrawal, or transfer actions currently available for that Asset.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+Balance and Equity answer different questions. Balance tells you how much of an Asset the account holds. Equity estimates what that balance is worth using the Asset's Index Price. The Index Price normalizes prices from leading centralized and decentralized exchanges, then weights them by trading volume to produce one reference price. Equity can therefore change with the broader market even when the Asset quantity stays the same.
+Move Assets from Funding
+An available Funding balance can move in four ways:
+Deposit an Asset
+Bring a supported Asset into the selected account from an external chain.
+Transfer to another Polyester account
+Send an available balance to another eligible account without creating a new Zipped Asset or changing its external backing.
+Transfer to Trading
+Make a balance available for spot Orders and for use as eligible collateral when borrowing.
+Withdraw an Asset
+Send a balance to an available Asset route and destination chain.
+Deposits and withdrawals cross between Polyester and an external chain through Zipper. Transfers between Funding, Trading, and other Polyester accounts stay inside Polyester.
+Transfer between Funding and Trading
+Use
+Transfer
+to make an available Funding balance usable for trading, borrowing, or margin. Reverse the direction when an unused Trading balance should return to Funding.
+1
+Open Transfer
+Keep
+Between My Accounts
+selected and review any values already shown in the form.
+2
+Choose the source and destination
+Select Funding as the source and Unified Trading as the destination to move an Asset into Trading. Reverse them to return an available Trading balance to Funding. Use the same Main Account or Subaccount on both sides.
+3
+Choose the Asset and amount
+Select an Asset held by the source account and enter an amount within its Available Balance.
+4
+Review and transfer
+Confirm the account, direction, Asset, and amount, then select
+Transfer
+once. Wait for Transfer History and both balances to show the result before using the balance or trying again.
+Learn the difference between funding and trading.
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_table]:my-4 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 svelte-wjm2xv" data-component-part="details-disclosure-content">
+Funding and Trading can show the same Unified Asset, but they serve different purposes. Funding is the on-chain balance area for deposits, transfers, and withdrawals. Trading is the private, low-latency balance area used by Orders, reservations, Fills, fees, and eligible collateral for borrowing.
+Compare
+Funding Account
+Trading Account
+Purpose
+Deposits, withdrawals, and transfers
+Trading, borrowing, and margin
+Recorded on
+Polyester Chain
+PolyEngine
+Ledger
+Publicly seen
+Yes
+No
+Lending
+Not supported
+Supported for eligible Assets
+Moving an Asset into Trading does not bridge it, change its owner, create another Zipped Asset, or move the underlying Zipped Asset out of Funding. It changes which part of the same Polyester account can use the corresponding Unified Asset balance.
+Funding-to-Trading transfers settle as one Polyester Chain transaction and normally appear in Trading almost immediately. Once the transfer completes, the updated Trading balance is ready to use.
+Funding and Lending
+Assets held in Funding are outside the Lending risk engine. They do not count as collateral, increase borrowing power, affect account health, or become available for liquidation.
+To use an eligible Asset as Lending collateral, transfer it to the
+Unified Trading Account
+Secure Your Funding Account
+Security controls apply to the active Main Account or Subaccount.
+MFA
+can confirm protected actions, while on-chain whitelists can limit where Assets are allowed to move.
+The
+external withdrawal whitelist
+restricts withdrawals to approved external addresses when enabled.
+The
+internal transfer whitelist
+restricts transfers to approved Polyester accounts when enabled.
+MFA
+confirms the person approving a protected action. It does not replace either whitelist.
+Use
+Address Book & Whitelists
+to manage approved destinations. Read
+Secure Your Account
+for an overview of MFA, the Guard Signer, and your owner credential.
+FAQ
+Why are my Funding Account and Unified Trading Account separate?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Your Funding Account holds on-chain balances for deposits, withdrawals, and transfers. Your Unified Trading Account manages the balances used for orders, fills, and borrowing. Assets kept in Funding are not used for lending or as collateral and are not exposed to liquidation. You stay in control of how much you move between Trading and Funding. Internal transfers happen in seconds.
+Related Topics
+Unified Assets
+Learn how Polyester turns chain-specific deposits into one account balance you can trade, transfer, or withdraw.
+Supported Assets
+Deposit and withdraw Unified Assets on supported networks. Expand a row for fees, minimums, and confirmation time.
+Trading Account
+Learn how the Trading Account manages available and reserved balances for trading, borrowing, transfers, and withdrawals.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Withdraw Funds
+Withdraw an available Polyester balance to an external wallet on a supported chain.
+Internal Transfers
+Move an available balance between Polyester accounts or balance areas.
+Previous
+Supported Assets
+Next
+Trading Account
+On this page
+What the Funding Account does
+How Assets reach Funding
+Read your balance
+Move Assets from Funding
+Transfer between Funding and Trading
+Funding and Lending
+Secure Your Funding Account
+FAQ
+Related Topics
+Share this page
+Funding Account
+Learn how the Funding Account keeps on-chain balances ready to deposit, transfer, trade, or withdraw.
+Share
+Copy Link

@@ -1,0 +1,34 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/lifecycle.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+`client.Lifecycle` correlates multi-step deposit, withdrawal, and transfer flows for operations dashboards.
+| Method                          | Purpose                       |
+| ------------------------------- | ----------------------------- |
+| `ListFlows`                     | Paginated flow summaries      |
+| `GetFlow`                       | One flow by intent or flow ID |
+| `GetFlowByTx` / `ListFlowsByTx` | Transaction lookup            |
+| `SubscribeOpenFlows`            | Open-flow summaries           |
+| `SubscribeFlowDetail`           | One flow's updates            |
+```go
+scope := "open_only"
+flows, err := client.Lifecycle.ListFlows(
+ctx, 50, nil, &scope, nil, nil, false,
+)
+if err != nil { log.Fatal(err) }
+for _, flow := range flows.Flows {
+fmt.Println(flow.IntentID, flow.FlowKind, flow.LatestStep, flow.IsTerminal, flow.LifecycleReason)
+if flow.ZipperReason != nil {
+fmt.Println(flow.ZipperReason.ReasonID, flow.ZipperReason.Message, flow.ZipperReason.Code)
+}
+}
+```
+Each flow summary exposes:
+- `LifecycleReason`: product-facing catalog label (`unspecified`, `zipper_validation_rejected`, ledger-mirror variants, or `unknown_reason_
+` when the wire code is ahead of the SDK catalog).
+- `ZipperReason`: optional Zipper detail (`Code`, `ReasonID`, `Message`) when Zipper supplied a precise rejection. Prefer `ReasonID` / `Message` for user-facing copy instead of raw numeric codes.
+`scope` is `"all"`, `"open_only"`, or `"terminal_only"`. Page tokens are opaque. Transaction lookup defaults to `"any"` when supplied to the convenience methods. Singular lookups return `*errors.TransportError` if a successful response omits the requested flow or its required summary; they never return an empty placeholder flow.
+`SubscribeOpenFlows(ctx, accountID)` is private when an Account ID is supplied; passing `nil` uses the public open-flows channel. `SubscribeFlowDetail` is public-by-flow-ID.
+Lifecycle progress is not the same as spendable balance. Confirm completed funding/trading balances before enabling dependent orders.

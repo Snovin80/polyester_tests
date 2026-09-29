@@ -1,0 +1,262 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/trading/daily-claim/claim
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+ClaimsService
+Claim Daily Reward
+Claim today's reward once for the authenticated root account. Requires a session JWT; API keys are not accepted. All reward assets are transferred together, and retries return the same claim.
+Copy URL
+Method
+POST
+Path
+/v1/trading/daily-claim/claim
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+POST
+/v1/trading/daily-claim/claim
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/trading/daily-claim/claim' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"campaign": {
+"campaignId": "value",
+"claimPolicy": "UTC_DAILY",
+"description": "Example configuration for the API playground.",
+"name": "value"
+},
+"claimId": "value",
+"claimedAt": "2025-01-01T00:00:00Z",
+"resetAt": "2025-01-01T00:00:00Z",
+"rewards": [
+"amount": "18.446744073709551617",
+"assetCode": "USDC",
+"assetId": 100
+}
+],
+"state": "AVAILABLE",
+"transfers": [
+"assetId": 100,
+"transferId": "9155001234569"
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+campaign
+object
+Campaign associated with this claim, using the name and description that applied when the claim was created.
+4 fields
+campaignId
+string
+Stable campaign identifier.
+Example
+value
+claimPolicy
+enum
+How frequently each root account may claim from this campaign.
+UTC_DAILY
+Example
+UTC_DAILY
+description
+string
+Campaign description. Existing claims retain the description that applied when they were created.
+Example
+Example configuration for the API playground.
+name
+string
+Campaign name. Existing claims retain the name that applied when they were created.
+Example
+value
+claimId
+string
+Claim identifier.
+Example
+value
+claimedAt
+string (date-time)
+Time when the claim completed. Omitted while the claim is processing.
+Example
+2025-01-01T00:00:00Z
+resetAt
+string (date-time)
+Start of the next UTC calendar day.
+Example
+2025-01-01T00:00:00Z
+rewards
+object[]
+Assets and amounts granted by this claim. They do not change after the claim is created.
+3 fields
+amount
+string
+/^[0-9]…9]+)?$/
+Claim amount in 18-decimal unified asset units.
+Example
+18.446744073709551617
+assetCode
+string
+Asset code.
+Example
+USDC
+assetId
+integer (int32)
+Asset identifier.
+Example
+100
+state
+enum
+Current claim state.
+AVAILABLE
+PROCESSING
+CLAIMED
+UNAVAILABLE
+Example
+AVAILABLE
+transfers
+object[]
+Transfers created for each reward asset. Empty while the claim is processing.
+2 fields
+assetId
+integer (int32)
+Asset identifier.
+Example
+100
+transferId
+string
+Transfer identifier.
+Example
+9155001234569
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/trading/daily-claim/claim
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s371" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/trading/daily-claim/claim' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"campaign": {
+"campaignId": "value",
+"claimPolicy": "UTC_DAILY",
+"description": "Example configuration for the API playground.",
+"name": "value"
+},
+"claimId": "value",
+"claimedAt": "2025-01-01T00:00:00Z",
+"resetAt": "2025-01-01T00:00:00Z",
+"rewards": [
+"amount": "18.446744073709551617",
+"assetCode": "USDC",
+"assetId": 100
+}
+],
+"state": "AVAILABLE",
+"transfers": [
+"assetId": 100,
+"transferId": "9155001234569"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/trading/daily-claim/claim' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "campaign": {
+    "campaignId": "value",
+    "claimPolicy": "UTC_DAILY",
+    "description": "Example configuration for the API playground.",
+    "name": "value"
+  },
+  "claimId": "value",
+  "claimedAt": "2025-01-01T00:00:00Z",
+  "resetAt": "2025-01-01T00:00:00Z",
+  "rewards": [
+    {
+      "amount": "18.446744073709551617",
+      "assetCode": "USDC",
+      "assetId": 100
+    }
+  ],
+  "state": "AVAILABLE",
+  "transfers": [
+    {
+      "assetId": 100,
+      "transferId": "9155001234569"
+    }
+  ]
+}

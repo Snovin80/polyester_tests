@@ -1,0 +1,441 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/order-book
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order book · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Order book
+Order book
+Copy page
+View as Markdown
+Open in
+client.Orderbook
+reads spot depth snapshots and maintains a stateful live book. It uses the
+public transport, so no authentication is required.
+Levels are
+pairs, best-first (bids descending, asks ascending). Each snapshot
+carries
+BookSeq
+, the backend sequence number used to detect gaps.
+Methods
+Method
+Summary
+Get
+Fetch a one-shot depth snapshot.
+CreateSubscription
+Managed live book (snapshot + sequence-checked deltas).
+Subscribe
+Convenience wrapper around
+CreateSubscription
+SubscribeDeltas
+Raw delta stream (no local merge).
+Get(ctx, symbol, depth)
+Fetches a depth snapshot and returns
+models.OrderbookData
+1, 5, 10, 20, 50, 100, 200, 500, 1000
+; intermediate requests round up to the next supported
+depth. Catalog hydration is required because decoded quantities need the pair's base scale.
+book
+,
+err
+client
+Orderbook
+Get
+(
+ctx
+,
+"BTC-USDT"
+,
+20
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+fmt
+Println
+(
+book
+Bids
+0
+],
+book
+Asks
+0
+],
+book
+BookSeq
+)
+CreateSubscription(ctx, opts) / Subscribe(...)
+Builds a managed live order book: REST snapshot, then Centrifugo deltas with sequence checking.
+Gaps trigger a REST refresh. Returns
+*orderbook.Subscription
+Managed books expose
+Updates()
+, not
+Messages()
+(that name is for typed
+*realtime.Subscription[T]
+helpers).
+import
+"
+github.com/Fabric-Labs/polyester-sdk-go/services
+"
+sub
+,
+err
+client
+Orderbook
+CreateSubscription
+(
+ctx
+,
+services
+CreateSubscriptionOptions
+Symbol
+"BTC-USDT"
+,
+Depth
+50
+,
+Bucket
+"1.0"
+,
+OnEvent
+func
+(
+book
+models
+OrderbookData
+) {
+fmt
+Println
+(
+book
+Bids
+0
+],
+book
+Asks
+0
+],
+book
+BookSeq
+)
+},
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+for
+book
+range
+sub
+Updates
+() {
+fmt
+Println
+(
+book
+BookSeq
+)
+break
+}
+sub
+SetBucket
+(
+"5.0"
+)
+// re-aggregate without reconnecting
+SymbolID
+is resolved from catalogs when omitted; call
+WaitForCatalogs
+first if you rely on
+symbol strings. Optional:
+OnSequenceGap
+,
+OnReconnect
+,
+OnSnapshotRefresh
+One-shot snapshots support depth
+1000
+; managed realtime channels are capped at depth
+500
+Buckets must be positive price increments. Bids round down and asks round up, preserving
+executable spread semantics. Malformed snapshots and integer overflow terminate the local render
+with a validation error. A malformed delta is rejected atomically and triggers a snapshot refresh
+without advancing the local sequence.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prefer the managed subscription
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+CreateSubscription
+handles snapshot fetch, sequence gaps, and reconnect refetch.
+SubscribeDeltas(ctx, symbolID, depth)
+Returns
+*realtime.Subscription[models.OrderBookDeltaUpdate]
+, consume with
+Messages()
+deltas
+,
+err
+client
+Orderbook
+SubscribeDeltas
+(
+ctx
+,
+1
+,
+50
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+deltas
+Close
+()
+for
+d
+range
+deltas
+Messages
+() {
+fmt
+Println
+(
+d
+BookSeqStart
+,
+d
+BookSeqEnd
+)
+break
+}
+Related
+Market data guide
+Streaming guide
+Market overview
+Public trades
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Market overview
+Next
+Orders
+On this page
+Methods
+Get(ctx, symbol, depth)
+CreateSubscription(ctx, opts) / Subscribe(...)
+SubscribeDeltas(ctx, symbolID, depth)
+Related
+Related Topics
+Share this page
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+book, err := client.Orderbook.Get(ctx, "BTC-USDT", 20)
+if err != nil { log.Fatal(err) }
+fmt.Println(book.Bids[0], book.Asks[0], book.BookSeq)
+
+---
+
+import "github.com/Fabric-Labs/polyester-sdk-go/services"
+
+sub, err := client.Orderbook.CreateSubscription(ctx, services.CreateSubscriptionOptions{
+    Symbol: "BTC-USDT",
+    Depth:  50,
+    Bucket: "1.0",
+    OnEvent: func(book models.OrderbookData) {
+        fmt.Println(book.Bids[0], book.Asks[0], book.BookSeq)
+    },
+})
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+
+for book := range sub.Updates() {
+    fmt.Println(book.BookSeq)
+    break
+}
+
+sub.SetBucket("5.0") // re-aggregate without reconnecting
+
+---
+
+deltas, err := client.Orderbook.SubscribeDeltas(ctx, 1, 50)
+if err != nil { log.Fatal(err) }
+defer deltas.Close()
+for d := range deltas.Messages() {
+    fmt.Println(d.BookSeqStart, d.BookSeqEnd)
+    break
+}

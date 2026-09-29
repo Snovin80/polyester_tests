@@ -1,0 +1,286 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Authentication model · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Authentication model
+Authentication model
+Copy page
+View as Markdown
+Open in
+How Polyester auth works under the SDK APIs. For the task walkthrough, see the
+API Keys guide
+Identity: the smart account
+A Polyester account is a Safe
+smart account
+on
+Polyester Chain
+(MetaMask, Turnkey, a raw private key) is the owner of that Safe. It controls the account. It is
+not the account itself.
+The Safe address is computed from the owner address, a salt nonce, and the environment's Safe
+deployment config. Two consequences:
+No on-chain deploy is required to authenticate. The address exists counterfactually before any
+transaction. Different
+saltNonce
+values derive different accounts (used for
+subaccounts
+).
+Signatures for smart-account operations can use
+ERC-6492
+-wrapped Safe signatures with the factory
+data a verifier needs. Login is different: it is authorized by the owner's raw EIP-191 signature.
+AccountSigner
+carries
+accountAddress
+, optional
+ownerAddress
+, an environment fingerprint, and
+signMessage
+ownerAddress
+is the
+EOA
+declared in the SIWE challenge and
+signMessage
+must return that owner's raw 65-byte EIP-191 signature.
+createPolyesterAccountSigner
+derives the
+standard single-owner Safe with zero RPC calls, but its Safe/ERC-6492-wrapped signer is for
+subaccount creation and other smart-account operations. Use it to derive
+accountAddress
+, then
+provide the owner EOA's
+signMessage
+for login.
+Wallet login: SIWE challenge to signature to JWT
+1
+Request a wallet challenge
+Request a server-generated EIP-4361 message for the signer, smart account, browser origin, and login
+purpose. Challenges are single-use and expire after five minutes.
+2
+Sign the exact message
+The owner EOA passes the returned UTF-8 message directly to
+personal_sign
+reconstruct, or normalize the message first. Login accepts only that raw 65-byte signature, not a
+Safe or ERC-6492-wrapped signature.
+3
+Exchange the signed challenge
+Submit the unchanged message and its signature for a JWT session token bound to the account.
+4
+Use the session token
+The browser client stores the token (memory by default, or a cookie via
+createCookieAuthTokenStorage
+), sends
+Authorization: Bearer ...
+on every request, and uses it for
+private realtime channels.
+The challenge includes the origin, signer address, smart-account resource, Polyester Chain ID,
+purpose, random nonce, issue time, and expiration time. A mismatched, altered, expired, replaced, or
+replayed challenge is rejected.
+Stored tokens are environment-fingerprint-bound. A token from one environment is invisible to
+clients built for another, while regional API or WebSocket gateway URLs do not change that identity.
+auth.refreshSession
+uses the same flow with a fresh challenge.
+The browser serializes login, refresh, restore, logout, signer changes, and hydration so a stale
+operation cannot replace a newer session. A superseded login or refresh rejects with
+AbortError
+; a
+superseded restore returns
+null
+network and signer-initialization failures leave the stored session available for retry.
+API keys: Ed25519 request signing
+API keys
+skip JWTs. Each request is signed on its own:
+1
+Register a public key
+Generate an Ed25519 keypair locally (
+apiKeys.generateKeypair
+) and register only the public key.
+The secret never leaves your process.
+2
+Sign each request
+For each request the SDK builds a canonical string
+(
+timestamp \n method \n path \n sorted-query \n sha256(body)
+), signs it, and sends
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+, and
+X-API-SIGNATURE
+3
+Verify the signature
+The backend verifies against the registered public key.
+The timestamp keeps replay windows tight. The body hash makes payloads tamper-evident. Keys can
+carry IP whitelists, expirations, and policies with spot-market scopes and allowed actions.
+An API key cannot do everything a wallet session can. Policy list/create/apply,
+MFA
+, profile, social
+verification, and
+accounts.resolve
+require an interactive session. Address-book writes need the
+manage-address-book
+action on the key's policy.
+WebSocket auth reuses the same contract for connection and subscription tokens.
+Sessions on servers
+Browser sessions show up on your server as cookies. The SDK splits what they prove:
+Auth token cookie: the JWT. Real proof. Verified by the backend on every call.
+Session cookie: display data (username, active account, addresses). Unsigned, client-writable,
+typed as display-only (
+ServerSessionSnapshot
+).
+PolyesterServerClient
+reads both, uses the JWT for calls, and exposes
+verifySession()
+for a
+backend-confirmed identity. Authorization is always the backend's call. The SDK only carries
+intent.
+Server factories accept a
+Request
+, a cookie record, or a synchronous
+store that
+returns a string or
+; await async framework cookie helpers first. Missing or
+malformed display data does not discard a valid bearer token, while an explicitly
+different-environment display cookie is rejected as a whole. For a framework cookie store on a local
+server, also provide the page location so the SDK can read that port's scoped cookies.
+Assurance layers: MFA
+Some operations need more than a valid session. Two elevation paths, two error types:
+Session elevation (
+SessionElevationRequiredError
+): the session must have passed MFA recently.
+Complete a challenge with purpose
+"sessionElevation"
+Fresh step-up (
+StepUpRequiredError
+): a one-use proof for a single protected request. Complete
+a challenge with purpose
+"freshStepUp"
+, then retry with the returned
+stepUpToken
+(
+X-Auth-Step-Up
+header).
+Factors are TOTP or passkeys, with one-time recovery codes as backup, all through
+client.mfa
+Subaccount owners can also require MFA from delegated members.
+Subaccounts and delegation
+Subaccounts are full smart accounts from the same owner with different salt nonces, tied to the
+main account
+server-derived smart account and salt nonce. That proof can use the new account's Safe or
+ERC-6492-wrapped signature. Access can be delegated with roles and constrained
+with policy templates. See
+Accounts & balances
+Related Topics
+Architecture
+How the SDK is put together: clients, transports, services, realtime, and the catalog.
+Environments
+The frozen configuration object that tells the SDK where to connect, and why it is fingerprinted.
+Catalog & precision
+The reference-data store behind every conversion, and why the SDK speaks exact decimal strings.
+Requests & idempotency
+How every service call is shaped, cancelled, retried, and deduplicated, and where idempotency keys fit.
+Previous
+Environments
+Next
+Catalog & precision
+On this page
+Identity: the smart account
+Wallet login: SIWE challenge to signature to JWT
+API keys: Ed25519 request signing
+Sessions on servers
+Assurance layers: MFA
+Subaccounts and delegation
+Related Topics
+Share this page
+Authentication model
+Smart accounts, wallet login, JWT sessions, Ed25519 API keys, and the MFA assurance layers.
+Share
+Copy Link

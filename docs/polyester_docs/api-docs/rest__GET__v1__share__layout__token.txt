@@ -1,0 +1,221 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/share/layout/token
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LayoutService
+Resolve Layout Share Token
+Resolve a share token to a view-only layout template snapshot.
+Copy URL
+Method
+GET
+Path
+/v1/share/layout/{token}
+Visibility
+Public endpoint
+GET
+/v1/share/layout/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/share/layout/share_01J5EXAMPLE000000000' \
+--header 'Accept: */*'
+Responses
+"layout": {
+"dockviewState": "AA==",
+"isDefault": false,
+"layoutId": "1",
+"name": "BTC Trading",
+"updatedAtMs": "1",
+"viewerId": "1",
+"widgets": [
+"widgetConfig": "AA==",
+"widgetId": "chart-main",
+"widgetType": "CHART"
+}
+]
+},
+"ownerId": "1",
+"templateId": "1",
+"version": 1
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+token
+string
+required
+min 1 chars
+Opaque share token from a layout share link.
+Response
+Form
+JSON
+layout
+object
+Shared layout snapshot.
+7 fields
+viewerId
+string (fixed64)
+Viewer that owns the saved layout.
+Example
+1
+layoutId
+string (fixed64)
+Layout identifier unique within the viewer's saved layouts.
+Example
+1
+name
+string
+Human-readable layout name.
+Example
+BTC Trading
+isDefault
+boolean
+True when this is the viewer's default layout.
+Example
+false
+dockviewState
+string (byte)
+Serialized editor panel arrangement snapshot.
+Example
+AA==
+widgets
+object[]
+Widgets contained in the layout.
+3 fields
+widgetId
+string
+Stable widget identifier within the layout, such as "chart-1".
+Example
+chart-main
+widgetType
+enum
+Widget kind that determines how widget_config is decoded.
+CHART
+ORDERBOOK
+TRADES
+POSITIONS
+ORDERS
+Example
+CHART
+widgetConfig
+string (byte)
+Serialized widget configuration bytes for the selected widget_type.
+Example
+AA==
+updatedAtMs
+string (fixed64)
+Last update time in milliseconds since epoch (UTC).
+Example
+1
+ownerId
+string (fixed64)
+Viewer that owns the shared template.
+Example
+1
+templateId
+string (fixed64)
+Template identifier referenced by the share token.
+Example
+1
+version
+integer (int32)
+Immutable template version referenced by the share token.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/share/layout/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s364" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/share/layout/share_01J5EXAMPLE000000000' \
+--header 'Accept: */*'
+Responses
+"layout": {
+"dockviewState": "AA==",
+"isDefault": false,
+"layoutId": "1",
+"name": "BTC Trading",
+"updatedAtMs": "1",
+"viewerId": "1",
+"widgets": [
+"widgetConfig": "AA==",
+"widgetId": "chart-main",
+"widgetType": "CHART"
+}
+]
+},
+"ownerId": "1",
+"templateId": "1",
+"version": 1
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/share/layout/share_01J5EXAMPLE000000000' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "layout": {
+    "dockviewState": "AA==",
+    "isDefault": false,
+    "layoutId": "1",
+    "name": "BTC Trading",
+    "updatedAtMs": "1",
+    "viewerId": "1",
+    "widgets": [
+      {
+        "widgetConfig": "AA==",
+        "widgetId": "chart-main",
+        "widgetType": "CHART"
+      }
+    ]
+  },
+  "ownerId": "1",
+  "templateId": "1",
+  "version": 1
+}

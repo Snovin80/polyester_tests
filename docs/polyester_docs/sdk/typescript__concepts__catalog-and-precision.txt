@@ -1,0 +1,333 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/concepts/catalog-and-precision
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Catalog & precision · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Catalog & precision
+Catalog & precision
+Copy page
+View as Markdown
+Open in
+Two facts shape the data model:
+The wire protocol carries scaled integers. A price is ticks. A quantity is an integer in
+per-asset units. Exact and compact, but only useful if you know each asset's scale.
+JavaScript
+number
+cannot represent money safely.
+The SDK answers both with one design: a catalog of reference data (every scale), and a public
+surface of exact decimal strings (no floating point).
+The decimal-string contract
+Every price/quantity output is a decimal string, converted exactly from the wire integer. No
+rounding. Trailing zeros trimmed.
+1500000n
+at scale 6 becomes
+"1.5"
+Service inputs use strict decimal conversion.
+"0.1234567"
+for a 6-decimal field throws
+CatalogConversionError
+from
+; the SDK never rounds an order silently.
+Zero padding beyond the scale is exact, so
+"1.5000000"
+is accepted for that same field.
+SpotOrderConstraints
+exposes
+maxPrice
+,
+maxQtyBase
+,
+maxNotionalQuote
+, and
+maxQuoteSlippage
+as decimal strings. These are protobuf wire-format ceilings, not exchange
+limits. Order and trigger inputs above them throw
+CatalogConversionError
+before network I/O.
+normalizePriceInput
+and
+normalizeQuantityInput
+are different: UI helpers that truncate
+excess fractional digits to catalog scale. They do not round, snap to a tick grid, or validate
+tick, step, or minimum rules.
+Trading prices, price deltas, and slippage always use 9 decimal places (
+PRICE_SCALE = 9
+).
+Quantity scales vary per asset and come from the catalog. Public market-data volume and
+composite reference candle prices have their own catalog scales; see
+Catalog
+Do arithmetic with a decimal library or plain string math. The strings parse cleanly into either.
+What the catalog holds
+client.catalog
+is a venue reference-data snapshot with typed readers:
+Reader
+Contents
+catalog.market
+Trading assets and pairs: symbols to ids, listing status, precision, price/amount converts
+catalog.ledger
+Ledger assets: id/symbol lookups, amount converts and display formatting
+catalog.orders
+Per-pair tick, step, minimum, and wire constraints plus order input validation
+catalog.zipper
+Deposit/withdraw chains,
+unified assets
+, per-chain
+routes
+, contracts
+await
+client
+catalog
+ensureReady
+();
+const
+pair
+=
+client
+catalog
+market
+requirePairBySymbol
+(
+"BTC-USDT"
+);
+const
+constraints
+=
+client
+catalog
+orders
+getSpotOrderConstraints
+(
+"BTC-USDT"
+);
+const
+route
+=
+client
+catalog
+zipper
+requireAssetChain
+(
+"ETH"
+,
+"ethereum-sepolia"
+);
+// conversions and display helpers
+client
+catalog
+market
+normalizePriceInput
+(
+"64250.5123456789"
+,
+"BTC-USDT"
+);
+// "64250.512345678"
+client
+catalog
+market
+decimalPriceToTicks
+(
+"64250.5123456789"
+,
+"BTC-USDT"
+);
+// throws CatalogConversionError
+client
+catalog
+ledger
+formatAmount
+(
+"1234.5"
+,
+"USDC"
+);
+// display-rounded
+get*
+returns
+null
+on a miss.
+require*
+throws
+CatalogLookupError
+The catalog order validator checks decimal parsing, tick, step, and minimum rules. It does not
+enforce the four wire ceilings.
+Lifecycle: ready, refresh, states
+The catalog starts empty. It fills from two public endpoints (spot config +
+zipper
+config) the
+first time something needs it.
+ensureReady()
+internally. Call it yourself before direct catalog reads.
+ready()
+refresh()
+state()
+empty
+,
+refreshing
+,
+fresh
+, or
+stale
+(keeps serving the old snapshot after a
+failed refresh).
+Realtime subscriptions gate event delivery behind readiness. Events that arrive before scales are
+known are buffered and flushed in order. The buffer is bounded, and a readiness failure ends the
+subscription through
+onError
+rather than leaving it connected and silent.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Unknown assets never crash
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Events that reference assets the catalog does not know resolve to a sentinel unknown asset
+(
+isUnknownLedgerAsset
+/
+isUnknownZipperAsset
+) instead of throwing
+mid-stream. Orders on unknown symbols are filtered out of list responses.
+Owning the snapshot
+By default each client fetches and holds its own snapshot. Three options change that:
+catalogSnapshot
+catalog.snapshot()
+, bakes it into the page, browser client starts warm.
+catalogCell
+makes every catalog read reactive, one snapshot shared across clients and UI.
+catalog
+ClientCatalog
+(advanced; mutually exclusive with the other
+two).
+The
+subpath exports the builders
+(
+createPolyesterCatalog
+,
+buildCatalogSnapshot
+,
+createCatalogSnapshotReader
+) and the
+reader/config types for these patterns.
+Related Topics
+Architecture
+How the SDK is put together: clients, transports, services, realtime, and the catalog.
+Environments
+The frozen configuration object that tells the SDK where to connect, and why it is fingerprinted.
+Authentication model
+Smart accounts, wallet login, JWT sessions, Ed25519 API keys, and the MFA assurance layers.
+Requests & idempotency
+How every service call is shaped, cancelled, retried, and deduplicated, and where idempotency keys fit.
+Previous
+Authentication model
+Next
+Requests & idempotency
+On this page
+The decimal-string contract
+What the catalog holds
+Lifecycle: ready, refresh, states
+Owning the snapshot
+Related Topics
+Share this page
+Catalog & precision
+The reference-data store behind every conversion, and why the SDK speaks exact decimal strings.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.catalog.ensureReady();
+
+const pair = client.catalog.market.requirePairBySymbol("BTC-USDT");
+const constraints = client.catalog.orders.getSpotOrderConstraints("BTC-USDT");
+const route = client.catalog.zipper.requireAssetChain("ETH", "ethereum-sepolia");
+
+// conversions and display helpers
+client.catalog.market.normalizePriceInput("64250.5123456789", "BTC-USDT"); // "64250.512345678"
+client.catalog.market.decimalPriceToTicks("64250.5123456789", "BTC-USDT"); // throws CatalogConversionError
+client.catalog.ledger.formatAmount("1234.5", "USDC"); // display-rounded

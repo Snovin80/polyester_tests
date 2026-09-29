@@ -1,0 +1,578 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/tutorials/portfolio-tracker
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Portfolio tracker · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Tutorials
+svg]:size-3.5">
+/
+Portfolio tracker
+Portfolio tracker
+Copy page
+View as Markdown
+Open in
+Build an authenticated account monitor that keeps exact funding and trading balances separate,
+tracks reservations and open orders, and uses revisions to reject stale balance updates.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A dashboard is not the source of truth
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Treat every screen as a projection of ledger and OMS state. Preserve raw scaled values, revisions,
+and timestamps. Never calculate spendable collateral from rounded display strings.
+1
+Read the balance snapshot
+use
+polyester
+proto
+ledger
+read
+v1
+GetBalancesRequest
+;
+let
+balances
+=
+client
+balances
+list
+(
+GetBalancesRequest
+default
+())
+;
+for
+balance
+in
+&
+balances
+balances {
+println!
+(
+"{} available={} reserved={} trading_revision={} funding_revision={}"
+,
+balance
+asset_id,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+balance
+available,
+18
+)
+?
+,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+balance
+reserved,
+18
+)
+?
+,
+balance
+trading_revision,
+balance
+funding_revision,
+);
+}
+The balance components are raw ledger
+u128
+strings at ledger scale 18. The formatter is for
+display only; retain the raw strings in the tracker.
+funding
+is deposit/withdraw custody state.
+trading
+,
+reserved
+, and
+available
+are execution
+state. Their revisions are independent; compare
+trading_revision
+only with trading-state updates
+and
+funding_revision
+only with funding-state updates.
+2
+Reconcile open orders
+use
+polyester
+models
+ListOpenOrdersOpts
+;
+let
+open
+=
+client
+orders
+list_open_with
+(
+ListOpenOrdersOpts
+include_attached_risk
+true
+,
+include_attached_risk_state
+true
+,
+Default
+default
+()
+})
+;
+for
+order
+in
+&
+open
+orders {
+println!
+(
+"{} {} {} {} {:?} {:?} {:?}"
+,
+order
+order_id,
+order
+client_order_id,
+order
+symbol_id,
+order
+status,
+order
+orig_qty,
+order
+cum_qty,
+order
+leaves_qty,
+);
+}
+Reserved balance and open-order leaves should move together eventually, but they are served by
+different read models and can lag briefly. Do not flag a mismatch until a bounded reconciliation
+window and a fresh read have both completed.
+3
+Subscribe for low-latency order changes
+let
+mut
+subscription
+=
+client
+orders
+subscribe
+(
+client
+default_account_id
+as_deref
+())
+;
+if
+let
+Some
+(
+order
+)
+=
+subscription
+recv_result
+()
+let
+scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol_id
+(
+order
+symbol_id)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"stream symbol quantity scale is unavailable"
+))
+?
+;
+let
+cum
+=
+match
+&
+order
+cum_qty {
+Some
+(
+qty
+)
+=>
+Some
+(
+qty
+format
+(
+Some
+(
+scale
+))
+?
+),
+None
+=>
+None
+,
+};
+let
+leaves
+=
+match
+&
+order
+leaves_qty {
+Some
+(
+qty
+)
+=>
+Some
+(
+qty
+format
+(
+Some
+(
+scale
+))
+?
+),
+None
+=>
+None
+,
+};
+println!
+(
+"{} {} {:?} {:?}"
+,
+order
+order_id,
+order
+status,
+cum
+,
+leaves
+);
+}
+if
+let
+Some
+(
+err
+)
+=
+subscription
+err
+() {
+eprintln!
+(
+"{err}"
+);
+}
+The private stream accelerates the UI; it does not replace snapshots. On reconnect or queue
+overflow, discard local assumptions and reconcile balances plus open orders again. Stream
+quantities can omit scale, so resolve it from the hydrated catalog by
+symbol_id
+and fail closed
+if unavailable; never invent a stream scale.
+4
+Resolve fills before computing inventory
+use
+std
+time
+Duration
+;
+let
+details
+=
+client
+orders
+wait_for_order_trades_complete
+(
+None
+,
+Some
+(
+"order-id-from-create"
+),
+Duration
+from_secs
+(
+15
+),
+)
+;
+if
+let
+Some
+(
+order
+)
+=
+details
+order {
+println!
+(
+"{:?} {}"
+,
+order
+cum_qty,
+details
+trades
+len
+());
+}
+The order projection can show cumulative quantity before every related trade row is queryable.
+Use the completed trade projection for fee-source-aware received inventory and realized execution
+reporting.
+5
+Poll as a safety net
+Poll slowly enough to respect rate limits, add jitter across replicas, and set one overall
+tokio::time::timeout
+per cycle. A useful cycle is balances → open orders → recent history.
+Publish the new dashboard state atomically only after all required reads succeed; otherwise retain
+the previous state and mark it stale.
+Account-state API map
+Method
+Important inputs
+Use
+balances.list
+GetBalancesRequest
+Funding/trading snapshot and revisions
+balances.get_balance_history
+request options
+Auditable balance movement
+orders.list_open_with
+subaccount
+, pagination, attached-risk flags
+Current reservation intent
+orders.list_history_with
+symbol, pagination
+Terminal and recent order states
+orders.get
+/
+get_with
+order ID or client order ID
+One order plus related fills
+orders.subscribe
+account ID
+Low-latency private lifecycle updates
+orders.wait_for_order_trades_complete
+order identity, overall duration
+Complete fill projection
+trades.list
+request filters
+User execution ledger
+Tested source
+Example
+02
+in
+polyester-examples-rust
+performs
+authenticated balance and order reads. Every target compiles and passes Clippy against the exact
+v0.1.0a22
+SDK commit.
+Related
+Accounts & balances
+Orders
+Trades
+Streaming
+Related Topics
+Live market ticker
+Build a snapshot-then-stream Rust market monitor with trades, candles, staleness detection, and clean shutdown.
+Build a production trading bot
+Build a resilient Rust quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+Previous
+Build a production trading bot
+Next
+Two-sided quoting
+On this page
+Account-state API map
+Tested source
+Related
+Related Topics
+Share this page
+Portfolio tracker
+Build a revision-aware Rust account monitor for balances, reservations, open orders, fills, and reconciliation.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::proto::ledger::read::v1::GetBalancesRequest;
+
+let balances = client.balances.list(GetBalancesRequest::default()).await?;
+for balance in &balances.balances {
+    println!(
+        "{} available={} reserved={} trading_revision={} funding_revision={}",
+        balance.asset_id,
+        polyester::codecs::scalars::format_ledger_u128(&balance.available, 18)?,
+        polyester::codecs::scalars::format_ledger_u128(&balance.reserved, 18)?,
+        balance.trading_revision,
+        balance.funding_revision,
+    );
+}
+
+---
+
+use polyester::models::ListOpenOrdersOpts;
+
+let open = client
+    .orders
+    .list_open_with(ListOpenOrdersOpts {
+        include_attached_risk: true,
+        include_attached_risk_state: true,
+        ..Default::default()
+    })
+    .await?;
+for order in &open.orders {
+    println!(
+        "{} {} {} {} {:?} {:?} {:?}",
+        order.order_id,
+        order.client_order_id,
+        order.symbol_id,
+        order.status,
+        order.orig_qty,
+        order.cum_qty,
+        order.leaves_qty,
+    );
+}
+
+---
+
+let mut subscription = client
+    .orders
+    .subscribe(client.default_account_id.as_deref())
+    .await?;
+if let Some(order) = subscription.recv_result().await? {
+    let scale = client
+        .catalogs
+        .base_quantity_scale_for_symbol_id(order.symbol_id)
+        .ok_or_else(|| polyester::Error::validation("stream symbol quantity scale is unavailable"))?;
+    let cum = match &order.cum_qty {
+        Some(qty) => Some(qty.format(Some(scale))?),
+        None => None,
+    };
+    let leaves = match &order.leaves_qty {
+        Some(qty) => Some(qty.format(Some(scale))?),
+        None => None,
+    };
+    println!("{} {} {:?} {:?}", order.order_id, order.status, cum, leaves);
+}
+if let Some(err) = subscription.err() {
+    eprintln!("{err}");
+}
+
+---
+
+use std::time::Duration;
+
+let details = client
+    .orders
+    .wait_for_order_trades_complete(
+        None,
+        Some("order-id-from-create"),
+        Duration::from_secs(15),
+    )
+    .await?;
+if let Some(order) = details.order {
+    println!("{:?} {}", order.cum_qty, details.trades.len());
+}

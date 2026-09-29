@@ -1,0 +1,671 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/market-overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market overview · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Market overview
+Market overview
+Copy page
+View as Markdown
+Open in
+client.marketOverview
+is the ticker surface: one row per spot market with last and optional index
+prices, 24-hour stats, top-of-book quotes, listing time, and optional sparklines. It uses the
+public transport, so no authentication is required.
+Prices and quantities come back as decimal strings, already scaled to each pair's precision.
+Timestamps are epoch milliseconds.
+Methods
+Method
+Summary
+list
+Fetch a page of market overview rows, sorted and filtered.
+subscribe
+Stream the merged live set of market rows over a public channel.
+getSpotVolumeHistory
+Read trailing-24-hour USD-volume samples.
+getCurrencyConversionConfig
+Read fiat and stablecoin display metadata.
+getCurrencyConversionRates
+Read observed conversion rates and staleness.
+list(input?, options?)
+Returns
+markets by canonical 24-hour USD volume, descending.
+await
+client
+catalog
+ensureReady
+();
+const
+markets
+}
+=
+await
+client
+marketOverview
+list
+({
+limit:
+20
+,
+orderBy:
+"volume_24h_usd"
+,
+sort:
+"desc"
+,
+includeSparklines:
+true
+,
+});
+for
+(
+const
+m
+of
+markets
+) {
+const
+symbol
+=
+client
+catalog
+market
+requirePairSymbolBySymbolId
+(
+m
+symbolId
+);
+console
+log
+(
+symbol
+,
+m
+lastPrice
+,
+m
+change24hBps
+);
+}
+Filter to specific pairs with
+symbolIds
+, and page through larger sets with the returned token:
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+const
+first
+=
+await
+client
+marketOverview
+list
+({ symbolIds: [
+symbolId
+] });
+const
+next
+=
+await
+client
+marketOverview
+list
+({ pageToken:
+first
+nextPageToken
+});
+ListMarketOverviewInput
+Field
+Type
+Default
+Notes
+symbolIds
+number[]
+(all)
+Stable IDs from 1 through 4,294,967,295.
+limit
+number
+500
+Positive uint32 page size (1 through 4,294,967,295).
+pageToken
+string
+""
+Cursor from a previous
+nextPageToken
+orderBy
+"volume_24h_usd" | ...
+"volume_24h_usd"
+Sort key. Unvalued markets sort last.
+sort
+"asc" | "desc"
+"desc"
+Sort direction.
+includeSparklines
+boolean
+true
+Include the sparkline close series.
+sparklineIntervals
+SparklineIntervalName[]
+Which sparkline windows to return.
+subscribe(input)
+Streams the live set of market rows. It fetches an initial snapshot, buffers updates until ready,
+and emits the merged full set as an array on every change. On reconnect it refetches the snapshot
+before resuming.
+symbolIds
+filters the snapshot, buffered updates, and live publications,
+including after reconnect. Omit it or pass
+for all symbols. Returns an idempotent
+unsubscribe function.
+const
+unsubscribe
+=
+client
+marketOverview
+subscribe
+({
+includeSparklines:
+true
+,
+sparklineIntervals: [
+"24h"
+],
+onEvent
+markets
+)
+=>
+// markets is the full merged MarketOverview[] on every update
+console
+log
+(
+markets
+length
+,
+"markets"
+);
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+onEvent
+is required.
+onOpen
+,
+onClose
+, and
+onError
+are optional. See the
+realtime client reference
+for the handler contract.
+getSpotVolumeHistory(input?, options?)
+Returns 97 aligned trailing-24-hour USD-volume samples at 15-minute intervals. With no
+symbolIds
+, it returns every configured pair; pass up to 2,000 distinct positive IDs to select
+specific pairs. The result is
+bucket
+is currently
+"15m"
+, every pair's
+volumeUsd
+and
+totalVolumeUsd
+are decimal-string
+arrays ordered oldest-first, and each pair has its
+symbolId
+Samples overlap, so do not sum them to calculate traded volume for a period. The request rejects
+when a contributing trade cannot be valued in USD; it does not return partial or zero-filled
+valuations.
+const
+history
+=
+await
+client
+marketOverview
+getSpotVolumeHistory
+({ symbolIds: [
+1
+,
+2
+] });
+console
+log
+(
+history
+totalVolumeUsd
+at
+(
+-
+1
+));
+// latest trailing-24h USD volume
+getCurrencyConversionConfig(options?)
+Returns cacheable display metadata as
+, even before rates have been
+observed. Each entry has
+code
+,
+defaultEnglishName
+,
+symbol
+, and
+fractionDigits
+getCurrencyConversionRates(options?)
+Returns exact decimal-string conversion rates and backend staleness flags. Fiat rates are
+currency units per USD
+; stablecoin rates are
+USD per stablecoin unit
+const
+config
+=
+await
+client
+marketOverview
+getCurrencyConversionConfig
+();
+const
+rates
+=
+await
+client
+marketOverview
+getCurrencyConversionRates
+();
+for
+(
+const
+rate
+of
+rates
+fiat
+?.
+rates
+??
+console
+log
+(
+rate
+code
+,
+rate
+unitsPerUsd
+,
+rates
+fiat
+?.
+stale
+);
+}
+for
+(
+const
+rate
+of
+rates
+stablecoins
+) {
+console
+log
+(
+rate
+code
+,
+rate
+usdPerUnit
+,
+rate
+sourceTsMs
+,
+rate
+stale
+);
+}
+The result contains
+snapshotTsMs
+, optional
+fiat
+, and
+stablecoins
+rates
+,
+sourceTsMs
+, and
+stale
+; each fiat rate has
+code
+and
+unitsPerUsd
+rate has
+code
+,
+usdPerUnit
+,
+sourceTsMs
+, and
+stale
+Unobserved rates remain absent. Before any observation exists, the rates request rejects as
+unavailable. Preserve absence and staleness in displays; do not substitute zero or assume a
+stablecoin is worth exactly one USD. Use decimal arithmetic when applying the rates.
+The
+MarketOverview
+shape
+list
+rows and each element of the
+subscribe
+array share one parsed shape. Each row carries a
+stable numeric
+symbolId
+; resolve its display pair through the catalog.
+import
+type
+SparklineIntervalName
+,
+MarketOverview
+,
+MarketOverviewSparkline
+,
+}
+from
+"@polyester/sdk"
+;
+indexPrice
+is absent when the venue has no positive index value. Treat absence as unavailable,
+not as zero. Sparkline
+interval
+is a
+SparklineIntervalName
+(
+"1h" | "24h" | "1w" | "1m"
+) plus
+"unspecified"
+on the parsed read model.
+volume24hBase
+and
+volume24hQuote
+are absent when their scaled wire values overflow. The
+canonical
+volume24hUsd
+is also optional: it is absent when the 24-hour volume cannot be valued
+reliably. It is a decimal string in USD, based on execution prices and historical quarter-hour
+marks. Treat unavailable volumes separately from the known zero value
+"0"
+Rows for unknown or disabled catalog symbols are skipped rather than rejecting the full response or
+stream batch.
+For freshly listed pairs,
+change24hBps
+may be
+0
+from the API. Use
+getMarketOverview24hChangeDisplay(market)
+to derive a display change from the sparkline when a
+market is under 24 hours old.
+Related
+Market data guide
+for the task-oriented walkthrough.
+Streaming guide
+for the subscription model.
+Candles
+for OHLCV series.
+Order book
+for depth.
+Public trades
+for prints.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Lifecycle
+Next
+MFA
+On this page
+Methods
+list(input?, options?)
+ListMarketOverviewInput
+subscribe(input)
+getSpotVolumeHistory(input?, options?)
+getCurrencyConversionConfig(options?)
+getCurrencyConversionRates(options?)
+The MarketOverview shape
+Related
+Related Topics
+Share this page
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.catalog.ensureReady();
+const { markets } = await client.marketOverview.list({
+	limit: 20,
+	orderBy: "volume_24h_usd",
+	sort: "desc",
+	includeSparklines: true,
+});
+
+for (const m of markets) {
+	const symbol = client.catalog.market.requirePairSymbolBySymbolId(m.symbolId);
+	console.log(symbol, m.lastPrice, m.change24hBps);
+}
+
+---
+
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const first = await client.marketOverview.list({ symbolIds: [symbolId] });
+const next = await client.marketOverview.list({ pageToken: first.nextPageToken });
+
+---
+
+const unsubscribe = client.marketOverview.subscribe({
+	includeSparklines: true,
+	sparklineIntervals: ["24h"],
+	onEvent: (markets) => {
+		// markets is the full merged MarketOverview[] on every update
+		console.log(markets.length, "markets");
+	},
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+const history = await client.marketOverview.getSpotVolumeHistory({ symbolIds: [1, 2] });
+console.log(history.totalVolumeUsd.at(-1)); // latest trailing-24h USD volume
+
+---
+
+const config = await client.marketOverview.getCurrencyConversionConfig();
+const rates = await client.marketOverview.getCurrencyConversionRates();
+
+for (const rate of rates.fiat?.rates ?? []) {
+	console.log(rate.code, rate.unitsPerUsd, rates.fiat?.stale);
+}
+for (const rate of rates.stablecoins) {
+	console.log(rate.code, rate.usdPerUnit, rate.sourceTsMs, rate.stale);
+}
+
+---
+
+import type {
+	SparklineIntervalName,
+	MarketOverview,
+	MarketOverviewSparkline,
+} from "@polyester/sdk";

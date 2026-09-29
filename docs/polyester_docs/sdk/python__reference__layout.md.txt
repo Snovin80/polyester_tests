@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/layout.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Layout
+Layout collaboration APIs (reference-only).
+`client.layout` wraps Polyester app layout collaboration RPCs: get/list, upsert/delete, share links, publish/unpublish, version history, and template subscriptions.
+## Methods
+| Group               | Methods                                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Saved layouts       | `get_layouts`, `get_layout`, `upsert_layout`, `delete_layout`                                                      |
+| Share links         | `resolve_layout_share_token`, `create_layout_share_link`, `revoke_layout_share_link`                               |
+| Published templates | `list_owner_published_layouts`, `publish_layout`, `unpublish_layout`                                               |
+| Versions            | `list_layout_template_versions`, `get_layout_template_version`                                                     |
+| Subscriptions       | `set_layout_template_subscription`, `delete_layout_template_subscription`, `list_my_layout_template_subscriptions` |
+Representative reads:
+```python
+layouts = await client.layout.get_layouts(limit=50)
+one = await client.layout.get_layout(layout_id="...")
+```
+Methods accept keyword arguments plus raw dict-shaped Protobuf data where a layout payload is required, and return `ApiData`. List methods accept `limit` and opaque `page_token` values.
+This is **not a supported API-key flow**. Layout collaboration is tied to the interactive app/session, and some deployments may not mount these routes. Use the TypeScript session client for production layout work.
+Do not retry a raw layout mutation without understanding its revision/idempotency behavior. Never let a layout-route failure block trading or risk controls.
+Related: [Limitations](https://testnet.polyester.com/docs/sdk/python/concepts/limitations-and-non-features).

@@ -1,0 +1,253 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/deposit
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Deposit · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Deposit
+Deposit
+Copy page
+View as Markdown
+Open in
+client.deposit
+manages chain deposit addresses. Every method is authenticated and
+account-scoped (
+account
+/
+sub_account_id
+).
+Deposit addresses are per-account and per-chain. Creating an address is idempotent: it returns the
+existing address when one is already assigned. A
+deposit flow
+can target
+funding
+or
+trading
+; select and confirm the intended destination in the corresponding chain flow.
+Methods
+Method
+Summary
+create_address
+Create or return the deposit address for a chain.
+list_addresses
+List deposit addresses for a chain.
+Create address
+addr
+=
+await
+client.deposit.create_address(
+chain_id
+=
+1
+)
+print
+(addr.chain_id, addr.deposit_address)
+The SDK raises
+PolyesterTransportError
+if a successful response omits or empties the required
+address; it never fabricates a placeholder address.
+Field
+Required
+Notes
+chain_id
+yes
+PolyChain-registered source chain id
+account
+/
+sub_account_id
+no
+Scope override
+List addresses
+listed
+=
+await
+client.deposit.list_addresses(
+chain_id
+=
+1
+)
+for
+a
+in
+listed.addresses:
+print
+(a.chain_id, a.deposit_address)
+Related
+Deposits & withdrawals guide
+Balances
+Withdrawals
+Lifecycle
+(if present) for deposit confirmation tracking
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Client configuration
+Next
+Errors
+On this page
+Methods
+Create address
+List addresses
+Related
+Related Topics
+Share this page
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+addr = await client.deposit.create_address(chain_id=1)
+print(addr.chain_id, addr.deposit_address)
+
+---
+
+listed = await client.deposit.list_addresses(chain_id=1)
+for a in listed.addresses:
+    print(a.chain_id, a.deposit_address)

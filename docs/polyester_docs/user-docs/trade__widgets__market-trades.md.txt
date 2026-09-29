@@ -1,0 +1,23 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/market-trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market Trades
+Follow recent public executions for the active Pair and see where trading is taking place.
+**Market Trades is the live tape for the active Pair.** Each row is a completed public execution, not a resting order or an unactivated trigger.
+![Market Trades](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/4291e94568c42a880c6105bdbfec364234f0a02890e379c0e09745b1a8d503b8/source.webp)
+## What the widget shows
+| Field  | What it means                                            |
+| ------ | -------------------------------------------------------- |
+| Price  | Price where the trade completed                          |
+| Amount | Executed amount in the selected base or quote Asset unit |
+| Time   | Time the public execution was reported                   |
+| Color  | Displayed buy or sell direction for the trade print      |
+The widget can show Amount in the base or quote Asset. Its volume threshold can also emphasize larger trades without removing the underlying executions from the market record.
+## Read recent activity
+Market Trades shows where price discovery is happening and whether recent activity is clustered around a level. Compare it with the [Polyester Chart](https://testnet.polyester.com/docs/user-docs/trade/widgets/polyester-chart) for history and the [Order Book](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book) for liquidity that is resting now.
+> **Public trades are not private fill history**
+>
+> A row does not identify either participant or prove that the selected account took part. Use Order History and fill details to confirm account activity, fees, and balance changes.
+## If the tape looks stale
+Confirm the active Pair, latest timestamp, and connection state. Refresh the widget after a connection gap, then verify your own order independently in [Order History](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history).

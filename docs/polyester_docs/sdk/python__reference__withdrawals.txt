@@ -1,0 +1,364 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/withdrawals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Withdrawals · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Withdrawals
+Withdrawals
+Copy page
+View as Markdown
+Open in
+client.withdraw
+(alias
+client.trading_withdraws
+) creates durable, signed withdrawal intents
+out of the
+trading
+venue: to funding or to an external chain via
+Zipper
+API-key bots can use the SDK's prepare/sign/persist flow. It builds the deadline and nonce once,
+serializes the payload deterministically, signs those exact protobuf bytes with the configured
+Ed25519
+API key
+, and returns an immutable
+PreparedTradingWithdraw
+submission and reuse it unchanged after an ambiguous timeout.
+Methods (API-key surface)
+Method
+Summary
+prepare_api_key_to_funding
+Build and sign Trading → funding once.
+prepare_api_key_to_external_chain
+Build and sign Trading → external once.
+submit_prepared
+Submit persisted bytes without rebuilding.
+create_api_key_to_funding
+One-call prepare, sign, and submit.
+create_api_key_to_external_chain
+One-call prepare, sign, and submit.
+create_to_funding
+/
+create_to_external_chain
+Advanced precomputed-signature paths.
+Wallet-authorized
+create_wallet_trading_withdraw
+exists for session/custody products, market
+makers
+typically use the payload-signature helpers above.
+Prepare, persist, and submit
+from
+pathlib
+import
+Path
+from
+polyester
+import
+PreparedTradingWithdraw, new_trading_withdraw_idempotency_key
+prepared
+=
+client.withdraw.prepare_api_key_to_funding(
+asset_id
+=
+2
+,
+quantity
+=
+"100.00"
+,
+idempotency_key
+=
+new_trading_withdraw_idempotency_key(),
+)
+# Persist before first submission. Protect this record like other mutation state.
+Path(
+"withdraw-request.pb"
+).write_bytes(prepared.request_bytes)
+result
+=
+await
+client.withdraw.submit_prepared(prepared)
+# After restart or an outcome-unknown failure, restore and submit unchanged.
+restored
+=
+PreparedTradingWithdraw.from_request_bytes(
+Path(
+"withdraw-request.pb"
+).read_bytes()
+)
+assert
+restored.deterministic_payload_bytes
+==
+prepared.deterministic_payload_bytes
+assert
+restored.payload_signature
+==
+prepared.payload_signature
+# retry = await client.withdraw.submit_prepared(restored)
+deadline_ts_sec
+and
+nonce
+are optional on prepare methods. When omitted, they are generated
+once during preparation and become part of the persisted signed request. The one-call
+create_api_key_to_*
+methods are convenient when the caller does not need durable retry state.
+Create to external chain
+Requires
+destination_chain_id
+and
+destination_address
+from
+polyester
+import
+new_trading_withdraw_idempotency_key
+result
+=
+await
+client.withdraw.create_api_key_to_external_chain(
+asset_id
+=
+2
+,
+quantity
+=
+"50.00"
+,
+destination_chain_id
+=
+1
+,
+destination_address
+=
+"0x..."
+,
+idempotency_key
+=
+new_trading_withdraw_idempotency_key(),
+)
+Exact amount scaling
+The wire field is always
+amount_e18
+amount_scale
+declares the input scale; the SDK then
+rescales exactly to 18 with checked overflow and no rounding. For example,
+AssetAmount.from_scaled(125, scale=2)
+becomes
+1_250_000_000_000_000_000
+(
+1.25e18
+).
+An inexact downscale is rejected.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Advanced precomputed signatures
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+create_to_funding
+,
+create_to_external_chain
+, and
+create_wallet_trading_withdraw
+require a non-empty signature and an explicit non-zero
+deadline_ts_sec
+Related
+Deposits & withdrawals guide
+Internal transfers
+Requests & idempotency
+Withdrawals & transfers security
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Whiteboard
+Next
+Zipper
+On this page
+Methods (API-key surface)
+Prepare, persist, and submit
+Create to external chain
+Exact amount scaling
+Related
+Related Topics
+Share this page
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+from pathlib import Path
+
+from polyester import PreparedTradingWithdraw, new_trading_withdraw_idempotency_key
+
+prepared = client.withdraw.prepare_api_key_to_funding(
+    asset_id=2,
+    quantity="100.00",
+    idempotency_key=new_trading_withdraw_idempotency_key(),
+)
+
+# Persist before first submission. Protect this record like other mutation state.
+Path("withdraw-request.pb").write_bytes(prepared.request_bytes)
+result = await client.withdraw.submit_prepared(prepared)
+
+# After restart or an outcome-unknown failure, restore and submit unchanged.
+restored = PreparedTradingWithdraw.from_request_bytes(
+    Path("withdraw-request.pb").read_bytes()
+)
+assert restored.deterministic_payload_bytes == prepared.deterministic_payload_bytes
+assert restored.payload_signature == prepared.payload_signature
+# retry = await client.withdraw.submit_prepared(restored)
+
+---
+
+from polyester import new_trading_withdraw_idempotency_key
+
+result = await client.withdraw.create_api_key_to_external_chain(
+    asset_id=2,
+    quantity="50.00",
+    destination_chain_id=1,
+    destination_address="0x...",
+    idempotency_key=new_trading_withdraw_idempotency_key(),
+)

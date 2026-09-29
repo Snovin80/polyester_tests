@@ -1,0 +1,233 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.AddressBookService/GetWithdrawWhitelistView
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.AddressBookService
+GetWithdrawWhitelistView
+Copy URL
+Method
+POST
+Path
+auth.v1.AddressBookService/GetWithdrawWhitelistView
+Service
+auth.v1.AddressBookService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+auth.v1.AddressBookService/GetWithdrawWhitelistView
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/GetWithdrawWhitelistView' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678"
+}'
+Responses
+"view": {
+"activeEntries": [
+"canonicalAddress": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1,
+"rawAddressHex": "3333333333333333333333333333333333333333",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"externalWhitelistRequired": false,
+"internalWhitelistRequired": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+}
+}
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.GetWithdrawWhitelistViewRequest
+Response
+auth.v1.GetWithdrawWhitelistViewResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+> 0
+Optional subaccount scope. Omit to use the root account withdraw whitelist view.
+Response
+Form
+JSON
+view
+object
+Withdraw whitelist status for the requested address book.
+4 fields
+scope
+object
+Address book for this withdraw whitelist view.
+3 fields
+scopeType
+enum
+must be defined value
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+rootAccountId
+string (fixed64)
+> 0
+Root account that owns this address book.
+subaccountId
+string (fixed64)
+> 0
+Subaccount for subaccount-scoped books. Empty for root account books.
+externalWhitelistRequired
+boolean
+Whether external withdrawals are restricted to whitelisted destinations.
+activeEntries
+object[]
+Active external withdraw whitelist entries for this address book.
+4 fields
+canonicalAddress
+string
+max 256 chars
+Destination address on the selected external network.
+rawAddressHex
+string
+max 1024 chars
+Encoded destination payload as lowercase hex, when available.
+updatedAt
+string (date-time)
+Time this whitelist entry was last updated, as a UTC timestamp.
+polychainChainId
+integer (int32)
+> 0
+External network identifier for this whitelist entry.
+internalWhitelistRequired
+boolean
+Whether internal transfers are restricted to whitelisted destinations.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.AddressBookService/GetWithdrawWhitelistView
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s391" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/GetWithdrawWhitelistView' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678"
+}'
+Responses
+"view": {
+"activeEntries": [
+"canonicalAddress": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1,
+"rawAddressHex": "3333333333333333333333333333333333333333",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"externalWhitelistRequired": false,
+"internalWhitelistRequired": false,
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "SCOPE_ROOT",
+"subaccountId": "6789012345678"
+}
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.AddressBookService/GetWithdrawWhitelistView' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "view": {
+    "activeEntries": [
+      {
+        "canonicalAddress": "0x3333333333333333333333333333333333333333",
+        "polychainChainId": 1,
+        "rawAddressHex": "3333333333333333333333333333333333333333",
+        "updatedAt": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "externalWhitelistRequired": false,
+    "internalWhitelistRequired": false,
+    "scope": {
+      "rootAccountId": "7563897446546",
+      "scopeType": "SCOPE_ROOT",
+      "subaccountId": "6789012345678"
+    }
+  }
+}

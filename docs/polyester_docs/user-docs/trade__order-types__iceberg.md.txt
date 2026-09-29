@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/iceberg.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+An iceberg order displays part of a larger limit instruction and replenishes it from hidden quantity.
+## What it would do
+In the general market concept, an **iceberg order** exposes only part of a larger limit instruction in the public Order Book. The undisplayed remainder stays hidden under defined replenishment rules.
+It is designed for a trader who wants limit-price control without displaying the full intended quantity at once. Repeated displayed fills can still reveal the larger execution over time.
+> **Iceberg is not available**
+>
+> The current public order and trigger contracts have no Iceberg request. The public Pair catalog also has no advanced-order capability flag that enables it.
+## How the concept works
+| Quantity or rule | What it controls                                                   |
+| ---------------- | ------------------------------------------------------------------ |
+| Total quantity   | The complete amount managed by the instruction                     |
+| Display quantity | The maximum amount shown publicly at one time                      |
+| Hidden quantity  | The undisplayed remainder                                          |
+| Replenishment    | When another displayed portion enters the book after fills         |
+| Priority         | Whether replenished quantity keeps or receives a new time priority |
+These fields describe the concept only. Polyester has not published reservation, replenishment, queue-priority, cancellation, or lifecycle rules for an implemented Iceberg order.
+## When it would fit
+- **Use it when displayed size should stay smaller.** The concept fits a larger limit order that should reveal only part of its intended quantity at once.
+- **Avoid it when the instruction must work on Polyester today.** Iceberg is not currently available, and repeated replenishment can still reveal the larger intent over time.
+## Example
+Let's say Bitcoin is currently trading at **100,000 USDT**. You want to sell **0.01 BTC**, worth about 1,000 USDT, without displaying the full order at once. You would choose an Iceberg order with a **0.002 BTC display quantity** so only one portion is visible at a time.
+1. The first 0.002 BTC appears in the public Order Book.
+2. After that portion fills, the next 0.002 BTC becomes visible under the order's priority rules.
+3. The order continues replenishing in 0.002 BTC portions until the full 0.01 BTC fills or the order ends.
+**Result:** No more than 0.002 BTC is displayed at once, though repeated fills can still reveal that a larger order exists.
+*This is a conceptual example. Polyester does not currently accept Iceberg orders through the application or public API.*

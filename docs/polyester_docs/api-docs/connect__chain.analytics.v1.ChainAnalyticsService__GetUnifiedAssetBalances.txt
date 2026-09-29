@@ -1,0 +1,227 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+chain.analytics.v1.ChainAnalyticsService
+GetUnifiedAssetBalances
+Get unified asset total balance chart columns.
+Copy URL
+Method
+POST
+Path
+chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances
+Service
+chain.analytics.v1.ChainAnalyticsService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"assetId": 100,
+"bucket": "1m",
+"endTsSec": 1735689600,
+"range": "DAY_1",
+"startTsSec": 1735689600
+}'
+Responses
+"assetId": 100,
+"bucket": "1m",
+"endTsSec": 1735689600,
+"points": 1,
+"range": "DAY_1",
+"startTsSec": 1735689600,
+"totalBalanceQ": [
+"1"
+]
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+chain.analytics.v1.GetUnifiedAssetBalancesRequest
+Response
+chain.analytics.v1.GetUnifiedAssetBalancesResponse
+Request body
+Form
+JSON
+Example
+assetId
+integer (int32)
+> 0
+Unified asset identifier.
+range
+enum
+must be defined value
+Standard history window. Defaults to 1 day when unspecified.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s359" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+DAY_1
+bucket
+string
+max 3 chars
+/^$|^(1…h|1d)$/
+Optional explicit bucket. Allowed values are 1m, 5m, 10m, 15m, 30m, 1h, 2h, 4h, 8h, 12h, or 1d.
+Valid buckets depend on range to keep chart payloads near 1k points.
+When omitted, the server picks the default bucket for the selected range.
+startTsSec
+integer (int32)
+> 0
+Optional inclusive start timestamp in seconds since Unix epoch.
+endTsSec
+integer (int32)
+> 0
+Optional inclusive end timestamp in seconds since Unix epoch.
+Response
+Form
+JSON
+assetId
+integer (int32)
+Unified asset identifier.
+range
+enum
+Resolved history window.
+DAY_1
+DAY_7
+DAY_30
+DAY_90
+DAY_180
+DAY_365
+bucket
+string
+Resolved bucket duration.
+startTsSec
+integer (int32)
+First bucket timestamp in seconds since Unix epoch.
+endTsSec
+integer (int32)
+Last bucket timestamp in seconds since Unix epoch.
+points
+integer (int32)
+Number of buckets represented by each value column.
+totalBalanceQ
+string[] (uint64)
+Total unified balance per bucket across public account surfaces, scaled by
+AssetConfig.quantity_scale from SpotConfig for asset_id.
+Decode: total_balance_q / 10^quantity_scale.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s389" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"assetId": 100,
+"bucket": "1m",
+"endTsSec": 1735689600,
+"range": "DAY_1",
+"startTsSec": 1735689600
+}'
+Responses
+"assetId": 100,
+"bucket": "1m",
+"endTsSec": 1735689600,
+"points": 1,
+"range": "DAY_1",
+"startTsSec": 1735689600,
+"totalBalanceQ": [
+"1"
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/chain.analytics.v1.ChainAnalyticsService/GetUnifiedAssetBalances' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "assetId": 100,
+  "bucket": "1m",
+  "endTsSec": 1735689600,
+  "range": "DAY_1",
+  "startTsSec": 1735689600
+}'
+
+---
+
+{
+  "assetId": 100,
+  "bucket": "1m",
+  "endTsSec": 1735689600,
+  "points": 1,
+  "range": "DAY_1",
+  "startTsSec": 1735689600,
+  "totalBalanceQ": [
+    "1"
+  ]
+}

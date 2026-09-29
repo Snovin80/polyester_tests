@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/limit-order.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+A limit order trades only at your chosen price or better, even if that means waiting or not filling.
+## What it does
+A **limit order** gives you control over the worst price the order may accept. A Limit buy can execute at its limit price or lower, while a Limit sell can execute at its limit price or higher.
+If eligible liquidity is not available, the order can remain open, fill partially, or end without a fill according to its [time-in-force instruction](https://testnet.polyester.com/docs/user-docs/trade/order-types/time-in-force-and-post-only).
+## How it works
+| Side | Price boundary                                    | Example                                                   |
+| ---- | ------------------------------------------------- | --------------------------------------------------------- |
+| Buy  | The order cannot pay more than the limit price    | A buy at 99,000 USDT can fill at 99,000 USDT or lower     |
+| Sell | The order cannot accept less than the limit price | A sell at 101,000 USDT can fill at 101,000 USDT or higher |
+A Limit order can rest in the Order Book, but it can also execute immediately when its price crosses available liquidity. Add [post-only](https://testnet.polyester.com/docs/user-docs/trade/order-types/time-in-force-and-post-only) when it must add liquidity instead of executing immediately as a taker.
+> **A limit price does not guarantee a fill**
+>
+> The market may never reach your price, or only part of the requested quantity may become available there.
+## When to use it
+- **Use it when your price boundary matters most.** Choose a Limit order when you will buy only at or below a maximum price, or sell only at or above a minimum price.
+- **Avoid it when you need to trade immediately.** Choose a Market order when attempting execution now matters more than waiting for one price or better.
+Choose the limit price, time-in-force, and post-only setting based on whether the order may wait, take liquidity immediately, or must remain maker-only.
+## Example
+Let's say Bitcoin is currently trading at **100,000 USDT**. You want to buy **0.01 BTC**, but only if the price falls to **99,000 USDT or lower**. Because that maximum price matters more to you than buying immediately, you choose a Limit order.
+1. You submit a Limit buy for 0.01 BTC at 99,000 USDT.
+2. The best available ask is still above 99,000 USDT, so the order waits in the Order Book.
+3. Bitcoin falls and 0.006 BTC becomes available at 99,000 USDT, partially filling the order.
+4. The remaining 0.004 BTC later fills at 98,950 USDT, which is better than your limit price.
+**Result:** You buy 0.01 BTC for 989.80 USDT before fees, at an average price of 98,980 USDT. The order never pays more than 99,000 USDT per BTC.
+*These are example prices and available quantities. If the market never reaches the limit, the order may remain open or end without filling.*
+## What to watch
+- A Limit order is not guaranteed to fill.
+- Partial fills can leave quantity open in the Order Book.
+- A crossing Limit order can execute immediately as a taker.
+- Time-in-force determines what happens to unfilled quantity.
+- Use a [Market Order](https://testnet.polyester.com/docs/user-docs/trade/order-types/market-order) when trading immediately matters more than one fixed price.

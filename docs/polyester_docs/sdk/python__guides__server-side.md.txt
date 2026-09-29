@@ -1,0 +1,17 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/server-side.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Python ships **async** (`AsyncPolyester`) and **sync** (`Polyester`) clients with the same service tree. Prefer async for bots with streams.
+## Process lifecycle
+- Create **one client** per process (or per logical bot) and reuse it.
+- Close / drop the client on shutdown so HTTP and WebSocket pools release cleanly (Python context managers, Go `Close()`, Rust drop).
+- Cancel work with async cancellation (Python task cancel), `context.Context` (Go), or Tokio cancellation (Rust).
+## Configuration
+Prefer explicit credentials from your secret store. Use `from_env` / `FromEnv` only for local scripts.
+Wait for catalogs before decimal writes. Disable catalog hydration only if you exclusively use pre-scaled integers and understand the tradeoff.
+## Wire format
+Binary Protobuf is the default Connect codec. JSON wire formats are for debugging, not hot paths. If you enable JSON, API-key signatures hash the **codec-encoded JSON body bytes that are actually sent**, not a separately marshaled protobuf blob. A body/signature mismatch fails auth.
+See [Client configuration](https://testnet.polyester.com/docs/sdk/python/reference/client-configuration).

@@ -1,0 +1,137 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+## Account scoping
+A Polyester user has one main account and any number of subaccounts. Almost every authenticated read/write takes an optional `account` field for which one the call is about:
+```ts
+await client.balances.list(); // the "active" account (see below)
+await client.balances.list({ account: "main" }); // force the main account
+await client.balances.list({ account: { subaccountId } }); // a specific subaccount
+```
+Default `"active"` resolves through the client:
+- `PolyesterBrowserClient`: the account from `auth.switchAccount(...)`
+- `PolyesterServerClient`: main account, unless you opt into the display session's active account with `useDisplaySessionActiveAccountAsDefault`
+- `PolyesterClient`: main account (no resolver)
+> **Authorization stays server-side**
+>
+> The `account` field expresses intent. The backend still verifies the caller may access that account.
+## Subaccounts
+Full lifecycle via `client.subaccounts`:
+```ts
+const { subaccounts, totalCreated } = await client.subaccounts.list();
+const detail = await client.subaccounts.get({ subaccountId }); // + apiKeys, policy, members, invites
+const updated = await client.subaccounts.update({
+subaccountId,
+expectedRevision: detail.revision,
+label: "market-making",
+});
+await client.subaccounts.update({
+subaccountId,
+expectedRevision: updated.revision,
+status: "disabled",
+});
+```
+Creating a subaccount needs a signed smart-account proof. The server derives the next smart account and salt nonce in a subaccount challenge. On `PolyesterBrowserClient`, auth requests the challenge and signs for you:
+```ts
+import { PolyesterBrowserClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+const browserClient = new PolyesterBrowserClient({
+environment: POLYESTER_TESTNET_ENVIRONMENT,
+accountSigner, // root signer used to log in
+});
+const { subaccountId } = await browserClient.auth.createSubaccount({
+// derive the signer for the server-chosen smart account
+accountSigner: (challenge) => deriveSubaccountSigner(challenge.smartAccountSaltNonce),
+label: "experiments",
+});
+```
+### Sharing and roles
+Invite other users, assign roles, optionally require MFA:
+```ts
+await client.subaccounts.inviteMember({ subaccountId, granteeAccountId, role: "trader" });
+await client.subaccounts.listInvites({ direction: "outgoing" });
+await client.subaccounts.respondInvite({ inviteId, action: "accept" });
+await client.subaccounts.updateMemberRole({
+subaccountId,
+granteeAccountId,
+role: "viewer",
+});
+await client.subaccounts.setMemberMfaRequirement({ subaccountId, requireMemberMfa: true });
+await client.subaccounts.removeMember({ subaccountId, granteeAccountId });
+// audit trail
+const { events } = await client.subaccounts.listEvents({ subaccountId });
+```
+### Policies
+Reusable permission templates with spot-market scopes and allowed actions. Subaccount policies also carry order limits, trading halts, review times, expiry, and policy locks. Updates take `expectedRevision` and patch only the fields you send.
+```ts
+// Subaccount policies
+const policies = await client.subaccounts.policies.list();
+const policy = await client.subaccounts.policies.create({
+name: "restricted trading",
+spotMarketScope: "all",
+actions: ["read-balances", "read-spot", "trade-spot"],
+});
+await client.subaccounts.policies.apply({ subaccountId, policyId: policy.id });
+await client.subaccounts.policies.update({
+policyId: policy.id,
+expectedRevision: policy.revision,
+name: "restricted trading",
+});
+// API key policies
+const keyPolicy = await client.apiKeys.policies.create({
+name: "bot",
+spotMarketScope: "all",
+actions: ["read-balances", "read-spot", "trade-spot"],
+});
+await client.apiKeys.policies.apply({ keyId, policyId: keyPolicy.id });
+```
+## Balances
+```ts
+const balances = await client.balances.list();
+for (const b of balances) {
+console.log(b); // per-asset balances as decimal strings
+}
+```
+History comes in two columnar, chart-ready shapes: per-asset balance history and account equity history. Both use a fixed `range`, not custom start/end timestamps.
+```ts
+const history = await client.balances.getBalanceHistory({
+range: "7d",
+accountCodes: ["trading"],
+});
+const equity = await client.balances.getEquityHistory({
+range: "7d",
+groupBy: "account",
+});
+```
+`range` is one of `"1d"`, `"7d"`, `"30d"`, `"90d"`, `"180d"`, or `"365d"`. `accountCodes` is optional on both methods; balance history also accepts an optional numeric `ledger`. Equity history can group by `"account"` (default) or `"asset"`. The response supplies the actual `startTsSec` and `endTsSec`.
+Live updates:
+```ts
+const unsubscribe = client.balances.subscribe({
+accountId,
+onEvent: (balance) => updateUI(balance),
+});
+```
+## Resolving other accounts
+Internal transfers need a destination. `client.accounts.resolve` turns a username, account id, or smart-account address into concrete destinations:
+```ts
+const matches = await client.accounts.resolve({
+query: "hunter",
+includeSubaccounts: true,
+});
+```
+## Profile
+```ts
+const profile = await client.auth.profile.get();
+await client.auth.profile.update({
+bio: "Trading spot on Polyester.",
+website: "https://example.com",
+});
+const history = await client.auth.profile.getUsernameHistory();
+```
+## Address book
+Saved destinations, tags, whitelists, and recent counterparties live under `client.addressBook`. See the [Address book reference](https://testnet.polyester.com/docs/sdk/typescript/reference/address-book).
+`getView()` powers a dashboard in one call. `subscribeViewInvalidations` tells you when to refetch.
+## MFA
+`client.mfa` manages TOTP and passkey enrollment, challenges, recovery codes, and step-up proofs. Common flow: a mutation throws `StepUpRequiredError`, you complete a challenge, retry with `stepUpToken`. Covered in [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling).

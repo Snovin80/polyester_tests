@@ -1,0 +1,254 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/faucet-backups
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Faucet Backups · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Faucet Backups
+Faucet Backups
+Copy page
+View as Markdown
+Open in
+Use these faucets when a
+testnet faucet
+is unavailable or rate-limited. Some require a mainnet balance before they will send testnet funds.
+After you receive funds,
+deposit
+them into Polyester.
+Asset
+Network
+Faucet
+Notes
+AVAX
+Avalanche C Fuji
+Chainlink
+0.5 AVAX per claim. Hold at least 1 LINK on Ethereum mainnet.
+AVAX
+Avalanche C Fuji
+QuickNode
+Hold 0.0025 ETH or more on Ethereum mainnet.
+BNB
+BNB Smart Chain Testnet
+BNB Chain
+0.3 BNB per claim. Hold at least 0.002 BNB on BNB Smart Chain mainnet.
+BNB
+BNB Smart Chain Testnet
+ZalalenA
+0.0005 BNB per claim.
+BTC
+Bitcoin Testnet
+DevWork
+0.000055 BTC per claim.
+ETC
+Ethereum Classic Testnet
+GHOST
+5 ETC per claim.
+ETH
+Ethereum Sepolia
+PK910
+Proof-of-work browser mining. Amount depends on mining completed.
+ETH
+Ethereum Sepolia
+Alchemy
+0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.
+ETH
+Base Sepolia
+Alchemy
+0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.
+ETH
+Base Sepolia
+QuickNode
+Hold 0.0025 ETH or more on Ethereum mainnet.
+ETH
+Arbitrum Sepolia
+Alchemy
+0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.
+ETH
+Arbitrum Sepolia
+QuickNode
+Hold 0.0025 ETH or more on Ethereum mainnet.
+ETH
+Robinhood Testnet
+Alchemy
+0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.
+ETH
+Robinhood Testnet
+QuickNode
+0.5 ETH per claim. Hold 0.0025 ETH or more on Ethereum mainnet.
+HYPE
+HyperEVM Testnet
+QuickNode
+Requires HYPE on Hyperliquid mainnet.
+POL
+Polygon Amoy
+Alchemy
+0.1 POL per claim. Hold at least 0.001 ETH on Ethereum mainnet.
+POL
+Polygon Amoy
+Chainlink
+0.5 POL per claim. Hold at least 1 LINK on Ethereum mainnet.
+POL
+Polygon Amoy
+QuickNode
+0.025 POL per claim. Hold 0.0025 ETH or more on Ethereum mainnet.
+XRP
+Ripple Testnet
+XRPL.to
+200 XRP per claim.
+Faucet amounts, availability, and eligibility can change. Use the faucet's own page for current terms.
+Related Topics
+Testnet Faucets
+Claim testnet Assets from faucets that do not require a mainnet balance.
+Confirmation Requirements
+See the confirmation requirements and estimated deposit times for supported chains.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Previous
+Testnet Faucets
+Next
+Polyester Contracts
+On this page
+Related Topics
+Share this page
+Faucet Backups
+Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+Share
+Copy Link

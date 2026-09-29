@@ -1,0 +1,79 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/error-handling.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Match on `polyester::Error` when you need variant-specific fields. Full variant list: [Errors reference](https://testnet.polyester.com/docs/sdk/rust/reference/errors).
+For retry loops, prefer the classifiers over string matching or hand-rolled variant lists:
+- `err.is_retryable()` - transport, rate-limit, and server failures that may succeed after backoff
+- `err.retry_after()` - honor a server-requested delay when present
+- `err.mutation_outcome_unknown()` - the mutation may already have committed; reconcile before retrying and reuse the original request identity
+`is_retryable()` is not proof that a mutation was unapplied. Only `mutation_outcome_unknown()` obliges reconciliation and key reuse. These classifiers are independent: `Error::ResponseContract` is non-retryable but has an unknown mutation outcome because the RPC succeeded and only the returned payload violated the SDK contract.
+```rust
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide};
+use polyester::{Error, Quantity};
+let quantity_scale = client
+let params = CreateOrderParams {
+symbol: "BTC-USDT".into(),
+side: CreateSide::Buy,
+order_type: CreateOrderType::Limit,
+quantity: Some(Quantity::from_decimal_str("0.01", quantity_scale, Some("BTC-USDT".into()), None)?),
+max_quote_debit_scaled: None,
+price: None,
+time_in_force: None,
+client_order_id: Some("mm-bot-001".into()),
+subaccount_id: None,
+post_only: None,
+market_client_ref_price: None,
+fee_asset: None,
+self_trade_prevention: None,
+market_max_slippage: None,
+attached_risk: None,
+};
+match client.orders.create(params.clone()).await {
+Ok(r) => println!("{}", r.order_id),
+Err(err) if err.mutation_outcome_unknown() => {
+// Reconcile by client_order_id before deciding whether to retry.
+// Retained reuse conflicts; it does not replay the earlier result.
+return Err(err);
+}
+Err(err) if err.is_retryable() => {
+if let Some(seconds) = err.retry_after() {
+tokio::time::sleep(std::time::Duration::from_secs_f64(seconds)).await;
+}
+// Reconcile this create by client_order_id before resubmitting.
+return Err(err);
+}
+Err(Error::QueueOverflow(_)) => {
+// subscription only, resubscribe after catching up
+}
+Err(Error::Auth(message)) => {
+// Unary Unauthenticated and PermissionDenied both map here.
+eprintln!("fix credentials or API-key policy: {message}");
+}
+Err(Error::Validation(msg)) => {
+// fix input (e.g. invalid client_order_id charset/length)
+eprintln!("{msg}");
+}
+Err(err) => return Err(err),
+}
+```
+## Retry rules
+- Retry when `is_retryable()` is true, with exponential backoff.
+- Local signing-capacity exhaustion is also `Error::RateLimit`. Async client calls wait without blocking Tokio worker threads; respect `retry_after()` if the bounded wait is exhausted.
+- When `mutation_outcome_unknown()` is true, reconcile server state first, then reuse the same **`client_order_id`**, **`request_id`**, or **`client_trigger_id`**.
+- Do not blindly retry `Error::ResponseContract`; reconcile and inspect/escalate the malformed successful response before deciding on any new action.
+- Reconcile every batch item before retrying; `request_id` is not a whole-batch atomicity guarantee.
+- Do **not** generate a fresh idempotency key inside the retry loop.
+- Realtime **overflow** is fail-closed: treat it as fatal for that subscription.
+- Unary order API `Unauthenticated` and `PermissionDenied` responses map to `Error::Auth`; fix the credentials or API-key policy before retrying. `Error::PermissionDenied` is reserved for an HTTP 403 from private realtime-token acquisition, where `code`, `context`, and `endpoint` identify the denied stream permission.
+> **Do not replace an unresolved client order ID**
+>
+> Creating a new `client_order_id` can double-place an order if the first attempt already applied. Keep the original ID for reconciliation; a duplicate conflict does not replay the earlier outcome.
+## Validation & precision
+Local validation failures (`Error::Validation`) include catalog scale misses, invalid `client_order_id` / `request_id` charset or length, and unsupported order controls. Fix the input; do not retry unchanged.
+## Related
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/rust/concepts/requests-and-idempotency)
+- [Errors reference](https://testnet.polyester.com/docs/sdk/rust/reference/errors)
+- [Trading guide](https://testnet.polyester.com/docs/sdk/rust/guides/trading)

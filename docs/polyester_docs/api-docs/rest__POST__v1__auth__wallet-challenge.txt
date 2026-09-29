@@ -1,0 +1,163 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/auth/wallet-challenge
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+AuthService
+Create Wallet Challenge
+Create a short-lived EIP-4361 message for wallet login.
+Copy URL
+Method
+POST
+Path
+/v1/auth/wallet-challenge
+Visibility
+Public endpoint
+POST
+/v1/auth/wallet-challenge
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/auth/wallet-challenge' \
+--header 'Accept: */*' \
+--header 'Content-Type: application/json' \
+--data '{
+"purpose": "LOGIN",
+"signerAddress": "0x5555555555555555555555555555555555555555",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"uri": "https://devnet.polyester.com"
+}'
+Responses
+"expiresAt": "2026-01-01T00:05:00Z",
+"message": "devnet.polyester.com wants you to sign in with your Ethereum account:\n0x5555555555555555555555555555555555555555\n\nSign in to Polyester. This does not authorize a transaction.\n\nURI: https://devnet.polyester.com\nVersion: 1\nChain ID: 1\nNonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nIssued At: 2026-01-01T00:00:00Z\nExpiration Time: 2026-01-01T00:05:00Z\nRequest ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nResources:\n- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+purpose
+string
+required
+Operation for which the challenge may be consumed. Must be LOGIN.
+signerAddress
+string
+required
+/^0x[0-…]{40}$/
+Address whose signature authorizes the challenge and that is written into
+the EIP-4361 message. This must be an EOA that controls the target smart account.
+smartAccountAddress
+string
+required
+/^0x[0-…]{40}$/
+Smart-account EVM address being authenticated, formatted as 0x plus 40 hex characters.
+uri
+string
+required
+1-2048 chars
+Browser origin URI requesting the signature, including scheme and optional
+port but no path, query, fragment, or user information.
+Response
+Form
+JSON
+message
+string
+Canonical EIP-4361 message. Sign these UTF-8 bytes exactly once with
+personal_sign; do not hash, alter, or reconstruct the message.
+Example
+devnet.polyester.com wants you to sign in with your Ethereum account:
+0x5555555555555555555555555555555555555555
+Sign in to Polyester. This does not authorize a transaction.
+URI: https://devnet.polyester.com
+Version: 1
+Chain ID: 1
+Nonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605
+Issued At: 2026-01-01T00:00:00Z
+Expiration Time: 2026-01-01T00:05:00Z
+Request ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605
+Resources:
+- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222
+expiresAt
+string (date-time)
+Time in UTC when the challenge expires. Wallet challenges expire after 5 minutes.
+Example
+2026-01-01T00:05:00Z
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/auth/wallet-challenge
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s365" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/auth/wallet-challenge' \
+--header 'Accept: */*' \
+--header 'Content-Type: application/json' \
+--data '{
+"purpose": "LOGIN",
+"signerAddress": "0x5555555555555555555555555555555555555555",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"uri": "https://devnet.polyester.com"
+}'
+Responses
+"expiresAt": "2026-01-01T00:05:00Z",
+"message": "devnet.polyester.com wants you to sign in with your Ethereum account:\n0x5555555555555555555555555555555555555555\n\nSign in to Polyester. This does not authorize a transaction.\n\nURI: https://devnet.polyester.com\nVersion: 1\nChain ID: 1\nNonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nIssued At: 2026-01-01T00:00:00Z\nExpiration Time: 2026-01-01T00:05:00Z\nRequest ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nResources:\n- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/wallet-challenge' \
+  --header 'Accept: */*' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "purpose": "LOGIN",
+  "signerAddress": "0x5555555555555555555555555555555555555555",
+  "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+  "uri": "https://devnet.polyester.com"
+}'
+
+---
+
+{
+  "expiresAt": "2026-01-01T00:05:00Z",
+  "message": "devnet.polyester.com wants you to sign in with your Ethereum account:\n0x5555555555555555555555555555555555555555\n\nSign in to Polyester. This does not authorize a transaction.\n\nURI: https://devnet.polyester.com\nVersion: 1\nChain ID: 1\nNonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nIssued At: 2026-01-01T00:00:00Z\nExpiration Time: 2026-01-01T00:05:00Z\nRequest ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nResources:\n- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222"
+}

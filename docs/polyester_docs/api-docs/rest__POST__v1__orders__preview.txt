@@ -1,0 +1,577 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/orders/preview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrdersService
+Preview Order
+Check current order eligibility and available balance, and preview resolved quantity, price protection, quote debit, and fees. The result is advisory.
+Copy URL
+Method
+POST
+Path
+/v1/orders/preview
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+/v1/orders/preview
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/preview' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"order": {
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+}
+},
+"baseQty": "100000",
+"clientOrderId": "cli-ord-20250101-001",
+"feeAsset": "QUOTE",
+"marketIoc": {
+"clientRefPrice": "0.005",
+"maxSlippageTicks": 1
+},
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"side": "BUY",
+"symbol": "BTC-USDT"
+},
+"subaccountId": "45LUmqjT"
+}'
+Responses
+"admissible": true,
+"evaluatedAt": "2026-07-29T12:00:00Z",
+"protectedPriceBound": "50500",
+"resolvedBaseQty": "0.0198"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+order
+object
+required
+Order intent to evaluate without submitting it.
+13 fields
+attachedRisk
+object
+Optional attached risk controls that arm after the parent order fills.
+4 fields
+oco
+boolean
+required
+If true, take-profit and the configured stop leg (stop-loss or trailing-stop) form an OCO pair: when one fires, the other is canceled. Default is false (no mutual cancellation).
+Unset
+False
+True
+stopLoss
+object
+Optional stop-loss configuration.
+2 fields
+child
+object
+Child execution when the threshold is crossed.
+2 fields
+limitGtc
+object
+Resting GTC limit child.
+1 field
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+Edit in JSON
+triggerPrice
+string
+required
+/^[0-9]…9]+)?$/
+Trigger price in quote units scaled by 1e9.
+takeProfit
+object
+Optional take-profit configuration.
+2 fields
+child
+object
+Child execution when the threshold is crossed.
+2 fields
+limitGtc
+object
+Resting GTC limit child.
+1 field
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market child with implicit IOC behavior.
+Edit in JSON
+triggerPrice
+string
+required
+/^[0-9]…9]+)?$/
+Trigger price in quote units scaled by 1e9.
+trailingStop
+object
+Optional trailing stop configuration.
+5 fields
+activationPrice
+string
+/^[0-9]…9]+)?$/
+Optional activation price: trailing only starts after this price is reached. If omitted, trailing starts immediately after the parent order fills. Expressed in quote units scaled by 1e9.
+maxSlippageBps
+integer (int32)
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+trailingDistanceBps
+integer (int32)
+Trailing distance in basis points (1 bp = 0.01%).
+trailingDistanceTicks
+string
+/^[0-9]…9]+)?$/
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+baseQty
+string
+/^[0-9]…9]+)?$/
+Exact gross base quantity as a human-readable decimal using the pair's base quantity scale.
+clientOrderId
+string
+Optional account-scoped identifier for correlation, lookup, and cancellation. While this identifier is retained, reuse returns CONFLICT_DUPLICATE_CLIENT_ORDER_ID for every new submission, even with the same payload. This identifier enables GetOrder reconciliation after a timeout; it does not provide exact replay.
+feeAsset
+enum
+Asset charged for fees. Defaults to QUOTE. BASE is available only for BUY orders; SELL orders must use QUOTE.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s400" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+QUOTE
+limitFok
+object
+Fill-or-kill limit order.
+1 field
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitGtc
+object
+Resting GTC limit order, optionally post-only.
+2 fields
+postOnly
+boolean
+required
+Reject the order instead of taking liquidity. Post-only is available only on this resting limit-order variant.
+Unset
+False
+True
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitGtd
+object
+Limit order with an exact expiry time.
+3 fields
+expireAt
+string (date-time)
+required
+Exact expiry time in UTC. It must be at least 1 second and at most 30 days after validation time. The order cannot execute when the current time equals this value.
+postOnly
+boolean
+required
+Reject the order instead of taking liquidity.
+Unset
+False
+True
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+limitIoc
+object
+Immediate-or-cancel limit order.
+1 field
+price
+string
+required
+/^[0-9]…9]+)?$/
+Limit price in quote units scaled by 1e9.
+marketIoc
+object
+Market order with implicit IOC behavior.
+3 fields
+clientRefPrice
+string
+/^[0-9]…9]+)?$/
+Optional client reference price in quote units scaled by 1e9. When omitted, admission uses server-side reference pricing.
+maxSlippageBps
+integer (int32)
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+maxSlippageTicks
+integer (int64)
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxQuoteDebit
+string
+/^[0-9]…9]+)?$/
+Hard all-in quote debit limit scaled by the pair's quote_quantity_scale from GetSpotConfig. Valid only for BUY market IOC and BUY limit IOC.
+selfTradePreventionMode
+enum
+Self-trade prevention mode. Defaults to EXPIRE_MAKER if unspecified.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s448" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+EXPIRE_MAKER
+side
+enum
+required
+Order side.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s450" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+BUY
+symbol
+string
+required
+Trading pair symbol, e.g. BTC-USDT.
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Target sub-account numeric ID. When omitted, uses caller's root account.
+Response
+Form
+JSON
+admissible
+boolean
+Whether the order passed the current validation, policy, risk, and available-balance checks.
+evaluatedAt
+string (date-time)
+Time at which this admission evaluation completed.
+protectedPriceBound
+string
+/^[0-9]…9]+)?$/
+Protective execution boundary in quote units scaled by 1e9. This is not an expected fill price. Present when price protection was resolved.
+rejection
+object
+Typed reason the order is not currently admissible. Omitted when admissible is true.
+3 fields
+code
+enum
+Stable error code matching the REST problem+json "code" field.
+BAD_REQUEST
+INVALID_ARGUMENT
+INSUFFICIENT_FUNDS
+UNKNOWN_SYMBOL
+BAD_PRICE
+BAD_QTY
+MIN_NOTIONAL
+QTY_STEP_SIZE
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+UNAVAILABLE
+UNAUTHENTICATED
+PERMISSION_DENIED
+NOT_FOUND
+UPSTREAM_ERROR
+FEE_ASSET_NOT_ALLOWED
+PAIR_DISABLED
+ORDER_UNKNOWN
+INTERNAL_ERROR
+SUBACCOUNT_INACTIVE
+POLICY_MARKET_DENY
+POLICY_MAX_NOTIONAL
+POLICY_TRADING_HALTED
+POLICY_SPOT_TRADE_DENY
+API_KEY_ROOT_SCOPE_ONLY
+API_KEY_SUB_SCOPE_ONLY
+API_KEY_SUBACCOUNT_MISMATCH
+API_KEY_POLICY_REQUIRED
+API_KEY_UNKNOWN
+API_KEY_MARKET_DENY
+PRICE_TICK_SIZE
+MIN_QTY
+POST_ONLY_LIMIT_ONLY
+BATCH_TOO_LARGE
+POLICY_MAX_OPEN_ORDERS
+MODIFICATION_REQUIRES_REPLACE
+CONFLICT_IDEMPOTENCY_KEY_REUSE
+MARKET_PRICE_UNAVAILABLE
+PAIR_NOT_LISTED_YET
+PAIR_DELISTED
+PAIR_CANCEL_ONLY
+PAIR_POST_ONLY
+PAIR_REDUCE_ONLY
+RISK_LIMIT
+MARKET_HALTED
+ACCOUNT_UNKNOWN
+POST_ONLY_CROSS
+REDUCE_ONLY_BLOCKED
+PRICE_BAND_VIOLATION
+MARKET_CAP_VIOLATION
+EMPTY_BOOK
+FOK_INSUFFICIENT_LIQUIDITY
+ORDER_ALREADY_TERMINAL
+TRIGGER_PRICE_INVALID
+TRIGGER_PRICE_SOURCE_UNSUPPORTED
+TRAILING_DISTANCE_INVALID
+TRIGGER_NOT_FOUND
+TRIGGER_CANCEL_REJECTED
+TRIGGER_STATUS_INVALID
+TRIGGER_NOT_MODIFIABLE
+CONFLICT_DUPLICATE_CLIENT_TRIGGER_ID
+MAX_SLIPPAGE_INVALID
+STALE_QUOTE
+VALIDATION_ERROR
+OVERLOADED
+MAX_QUOTE_DEBIT_TOO_SMALL
+RATE_LIMIT_EXCEEDED
+SUBACCOUNT_READ_FORBIDDEN
+POLICY_SPOT_READ_DENY
+API_KEY_SPOT_READ_DENY
+CANCEL_REQUEST_EXPIRED
+rateLimit
+object
+Structured quota state. Present only for rate-limit rejections.
+9 fields
+limit
+integer (int64)
+Active weighted quota. Present for quota-exhaustion responses.
+operationId
+string
+Stable operation identifier shared by all aliases of the same action.
+policyClass
+enum
+Mutable quota family used for the decision.
+AUTH_PUBLIC
+TRADING_PLACE
+TRADING_CANCEL
+TRADING_READ
+ACCOUNT_ADMIN
+PUBLIC_READ
+ACCOUNT_SECURITY
+DEPOSIT_CREATE
+INTERNAL_TRANSFER
+WITHDRAW_SUBMIT
+WITHDRAW_VALIDATE
+GUARD_SIGN
+SOCIAL_PROVIDER
+policyVersion
+integer (int64)
+Policy version used for the decision, when available.
+reason
+enum
+Machine-readable failure reason.
+QUOTA_EXCEEDED
+AUTHORITY_UNAVAILABLE
+refillModel
+enum
+Refill behavior used by the active limiter.
+CONTINUOUS
+FIXED_WINDOW
+ROLLING_WINDOW
+remaining
+integer (int64)
+Weighted capacity remaining when the request was rejected.
+retryAfterMs
+integer (int64)
+Minimum relative delay before retrying, in milliseconds.
+scope
+enum
+Caller dimension that owns the exhausted capacity.
+CLIENT_IP
+API_KEY
+ACCOUNT
+SUBACCOUNT
+CONNECTION
+SERVICE
+REGION
+SYMBOL
+AUTH_SUBJECT
+violations
+object[]
+Field-level validation failures. Empty for non-validation domain errors.
+3 fields
+fieldPath
+string
+Protobuf field path relative to the request, using canonical field names.
+message
+string
+Human-readable explanation of the violation.
+ruleId
+string
+Stable validation rule identifier suitable for programmatic matching.
+resolvedBaseQty
+string
+/^[0-9]…9]+)?$/
+Gross base quantity resolved for execution, scaled by the pair's base_quantity_scale from GetSpotConfig. Present when sizing was resolved.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/orders/preview
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s579" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/preview' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"order": {
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+},
+"takeProfit": {
+"child": {
+"marketIoc": {}
+},
+"triggerPrice": "0.005"
+}
+},
+"baseQty": "100000",
+"clientOrderId": "cli-ord-20250101-001",
+"feeAsset": "QUOTE",
+"marketIoc": {
+"clientRefPrice": "0.005",
+"maxSlippageTicks": 1
+},
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"side": "BUY",
+"symbol": "BTC-USDT"
+},
+"subaccountId": "45LUmqjT"
+}'
+Responses
+"admissible": true,
+"evaluatedAt": "2026-07-29T12:00:00Z",
+"protectedPriceBound": "50500",
+"resolvedBaseQty": "0.0198"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/orders/preview' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "order": {
+    "attachedRisk": {
+      "oco": false,
+      "stopLoss": {
+        "child": {
+          "marketIoc": {}
+        },
+        "triggerPrice": "0.005"
+      },
+      "takeProfit": {
+        "child": {
+          "marketIoc": {}
+        },
+        "triggerPrice": "0.005"
+      }
+    },
+    "baseQty": "100000",
+    "clientOrderId": "cli-ord-20250101-001",
+    "feeAsset": "QUOTE",
+    "marketIoc": {
+      "clientRefPrice": "0.005",
+      "maxSlippageTicks": 1
+    },
+    "selfTradePreventionMode": "EXPIRE_MAKER",
+    "side": "BUY",
+    "symbol": "BTC-USDT"
+  },
+  "subaccountId": "45LUmqjT"
+}'
+
+---
+
+{
+  "admissible": true,
+  "evaluatedAt": "2026-07-29T12:00:00Z",
+  "protectedPriceBound": "50500",
+  "resolvedBaseQty": "0.0198"
+}

@@ -1,0 +1,53 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Programmatic access uses **Ed25519 API keys**. The SDK signs authenticated ConnectRPC requests and fetches private realtime tokens for you.
+## Recommended: explicit credentials
+```python
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+async with AsyncPolyester(
+environment=POLYESTER_TESTNET_ENVIRONMENT,
+api_key_id="ak_...",
+api_private_key="...",  # 64-char hex from key creation
+default_account_id="...",  # Profile → Account ID
+) as client:
+await client.wait_for_catalogs()
+```
+## Environment variables
+Read secrets in your process and pass them in:
+```python
+import os
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+client = AsyncPolyester(
+environment=POLYESTER_TESTNET_ENVIRONMENT,
+api_key_id=os.environ["POLYESTER_API_KEY_ID"],
+api_private_key=os.environ["POLYESTER_API_PRIVATE_KEY"],
+default_account_id=os.environ["POLYESTER_ACCOUNT_ID"],
+)
+```
+For scripts only, `AsyncPolyester.from_env()` / `Polyester.from_env()` load the network preset, credentials, and Account ID. Set `POLYESTER_ENV=testnet`. Prefer explicit config in production.
+| Variable                                 | Purpose                                 |
+| ---------------------------------------- | --------------------------------------- |
+| `POLYESTER_ENV`                          | Network preset, set to `testnet`        |
+| `POLYESTER_API_KEY_ID`                   | API key id                              |
+| `POLYESTER_API_PRIVATE_KEY`              | 64-char hex private key                 |
+| `POLYESTER_ACCOUNT_ID`                   | Profile Account ID                      |
+| `POLYESTER_API_URL` / `POLYESTER_WS_URL` | Optional `api_url` / `ws_url` overrides |
+> **Never commit secrets**
+>
+> Use placeholders in docs and samples. Store production keys in your secret manager.
+## Generate a keypair
+```python
+pair = client.api_keys.generate_keypair()
+# pair.public_key_hex / pair.secret_key_hex, persist secret yourself
+```
+Local key material only via `generate_keypair()`. Listing and subscribing use `client.api_keys`. **Creating** API keys is JWT/session-only (TypeScript / browser), not exposed on this SDK. See [API keys](https://testnet.polyester.com/docs/sdk/python/reference/api-keys).
+## Public vs private
+- Public market data works with no key.
+- Private RPCs and private WebSocket channels need a key **and** Account ID.
+## Subaccount scope
+Set `default_sub_account_id` for default scoping, or pass per-call `account` / `sub_account_id` where the service supports it.
+Concept: [Authentication model](https://testnet.polyester.com/docs/sdk/python/concepts/authentication-model). Config: [Client configuration](https://testnet.polyester.com/docs/sdk/python/reference/client-configuration).

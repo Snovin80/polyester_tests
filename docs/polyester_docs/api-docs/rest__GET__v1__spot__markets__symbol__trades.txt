@@ -1,0 +1,192 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/spot/markets/symbol/trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketDataService
+Get Trades
+Retrieve recent public trades for a spot symbol, ordered newest first. Supports optional aggressor side, inclusive time-range, and opaque page-token pagination filters.
+Copy URL
+Method
+GET
+Path
+/v1/spot/markets/{symbol}/trades
+Visibility
+Public endpoint
+GET
+/v1/spot/markets/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/BTC-USDT/trades?limit=100' \
+--header 'Accept: */*'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"trades": [
+"executedAt": "2025-01-01T00:00:00Z",
+"matchId": "100001",
+"price": "0.005",
+"qty": "100000",
+"side": "BUY",
+"symbol": "BTC-USDT"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+symbol
+string
+required
+Trading pair symbol, e.g. BTC-USDT
+Query parameters
+Example
+endTime
+string (date-time)
+Filter trades executed at or before this time (inclusive, RFC3339)
+limit
+integer
+≤ 1000
+Maximum trades to return. Default 100, max 1000.
+pageToken
+string
+max 512 chars
+Opaque cursor from the previous response.
+side
+enum
+must be defined value
+Filter by aggressor side. BUY means the taker bought the base asset; SELL means the taker sold the base asset.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s335-side" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select side
+startTime
+string (date-time)
+Filter trades executed at or after this time (inclusive, RFC3339)
+Response
+Form
+JSON
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+trades
+object[]
+Trades ordered newest-first by execution timestamp, with match_id as a tie-breaker.
+6 fields
+executedAt
+string (date-time)
+Trade execution timestamp, in nanoseconds since the Unix epoch (UTC).
+Example
+2025-01-01T00:00:00Z
+matchId
+string
+/^[0-9]+$/
+Stable trade id within the symbol, suitable for pagination and de-duplication.
+Example
+100001
+price
+string
+/^[0-9]…9]+)?$/
+Trade price in quote-asset units scaled by 1e9.
+Example
+0.005
+qty
+string
+/^[0-9]…9]+)?$/
+Traded base-asset quantity scaled by the pair's base_quantity_scale from GetSpotConfig.
+Example
+100000
+side
+enum
+True when the taker/aggressor bought the base asset; false when the taker/aggressor sold the base asset.
+BUY
+SELL
+Example
+BUY
+symbol
+string
+Stable numeric pair id from GetSpotConfig.
+Example
+BTC-USDT
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/spot/markets/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s371" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/BTC-USDT/trades?limit=100' \
+--header 'Accept: */*'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"trades": [
+"executedAt": "2025-01-01T00:00:00Z",
+"matchId": "100001",
+"price": "0.005",
+"qty": "100000",
+"side": "BUY",
+"symbol": "BTC-USDT"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/spot/markets/BTC-USDT/trades?limit=100' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "trades": [
+    {
+      "executedAt": "2025-01-01T00:00:00Z",
+      "matchId": "100001",
+      "price": "0.005",
+      "qty": "100000",
+      "side": "BUY",
+      "symbol": "BTC-USDT"
+    }
+  ]
+}

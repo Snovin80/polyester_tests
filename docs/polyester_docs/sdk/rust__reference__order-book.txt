@@ -1,0 +1,414 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/order-book
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order book · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Order book
+Order book
+Copy page
+View as Markdown
+Open in
+client.orderbook
+reads spot depth snapshots and maintains a stateful live book. It uses the
+public transport, so no authentication is required. Realtime support is always compiled; the
+realtime
+Cargo feature is only an empty compatibility flag.
+Levels are price/qty pairs, best-first (bids descending, asks ascending). Each snapshot carries
+book_seq
+, the backend sequence number used to detect gaps.
+Methods
+Method
+Summary
+get
+Fetch a one-shot depth snapshot.
+create_subscription
+Managed live book (snapshot + sequence-checked deltas).
+subscribe_deltas
+Raw delta stream (no local merge).
+There is no separate
+subscribe
+convenience alias, use
+create_subscription
+Get
+Fetches a depth snapshot and returns
+OrderbookData
+Some(depth)
+for an explicit level
+(
+1, 5, 10, 20, 50, 100, 200, 500, 1000
+).
+None
+/
+0
+leaves depth unspecified (reported as 50).
+let
+book
+=
+client
+orderbook
+get
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+println!
+(
+"{:?} {:?} {}"
+,
+book
+bids
+first
+(),
+book
+asks
+first
+(),
+book
+book_seq);
+Create subscription
+Builds a managed live order book: REST snapshot, then Centrifugo deltas with sequence checking.
+Gaps trigger a REST refresh. Returns
+orderbook::Subscription
+updates().recv().await
+(not
+TypedSubscription::recv
+).
+use
+polyester
+services
+CreateSubscriptionOptions
+;
+let
+mut
+sub
+=
+client
+orderbook
+create_subscription
+(
+CreateSubscriptionOptions
+symbol
+"BTC-USDT"
+into
+(),
+depth
+Some
+(
+50
+),
+bucket
+Some
+(
+"1.0"
+into
+()),
+Default
+default
+()
+})
+;
+while
+let
+Some
+(
+book
+)
+=
+sub
+updates
+()
+recv
+()
+println!
+(
+"{} {}"
+,
+book
+book_seq,
+book
+bids
+len
+());
+break
+;
+}
+sub
+set_bucket
+(
+"5.0"
+)
+?
+;
+// validates and re-aggregates without reconnecting
+sub
+close
+();
+symbol_id
+is resolved from catalogs when omitted; call
+wait_for_catalogs().await?
+first if you
+rely on symbol strings.
+One-shot snapshots support depth
+1000
+; managed realtime channels are capped at depth
+500
+Buckets must be positive price increments. Bids round down and asks round up, so aggregation never
+displays an ask below its executable price or narrows the visible spread artificially.
+Malformed snapshots or checked-arithmetic overflow return
+Error::Validation
+instead of
+panicking, wrapping, or producing levels with missing fields. A malformed delta is rejected
+atomically and triggers a snapshot refresh without advancing the local sequence.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prefer the managed subscription
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+create_subscription
+handles snapshot fetch, sequence gaps, and reconnect refetch.
+Subscribe deltas
+Returns
+TypedSubscription<OrderBookDeltaUpdate>
+recv_result().await
+so terminal errors
+are not separated from stream closure.
+let
+mut
+deltas
+=
+client
+orderbook
+subscribe_deltas
+(
+1
+,
+Some
+(
+50
+))
+;
+while
+let
+Some
+(
+delta
+)
+=
+deltas
+recv_result
+()
+println!
+(
+"{:?}"
+,
+delta
+);
+break
+;
+}
+Related
+Market data guide
+Streaming guide
+Market overview
+Public trades
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Market overview
+Next
+Orders
+On this page
+Methods
+Get
+Create subscription
+Subscribe deltas
+Related
+Related Topics
+Share this page
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+let book = client.orderbook.get("BTC-USDT", Some(20)).await?;
+println!("{:?} {:?} {}", book.bids.first(), book.asks.first(), book.book_seq);
+
+---
+
+use polyester::services::CreateSubscriptionOptions;
+
+let mut sub = client
+    .orderbook
+    .create_subscription(CreateSubscriptionOptions {
+        symbol: "BTC-USDT".into(),
+        depth: Some(50),
+        bucket: Some("1.0".into()),
+        ..Default::default()
+    })
+    .await?;
+
+while let Some(book) = sub.updates().recv().await {
+    println!("{} {}", book.book_seq, book.bids.len());
+    break;
+}
+
+sub.set_bucket("5.0")?; // validates and re-aggregates without reconnecting
+sub.close();
+
+---
+
+let mut deltas = client.orderbook.subscribe_deltas(1, Some(50)).await?;
+while let Some(delta) = deltas.recv_result().await? {
+    println!("{:?}", delta);
+    break;
+}
