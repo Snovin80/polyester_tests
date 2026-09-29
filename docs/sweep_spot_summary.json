@@ -1,0 +1,1038 @@
+{
+ "spot__config": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/config"
+   ],
+   "real": [
+    200,
+    "/v1/spot/config"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [
+   "pairs[].listingAt.seconds",
+   "pairs[].listingAt.nanos"
+  ],
+  "types": [
+   [
+    "pairs[].listingAt",
+    "string",
+    [
+     "object"
+    ]
+   ]
+  ]
+ },
+ "spot__fee-rates": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Optional sub-account public identifier."
+   },
+   "symbol": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "Optional trading pair symbols; repeat the query parameter to select multiple markets."
+   },
+   "symbolId": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional unique spot market identifier filter. When empty, all currently listed, non-disabled spot markets are returned. At most 100 identifiers may be requested."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/fee-rates"
+   ],
+   "real": [
+    200,
+    "/v1/spot/fee-rates"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "filter_symbol_ETH-USDT": [
+    200,
+    1,
+    [
+     "ETH-USDT"
+    ]
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "spot__markets__overview": {
+  "doc_params": {
+   "includeSparklines": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "When true, include sparklines in each MarketOverview. Unset False True"
+   },
+   "include_sparklines": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "When true, include sparklines in each market. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 2000 Maximum markets to return (server default 50, max 2000)."
+   },
+   "orderBy": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Sort key. When unset/UNSPECIFIED, defaults to descending 24h USD volume. Select orderBy"
+   },
+   "order_by": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Sort key. Select order_by"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque cursor from the previous response."
+   },
+   "sort": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Sort direction. Select sort"
+   },
+   "sparklineIntervals": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "Which sparklines to include. If empty and include_sparklines is true, server defaults to 24h."
+   },
+   "sparkline_intervals": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Sparkline intervals; repeat query param. Select sparkline_intervals"
+   },
+   "symbolId": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 2000 items, unique Filter by stable numeric pair IDs from GetSpotConfig. When empty, returns all enabled markets."
+   },
+   "symbols": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Filter by specific symbols; repeat query param (e.g., ?symbols=BTC-USDT&symbols=ETH-USDT)."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/markets/overview?include_sparklines=false&limit=50"
+   ],
+   "real": [
+    200,
+    "/v1/spot/markets/overview"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    19
+   ],
+   "limit_100000": [
+    400,
+    "{\"title\":\"Invalid Argument\",\"status\":400,\"detail\":\"validation error: limit: must be less than or equal to 2000\",\"code\":\"INVALID_ARGUMENT\",\"type\":\"https://polyester.dev/problems/invalid-argument\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"code\":\"BAD_REQUEST\",\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Bad request.\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"code\":\"BAD_REQUEST\",\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Bad request.\"}"
+   ]
+  },
+  "missing": [
+   "markets[].sparklines",
+   "markets[].sparklines[].closeTicks",
+   "markets[].sparklines[].interval",
+   "nextPageToken"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "spot__markets__symbol__candles": {
+  "doc_params": {
+   "symbol": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required Trading pair symbol, e.g. BTC-USDT"
+   },
+   "endTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": "Filter candles with bucket start time at or before this time (inclusive, RFC3339)."
+   },
+   "includeIncomplete": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include the current open candle when available. It is prepended to the newest-first candle list and does not count toward limit. Unset False True"
+   },
+   "includeReference": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include the composite reference market candle series when available. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 10000 Maximum closed candles to return. Default 500, max 10000."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque cursor from the previous response."
+   },
+   "startTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": "Filter candles with bucket start time at or after this time (inclusive, RFC3339)."
+   },
+   "timeframe": {
+    "in": "query",
+    "type": "enum",
+    "required": true,
+    "desc": "required must be defined value Candle bucket timeframe, such as 1m, 5m, 1h, or 1d. 1s"
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/markets/BTC-USDT/candles?includeIncomplete=false&includeReference=false&limit=500&timeframe=1s"
+   ],
+   "real": [
+    200,
+    "/v1/spot/markets/ETH-USDT/candles?timeframe=1m&limit=5"
+   ],
+   "no_required": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-argument\",\"title\":\"Invalid Argument\",\"status\":400,\"detail\":\"validation error: timeframe: must not be in list\",\"code\":\"INVALID_ARGUMENT\"}"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    500
+   ],
+   "limit_100000": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-argument\",\"title\":\"Invalid Argument\",\"status\":400,\"detail\":\"validation error: limit: must be less than or equal to 10000\",\"code\":\"INVALID_ARGUMENT\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"The request was malformed or missing required parameters.\",\"code\":\"BAD_REQUEST\"}"
+   ],
+   "limit_abc": [
+    200,
+    5
+   ]
+  },
+  "missing": [
+   "referenceCandles"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "spot__markets__symbol__trades": {
+  "doc_params": {
+   "symbol": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required Trading pair symbol, e.g. BTC-USDT"
+   },
+   "endTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": "Filter trades executed at or before this time (inclusive, RFC3339)"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 1000 Maximum trades to return. Default 100, max 1000."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque cursor from the previous response."
+   },
+   "side": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Filter by aggressor side. BUY means the taker bought the base asset; SELL means the taker sold the base asset. Select side"
+   },
+   "startTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": "Filter trades executed at or after this time (inclusive, RFC3339)"
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/markets/BTC-USDT/trades?limit=100"
+   ],
+   "real": [
+    200,
+    "/v1/spot/markets/ETH-USDT/trades"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    200,
+    100
+   ],
+   "limit_100000": [
+    400,
+    "{\"status\":400,\"detail\":\"validation error: limit: must be less than or equal to 1000\",\"code\":\"INVALID_ARGUMENT\",\"type\":\"https://polyester.dev/problems/invalid-argument\",\"title\":\"Invalid Argument\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"code\":\"BAD_REQUEST\",\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"The request was malformed or missing required parameters.\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"detail\":\"The request was malformed or missing required parameters.\",\"code\":\"BAD_REQUEST\",\"type\":\"https://polyester.dev/problems/bad-request\",\"title\":\"Bad Request\",\"status\":400}"
+   ],
+   "filter_side_BUY": [
+    200,
+    100,
+    [
+     "BUY"
+    ]
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "spot__markets__volume-history": {
+  "doc_params": {
+   "symbolId": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 2000 items, unique Stable pair IDs; repeat this parameter for multiple pairs. Empty selects all currently listed pairs. At most 2000 distinct positive IDs; unknown IDs are rejected."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/markets/volume-history"
+   ],
+   "real": [
+    200,
+    "/v1/spot/markets/volume-history"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "spot__orders__order_id": {
+  "doc_params": {
+   "order_id": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required > 0 Order ID (base58)"
+   },
+   "includeAttachedRisk": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include attached-risk policy fields in response.order. Defaults to false when omitted. Unset False True"
+   },
+   "includeAttachedRiskState": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include attached-risk state fields in response.order. Defaults to false when omitted. Unset False True"
+   },
+   "includeExecutionHistory": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include lineage trades and their transfers. Set false for state-only polling. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "1–1000 Maximum trades on the embedded execution page. Requires execution history."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Cursor from nextPageToken; use the same physical order ID for subsequent pages."
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0"
+   }
+  },
+  "calls": {
+   "example": [
+    400,
+    "/v1/spot/orders/9876543210123?includeExecutionHistory=true&limit=100"
+   ],
+   "real": [
+    200,
+    "/v1/spot/orders/FJ2wTecwwgQ"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/validation-error\",\"title\":\"Validation Error\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"VALIDATION_ERROR\"}"
+   ],
+   "limit_100000": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/validation-error\",\"title\":\"Validation Error\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"VALIDATION_ERROR\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"status\":400,\"detail\":\"invalid limit\",\"code\":\"VALIDATION_ERROR\",\"type\":\"https://polyester.dev/problems/validation-error\",\"title\":\"Validation Error\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"status\":400,\"detail\":\"invalid limit\",\"code\":\"VALIDATION_ERROR\",\"type\":\"https://polyester.dev/problems/validation-error\",\"title\":\"Validation Error\"}"
+   ]
+  },
+  "missing": [
+   "nextPageToken",
+   "order.attachedRisk",
+   "order.attachedRisk.oco",
+   "order.attachedRisk.stopLoss",
+   "order.attachedRisk.stopLoss.policy",
+   "order.attachedRisk.stopLoss.policy.child",
+   "order.attachedRisk.stopLoss.policy.triggerPrice",
+   "order.attachedRisk.stopLoss.state",
+   "order.attachedRisk.stopLoss.state.armedAt",
+   "order.attachedRisk.stopLoss.state.childOrderId",
+   "order.attachedRisk.stopLoss.state.status",
+   "order.attachedRisk.stopLoss.state.terminalAt",
+   "order.attachedRisk.stopLoss.state.triggerId",
+   "order.attachedRisk.takeProfit",
+   "order.attachedRisk.takeProfit.policy",
+   "order.attachedRisk.takeProfit.policy.child",
+   "order.attachedRisk.takeProfit.policy.triggerPrice",
+   "order.attachedRisk.takeProfit.state",
+   "order.attachedRisk.takeProfit.state.armedAt",
+   "order.attachedRisk.takeProfit.state.childOrderId",
+   "order.attachedRisk.takeProfit.state.status",
+   "order.attachedRisk.takeProfit.state.terminalAt",
+   "order.attachedRisk.takeProfit.state.triggerId",
+   "order.attachedRisk.trailingStop",
+   "order.attachedRisk.trailingStop.policy",
+   "order.attachedRisk.trailingStop.policy.activationPrice",
+   "order.attachedRisk.trailingStop.policy.maxSlippageTicks",
+   "order.attachedRisk.trailingStop.policy.trailingDistanceTicks",
+   "order.attachedRisk.trailingStop.state",
+   "order.attachedRisk.trailingStop.state.armedAt",
+   "order.attachedRisk.trailingStop.state.childOrderId",
+   "order.attachedRisk.trailingStop.state.status",
+   "order.attachedRisk.trailingStop.state.terminalAt",
+   "order.attachedRisk.trailingStop.state.triggerId",
+   "order.expireAt",
+   "order.marketMaxSlippageBps",
+   "order.marketMaxSlippageTicks",
+   "order.origin.childSeq",
+   "order.origin.parentOrderId",
+   "order.origin.triggerId",
+   "order.submittedMaxQuoteDebit",
+   "trades",
+   "trades[].executedAt",
+   "trades[].fee",
+   "trades[].feeAsset",
+   "trades[].feeIsRebate",
+   "trades[].isMaker",
+   "trades[].lineage",
+   "trades[].lineage.generation",
+   "trades[].lineage.id",
+   "trades[].matchId",
+   "trades[].orderId",
+   "trades[].price",
+   "trades[].qty",
+   "trades[].referralShare",
+   "trades[].side",
+   "trades[].symbol",
+   "transfers",
+   "transfers[].account",
+   "transfers[].asset",
+   "transfers[].isDebit",
+   "transfers[].matchId",
+   "transfers[].symbolId",
+   "transfers[].timestamp",
+   "transfers[].transferCode",
+   "transfers[].txId"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "spot__trades": {
+  "doc_params": {
+   "afterMatchId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Return only durable fills after this per-symbol match ID. Requires symbol."
+   },
+   "endTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": ""
+   },
+   "includeTransfers": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include settlement legs linked to matches on this page. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "1–1000"
+   },
+   "lineageId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Logical order ID shared by accepted replacements; mutually exclusive with orderId."
+   },
+   "orderId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Exact physical order ID; mutually exclusive with lineageId."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars"
+   },
+   "side": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Select side"
+   },
+   "startTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": ""
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0"
+   },
+   "symbol": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": ""
+   },
+   "throughGeneration": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Inclusive generation ceiling; requires lineageId."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/spot/trades?includeTransfers=false&limit=100"
+   ],
+   "real": [
+    200,
+    "/v1/spot/trades"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_100000": [
+    400,
+    "{\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400}"
+   ],
+   "filter_symbol_ETH-USDT": [
+    200,
+    100,
+    [
+     "ETH-USDT"
+    ]
+   ],
+   "filter_side_BUY": [
+    200,
+    100,
+    [
+     "BUY"
+    ]
+   ]
+  },
+  "missing": [
+   "trades[].feeIsRebate",
+   "transfers",
+   "transfers[].account",
+   "transfers[].asset",
+   "transfers[].isDebit",
+   "transfers[].matchId",
+   "transfers[].symbolId",
+   "transfers[].timestamp",
+   "transfers[].transferCode",
+   "transfers[].txId"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "orders__history": {
+  "doc_params": {
+   "endTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": "RFC3339 timestamp (nanosecond precision supported)"
+   },
+   "includeAttachedRisk": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include attached-risk policy fields in each order. Defaults to false when omitted. Unset False True"
+   },
+   "includeAttachedRiskState": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include attached-risk state fields in each order. Defaults to false when omitted. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "1–1000"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars"
+   },
+   "side": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Select side"
+   },
+   "startTime": {
+    "in": "query",
+    "type": "string (date-time)",
+    "required": false,
+    "desc": "RFC3339 timestamp (nanosecond precision supported)"
+   },
+   "status": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value OrderStatus enum name (e.g. FILLED, CANCELED) Select status"
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0"
+   },
+   "symbol": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "Filter by symbol(s): use repeated params (?symbol=BTC-USDT&symbol=ETH-USDT) or comma-separated values."
+   },
+   "triggerId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Filter by trigger public ID (base58)."
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/orders/history?limit=100"
+   ],
+   "real": [
+    200,
+    "/v1/orders/history"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ],
+   "limit_0": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_100000": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400}"
+   ],
+   "filter_symbol_ETH-USDT": [
+    200,
+    100,
+    [
+     "ETH-USDT"
+    ]
+   ],
+   "filter_side_BUY": [
+    200,
+    100,
+    [
+     "BUY"
+    ]
+   ],
+   "filter_status_CANCELED": [
+    200,
+    100,
+    [
+     "CANCELED"
+    ]
+   ],
+   "filter_status_FILLED": [
+    200,
+    100,
+    [
+     "FILLED"
+    ]
+   ]
+  },
+  "missing": [
+   "orders[].attachedRisk",
+   "orders[].attachedRisk.oco",
+   "orders[].attachedRisk.stopLoss",
+   "orders[].attachedRisk.stopLoss.policy",
+   "orders[].attachedRisk.stopLoss.policy.child",
+   "orders[].attachedRisk.stopLoss.policy.triggerPrice",
+   "orders[].attachedRisk.stopLoss.state",
+   "orders[].attachedRisk.stopLoss.state.armedAt",
+   "orders[].attachedRisk.stopLoss.state.childOrderId",
+   "orders[].attachedRisk.stopLoss.state.status",
+   "orders[].attachedRisk.stopLoss.state.terminalAt",
+   "orders[].attachedRisk.stopLoss.state.triggerId",
+   "orders[].attachedRisk.takeProfit",
+   "orders[].attachedRisk.takeProfit.policy",
+   "orders[].attachedRisk.takeProfit.policy.child",
+   "orders[].attachedRisk.takeProfit.policy.triggerPrice",
+   "orders[].attachedRisk.takeProfit.state",
+   "orders[].attachedRisk.takeProfit.state.armedAt",
+   "orders[].attachedRisk.takeProfit.state.childOrderId",
+   "orders[].attachedRisk.takeProfit.state.status",
+   "orders[].attachedRisk.takeProfit.state.terminalAt",
+   "orders[].attachedRisk.takeProfit.state.triggerId",
+   "orders[].attachedRisk.trailingStop",
+   "orders[].attachedRisk.trailingStop.policy",
+   "orders[].attachedRisk.trailingStop.policy.activationPrice",
+   "orders[].attachedRisk.trailingStop.policy.maxSlippageTicks",
+   "orders[].attachedRisk.trailingStop.policy.trailingDistanceTicks",
+   "orders[].attachedRisk.trailingStop.state",
+   "orders[].attachedRisk.trailingStop.state.armedAt",
+   "orders[].attachedRisk.trailingStop.state.childOrderId",
+   "orders[].attachedRisk.trailingStop.state.status",
+   "orders[].attachedRisk.trailingStop.state.terminalAt",
+   "orders[].attachedRisk.trailingStop.state.triggerId",
+   "orders[].expireAt",
+   "orders[].marketMaxSlippageTicks"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "orders__open": {
+  "doc_params": {
+   "includeAttachedRisk": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include attached-risk policy fields in each order. Defaults to false when omitted. Unset False True"
+   },
+   "includeAttachedRiskState": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "Include attached-risk state fields in each order. Defaults to false when omitted. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "1–1000 Max results (1-1000)"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Pagination cursor from previous response"
+   },
+   "side": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Filter by side Select side"
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Subaccount public ID (base58). When omitted, reads root account."
+   },
+   "symbol": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "Filter by symbol(s): use repeated params (?symbol=BTC-USDT&symbol=ETH-USDT) or comma-separated values."
+   },
+   "triggerId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Filter by trigger public ID (base58)."
+   }
+  },
+  "calls": {
+   "example": [
+    503,
+    "/v1/orders/open?limit=100"
+   ],
+   "real": [
+    503,
+    "/v1/orders/open"
+   ],
+   "extra_param": [
+    503,
+    "{\"type\":\"https://polyester.dev/problems/unavailable\",\"title\":\"Service Unavailable\",\"status\":503,\"detail\":\"Service unavailable.\",\"code\":\"UNAVAILABLE\"}"
+   ],
+   "limit_0": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_100000": [
+    400,
+    "{\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\"}"
+   ],
+   "limit_-1": [
+    400,
+    "{\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\",\"code\":\"INVALID_LIMIT\"}"
+   ],
+   "limit_abc": [
+    400,
+    "{\"code\":\"INVALID_LIMIT\",\"type\":\"https://polyester.dev/problems/invalid-limit\",\"title\":\"Invalid Limit\",\"status\":400,\"detail\":\"invalid limit\"}"
+   ],
+   "filter_symbol_ETH-USDT": [
+    503,
+    0,
+    []
+   ],
+   "filter_side_BUY": [
+    503,
+    0,
+    []
+   ]
+  }
+ },
+ "orderbook__symbol": {
+  "doc_params": {
+   "symbol": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required Trading pair symbol, e.g. BTC-USDT."
+   },
+   "depth": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Number of price levels per side. Defaults to 50 when omitted. Select depth"
+   }
+  },
+  "calls": {
+   "example": [
+    200,
+    "/v1/orderbook/BTC-USDT?depth=50"
+   ],
+   "real": [
+    200,
+    "/v1/orderbook/ETH-USDT"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "market__currency-conversion__config": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/market/currency-conversion/config"
+   ],
+   "real": [
+    200,
+    "/v1/market/currency-conversion/config"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "market__currency-conversion__rates": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/market/currency-conversion/rates"
+   ],
+   "real": [
+    200,
+    "/v1/market/currency-conversion/rates"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [],
+  "extra": [],
+  "types": []
+ },
+ "trading__daily-claim": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/trading/daily-claim"
+   ],
+   "real": [
+    403,
+    "/v1/trading/daily-claim"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "trading__rate-limits": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "> 0 Optional sub-account public identifier."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/trading/rate-limits"
+   ],
+   "real": [
+    403,
+    "/v1/trading/rate-limits"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ }
+}
