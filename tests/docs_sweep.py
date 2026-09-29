@@ -57,6 +57,9 @@ SECTIONS = {
 SUBS = {"symbol": "ETH-USDT", "order_id": "FJ2wTecwwgQ", "trigger_id": "ZfhZc1pbB5D", "engine_symbol_id": "2"}
 
 
+SECTIONS["local312"] = SECTIONS["local"]  # тот же список, запуск на Python 3.12 — ответы в отдельный файл
+
+
 def page(name):
     t = open(os.path.join(DOCS, f"rest__GET__v1__{name}.txt"), encoding="utf-8").read()
     body = t.split("=== ПРИМЕРЫ")[0]
