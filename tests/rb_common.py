@@ -19,6 +19,8 @@ class Rec:
         self.c = PolyesterClient()
         self.raw_path = raw_path
         self.own_ids = []           # id ордеров, созданных тестом (в т.ч. replacementOrderId)
+        self.own_sym = {}           # id -> symbol, если не SYMBOL
+        self.own_triggers = []      # id триггеров (например, привязанных ног), снимать DELETE
         self._last = {}
         orig = self.c._session.request
 
@@ -79,4 +81,9 @@ class Rec:
             st = ((p or {}).get("order") or {}).get("status") if isinstance(p, dict) else None
             if st and st not in ("CANCELED", "FILLED", "REJECTED", "EXPIRED"):
                 self.call(f"cleanup cancel {oid}", "POST", "/v1/orders/cancel",
-                          body={"symbol": SYMBOL, "orderId": oid})
+                          body={"symbol": self.own_sym.get(oid, SYMBOL), "orderId": oid})
+        for tid in dict.fromkeys(self.own_triggers):
+            http, p = self.call(f"cleanup GET trigger {tid}", "GET", f"/v1/triggers/{tid}")
+            st = ((p or {}).get("trigger") or {}).get("status") if isinstance(p, dict) else None
+            if st and st not in ("CANCELED", "COMPLETED", "FAILED"):
+                self.call(f"cleanup DELETE trigger {tid}", "DELETE", f"/v1/triggers/{tid}")

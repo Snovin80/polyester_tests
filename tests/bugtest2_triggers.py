@@ -4,6 +4,7 @@
 триггер сразу читается (GET) и снимается DELETE по своему id; в finally — повторная уборка.
 Сырые ответы — docs/raw_triggers_2026-09-29.jsonl.
 Запуск: python3 tests/bugtest2_triggers.py [блок ...]"""
+import json
 import sys
 import time
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
@@ -79,6 +80,12 @@ class TRec(Rec):
             if st and st not in ("CANCELED", "FILLED", "REJECTED", "EXPIRED"):
                 self.call(f"sweep cancel {oid}", "POST", "/v1/orders/cancel",
                           body={"symbol": SYMBOL, "orderId": oid})
+
+
+def rand_cid(n, prefix="t"):
+    import random
+    import string
+    return (prefix + "".join(random.choices(string.ascii_letters + string.digits, k=n)))[:n]
 
 
 def market(r):
@@ -182,22 +189,33 @@ def block_w(r):
 
 
 def block_r(r):
-    """R. Воспроизведение: длинный clientTriggerId (503) и повтор clientTriggerId с другим qty (502)."""
+    """R. Длина clientTriggerId (503) и повтор clientTriggerId (502). Все id случайные."""
     t0 = trig("stopLoss", "SELL", "10.000")
-    for i in range(3):
-        r.create(f"R1.{i + 1} clientTriggerId 200 символов", {**t0, "clientTriggerId": "a" * 200}, auto_cid=False)
-        time.sleep(3)
-    for n in (64, 100, 128, 129, 255):
-        r.create(f"R2 clientTriggerId {n} символов", {**t0, "clientTriggerId": "b" * n}, auto_cid=False)
+    res = {}
+    for n in (64, 65, 100, 200, 64):
+        h, p = r.create(f"R1 clientTriggerId {n} символов" + (" (повтор контроля)" if n == 64 and 64 in res else ""),
+                        {**t0, "clientTriggerId": rand_cid(n)}, auto_cid=False)
+        res.setdefault(n, h)
         time.sleep(2)
-    cid = "tt-dup-" + r.rid()[:8]
+    if res.get(65) == 200:
+        for n in (80, 90):
+            r.create(f"R1 clientTriggerId {n} символов", {**t0, "clientTriggerId": rand_cid(n)}, auto_cid=False)
+            time.sleep(2)
+    cid = rand_cid(20, "tt-dup-")
     h, p = r.create("R3.0 clientTriggerId повтор — первый", {**t0, "clientTriggerId": cid}, keep=True)
+    first = p.get("triggerId") if isinstance(p, dict) else None
     time.sleep(1)
-    for i in range(3):
-        r.create(f"R3.{i + 1} тот же clientTriggerId, другой qty", {**t0, "clientTriggerId": cid, "qty": "0.613791"}, auto_cid=False)
-        time.sleep(3)
-    r.create("R3.4 тот же clientTriggerId, другая цена", {**t0, "clientTriggerId": cid,
+    r.create("R3.1 тот же clientTriggerId, тот же body (пока ARMED)", {**t0, "clientTriggerId": cid}, auto_cid=False, keep=True)
+    r.create("R3.2 тот же clientTriggerId, другой qty", {**t0, "clientTriggerId": cid, "qty": "0.613791"}, auto_cid=False)
+    time.sleep(2)
+    r.create("R3.3 тот же clientTriggerId, другая цена", {**t0, "clientTriggerId": cid,
              "stopLoss": {**t0["stopLoss"], "triggerPrice": "9.500"}}, auto_cid=False)
+    time.sleep(1)
+    if first:
+        r.call("R3.4 GET первого после попыток", "GET", f"/v1/triggers/{first}")
+        r.delete("R3.5 DELETE первого", first)
+        time.sleep(1.5)
+        h, p = r.create("R3.6 тот же clientTriggerId и body после DELETE", {**t0, "clientTriggerId": cid}, auto_cid=False, keep=True)
     for tid in list(r.trigger_ids):
         if tid not in r.deleted:
             r.delete("R cleanup DELETE", tid)
@@ -240,6 +258,16 @@ def block_x(r):
     r.create("X7 stopLoss child limitIoc", {**t0, "stopLoss": {"side": "SELL", "triggerPrice": "10.000", "child": {"limitIoc": {"price": SELL_FAR}}}})
     r.create("X8 stopLoss child limitFok", {**t0, "stopLoss": {"side": "SELL", "triggerPrice": "10.000", "child": {"limitFok": {"price": SELL_FAR}}}})
     r.create("X9 stopLoss child marketIoc (SELL, без монет не хватит? qty норм)", {**t0, "stopLoss": {"side": "SELL", "triggerPrice": "10.000", "child": {"marketIoc": {}}}})
+    eth = {"symbol": "ETH-USDT", "qty": "0.005", "feeAsset": "QUOTE", "selfTradePreventionMode": "EXPIRE_MAKER",
+           "stopLoss": {"side": "BUY", "triggerPrice": "3500.005", "child": {"limitGtc": {"price": "1350.00", "postOnly": True}}}}
+    r.create("X14 ETH-USDT BUY stopLoss 3500.005 (шаг 0.01) — сравнение с привязанным TP/SL", eth)
+    r.create("X14b ETH-USDT BUY stopLoss 3500.00 (контроль)", {**eth, "stopLoss": {**eth["stopLoss"], "triggerPrice": "3500.00"}})
+    http, p = r.call("X15 ордер AVAX BUY qty 0.05 @5.700 (обратная проверка minQty)", "POST", "/v1/orders",
+                     body={"order": {"symbol": SYMBOL, "side": "BUY", "baseQty": "0.05", "clientOrderId": rand_cid(20, "tto-"),
+                                     "selfTradePreventionMode": "EXPIRE_MAKER", "feeAsset": "QUOTE",
+                                     "limitGtc": {"price": BUY_FAR, "postOnly": True}}})
+    if isinstance(p, dict) and p.get("orderId"):
+        r.call("X15 cancel", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": p["orderId"]})
     r.call("X10 GET несуществующий триггер", "GET", "/v1/triggers/2222222222")
     r.call("X11 DELETE несуществующий триггер", "DELETE", "/v1/triggers/2222222222")
     r.call("X12 GET триггер с неверным id", "GET", "/v1/triggers/0")
@@ -255,7 +283,7 @@ def block_x(r):
 def block_y(r):
     """Y. Чтение сразу после записи: GET после создания и GET после DELETE."""
     t0 = trig("stopLoss", "SELL", "10.000")
-    for i in range(3):
+    for i in range(10):
         h, p = r.create(f"Y{i + 1} create (без паузы)", t0, keep=True, settle=0)   # create() делает GET сразу
         tid = p.get("triggerId") if isinstance(p, dict) else None
         if not tid:
@@ -267,6 +295,153 @@ def block_y(r):
         r.call(f"Y{i + 1} GET сразу после DELETE", "GET", f"/v1/triggers/{tid}")
         time.sleep(1.0)
         r.call(f"Y{i + 1} GET +1s после DELETE", "GET", f"/v1/triggers/{tid}")
+
+
+def last_trade_ts(r, label):
+    http, p = r.call(label, "GET", f"/v1/spot/markets/{SYMBOL}/trades", query={"limit": 5})
+    tr = (p or {}).get("trades", []) if isinstance(p, dict) else []
+    return max((t["executedAt"] for t in tr), default=""), tr
+
+
+def block_fire(r, max_wait=900):
+    """FIRE. Срабатывание по факту сделки: «неверная сторона», qty ниже минимума, контроль верной стороны."""
+    bid, ask, mid = market(r)
+    lo, hi = fmt(mid * 0.8), fmt(mid * 1.2)
+    r.call("FIRE балансы до", "GET", "/v1/balances")
+    plan = [
+        ("FW1 SELL stopLoss ВЫШЕ рынка (неверная сторона) qty 0.25", "stopLoss", "SELL", hi, "0.25"),
+        ("FW2 BUY stopLoss НИЖЕ рынка (неверная сторона)", "stopLoss", "BUY", lo, QTY_B),
+        ("FM1 SELL stopLoss ВЫШЕ рынка, qty 0.05 (< minQty 0.1)", "stopLoss", "SELL", hi, "0.05"),
+        ("FC1 контроль: SELL stopLoss НИЖЕ рынка (верная сторона) qty 0.25", "stopLoss", "SELL", lo, "0.25"),
+        ("FC2 контроль: BUY stopLoss ВЫШЕ рынка (верная сторона)", "stopLoss", "BUY", hi, QTY_B),
+    ]
+    ids = {}
+    for label, kind, side, price, q in plan:
+        t = trig(kind, side, price)
+        t["qty"] = q
+        h, p = r.create(f"{label} @{price}", t, keep=True)
+        if isinstance(p, dict) and p.get("triggerId"):
+            ids[label] = p["triggerId"]
+    r.call("FIRE балансы после создания (резерв?)", "GET", "/v1/balances")
+    t0, _ = last_trade_ts(r, "FIRE последняя сделка до ожидания")
+    print(f"    >> последняя сделка до ожидания: {t0}; жду новую сделку до {max_wait} с")
+    start = time.time()
+    t1 = t0
+    while time.time() - start < max_wait:
+        time.sleep(5)
+        r._last = {}
+        try:
+            r.c._request("GET", f"/v1/spot/markets/{SYMBOL}/trades", query={"limit": 5}, max_retries=0)
+            tr = json.loads(r._last.get("text", "{}")).get("trades", [])
+            t1 = max((t["executedAt"] for t in tr), default=t0)
+        except Exception:
+            pass
+        if t1 > t0:
+            break
+    print(f"    >> новая сделка: {t1} (ждал {int(time.time() - start)} с)")
+    last_trade_ts(r, "FIRE сделки после ожидания")
+    time.sleep(3)
+    for label, tid in ids.items():
+        r.call(f"{label} | GET после сделки", "GET", f"/v1/triggers/{tid}")
+        r.call(f"{label} | events", "GET", f"/v1/triggers/{tid}/events")
+    for label, tid in ids.items():
+        r.delete(f"{label} | DELETE", tid)
+
+
+def block_rsv(r):
+    """RSV. Резервирует ли SELL-триггер монеты (справочник DELETE: «release its reserved quantity»)."""
+    r.call("RSV балансы до", "GET", "/v1/balances")
+    h, p = r.create("RSV SELL stopLoss @9.000 qty 0.25 (верная сторона)", {**trig("stopLoss", "SELL", "9.000"), "qty": "0.25"}, keep=True)
+    r.call("RSV балансы с триггером", "GET", "/v1/balances")
+    tid = p.get("triggerId") if isinstance(p, dict) else None
+    if tid:
+        r.delete("RSV DELETE", tid)
+    time.sleep(1)
+    r.call("RSV балансы после DELETE", "GET", "/v1/balances")
+
+
+def ladder(**lad):
+    lad = {"side": "BUY", "levels": 2, "priceMin": "5.000", "priceMax": "5.500", "postOnly": True, **lad}
+    lad = {k: v for k, v in lad.items() if v is not None}
+    return {"symbol": SYMBOL, "qty": "2.1", "feeAsset": "QUOTE", "selfTradePreventionMode": "EXPIRE_MAKER", "ladder": lad}
+
+
+def twap(**tw):
+    tw = {"side": "BUY", "durationMs": 60000, "sliceIntervalMs": 30000, "limitGtc": {"price": "5.500"}, **tw}
+    tw = {k: v for k, v in tw.items() if v is not None}
+    return {"symbol": SYMBOL, "qty": "2.1", "feeAsset": "QUOTE", "selfTradePreventionMode": "EXPIRE_MAKER", "twap": tw}
+
+
+def kids_of(r, label, tid):
+    http, p = r.call(label, "GET", f"/v1/triggers/{tid}/events")
+    return [ev["childOrderId"] for ev in ((p or {}).get("events", []) if isinstance(p, dict) else [])
+            if ev.get("childOrderId") and ev["childOrderId"] != "1"]
+
+
+def valid_strategy(r, label, t, watch_after=0):
+    """Создать ladder/twap, посмотреть дочерние, DELETE, проверить, что дочерние сняты; при нужде — отменить по id."""
+    h, p = r.create(label, t, keep=True, settle=2.0)
+    tid = p.get("triggerId") if isinstance(p, dict) else None
+    if not tid:
+        return
+    kids = kids_of(r, label + " | events до DELETE", tid)
+    for k in kids:
+        r.call(f"{label} | child {k} до DELETE", "GET", f"/v1/spot/orders/{k}")
+    r.delete(label + " | DELETE", tid)
+    time.sleep(2)
+    r.call(label + " | GET после DELETE", "GET", f"/v1/triggers/{tid}")
+    for k in kids:
+        http, pp = r.call(f"{label} | child {k} после DELETE", "GET", f"/v1/spot/orders/{k}")
+        stt = ((pp or {}).get("order") or {}).get("status") if isinstance(pp, dict) else None
+        if stt and stt not in ("CANCELED", "FILLED", "REJECTED", "EXPIRED"):
+            r.call(f"{label} | child {k} cancel вручную", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": k})
+    if watch_after:
+        time.sleep(watch_after)
+        late = kids_of(r, label + f" | events через {watch_after} с после DELETE", tid)
+        for k in set(late) - set(kids):
+            http, pp = r.call(f"{label} | НОВЫЙ child {k} после DELETE", "GET", f"/v1/spot/orders/{k}")
+            stt = ((pp or {}).get("order") or {}).get("status") if isinstance(pp, dict) else None
+            if stt and stt not in ("CANCELED", "FILLED", "REJECTED", "EXPIRED"):
+                r.call(f"{label} | НОВЫЙ child {k} cancel", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": k})
+
+
+def block_lad(r):
+    """LAD. Ladder BUY далеко ниже рынка: штатный и границы."""
+    valid_strategy(r, "L1 ladder BUY 2 уровня 5.000–5.500 qty 2.1 (штатно)", ladder())
+    for label, kw in [("L2 levels 0", dict(levels=0)), ("L3 levels -1", dict(levels=-1)), ("L4 levels 1", dict(levels=1)),
+                      ("L5 priceMin > priceMax", dict(priceMin="5.500", priceMax="5.000")),
+                      ("L6 priceMin = priceMax, levels 2", dict(priceMin="5.000", priceMax="5.000")),
+                      ("L7 priceMin 0", dict(priceMin="0")), ("L8 priceMax неверный шаг 5.5005", dict(priceMax="5.5005")),
+                      ("L9 без postOnly", dict(postOnly=None)), ("L10 без side", dict(side=None))]:
+        r.create(label, ladder(**kw), settle=1.0)
+    r.create("L11 qty на уровень ниже минимума (0.2 / 2 уровня)", {**ladder(), "qty": "0.2"}, settle=1.5)
+
+
+def block_twap(r):
+    """TWAP. BUY limitGtc далеко ниже рынка: штатный и границы (marketIoc не используем)."""
+    valid_strategy(r, "TW1 twap BUY limitGtc 5.500, 60 с / 30 с, qty 2.1 (штатно)", twap(), watch_after=35)
+    for label, kw in [("TW2 durationMs 0", dict(durationMs=0)), ("TW3 durationMs -1", dict(durationMs=-1)),
+                      ("TW4 sliceIntervalMs 0", dict(sliceIntervalMs=0)), ("TW5 sliceIntervalMs -1", dict(sliceIntervalMs=-1)),
+                      ("TW6 slice больше duration (120 с / 60 с)", dict(sliceIntervalMs=120000)),
+                      ("TW7 без limitGtc и marketIoc", dict(limitGtc=None)),
+                      ("TW8 limitGtc price 0", dict(limitGtc={"price": "0"})),
+                      ("TW9 limitGtc price неверный шаг 5.5005", dict(limitGtc={"price": "5.5005"})),
+                      ("TW10 без side", dict(side=None))]:
+        r.create(label, twap(**kw), settle=1.0)
+    r.create("TW11 qty на слайс ниже минимума (0.2 / 2 слайса)", {**twap(), "qty": "0.2"}, settle=1.5)
+
+
+def block_filt(r):
+    """FILT. Фильтры GET /v1/triggers (только чтение)."""
+    parent = "FzKTbH9PGF5"   # ордер ETH-USDT из части 1 (G5b) с двумя привязанными ногами, отменён
+    for label, q in [("FILT1 parentOrderId существующего родителя с 2 ногами", {"parentOrderId": parent, "limit": 200}),
+                     ("FILT2 parentOrderId несуществующий", {"parentOrderId": "2222222222", "limit": 200}),
+                     ("FILT3 symbol=ETH-USDT", {"symbol": "ETH-USDT", "limit": 200}),
+                     ("FILT4 status=CANCELED", {"status": "CANCELED", "limit": 200})]:
+        http, p = r.call(label, "GET", "/v1/triggers", query=q)
+        ts = (p or {}).get("triggers", []) if isinstance(p, dict) else []
+        print(f"    >> {label}: всего {len(ts)}, с parentOrderId={parent}: {sum(1 for t in ts if t.get('parentOrderId') == parent)}, "
+              f"символы {sorted(set(t.get('symbol') for t in ts))}, статусы {sorted(set(t.get('status') for t in ts))}")
 
 
 def block_f(r):
@@ -305,8 +480,8 @@ def block_f(r):
                                  "child": {"limitGtc": {"price": SELL_FAR, "postOnly": True}, "marketIoc": {}}}})
     r.create("F28 subaccountId неверный", t0, top={"subaccountId": "zzzz"})
     # clientTriggerId: длина и повтор
-    for label, cid in [("F29 clientTriggerId 36 символов", "a" * 36), ("F30 clientTriggerId 37 символов", "a" * 37),
-                       ("F31 clientTriggerId 200 символов", "a" * 200), ("F32 clientTriggerId со спецсимволами", "tt id/#?")]:
+    for label, cid in [("F29 clientTriggerId 36 символов", rand_cid(36)), ("F30 clientTriggerId 37 символов", rand_cid(37)),
+                       ("F32 clientTriggerId со спецсимволами", "tt id/#?" + rand_cid(6))]:
         r.create(label, {**t0, "clientTriggerId": cid}, auto_cid=False)
     cid = "tt-dup-" + r.rid()[:8]
     r.create("F33a clientTriggerId повтор — первый", {**t0, "clientTriggerId": cid}, keep=True)
@@ -357,6 +532,12 @@ def block_tr(r):
         ("TR28 activationPrice -1", dict(trailingDistanceBps=500, activationPrice="-1")),
         ("TR29 activationPrice неверный шаг 22.8005", dict(trailingDistanceBps=500, activationPrice="22.8005")),
     ]
+    cases += [
+        ("TR32 ticks '9223372036' (≈ int64 / 1e9)", dict(trailingDistanceTicks="9223372036")),
+        ("TR33 ticks '9223372037' (> int64 / 1e9)", dict(trailingDistanceTicks="9223372037")),
+        ("TR34 ticks '0.000000001' (9 знаков)", dict(trailingDistanceTicks="0.000000001")),
+        ("TR35 ticks '0.0000000001' (10 знаков)", dict(trailingDistanceTicks="0.0000000001")),
+    ]
     for label, ts in cases:
         r.create(label, tr(**ts))
     # activationPrice ниже рынка + огромная дистанция (не сработает: нужно падение на 50 %+)
@@ -365,11 +546,11 @@ def block_tr(r):
              "selfTradePreventionMode": "EXPIRE_MAKER", "trailingStop": {"side": "SELL", "trailingDistanceBps": 5000}})
 
 
-BLOCKS = {"BASE": block_base, "P": block_p, "S": block_s, "W": block_w, "R": block_r, "M": block_m, "X": block_x, "Y": block_y, "F": block_f, "TR": block_tr}
+BLOCKS = {"BASE": block_base, "P": block_p, "S": block_s, "W": block_w, "R": block_r, "M": block_m, "X": block_x, "Y": block_y, "FIRE": block_fire, "RSV": block_rsv, "LAD": block_lad, "TWAP": block_twap, "FILT": block_filt, "F": block_f, "TR": block_tr}
 
 
 def main():
-    names = [a.upper() for a in sys.argv[1:]] or ["P", "S", "F", "TR"]
+    names = [a.upper() for a in sys.argv[1:]] or ["P", "S", "F", "TR", "X", "Y", "R", "RSV", "LAD", "TWAP", "FILT", "FIRE"]
     r = TRec()
     try:
         for n in names:
