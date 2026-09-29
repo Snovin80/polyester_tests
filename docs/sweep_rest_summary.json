@@ -1,0 +1,721 @@
+{
+ "polychart__markets__engine_symbol_id__layers": {
+  "doc_params": {
+   "engine_symbol_id": {
+    "in": "path",
+    "type": "integer",
+    "required": true,
+    "desc": "required > 0 Engine symbol identifier for the market to load."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/polychart/markets/1/layers"
+   ],
+   "real": [
+    403,
+    "/v1/polychart/markets/2/layers"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "polychart__markets__engine_symbol_id__layers__inbox": {
+  "doc_params": {
+   "engine_symbol_id": {
+    "in": "path",
+    "type": "integer",
+    "required": true,
+    "desc": "required > 0 Engine symbol identifier for the market inbox."
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of layers to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to caller, market, and inbox sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/polychart/markets/1/layers/inbox"
+   ],
+   "real": [
+    403,
+    "/v1/polychart/markets/2/layers/inbox"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "polychart__owners__owner_id__published__layers": {
+  "doc_params": {
+   "owner_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Owner account whose published layers should be listed."
+   },
+   "engineSymbolId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "Optional market filter."
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of layers to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to owner, market filter, and newest-published sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/polychart/owners/1/published/layers"
+   ],
+   "real": [
+    403,
+    "/v1/polychart/owners/{owner_id}/published/layers"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "layouts": {
+  "doc_params": {
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of layouts to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to the authenticated caller and newest-updated sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/layouts"
+   ],
+   "real": [
+    403,
+    "/v1/layouts"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "layouts__layout_id": {
+  "doc_params": {
+   "layout_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Layout identifier to fetch."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/layouts/1"
+   ],
+   "real": [
+    403,
+    "/v1/layouts/{layout_id}"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "layouts__owners__owner_id__published": {
+  "doc_params": {
+   "owner_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Owner whose published layouts should be listed."
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of templates to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to owner and newest-published sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/layouts/owners/1/published"
+   ],
+   "real": [
+    403,
+    "/v1/layouts/owners/{owner_id}/published"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "layouts__templates__owner_id__template_id__versions": {
+  "doc_params": {
+   "owner_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Viewer that owns the template."
+   },
+   "template_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Template identifier."
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of versions to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to owner, template, and newest-version sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/layouts/templates/1/1/versions"
+   ],
+   "real": [
+    403,
+    "/v1/layouts/templates/{owner_id}/{template_id}/versions"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "layouts__templates__owner_id__template_id__versions__version": {
+  "doc_params": {
+   "owner_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Viewer that owns the template."
+   },
+   "template_id": {
+    "in": "path",
+    "type": "string (int64)",
+    "required": true,
+    "desc": "required Template identifier."
+   },
+   "version": {
+    "in": "path",
+    "type": "integer",
+    "required": true,
+    "desc": "required Immutable version number to fetch."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/layouts/templates/1/1/versions/1"
+   ],
+   "real": [
+    403,
+    "/v1/layouts/templates/{owner_id}/{template_id}/versions/{version}"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "layouts__templates__subscriptions": {
+  "doc_params": {
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of subscriptions to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to the authenticated caller and newest-updated sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/layouts/templates/subscriptions"
+   ],
+   "real": [
+    403,
+    "/v1/layouts/templates/subscriptions"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "share__layer__token": {
+  "doc_params": {
+   "token": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required min 1 chars Opaque share token from a layer share link."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/share/layer/share_01J5EXAMPLE000000000"
+   ],
+   "real": [
+    403,
+    "/v1/share/layer/{token}"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "share__layout__token": {
+  "doc_params": {
+   "token": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required min 1 chars Opaque share token from a layout share link."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/share/layout/share_01J5EXAMPLE000000000"
+   ],
+   "real": [
+    403,
+    "/v1/share/layout/{token}"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "collab__whiteboards": {
+  "doc_params": {
+   "includeArchived": {
+    "in": "query",
+    "type": "boolean",
+    "required": false,
+    "desc": "When true, include archived boards in the response. Unset False True"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of boards to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to the authenticated caller, archive filter, and newest-updated sort order."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/collab/whiteboards"
+   ],
+   "real": [
+    403,
+    "/v1/collab/whiteboards"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "collab__whiteboards__board_id": {
+  "doc_params": {
+   "board_id": {
+    "in": "path",
+    "type": "string (uuid)",
+    "required": true,
+    "desc": "required Board identifier as a UUID string."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/collab/whiteboards/123e4567-e89b-42d3-a456-426614174000"
+   ],
+   "real": [
+    403,
+    "/v1/collab/whiteboards/{board_id}"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__me": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    200,
+    "/v1/auth/me"
+   ],
+   "real": [
+    200,
+    "/v1/auth/me"
+   ],
+   "extra_param": [
+    200,
+    ""
+   ]
+  },
+  "missing": [
+   "session.authTime",
+   "session.authenticationMethods",
+   "session.sessionId",
+   "session.sessionLevel"
+  ],
+  "extra": [],
+  "types": []
+ },
+ "auth__profile": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/profile"
+   ],
+   "real": [
+    403,
+    "/v1/auth/profile"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__api-keys": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "Optional filter: only keys scoped to this sub-account (opaque ID). The caller must own or administer the sub-account. If unset, only non-revoked keys owned by the caller are returned."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/api-keys"
+   ],
+   "real": [
+    403,
+    "/v1/auth/api-keys"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__subaccounts": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/subaccounts"
+   ],
+   "real": [
+    403,
+    "/v1/auth/subaccounts"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__policies__api-keys": {
+  "doc_params": {
+   "keyId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "/^ak_[a…]{32}$/ Optional API key context for delegated administration. When omitted, only policies owned by the caller's root account are returned."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/policies/api-keys"
+   ],
+   "real": [
+    403,
+    "/v1/auth/policies/api-keys"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__mfa__factors": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/mfa/factors"
+   ],
+   "real": [
+    403,
+    "/v1/auth/mfa/factors"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__address-books": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/address-books"
+   ],
+   "real": [
+    403,
+    "/v1/auth/address-books"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "auth__transfer-destinations": {
+  "doc_params": {
+   "kind": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional destination type filter. Select kind"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of destinations to return. Defaults to 200 when omitted; maximum is 500."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor from a previous response. The cursor is exclusive and bound to account, subaccount scope, destination type filter, and stable destination sort order."
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Optional subaccount scope. Omit to use the root account address book."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/auth/transfer-destinations"
+   ],
+   "real": [
+    403,
+    "/v1/auth/transfer-destinations"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ }
+}
