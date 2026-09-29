@@ -1,0 +1,477 @@
+{
+ "chain__analytics__unified-asset-balances": {
+  "doc_params": {
+   "assetId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Unified asset identifier."
+   },
+   "asset_id": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": true,
+    "desc": "required > 0 Unified asset identifier."
+   },
+   "bucket": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 3 chars /^$|^(1…h|1d)$/ Optional bucket duration. Valid buckets depend on range and must keep chart density useful. Select bucket"
+   },
+   "endTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "end_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window. Defaults to 1d. Select range"
+   },
+   "startTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "start_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/analytics/unified-asset-balances?asset_id=100"
+   ],
+   "real": [
+    403,
+    "/v1/chain/analytics/unified-asset-balances?asset_id="
+   ],
+   "no_required": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__analytics__zipped-asset-supply": {
+  "doc_params": {
+   "bucket": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 3 chars /^$|^(1…h|1d)$/ Optional bucket duration. Valid buckets depend on range and must keep chart density useful. Select bucket"
+   },
+   "endTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "end_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window. Defaults to 1d. Select range"
+   },
+   "startTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "start_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "zippedAssetId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Zipped asset route identifier."
+   },
+   "zipped_asset_id": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": true,
+    "desc": "required > 0 Zipped asset route identifier."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/analytics/zipped-asset-supply?zipped_asset_id=100"
+   ],
+   "real": [
+    403,
+    "/v1/chain/analytics/zipped-asset-supply?zipped_asset_id="
+   ],
+   "no_required": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__analytics__zipped-asset-supply__group": {
+  "doc_params": {
+   "bucket": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 3 chars /^$|^(1…h|1d)$/ Optional bucket duration. Valid buckets depend on range and must keep chart density useful. Select bucket"
+   },
+   "endTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "end_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive end timestamp in seconds since Unix epoch."
+   },
+   "groupId": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "1-64 chars Zipped asset group identifier."
+   },
+   "group_id": {
+    "in": "query",
+    "type": "string",
+    "required": true,
+    "desc": "required 1-64 chars Zipped asset group identifier."
+   },
+   "range": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value History window. Defaults to 1d. Select range"
+   },
+   "startTsSec": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   },
+   "start_ts_sec": {
+    "in": "query",
+    "type": "integer (int32)",
+    "required": false,
+    "desc": "> 0 Optional inclusive start timestamp in seconds since Unix epoch."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/analytics/zipped-asset-supply/group?group_id=tether-group"
+   ],
+   "real": [
+    403,
+    "/v1/chain/analytics/zipped-asset-supply/group?group_id="
+   ],
+   "no_required": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__deposit-addresses": {
+  "doc_params": {
+   "chainId": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "> 0 Optional PolyChain-registered source chain id filter. When omitted, the response returns all known deposit addresses for the selected target, ordered by ascending chain id."
+   },
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Optional subaccount public id. When omitted, the authenticated caller's root account is used as the target account."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/deposit-addresses"
+   ],
+   "real": [
+    403,
+    "/v1/chain/deposit-addresses"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__deposit-withdraw__config": {
+  "doc_params": {},
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/deposit-withdraw/config"
+   ],
+   "real": [
+    403,
+    "/v1/chain/deposit-withdraw/config"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__flows": {
+  "doc_params": {
+   "flowKind": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional product flow kind filter. Unspecified includes all kinds. Select flowKind"
+   },
+   "flowState": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Optional lifecycle state filter. Unspecified includes all states permitted by the selected scope. Select flowState"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of flows to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "orderBy": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Timestamp used for ordering and pagination. Defaults to last activity. Select orderBy"
+   },
+   "ownerAccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Public account identifier for a main account or subaccount."
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by a previous response. The cursor is exclusive and bound to the caller, filters, account selector, sort direction, and ordering timestamp."
+   },
+   "polyesterChainIds": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional Polyester Chain ids to include. Maximum 100 unique ids."
+   },
+   "scope": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Selects open, terminal, or all lifecycle flows. Select scope"
+   },
+   "smartAccountAddress": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Smart account address on Polyester Chain."
+   },
+   "sort": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Sort direction for the selected ordering timestamp. Select sort"
+   },
+   "txRef": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "Optional transaction reference filter. Matches source or latest activity transaction identifiers across supported chains."
+   },
+   "unifiedAssetIds": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional unified asset ids to include. Maximum 100 unique ids."
+   },
+   "zippedAssetIds": {
+    "in": "query",
+    "type": "array",
+    "required": false,
+    "desc": "max 100 items, unique Optional chain asset mapping ids to include. Maximum 100 unique ids."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/flows"
+   ],
+   "real": [
+    403,
+    "/v1/chain/flows"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__flows__by-tx__tx_hash__matches": {
+  "doc_params": {
+   "tx_hash": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required Chain transaction identifier to search for. Accepts a 0x-prefixed 32-byte EVM hash or a printable chain-native transaction id such as a Solana signature, Bitcoin txid, Litecoin txid, Dogecoin"
+   },
+   "limit": {
+    "in": "query",
+    "type": "integer",
+    "required": false,
+    "desc": "≤ 500 Maximum number of matches to return. Defaults to 100 when omitted; maximum is 500."
+   },
+   "lookupKind": {
+    "in": "query",
+    "type": "enum",
+    "required": false,
+    "desc": "must be defined value Lookup mode that determines which transaction references are searched. Select lookupKind"
+   },
+   "pageToken": {
+    "in": "query",
+    "type": "string",
+    "required": false,
+    "desc": "max 512 chars Opaque keyset cursor returned by a previous response. The cursor is exclusive and bound to the transaction hash and lookup mode."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/flows/by-tx/0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890/matches"
+   ],
+   "real": [
+    403,
+    "/v1/chain/flows/by-tx/{tx_hash}/matches"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_0": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_100000": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_-1": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ],
+   "limit_abc": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__flows__flow_id": {
+  "doc_params": {
+   "flow_id": {
+    "in": "path",
+    "type": "string",
+    "required": true,
+    "desc": "required 6-64 chars /^flow_…m-z]+$/ Public, URL-safe lifecycle identifier returned by list/search responses."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/flows/flow_7YWHMfk9JZeLMgZauHuiSxhI"
+   ],
+   "real": [
+    403,
+    "/v1/chain/flows/{flow_id}"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ },
+ "chain__guard-signer__status": {
+  "doc_params": {
+   "subaccountId": {
+    "in": "query",
+    "type": "string (int64)",
+    "required": false,
+    "desc": "> 0 Optional subaccount public id. When omitted, the authenticated caller's root account is used as the target account."
+   }
+  },
+  "calls": {
+   "example": [
+    403,
+    "/v1/chain/guard-signer/status"
+   ],
+   "real": [
+    403,
+    "/v1/chain/guard-signer/status"
+   ],
+   "extra_param": [
+    403,
+    "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+   ]
+  }
+ }
+}
