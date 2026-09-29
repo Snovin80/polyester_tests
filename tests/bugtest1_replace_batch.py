@@ -358,13 +358,52 @@ def block_g(r):
     st(r, "G8 get succ", succ(p, k))
 
 
+def block_h(r):
+    """H. Чужой счёт: ключ субаккаунта против ордера и триггера основного счёта."""
+    from rb_common import Rec as _Rec
+    sub = _Rec(raw_path=r.raw_path, sub=True)
+    o = r.new_order("H0 root create @1350")
+    trig = {"symbol": "AVAX-USDT", "qty": "0.25", "feeAsset": "QUOTE", "selfTradePreventionMode": "EXPIRE_MAKER",
+            "clientTriggerId": longid("h-", 20),
+            "stopLoss": {"side": "SELL", "triggerPrice": "9.000", "child": {"limitGtc": {"price": "22.800", "postOnly": True}}}}
+    http, p = r.call("H0 root create trigger AVAX SELL stopLoss 9.000", "POST", "/v1/triggers", body={"trigger": trig})
+    tid = p.get("triggerId") if isinstance(p, dict) else None
+    if tid:
+        r.own_triggers.append(tid)
+    st(r, "H0 root get order до", o)
+    try:
+        sub.call("H1 SUB balances", "GET", "/v1/balances")
+        sub.call("H2 SUB GET ордер основного счёта", "GET", f"/v1/spot/orders/{o}")
+        sub.call("H3 SUB replace-batch ордера основного счёта", "POST", P,
+                 body={"symbol": SYMBOL, "requestId": r.rid(), "items": [{"orderId": o, "newQtyScaled": 4500}]})
+        sub.call("H4 SUB modify ордера основного счёта", "POST", "/v1/orders/modify",
+                 body={"symbol": SYMBOL, "requestId": r.rid(), "orderId": o, "newQtyScaled": 4500, "behavior": "AMEND_OR_REPLACE"})
+        sub.call("H5 SUB cancel ордера основного счёта", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": o})
+        sub.call("H6 SUB replace-batch с subaccountId основного счёта", "POST", P,
+                 body={"symbol": SYMBOL, "requestId": r.rid(), "subaccountId": "RCx3H2SjGz6",
+                       "items": [{"orderId": o, "newQtyScaled": 4500}]})
+        if tid:
+            sub.call("H7 SUB GET триггер основного счёта", "GET", f"/v1/triggers/{tid}")
+            sub.call("H8 SUB DELETE триггер основного счёта", "DELETE", f"/v1/triggers/{tid}")
+        sub.call("H9 SUB список триггеров", "GET", "/v1/triggers", query={"limit": 50})
+        sub.call("H10 SUB create ордер без денег (0.005 ETH @1350)", "POST", "/v1/orders", body=order_body())
+    finally:
+        time.sleep(1)
+        st(r, "H11 root get order после", o)
+        if tid:
+            r.call("H12 root GET trigger после", "GET", f"/v1/triggers/{tid}")
+        # если SUB вдруг что-то создал — снять
+        for oid in sub.own_ids:
+            sub.call(f"H SUB cleanup cancel {oid}", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": oid})
+
+
 def main():
-    blocks = [a.upper() for a in sys.argv[1:]] or ["A", "B", "C", "D", "E", "F", "G"]
+    blocks = [a.upper() for a in sys.argv[1:]] or ["A", "B", "C", "D", "E", "F", "G", "H"]
     r = Rec()
     try:
         for b in blocks:
             print(f"\n===== блок {b} =====")
-            {"A": block_a, "B": block_b, "C": block_c, "D": block_d, "E": block_e, "F": block_f, "G": block_g}[b](r)
+            {"A": block_a, "B": block_b, "C": block_c, "D": block_d, "E": block_e, "F": block_f, "G": block_g, "H": block_h}[b](r)
     finally:
         r.cleanup()
 

@@ -8,15 +8,21 @@ import uuid
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from api_client import PolyesterClient, PolyesterApiError  # noqa: E402
+from api_client import PolyesterClient, PolyesterApiError, PolyesterCredentials  # noqa: E402
 
 SYMBOL = "ETH-USDT"
 RAW_PATH = os.path.join(os.path.dirname(__file__), "..", "docs", "raw_replace_batch_2026-09-29.jsonl")
 
 
 class Rec:
-    def __init__(self, raw_path=RAW_PATH):
-        self.c = PolyesterClient()
+    def __init__(self, raw_path=RAW_PATH, sub=False):
+        if sub:  # ключ субаккаунта из .env (POLYESTER_SUB_API_*)
+            self.c = PolyesterClient(PolyesterCredentials(
+                key_id=os.environ["POLYESTER_SUB_API_KEY_ID"],
+                private_key=os.environ["POLYESTER_SUB_API_PRIVATE_KEY"],
+                base_url=os.environ.get("POLYESTER_BASE_URL", "https://api.testnet.polyester.com")))
+        else:
+            self.c = PolyesterClient()
         self.raw_path = raw_path
         self.own_ids = []           # id ордеров, созданных тестом (в т.ч. replacementOrderId)
         self.own_sym = {}           # id -> symbol, если не SYMBOL
