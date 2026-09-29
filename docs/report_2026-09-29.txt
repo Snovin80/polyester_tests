@@ -1,0 +1,78 @@
+POST /v1/orders/replace-batch: the reference says actionTaken AMENDED cancels the original order's remaining quantity without a successor. In practice decreasing newQtyScaled (5000 to 4500, 4500 to 4000) always returns REPLACED with a new replacementOrderId, the old order becomes CANCELED with terminalReason ORDER_REPLACED, and AMENDED was never returned; increasing it is REPLACED too. POST /v1/orders/modify with the same decrease returns AMENDED and keeps the order id. Is this by design, and in which case does replace-batch return AMENDED?
+
+POST /v1/orders/replace-batch: the fields of items are not described on the reference page, they are only shown in the example. newPriceTicks takes a decimal price string, not ticks: 1320 becomes price 1320 (not 13.20 with tick 0.01) and 132000 becomes price 132000; a JSON number is rejected with 400. newQtyScaled is an integer in pair scale, a string is rejected with 400.
+
+POST /v1/orders/replace-batch response: acceptedTs is documented as a string (example 2025-01-01T00:00:00Z) but is returned as an object with seconds and nanos. Fields with a zero value are omitted: results[0] has no itemIndex, acceptedCount is missing when nothing is admitted, rejectedCount is missing when nothing is rejected. Is this by design?
+
+POST /v1/orders/replace-batch results: for an unknown orderId and for an order of another pair oldOrderId comes back as 1 (zero id) instead of the orderId from the request, so a rejected item can only be matched by position. For CONFLICT_DUPLICATE_CLIENT_ORDER_ID the rejected item has replacementOrderId equal to oldOrderId, while the reference says zero for a rejection before assignment. Is this by design?
+
+POST /v1/orders/replace-batch: an item with the same price and quantity as the order is executed as REPLACED and the order gets a new id; modify with the same values does the same. An item without any fields is rejected with 400. Is a no-op replace by design?
+
+Addition to the modify ticket about an order of another pair: replace-batch behaves the same, an AVAX-USDT order sent with symbol ETH-USDT is rejected with UNKNOWN_SYMBOL.
+
+Attached TP/SL prices are not validated. On ETH-USDT (tick 0.01) newAttachedRisk in replace-batch and attachedRisk in POST /v1/orders accept a takeProfit triggerPrice of 3500.005, and the leg trigger is created with 3500.005; a takeProfit at 1000 on a BUY order at 1350 is accepted as well. A standalone POST /v1/triggers on ETH-USDT with triggerPrice 3500.005 is rejected with PRICE_TICK_SIZE. Is this by design?
+
+POST /v1/triggers: clientTriggerId is not marked required, but without it the API returns 400 VALIDATION_ERROR trigger.client_trigger_id must be at least 1 characters. A clientTriggerId of 64 characters is accepted, 65 or more returns 503 UNAVAILABLE with a read_decode connection reset by peer message that contains an internal host and port, instead of a 400 validation error.
+
+POST /v1/triggers with a clientTriggerId that already exists and a different body (other qty or other triggerPrice) returns a Cloudflare 502 Bad gateway HTML page instead of a JSON error such as CONFLICT_DUPLICATE_CLIENT_TRIGGER_ID; the original trigger stays unchanged. The same clientTriggerId with the same body after DELETE returns 200 with a new acceptedAt and the old triggerId, which is CANCELED, and no new trigger is created. Is the last one by design?
+
+POST /v1/triggers: a trigger whose condition is already met at creation is accepted. On AVAX-USDT a SELL stopLoss about 20 percent above the market and a BUY stopLoss about 20 percent below it are created as ARMED (all 10 side and type combinations above and below the market are accepted), and both fired on the next trade (completedAt equals the trade time) and placed their child orders, while a BUY stopLoss above the market created at the same time did not fire. TRIGGER_PRICE_INVALID was never returned; zero and negative prices return VALIDATION_ERROR. Is this by design, and when is TRIGGER_PRICE_INVALID returned?
+
+POST /v1/triggers: the pair minimum is not checked at creation. A stopLoss with qty 0.05 on AVAX-USDT (minQty 0.1) is created as ARMED and, when it fires, turns FAILED with failureReason MIN_QUANTITY and places no order, so the stop does nothing at the moment it is needed. Ladder and TWAP with 0.1 per level or slice are created and turn FAILED with MIN_NOTIONAL about a second later. A regular order with qty 0.05 is rejected at once with MIN_QTY. Is this by design?
+
+GET /v1/triggers/id right after a successful POST /v1/triggers returned 404 NOT_FOUND in 3 of 10 attempts (200 after 0.3 s). GET right after a DELETE that returned CANCELED showed ARMED in 6 of 10 attempts (CANCELED after 1 s). Is this by design?
+
+GET /v1/triggers: the parentOrderId filter is ignored, a real parent id, a non-existent id and no filter return the same list. The status filter is documented as TriggerStatus enum names and the enum is listed as CREATED, ARMED, RUNNING, COMPLETED, CANCELED, FAILED, PAUSED, but status=CANCELED returns 400 INVALID_TRIGGER_STATUS; only STATUS_CANCELED works, comma-separated values work only with the prefix too.
+
+POST /v1/triggers ladder: postOnly is marked required, but a ladder without it is accepted and the level orders are placed without post-only. Is this by design?
+
+Addition to the ticket about scaled prices in the triggers reference: trailingDistanceTicks is described as a delta in 1e-9 quote-unit ticks, but it is parsed as a decimal price: up to 9 fractional digits are accepted, 9223372036 is accepted and 9223372037 returns overflow (int64 divided by 1e9), so 1 means 1 USDT. qty is described as scaled by base_quantity_scale (example 100000) but is a decimal: qty 100 means 100 AVAX. TRAILING_DISTANCE_INVALID was never returned, a trailing distance of 9223372036 on AVAX-USDT at about 11.5 is accepted.
+
+
+POST /v1/orders/replace-batch: в справочнике actionTaken AMENDED отменяет оставшееся количество исходного ордера без преемника. На деле уменьшение newQtyScaled (5000 до 4500, 4500 до 4000) всегда даёт REPLACED с новым replacementOrderId, старый ордер становится CANCELED с terminalReason ORDER_REPLACED, AMENDED не пришёл ни разу; увеличение тоже REPLACED. POST /v1/orders/modify с тем же уменьшением возвращает AMENDED и сохраняет id ордера. Так задумано, и в каком случае replace-batch возвращает AMENDED?
+
+POST /v1/orders/replace-batch: поля items на странице справочника не описаны, они есть только в примере. newPriceTicks принимает десятичную цену строкой, а не тики: 1320 становится ценой 1320 (а не 13.20 при шаге 0.01), 132000 становится ценой 132000; число JSON отклоняется с 400. newQtyScaled — целое в масштабе пары, строка отклоняется с 400.
+
+Ответ POST /v1/orders/replace-batch: acceptedTs в справочнике строка (пример 2025-01-01T00:00:00Z), а приходит объектом с seconds и nanos. Поля с нулевым значением пропускаются: у results[0] нет itemIndex, acceptedCount нет, когда ничего не принято, rejectedCount нет, когда ничего не отклонено. Так задумано?
+
+results в POST /v1/orders/replace-batch: для несуществующего orderId и для ордера другой пары oldOrderId приходит как 1 (нулевой id), а не orderId из запроса, поэтому отклонённый пункт можно сопоставить только по позиции. При CONFLICT_DUPLICATE_CLIENT_ORDER_ID у отклонённого пункта replacementOrderId равен oldOrderId, хотя в справочнике для отказа до назначения указан ноль. Так задумано?
+
+POST /v1/orders/replace-batch: пункт с теми же ценой и количеством, что у ордера, выполняется как REPLACED, и ордер получает новый id; modify с теми же значениями делает то же самое. Пункт без полей отклоняется с 400. Замена без изменений так задумана?
+
+Дополнение к тикету про modify и ордер другой пары: replace-batch ведёт себя так же, ордер AVAX-USDT, отправленный с symbol ETH-USDT, отклоняется с UNKNOWN_SYMBOL.
+
+Цены привязанных TP/SL не проверяются. На ETH-USDT (шаг 0.01) newAttachedRisk в replace-batch и attachedRisk в POST /v1/orders принимают takeProfit triggerPrice 3500.005, и триггер ноги создаётся с 3500.005; takeProfit 1000 у ордера BUY по 1350 тоже принимается. Отдельный POST /v1/triggers на ETH-USDT с triggerPrice 3500.005 отклоняется с PRICE_TICK_SIZE. Так задумано?
+
+POST /v1/triggers: clientTriggerId не помечен обязательным, но без него API отвечает 400 VALIDATION_ERROR trigger.client_trigger_id must be at least 1 characters. clientTriggerId длиной 64 символа принимается, 65 и больше даёт 503 UNAVAILABLE с сообщением read_decode connection reset by peer, в котором виден внутренний хост и порт, вместо ошибки валидации 400.
+
+POST /v1/triggers с уже существующим clientTriggerId и другим телом (другой qty или другой triggerPrice) возвращает HTML-страницу Cloudflare 502 Bad gateway вместо JSON-ошибки вроде CONFLICT_DUPLICATE_CLIENT_TRIGGER_ID; исходный триггер не меняется. Тот же clientTriggerId с тем же телом после DELETE возвращает 200 с новым acceptedAt и прежним triggerId, который CANCELED, новый триггер не создаётся. Последнее так задумано?
+
+POST /v1/triggers: триггер, условие которого уже выполнено в момент создания, принимается. На AVAX-USDT SELL stopLoss примерно на 20 процентов выше рынка и BUY stopLoss примерно на 20 процентов ниже рынка создаются в статусе ARMED (принимаются все 10 сочетаний стороны и типа выше и ниже рынка), оба сработали на следующей сделке (completedAt равен времени сделки) и выставили дочерние ордера, а BUY stopLoss выше рынка, созданный тогда же, не сработал. TRIGGER_PRICE_INVALID не пришёл ни разу; нулевая и отрицательная цена дают VALIDATION_ERROR. Так задумано, и когда возвращается TRIGGER_PRICE_INVALID?
+
+POST /v1/triggers: минимум пары при создании не проверяется. stopLoss с qty 0.05 на AVAX-USDT (minQty 0.1) создаётся в статусе ARMED, а при срабатывании становится FAILED с failureReason MIN_QUANTITY и не выставляет ордер, то есть стоп не срабатывает в тот момент, когда он нужен. Ladder и TWAP с 0.1 на уровень или слайс создаются и примерно через секунду становятся FAILED с MIN_NOTIONAL. Обычный ордер с qty 0.05 сразу отклоняется с MIN_QTY. Так задумано?
+
+GET /v1/triggers/id сразу после успешного POST /v1/triggers вернул 404 NOT_FOUND в 3 из 10 попыток (через 0.3 с — 200). GET сразу после DELETE, вернувшего CANCELED, показал ARMED в 6 из 10 попыток (через 1 с — CANCELED). Так задумано?
+
+GET /v1/triggers: фильтр parentOrderId игнорируется, настоящий id родителя, несуществующий id и запрос без фильтра возвращают один и тот же список. Фильтр status описан как имена TriggerStatus, и значения перечислены как CREATED, ARMED, RUNNING, COMPLETED, CANCELED, FAILED, PAUSED, но status=CANCELED возвращает 400 INVALID_TRIGGER_STATUS; работает только STATUS_CANCELED, значения через запятую тоже работают только с префиксом.
+
+POST /v1/triggers ladder: postOnly помечен обязательным, но ladder без него принимается, и ордера уровней выставляются без post-only. Так задумано?
+
+Дополнение к тикету про scaled-цены в справочнике триггеров: trailingDistanceTicks описан как дельта в тиках 1e-9 quote-единиц, но читается как десятичная цена: принимается до 9 знаков после точки, 9223372036 принимается, а 9223372037 даёт overflow (int64, делённое на 1e9), то есть 1 означает 1 USDT. qty описан как масштабированный по base_quantity_scale (пример 100000), но это десятичное число: qty 100 означает 100 AVAX. TRAILING_DISTANCE_INVALID не пришёл ни разу, трейлинг-дистанция 9223372036 на AVAX-USDT при цене около 11.5 принята.
+
+
+Проверено (29.09, время UTC; сырые ответы — docs/raw_*_2026-09-29.jsonl, разбор — docs/findings_2026-09-29.md):
+AMENDED — два прогона (08:46–08:47 и 09:56:57–09:57:02, блок B), справочник replace-batch (actionTaken) и modify (finalOrderId); обратная проверка: modify с тем же уменьшением — AMENDED, id тот же (09:57:17). Случай «без преемника» (частично исполненный ордер) не проверен.
+items/newPriceTicks/newQtyScaled — 09:56:50–09:56:55 (A1, A3, A3b: 132000 стало ценой 132000, преемник отклонён POST_ONLY_CROSS), число JSON — 400 (09:56:52), newQtyScaled строкой — 400 (10:31:47); справочник: у items только пример.
+acceptedTs и нулевые поля — D1 (09:57:13), C3 50 пунктов (09:57:03), D2 (09:57:15); у POST /v1/orders время строкой acceptedAt; справочник Response replace-batch.
+oldOrderId 1 / replacementOrderId — C10 (09:57:07), F1 другой пары (09:57:20), F4 дубль clientOrderId (09:57:25); для отменённого своего ордера oldOrderId эхом (F2) — обратная проверка.
+Замена без изменений — C8 (09:57:05), modify F9 (09:57:31); пункт без полей — 400 (C7).
+UNKNOWN_SYMBOL — F1 (09:57:20), AVAX-ордер после этого не изменён; связано с отправленным 28.09 про modify.
+Привязанный TP/SL — replace-batch G3a/G4a/G5a (09:57:35), create G3b/G4b (09:57:35–09:57:36), хранение перечитано 10:31–10:32 (K2, K4, K6, нога K8 с 3500.005); обратная проверка: отдельный триггер 3500.005 — PRICE_TICK_SIZE, 3500.00 — 200 (10:00:49).
+clientTriggerId — без поля 400 (10:00:18); 64 — 200, 65/100/200 — 503, повтор 64 — 200 (10:01:49–10:02:01); первый прогон 09:35 то же (8 из 8); список GET /v1/triggers — лишних триггеров от 503 нет; справочник POST /v1/triggers: поле без required.
+Дубль clientTriggerId — тот же body 200 и тот же id, другой qty и другая цена — 502 (10:02:03–10:02:08; первый прогон 09:34 и 09:35 — 5 из 5), исходный не изменён (GET 10:02:09), после DELETE — 200 со старым CANCELED id (10:02:11).
+«Не с той стороны» — S1–S10 все ARMED (09:59:57–10:00:18); срабатывание: сделка 10:29:50.283879368, FW1/FW2 COMPLETED с тем же временем, контроль FC2 остался ARMED; первый прогон: сделка 09:33:11.804064116 = completedAt, перечитано 10:19; справочник: TRIGGER_PRICE_INVALID есть в списке кодов (страница replace-batch).
+Минимум qty — F12 ARMED (10:00:19), FM1 при срабатывании FAILED MIN_QUANTITY (10:29:50), L11/TW11 FAILED MIN_NOTIONAL (10:02:21, 10:03:04); обратная проверка: ордер qty 0.05 — MIN_QTY (10:00:51).
+Чтение после записи — Y1–Y10 (10:01:16–10:01:49): 404 в 3 из 10, ARMED после DELETE в 6 из 10; первый прогон 09:41 — 1 из 3 и 1 из 3.
+Фильтры — FILT6–FILT9 (10:04:19–10:04:20): parentOrderId настоящий / несуществующий / без фильтра — тот же nextPageToken и те же записи; status: CANCELED — 400, STATUS_CANCELED — 200; symbol работает (обратная проверка); справочник GET /v1/triggers.
+Ladder postOnly — L9 (10:02:20), дочерние ордера без postOnly; справочник POST /v1/triggers: postOnly required.
+trailingDistanceTicks и qty — TR32/TR33/TR34/TR35 (10:00:40–10:00:42), TR15 «0.1» (10:00:36); qty 7 знаков — 400 (10:00:21), qty 100 — INSUFFICIENT_FUNDS (10:00:44), GET триггера отдаёт qty 0.513791; справочник POST /v1/triggers.

@@ -95,7 +95,7 @@ w(f"""# Findings 2026-09-29 (перепроверено)
 
 Все утверждения ниже — из свежего прогона 29.09 (replace-batch — около 09:56–09:58 UTC, триггеры — около 09:59–10:20 UTC). Для каждого пункта: что в справочнике (дословно из `docs/reference/`, скачано 29.09 08:44 UTC), что на деле, сырой ответ (тело дословно, время UTC, HTTP-код). Не баг — так и написано.
 
-Сырые логи: `docs/raw_replace_batch_2026-09-29.jsonl` ({len(rb_rows)} вызовов), `docs/raw_triggers_2026-09-29.jsonl` ({len(tr_rows)} вызовов), `docs/raw_triggers_filters_2026-09-29.jsonl` ({len(tf_rows)} вызовов). Скрипты: `tests/bugtest1_replace_batch.py`, `tests/bugtest2_triggers.py`, сборка этого файла — `tests/make_findings.py`. Первый прогон (до перепроверки) — в истории git.
+Сырые логи: `docs/raw_replace_batch_2026-09-29.jsonl` ({len(rb_rows)} вызовов), `docs/raw_triggers_2026-09-29.jsonl` ({len(tr_rows)} вызовов), `docs/raw_triggers_filters_2026-09-29.jsonl` ({len(tf_rows)} вызовов). Скрипты: `tests/bugtest1_replace_batch.py`, `tests/bugtest2_triggers.py`, сборка этого файла — `tests/make_findings.py`. Первый прогон (до перепроверки) — в истории git. Текст для команды (EN + RU + «Проверено») — `docs/report_2026-09-29.txt`.
 
 Аккаунт общий. Ордера — ETH-USDT BUY 0.005 по 1350 (рынок ≈2700) и AVAX-USDT BUY по 5.7 (рынок ≈11.5), post-only. Дочерние ордера триггеров — SELL 22.8 / BUY 5.0–5.7, трейлинг — с activationPrice ≈2× рынка. Всё своё снято по id; cancel-all не вызывался. Итог уборки — в разделе 3.
 
@@ -117,6 +117,7 @@ w(f"Состояние после: `{order_line(ALL['A3 get succ'])}`\n\n")
 w(raw("A3b обратная проверка: '132000' (если бы тики — 1320.00)", req=False))
 w(f"Преемник: `{order_line(ALL['A3b get succ'])}`; исходный: `{order_line(ALL['A3b get old'])}`\n\n")
 w(raw("A2 newPriceTicks JSON number 133000"))
+w(raw("K1 newQtyScaled строкой '4500' (несуществующий id)"))
 
 w("""### 1.2 actionTaken AMENDED
 
@@ -191,6 +192,10 @@ for lab in ["F8a newAttachedRisk takeProfit 3500 (limitGtc)", "G3a replace-batch
             "G4b create ордера с attachedRisk TP 1000 (ниже цены входа 1350)",
             "G5a replace-batch newAttachedRisk как в примере (0.005/0.005)"]:
     w(raw(lab))
+w("Хранение (перепроверено 10:31–10:32 UTC): ордер из `POST /v1/orders` с TP 3500.005 и с TP 1000 — в attachedRisk сохранено «3500.005» и «1000»; преемник replace-batch с TP 3500.005 — в attachedRisk «3500.005», нога-триггер создана с triggerPrice «3500.005» (статус CREATED). У заменённого ордера attachedRisk в ответе пропадает — риск переходит к преемнику, это не отдельная проблема.\n\n")
+for lab in ["K2 GET ордер из G3b (create, TP 3500.005)", "K4 GET ордер из G4b (create, TP 1000)",
+            "K6 replace-batch newAttachedRisk TP 3500.005 (marketIoc)", "K6 GET преемник сразу", "K8 GET нога cSbDnHzCuP8"]:
+    w(raw(lab, req=lab.startswith("K6 replace"), cut=1300))
 w(raw("G6 get родителя после cancel", req=False, cut=1600))
 
 w("""### 1.5 Пункт с теми же ценой и qty меняет id
@@ -316,7 +321,7 @@ if fire_wait_line and waited:
         w(f"В этом ожидании (с {fire_wait_line['utc']} до {waited[-1]['utc']}) новых сделок по паре не было — последняя {_t0}; поэтому статусы не изменились и вывода о срабатывании из этого запуска нет.\n\n")
 w("""Контроль (верная сторона, далеко от рынка) не сработал — значит, срабатывание вызвано уже выполненным условием, а не сбоем. Дочерние ордера сработавших — далёкие лимитки, сняты по id.
 Первый прогон (09:33) — единственная сделка за время теста. Перечитано живыми вызовами в 10:19 UTC (ниже): два триггера «не с той стороны» (SELL stopLoss 13.707 и BUY stopLoss 9.138 при рынке ≈11.4) — COMPLETED, completedAt 09:33:11.804064116; события FIRED с tsNs 1790674391804064116 и firePx 11.422; публичная сделка AVAX-USDT 11.422 в 09:33:11.804064116 — то же время до наносекунды. Дочерние ордера (SELL 22.8, BUY 5.7) отменены мной по id в 09:34.
-Повторные прогоны с ожиданием новой сделки (15 и 30 мин) — таблица выше: если сделок не было, триггеры, включая контроль, остались ARMED; это не противоречит (без сделки нет срабатывания).
+Перепроверка: первое ожидание (10:04–10:19) сделки не дождалось — все триггеры, включая контроль, остались ARMED (без сделки срабатывания нет, противоречия нет). Второе ожидание (с 10:20) дождалось сделки 10:29:50.283879368 — таблица выше: FW1 и FW2 («неверная сторона») COMPLETED с completedAt и tsNs события, равными времени сделки; firePx 11.608 — одна из сделок этой наносекунды; дочерние ордера SELL 22.8 и BUY 5.7 выставлены и сняты мной по id; контроль FC2 (верная сторона) остался ARMED.
 Вопрос: is this by design? Триггер, условие которого уже выполнено при создании, принимается без ошибки и срабатывает на первой же сделке. Когда возвращается TRIGGER_PRICE_INVALID?
 
 """)
@@ -332,12 +337,20 @@ for e in fire_after + fire_ev:
     w(raw(e, req=False, cut=900))
 if waited:
     w(raw(waited[-1], req=True, cut=700))
+for lab in ["FIRE2 child DGtExYgSR7e после отмены", "FIRE2 child 6ZFFe9n7QBW после отмены"]:
+    if lab in ALL:
+        w(raw(lab, req=False, cut=900))
+if "FIRE2 публичные сделки (limit 50)" in ALL:
+    e = ALL["FIRE2 публичные сделки (limit 50)"]
+    t50 = [t for t in (J(e) or {}).get("trades", []) if t["executedAt"].startswith("2026-09-29T10:29:50")]
+    w(f"`GET /v1/spot/markets/AVAX-USDT/trades` — {e['utc']} — HTTP {e['http']} — сделки 10:29:50 из ответа (выборка):\n```\n{json.dumps(t50, ensure_ascii=False)}\n```\n")
 
 w("""### 2.3 qty ниже минимума принимается при создании
 
 В доках: ограничений qty на странице нет. Для ордеров биржа отклоняет MIN_QTY / MIN_NOTIONAL (обратная проверка ниже).
-На деле: stop-loss с qty 0.05 (minQty пары 0.1; дочерний ордер 0.05 × 22.8 = 1.14 USDT < 5) — 200, ARMED. Ladder и TWAP с qty 0.2 (на уровень/слайс 0.1) — 200, через ~1 с FAILED с failureReason MIN_NOTIONAL. Что со stop-loss при срабатывании — в таблице 2.2 (FM1).
-Вопрос: is this by design? Проверка минимумов откладывается до исполнения, и о неудаче клиент узнаёт только по статусу.
+На деле: stop-loss с qty 0.05 (minQty пары 0.1; дочерний ордер 0.05 × 22.8 = 1.14 USDT < 5) — 200, ARMED. Ladder и TWAP с qty 0.2 (на уровень/слайс 0.1) — 200, через ~1 с FAILED с failureReason MIN_NOTIONAL.
+Stop-loss с qty 0.05 при срабатывании (сделка 10:29:50.283879368, FM1 в таблице 2.2) — FAILED, failureReason MIN_QUANTITY, событие FAILED, дочернего ордера нет. То есть о слишком малом qty клиент узнаёт только в момент, когда стоп должен был сработать.
+Вопрос: is this by design? Проверка минимумов откладывается до срабатывания, и защитный стоп молча не исполняется.
 
 """)
 for lab in ["F12 qty ниже minQty (0.05 AVAX)", "X15 ордер AVAX BUY qty 0.05 @5.700 (обратная проверка minQty)",
