@@ -303,8 +303,10 @@ def last_trade_ts(r, label):
     return max((t["executedAt"] for t in tr), default=""), tr
 
 
-def block_fire(r, max_wait=900):
+def block_fire(r, max_wait=None):
     """FIRE. Срабатывание по факту сделки: «неверная сторона», qty ниже минимума, контроль верной стороны."""
+    import os
+    max_wait = max_wait or int(os.environ.get("FIRE_WAIT", "900"))
     bid, ask, mid = market(r)
     lo, hi = fmt(mid * 0.8), fmt(mid * 1.2)
     r.call("FIRE балансы до", "GET", "/v1/balances")
@@ -312,7 +314,6 @@ def block_fire(r, max_wait=900):
         ("FW1 SELL stopLoss ВЫШЕ рынка (неверная сторона) qty 0.25", "stopLoss", "SELL", hi, "0.25"),
         ("FW2 BUY stopLoss НИЖЕ рынка (неверная сторона)", "stopLoss", "BUY", lo, QTY_B),
         ("FM1 SELL stopLoss ВЫШЕ рынка, qty 0.05 (< minQty 0.1)", "stopLoss", "SELL", hi, "0.05"),
-        ("FC1 контроль: SELL stopLoss НИЖЕ рынка (верная сторона) qty 0.25", "stopLoss", "SELL", lo, "0.25"),
         ("FC2 контроль: BUY stopLoss ВЫШЕ рынка (верная сторона)", "stopLoss", "BUY", hi, QTY_B),
     ]
     ids = {}

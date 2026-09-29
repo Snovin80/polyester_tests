@@ -157,7 +157,7 @@ w("""### 1.3 Границы
 | newClientOrderId 36 символов | 200; 37, 64, 100 — 400 «new_client_order_id: must be at most 36 characters» |
 | newClientOrderId = clientOrderId другого живого ордера | 200, REJECTED, CONFLICT_DUPLICATE_CLIENT_ORDER_ID, replacementOrderId = oldOrderId (не «1», см. 1.6) |
 | subaccountId «zzzz» и свой корневой RCx3H2SjGz6 | 403 API_KEY_ROOT_SCOPE_ONLY (ключ только для корневого счёта) |
-| чужой orderId (другой аккаунт) | не проверено: нет второго аккаунта, а публичные сделки не содержат orderId |
+| чужой ордер (субаккаунт ↔ основной счёт, в обе стороны) | 200, REJECTED, ORDER_UNKNOWN, oldOrderId «1»; modify/cancel/GET — 404; ордер не тронут (см. 1.8) |
 
 Не баги: всё в таблице, кроме отмеченного в 1.5 и 1.6. Коды BATCH_TOO_LARGE, CONFLICT_IDEMPOTENCY_KEY_REUSE, CONFLICT_DUPLICATE_CLIENT_ORDER_ID, PRICE_TICK_SIZE, MIN_QTY, MIN_NOTIONAL, ORDER_UNKNOWN есть в списке кодов справочника. В таблице «Possible errors» страницы — только 401, 403, 400, 404, 503 (нет 409) — мелочь.
 
@@ -231,6 +231,20 @@ w("""### 1.7 Приём ≠ результат (не баг)
 w(raw("E1 цена 3000 (выше лучшего ask, post-only пересечёт)", req=False))
 w(f"Исходный: `{order_line(ALL['E1 get old'])}`; преемник: `{order_line(ALL['E1 get succ'])}`\n\n")
 
+w("""### 1.8 Чужой счёт: субаккаунт в обе стороны (не баг)
+
+Ключ субаккаунта snovin-1 (387wT9mN3df) против ордера и триггера основного счёта: GET ордера — 404 NOT_FOUND; replace-batch — 200 REJECTED ORDER_UNKNOWN (oldOrderId «1»); modify и cancel — 404 ORDER_UNKNOWN; replace-batch с subaccountId основного счёта — 404; GET триггера — 404 NOT_FOUND, DELETE — 404 TRIGGER_NOT_FOUND; список триггеров субаккаунта пуст. Ордер и триггер основного счёта не изменились.
+Основной ключ против ордера субаккаунта: GET — 404; replace-batch — 200 REJECTED ORDER_UNKNOWN; modify и cancel — 404 ORDER_UNKNOWN; replace-batch с subaccountId субаккаунта — 403 API_KEY_ROOT_SCOPE_ONLY. Ордер субаккаунта не изменился; ключ субаккаунта сам меняет его штатно (REPLACED).
+Изоляция работает. Попутно: до того как автор включил торговлю в правах самого субаккаунта (отдельно от прав ключа), создание ордера давало 403 POLICY_SPOT_TRADE_DENY — это настройка, не баг.
+
+""")
+for lab in ["H2 SUB GET ордер основного счёта", "H3 SUB replace-batch ордера основного счёта", "H5 SUB cancel ордера основного счёта",
+            "H8 SUB DELETE триггер основного счёта", "H11 root get order после", "J1 ROOT GET ордер субаккаунта",
+            "J2 ROOT replace-batch ордера субаккаунта", "J4 ROOT cancel ордера субаккаунта",
+            "J5 ROOT replace-batch с subaccountId субаккаунта", "J6 SUB GET свой ордер после",
+            "J7 SUB replace-batch своего ордера qty 5000->4500 (контроль)"]:
+    w(raw(lab, req=lab.startswith(("H3", "J2", "J5")), cut=700))
+
 # ================= ЧАСТЬ 2 =================
 w("## Часть 2. POST /v1/triggers\n\n")
 w("""Пара AVAX-USDT (шаг цены 0.001, minQty 0.1, min notional 5). Справочник — `docs/reference/POST_triggers.txt`, `GET_triggers.txt`, `GET_triggers_trigger_id.txt`, `DELETE_triggers_trigger_id.txt`.
@@ -264,10 +278,21 @@ w(raw("R3.6 тот же clientTriggerId и body после DELETE"))
 w(raw("R3.6 тот же clientTriggerId и body после DELETE | GET", req=False))
 
 # FIRE — из данных
-fire_create = [e for e in tr_rows if e["label"].startswith(("FW", "FM", "FC")) and e["method"] == "POST"]
-fire_after = [e for e in tr_rows if e["label"].startswith(("FW", "FM", "FC")) and e["label"].endswith("| GET после сделки")]
-fire_ev = [e for e in tr_rows if e["label"].startswith(("FW", "FM", "FC")) and e["label"].endswith("| events")]
-waited = [e for e in tr_rows if e["label"] == "FIRE сделки после ожидания"]
+# только последний ЗАВЕРШЁННЫЙ запуск FIRE (от «FIRE балансы до» до «FIRE сделки после ожидания»)
+_starts = [i for i, e in enumerate(tr_rows) if e["label"] == "FIRE балансы до"]
+_ends = [i for i, e in enumerate(tr_rows) if e["label"] == "FIRE сделки после ожидания"]
+_run = []
+for st_i in reversed(_starts):
+    en = [j for j in _ends if j > st_i]
+    if en:
+        nxt = [k for k in _starts if k > st_i]
+        _run = tr_rows[st_i: (nxt[0] if nxt else len(tr_rows))]
+        break
+fire_create = [e for e in _run if e["label"].startswith(("FW", "FM", "FC")) and e["method"] == "POST"]
+fire_after = [e for e in _run if e["label"].startswith(("FW", "FM", "FC")) and e["label"].endswith("| GET после сделки")]
+fire_ev = [e for e in _run if e["label"].startswith(("FW", "FM", "FC")) and e["label"].endswith("| events")]
+waited = [e for e in _run if e["label"] == "FIRE сделки после ожидания"]
+fire_wait_line = next((e for e in _run if e["label"] == "FIRE последняя сделка до ожидания"), None)
 fire_rows = []
 for e in fire_after:
     t = (J(e) or {}).get("trigger", {})
@@ -276,17 +301,31 @@ w("""### 2.2 Цена «не с той стороны» рынка: приним
 
 В доках: TRIGGER_PRICE_INVALID есть в списке кодов (страница replace-batch); на странице POST /v1/triggers — ни слова, когда он приходит.
 На деле: все 10 сочетаний (SELL/BUY × stopLoss/takeProfit, выше/ниже рынка, ровно по bid/ask) создаются со статусом ARMED; направление (BELOW/ABOVE) выводится из типа и стороны, а не из рынка. Цена 0 и отрицательная — VALIDATION_ERROR; TRIGGER_PRICE_INVALID не пришёл ни разу.
-Срабатывание: триггеры ждали первую новую сделку по паре (сделки идут в среднем раз в 48 с, бывают паузы до 38 мин). Результат после сделки:
+Срабатывание: триггеры ждали первую новую сделку по паре (сделки идут в среднем раз в 48 с, бывают паузы до 38 мин). Результат последнего ожидания (была ли новая сделка — строка «FIRE сделки после ожидания» ниже):
 
 | Триггер | Статус после сделки | failureReason |
 |---|---|---|
 """)
 w("\n".join(fire_rows) + "\n\n")
+if fire_wait_line and waited:
+    _t0 = max((t["executedAt"] for t in (J(fire_wait_line) or {}).get("trades", [])), default="")
+    _t1 = max((t["executedAt"] for t in (J(waited[-1]) or {}).get("trades", [])), default="")
+    if _t1 > _t0:
+        w(f"В этом ожидании новая сделка была: {_t1} (до ожидания последняя — {_t0}).\n\n")
+    else:
+        w(f"В этом ожидании (с {fire_wait_line['utc']} до {waited[-1]['utc']}) новых сделок по паре не было — последняя {_t0}; поэтому статусы не изменились и вывода о срабатывании из этого запуска нет.\n\n")
 w("""Контроль (верная сторона, далеко от рынка) не сработал — значит, срабатывание вызвано уже выполненным условием, а не сбоем. Дочерние ордера сработавших — далёкие лимитки, сняты по id.
-Первый прогон (09:33) дал то же: два триггера «не с той стороны» стали COMPLETED ровно в момент сделки 09:33:11.804 (tsNs события = времени сделки).
+Первый прогон (09:33) — единственная сделка за время теста. Перечитано живыми вызовами в 10:19 UTC (ниже): два триггера «не с той стороны» (SELL stopLoss 13.707 и BUY stopLoss 9.138 при рынке ≈11.4) — COMPLETED, completedAt 09:33:11.804064116; события FIRED с tsNs 1790674391804064116 и firePx 11.422; публичная сделка AVAX-USDT 11.422 в 09:33:11.804064116 — то же время до наносекунды. Дочерние ордера (SELL 22.8, BUY 5.7) отменены мной по id в 09:34.
+Повторные прогоны с ожиданием новой сделки (15 и 30 мин) — таблица выше: если сделок не было, триггеры, включая контроль, остались ARMED; это не противоречит (без сделки нет срабатывания).
 Вопрос: is this by design? Триггер, условие которого уже выполнено при создании, принимается без ошибки и срабатывает на первой же сделке. Когда возвращается TRIGGER_PRICE_INVALID?
 
 """)
+for lab in ["W-run1 GET Zafbqjkj34P (перечитано)", "W-run1 events Zafbqjkj34P (перечитано)",
+            "W-run1 GET 4b6gLadxpm3 (перечитано)", "W-run1 events 4b6gLadxpm3 (перечитано)"]:
+    w(raw(lab, req=False, cut=1200))
+e = ALL["W-run1 публичные сделки AVAX-USDT (limit 1000)"]
+tr933 = [t for t in (J(e) or {}).get("trades", []) if t["executedAt"].startswith("2026-09-29T09:33:")]
+w(f"`GET /v1/spot/markets/AVAX-USDT/trades` — {e['utc']} — HTTP {e['http']} — сделки 09:33 из ответа (выборка):\n```\n{json.dumps(tr933, ensure_ascii=False)}\n```\n")
 for e in fire_create:
     w(raw(e, req=e["label"].startswith("FW1")))
 for e in fire_after + fire_ev:
@@ -459,7 +498,6 @@ w(f"""## Часть 3. Согласованность проверок и убо
 ## Не покрыто / нужна помощь автора
 
 - AMENDED в replace-batch (случай «без преемника»): нужен частично исполненный ордер. Детерминированно — только сделкой ≈6 USDT с самим собой на лучшей цене (правило CLAUDE.md запрещает исполнение). Нужно разрешение.
-- Чужой orderId (другой аккаунт): нужен второй аккаунт или id чужого ордера.
 - Трейлинг/стоп с рыночным дочерним ордером при срабатывании — продал бы монеты общего счёта; не делал.
 """)
 

@@ -397,13 +397,52 @@ def block_h(r):
             sub.call(f"H SUB cleanup cancel {oid}", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": oid})
 
 
+def block_j(r):
+    """J. Чужой счёт, обратное направление: основной ключ против ордера субаккаунта."""
+    from rb_common import Rec as _Rec
+    sub = _Rec(raw_path=r.raw_path, sub=True)
+    so = None
+    try:
+        http, p = sub.call("J0 SUB create ETH BUY 0.005 @1350", "POST", "/v1/orders", body=order_body())
+        so = p.get("orderId") if isinstance(p, dict) else None
+        if not so:
+            return
+        sub.own_ids.append(so)
+        time.sleep(0.6)
+        sub.call("J0 SUB GET свой ордер до", "GET", f"/v1/spot/orders/{so}")
+        r.call("J1 ROOT GET ордер субаккаунта", "GET", f"/v1/spot/orders/{so}")
+        r.call("J2 ROOT replace-batch ордера субаккаунта", "POST", P,
+               body={"symbol": SYMBOL, "requestId": r.rid(), "items": [{"orderId": so, "newQtyScaled": 4500}]})
+        r.call("J3 ROOT modify ордера субаккаунта", "POST", "/v1/orders/modify",
+               body={"symbol": SYMBOL, "requestId": r.rid(), "orderId": so, "newQtyScaled": 4500, "behavior": "AMEND_OR_REPLACE"})
+        r.call("J4 ROOT cancel ордера субаккаунта", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": so})
+        r.call("J5 ROOT replace-batch с subaccountId субаккаунта", "POST", P,
+               body={"symbol": SYMBOL, "requestId": r.rid(), "subaccountId": "387wT9mN3df",
+                     "items": [{"orderId": so, "newQtyScaled": 4500}]})
+        time.sleep(1)
+        sub.call("J6 SUB GET свой ордер после", "GET", f"/v1/spot/orders/{so}")
+        http, p = sub.call("J7 SUB replace-batch своего ордера qty 5000->4500 (контроль)", "POST", P,
+                           body={"symbol": SYMBOL, "requestId": r.rid(), "items": [{"orderId": so, "newQtyScaled": 4500}]})
+        for it in (p or {}).get("results", []) if isinstance(p, dict) else []:
+            v = it.get("replacementOrderId")
+            if v and v != "1":
+                sub.own_ids.append(v)
+    finally:
+        time.sleep(1)
+        for oid in dict.fromkeys(sub.own_ids):
+            http, p = sub.call(f"J SUB cleanup GET {oid}", "GET", f"/v1/spot/orders/{oid}")
+            stt = ((p or {}).get("order") or {}).get("status") if isinstance(p, dict) else None
+            if stt and stt not in ("CANCELED", "FILLED", "REJECTED", "EXPIRED"):
+                sub.call(f"J SUB cleanup cancel {oid}", "POST", "/v1/orders/cancel", body={"symbol": SYMBOL, "orderId": oid})
+
+
 def main():
     blocks = [a.upper() for a in sys.argv[1:]] or ["A", "B", "C", "D", "E", "F", "G", "H"]
     r = Rec()
     try:
         for b in blocks:
             print(f"\n===== блок {b} =====")
-            {"A": block_a, "B": block_b, "C": block_c, "D": block_d, "E": block_e, "F": block_f, "G": block_g, "H": block_h}[b](r)
+            {"A": block_a, "B": block_b, "C": block_c, "D": block_d, "E": block_e, "F": block_f, "G": block_g, "H": block_h, "J": block_j}[b](r)
     finally:
         r.cleanup()
 
