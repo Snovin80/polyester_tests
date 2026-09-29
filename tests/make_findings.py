@@ -109,7 +109,7 @@ w("""## 0. Сверка с полной документацией (docs/polyest
 | 1.1 newPriceTicks / newQtyScaled | developer-docs/connectrpc__scaled-integers: «Polyester REST APIs expose decimal values as strings … REST clients do not need to decode *_scaled, *_ticks …» | newPriceTicks соответствует; newQtyScaled (replace-batch и modify) — нет: только целое, «0.0045» строкой и числом — 400 |
 | 1.4 привязанный TP/SL | api-docs POST /v1/orders: attachedRisk «arm after the parent order fills», triggerPrice «scaled by 1e9»; про проверку цены — ничего | без изменений |
 | 1.6 acceptedTs | общего правила о формате времени в REST нет; REST и connect страницы — строка | без изменений |
-| 2.1 clientTriggerId | connect CreateTrigger: «min 1 chars», максимума нет; SDK: «reuse replayable … clientTriggerID» | повтор после DELETE → прежний триггер — по докам нормально, убрано из отчёта |
+| 2.1 clientTriggerId | connect CreateTrigger: «min 1 chars», максимума нет; REST: «Client-provided trigger ID for idempotency.» (SDK-доки не используем — команда просила не опираться на SDK) | повтор после DELETE → прежний триггер — по докам нормально, убрано из отчёта |
 | 2.2 «не с той стороны» | user-docs stop-loss: «A Last Price trade at or below 95,000 USDT activates the stop» | **не баг по докам**, убрано из отчёта |
 | 2.3 qty ниже минимума | user-docs ladder/twap: «Every rounded child must independently satisfy … minimum-order rules»; order-triggers: «A child rejection is a terminal trigger failure»; stop-loss: «An accepted trigger does not prove that the later child is admitted» | **не баг по докам**, убрано из отчёта |
 | 2.7 ladder postOnly | REST — required; connect — Unset/False/True | в отчёте: расхождение REST и connect |
