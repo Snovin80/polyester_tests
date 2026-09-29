@@ -121,12 +121,12 @@ w(raw("K1 newQtyScaled строкой '4500' (несуществующий id)")
 
 w("""### 1.2 actionTaken AMENDED
 
-В доках replace-batch (results[].actionTaken): «REPLACED admits a successor. AMENDED cancels the original order's remaining quantity without a successor; keep tracking old_order_id until its terminal state is confirmed. Unspecified for rejected items.»
+В доках replace-batch (results[].actionTaken): «REPLACED admits a successor. AMENDED cancels the original order's remaining quantity without a successor; keep tracking old_order_id until its terminal state is confirmed. Unspecified for rejected items.» (results[].replacementOrderId): «Assigned successor order ID. Zero for cancel-only outcomes or rejection before assignment.» Но пример ответа на той же странице: `"actionTaken": "AMENDED"`, `"oldOrderId": "5USXJZmk"`, `"replacementOrderId": "5USXJZmk"` — у AMENDED преемник равен исходному, не ноль; пример противоречит описанию. Когда replace-batch возвращает AMENDED, на странице не сказано. У modify поле behavior — только AMEND_OR_REPLACE («MODIFY_BEHAVIOR_UNSPECIFIED is treated as AMEND_OR_REPLACE»).
 В доках modify: `finalOrderId` — «Final active order ID; same as old_order_id for amendments.»
 
 На деле replace-batch при уменьшении qty (5000→4500, 4500→4000) и при увеличении (→6000) всегда отвечает REPLACED: новый id, старый ордер CANCELED с terminalReason ORDER_REPLACED, преемник WORKING с новым qty, той же ценой, тем же clientOrderId и тем же createdAt (lineage.generation +1). AMENDED не пришёл ни разу за оба прогона.
 Обратная проверка: modify с тем же уменьшением (5000→4500) на свежем ордере — AMENDED, finalOrderId = oldOrderId, ордер тот же.
-Не проверено: случай из описания AMENDED («без преемника») — для него, видимо, нужен частично исполненный ордер; такой ордер я не делал (правило: ордера не исполнять). См. вопросы автору в конце.
+Не проверено: случай из описания AMENDED («без преемника»). Предположение «нужен частично исполненный ордер» — моё, в справочнике его нет; такой ордер не создавался. Вопрос команде — в отчёте.
 
 """)
 w(raw("B1 qty вниз 5000->4500, цена не передана"))
@@ -508,9 +508,9 @@ w(f"""## Часть 3. Согласованность проверок и убо
 - 429 не было ни разу.
 - Триггеры перепроверки: создано {len(ids_created)}, итог статусов {fin_counts}. COMPLETED/FAILED — сработавшие в 2.2 и FAILED из 2.3/2.7; их дочерние ордера сняты по id. Все ордера replace-batch закрыты (проверено по id). RUNNING-триггеры на LTC — не мои (ноги автора, созданы 08:09), не трогал.
 
-## Не покрыто / нужна помощь автора
+## Не покрыто
 
-- AMENDED в replace-batch (случай «без преемника»): нужен частично исполненный ордер. Детерминированно — только сделкой ≈6 USDT с самим собой на лучшей цене (правило CLAUDE.md запрещает исполнение). Нужно разрешение.
+- AMENDED в replace-batch (случай «без преемника»): не проверено; когда он возвращается, спрошено у команды.
 - Трейлинг/стоп с рыночным дочерним ордером при срабатывании — продал бы монеты общего счёта; не делал.
 """)
 
