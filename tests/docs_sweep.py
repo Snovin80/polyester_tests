@@ -4,7 +4,9 @@
   2) вызов с реальными параметрами (подстановки из SUBS);
   3) пробы: без обязательного параметра, лишний параметр, неверный limit;
   4) сверка полей ответа с примером ответа справочника (имя, тип JSON, есть/нет).
-Сырые ответы — docs/raw_sweep_<раздел>.jsonl. Запуск: python3 tests/docs_sweep.py <раздел>"""
+Сырые ответы — docs/raw_sweep_<раздел>.jsonl. Запуск: python3 tests/docs_sweep.py <раздел>
+С компьютера автора (из облака закрыто Cloudflare): python tests/docs_sweep.py local > docs/sweep_local.txt
+Нужны ключи в .env (как для бота). Только GET, ничего не создаёт и не меняет."""
 import json
 import os
 import re
@@ -32,6 +34,16 @@ SECTIONS = {
               "chain__analytics__zipped-asset-supply__group", "chain__deposit-addresses",
               "chain__deposit-withdraw__config", "chain__flows", "chain__flows__by-tx__tx_hash__matches",
               "chain__flows__flow_id", "chain__guard-signer__status"],
+    # всё, что из облака закрыто Cloudflare («Just a moment…»): запускать с компьютера автора
+    "local": ["trading__daily-claim", "trading__rate-limits", "vip__status", "vip__tiers", "rate-limits",
+              "chain__deposit-withdraw__config", "chain__deposit-addresses", "chain__flows", "chain__flows__flow_id",
+              "chain__flows__by-tx__tx_hash__matches", "chain__guard-signer__status",
+              "chain__analytics__unified-asset-balances", "chain__analytics__zipped-asset-supply",
+              "chain__analytics__zipped-asset-supply__group",
+              "polychart__markets__engine_symbol_id__layers", "polychart__markets__engine_symbol_id__layers__inbox",
+              "layouts", "layouts__templates__subscriptions", "collab__whiteboards",
+              "auth__profile", "auth__api-keys", "auth__subaccounts", "auth__policies__api-keys", "auth__mfa__factors",
+              "auth__address-books", "auth__transfer-destinations"],
     "rest": ["polychart__markets__engine_symbol_id__layers", "polychart__markets__engine_symbol_id__layers__inbox",
              "polychart__owners__owner_id__published__layers", "layouts", "layouts__layout_id",
              "layouts__owners__owner_id__published", "layouts__templates__owner_id__template_id__versions",
@@ -102,6 +114,9 @@ class Sweep:
             status, text, ctype = r.status_code, r.text, r.headers.get("Content-Type", "")
         except Exception as e:
             status, text, ctype = None, f"EXC {type(e).__name__}: {e}", ""
+        kid = self.c.creds.key_id
+        if kid and kid in text:
+            text = text.replace(kid, "ak_***скрыт***")
         with open(self.raw, "a", encoding="utf-8") as f:
             f.write(json.dumps({"label": label, "utc": ts, "method": "GET", "path": path, "query": canon,
                                 "http": status, "content_type": ctype, "response_raw": text}, ensure_ascii=False) + "\n")
@@ -159,6 +174,19 @@ def main():
     names = sys.argv[2:] or SECTIONS[section]
     sw = Sweep(section)
     summary = {}
+    if any(n.startswith("chain__flows__") for n in names):
+        st, j, t = sw.get("chain__flows | для подстановки id", "/v1/chain/flows", "limit=5")
+        for fl in (j or {}).get("flows", []) if isinstance(j, dict) else []:
+            SUBS.setdefault("flow_id", fl.get("flowId") or fl.get("id"))
+            for k in ("txHash", "sourceTxHash", "destinationTxHash"):
+                if fl.get(k):
+                    SUBS.setdefault("tx_hash", fl[k])
+            for v in fl.values():
+                if isinstance(v, dict):
+                    for k in ("txHash", "hash"):
+                        if v.get(k):
+                            SUBS.setdefault("tx_hash", v[k])
+        print(f"подстановка: flow_id={SUBS.get('flow_id')} tx_hash={SUBS.get('tx_hash')}")
     for name in names:
         pg = page(name)
         tpl = pg["path"]
