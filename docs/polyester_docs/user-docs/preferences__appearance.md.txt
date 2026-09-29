@@ -1,0 +1,63 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/appearance.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Appearance
+Choose your theme, colors, and typeface.
+Appearance settings let you make Polyester look the way you prefer. Choose a light or dark theme, adjust the overall color tone, select your trading colors, and change the typeface.
+Open **[Personalization](https://testnet.polyester.com/account/settings/personalization)** from the in the top nav to make changes. Your preview updates as you choose each option.
+## Choose a theme
+Use **Light** for a bright interface, **Dark** for a darker workspace, or **System** to follow your device setting automatically.
+Interactive
+Personalization
+Mode
+- Theme
+Polyester
+- Trading Palette
+Polyester Classic
+- Fonts
+Inter
+## Choose a color tone
+Color tone changes the accent colors used throughout Polyester. Choose **Default**, **Warm**, or **Blue** based on what is most comfortable for you.
+Interactive
+Personalization
+Mode
+- Theme
+Polyester
+- Trading Palette
+Polyester Classic
+- Fonts
+Inter
+Polyester Polyester Warm Polyester Blue Sunset Warm Midnight Blue
+## Choose your trading colors
+Trading colors control how positive and negative price movement appears on charts, tables, and market values. Choose the palette that makes gains and losses easiest for you to recognize.
+Interactive
+Personalization
+Mode
+- Theme
+Polyester
+- Trading Palette
+Polyester Classic
+- Fonts
+Inter
+Polyester Classic
+Default
+Emerald City Soft Signal Neon Dreams Bull & Bear Monochrome Ocean Fire Royal Gold Emerald Empire Matrix Mint Silver & Copper Tropical Trader Neon Rave Diamond Hands Forest Fire Ocean Sunset Ancient Wealth Electric Pulse Royal Navy Steel & Fire Midnight Sun
+Mock data only, for preview purposes.
+Written labels and values stay the same when you change colors.
+## Choose a typeface
+Select **Sans-serif**, **Serif**, or **Mono** for interface text. Use the preview to compare navigation, prices, and tables before settling on one.
+Interactive
+Personalization
+Mode
+- Theme
+Polyester
+- Trading Palette
+Polyester Classic
+- Fonts
+Inter
+Inter
+Default
+Roboto Oxanium Geist Mono JetBrains Mono
+## Saving your appearance
+Your choices save automatically in the current browser and apply across its Polyester tabs. Another browser or device can use different appearance settings.

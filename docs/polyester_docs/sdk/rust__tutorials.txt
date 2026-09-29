@@ -1,0 +1,488 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/tutorials
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Live market ticker · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Tutorials
+Live market ticker
+Copy page
+View as Markdown
+Open in
+Build a public market monitor that starts from REST state, follows realtime trades, confirms candle
+availability, and fails visibly when its stream becomes stale. This pattern is useful both for a
+terminal ticker and as the market-data health input to a trading system.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public and non-mutating
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+No
+API key
+is required. Empty trade or candle arrays are valid on a quiet testnet market; distinguish
+an empty successful response from a transport failure.
+1
+Create the client and load catalogs
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+hydrate_catalogs
+true
+,
+Default
+default
+()
+})
+?
+;
+client
+wait_for_catalogs
+()
+;
+Catalog hydration resolves symbols to engine IDs and attaches the correct quantity scale to public
+trades.
+2
+Bootstrap from recent trades and candles
+let
+recent
+=
+client
+market_data
+get_trades
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+for
+trade
+in
+&
+recent
+trades {
+println!
+(
+"{} {} {:?} {:?} {}"
+,
+trade
+match_id,
+trade
+side,
+trade
+price,
+trade
+qty,
+trade
+ts_ns
+);
+}
+let
+candles
+=
+client
+market_data
+get_candles
+(
+"BTC-USDT"
+,
+"1m"
+,
+Some
+(
+50
+))
+;
+if
+let
+Some
+(
+latest
+)
+=
+candles
+candles
+first
+() {
+println!
+(
+"{} {} {}"
+,
+latest
+ts_sec,
+latest
+close,
+latest
+volume);
+}
+REST bootstrap prevents a blank screen while waiting for the next trade. Keep the match ID and
+timestamp of the newest row so consumers can deduplicate a reconnect overlap. Candle rows are
+newest-first, and an included open candle is prepended. For indicators, request closed candles and
+reverse or sort the rows by
+ts_sec
+into chronological order first.
+3
+Follow the public trade tape
+use
+std
+time
+Duration
+;
+let
+mut
+trade_sub
+=
+client
+market_data
+subscribe_trades
+(
+"BTC-USDT"
+)
+;
+match
+tokio
+time
+timeout
+(
+Duration
+from_secs
+(
+30
+),
+trade_sub
+recv_result
+())
+Ok
+(
+Ok
+(
+Some
+(
+trade
+)))
+=>
+println!
+(
+"{} {} {:?} {:?}"
+,
+trade
+match_id,
+trade
+side,
+trade
+price,
+trade
+qty);
+}
+Ok
+(
+Ok
+(
+None
+))
+=>
+eprintln!
+(
+"trade stream closed"
+),
+Ok
+(
+Err
+(
+err
+))
+=>
+return
+Err
+(
+err
+),
+Err
+(
+_
+)
+=>
+eprintln!
+(
+"no trade in 30s; market may be quiet or stream may be stale"
+),
+}
+The subscription completes its handshake before returning. Queue overflow is terminal; discard
+the subscription and create a new one after recording the error.
+4
+Add candle updates
+let
+mut
+candle_sub
+=
+client
+market_data
+subscribe_candles
+(
+"BTC-USDT"
+,
+"1m"
+)
+;
+if
+let
+Some
+(
+candle
+)
+=
+candle_sub
+recv_result
+()
+println!
+(
+"{} {} {} {} {}"
+,
+candle
+ts_sec,
+candle
+open,
+candle
+high,
+candle
+low,
+candle
+close
+);
+}
+Candle
+does not expose
+is_closed
+include_incomplete: false
+for
+indicators that must not repaint. For the stream, treat a timestamp bucket as forming until the
+next bucket begins.
+5
+Operate and shut down
+Track a last-event timestamp separately for trades and candles. A quiet market can legitimately
+produce no events, so verify staleness with a bounded REST read before declaring the websocket
+unhealthy. Use
+tokio::signal::ctrl_c()
+or Unix signal streams, then close/drop subscriptions
+before dropping the client.
+API map
+Method
+Important inputs
+Use
+market_data.get_trades
+/
+get_trades_with
+symbol/ID, limit, page token
+Initial tape and reconnect overlap
+market_data.subscribe_trades
+symbol
+Live public executions
+market_data.get_candles
+/
+get_candles_with
+symbol, timeframe, bounds, incomplete flag
+Historical/bootstrap OHLCV
+market_data.get_current_candle
+symbol, timeframe
+Lightweight health check
+market_data.subscribe_candles
+symbol, timeframe
+Forming and closed candle updates
+orderbook.create_subscription
+CreateSubscriptionOptions
+Sequence-checked bid/ask state
+Tested source
+Example
+01
+performs live REST market reads and example
+04
+runs the public trade stream in
+polyester-examples-rust
+compiles against the exact
+v0.1.0a22
+commit; the REST path and candle-backed RSI dry-run were
+executed live.
+Related
+Streaming
+Market data
+Candles
+Public trades
+Related Topics
+Build a production trading bot
+Build a resilient Rust quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+Portfolio tracker
+Build a revision-aware Rust account monitor for balances, reservations, open orders, fills, and reconciliation.
+Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+Previous
+Zipper
+Next
+Build a production trading bot
+On this page
+API map
+Tested source
+Related
+Related Topics
+Share this page
+Live market ticker
+Build a snapshot-then-stream Rust market monitor with trades, candles, staleness detection, and clean shutdown.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    hydrate_catalogs: true,
+    ..Default::default()
+})?;
+client.wait_for_catalogs().await?;
+
+---
+
+let recent = client.market_data.get_trades("BTC-USDT", Some(20)).await?;
+for trade in &recent.trades {
+    println!(
+        "{} {} {:?} {:?} {}",
+        trade.match_id, trade.side, trade.price, trade.qty, trade.ts_ns
+    );
+}
+
+let candles = client
+    .market_data
+    .get_candles("BTC-USDT", "1m", Some(50))
+    .await?;
+if let Some(latest) = candles.candles.first() {
+    println!("{} {} {}", latest.ts_sec, latest.close, latest.volume);
+}
+
+---
+
+use std::time::Duration;
+
+let mut trade_sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+match tokio::time::timeout(Duration::from_secs(30), trade_sub.recv_result()).await {
+    Ok(Ok(Some(trade))) => {
+        println!("{} {} {:?} {:?}", trade.match_id, trade.side, trade.price, trade.qty);
+    }
+    Ok(Ok(None)) => eprintln!("trade stream closed"),
+    Ok(Err(err)) => return Err(err),
+    Err(_) => eprintln!("no trade in 30s; market may be quiet or stream may be stale"),
+}
+
+---
+
+let mut candle_sub = client
+    .market_data
+    .subscribe_candles("BTC-USDT", "1m")
+    .await?;
+if let Some(candle) = candle_sub.recv_result().await? {
+    println!(
+        "{} {} {} {} {}",
+        candle.ts_sec,
+        candle.open,
+        candle.high,
+        candle.low,
+        candle.close
+    );
+}

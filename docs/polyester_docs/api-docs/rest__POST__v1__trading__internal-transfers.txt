@@ -1,0 +1,271 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/trading/internal-transfers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+InternalTransferService
+Create Internal Transfer
+Create or return one authenticated Trading to Trading internal transfer.
+Copy URL
+Method
+POST
+Path
+/v1/trading/internal-transfers
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Conditionally required
+POST
+/v1/trading/internal-transfers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/trading/internal-transfers' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"amount": "18.446744073709551617",
+"assetId": 100,
+"destinationAccountId": "4Rh4iXdT",
+"idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+"subaccountId": "45LUmqjT"
+}'
+Responses
+"acceptedAtTsNs": "1735689600000000000",
+"amount": "18.446744073709551617",
+"assetCode": "USDC",
+"assetId": 100,
+"destination": {
+"rootAccountPublicId": "7563897446546",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountPublicId": "6789012345678"
+},
+"requestId": "request_01J0EXAMPLE",
+"status": "ACCEPTED",
+"transferId": "9155001234569",
+"uAssetId": "100"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+amount
+string
+required
+/^[0-9]…9]+)?$/
+Transfer amount in canonical 18-decimal unified asset units. For example, 0.5 is encoded as 500000000000000000.
+assetId
+integer (int32)
+Canonical public unified asset id for the asset being transferred.
+destinationAccountId
+string
+/^[1-9A…m-z]+$/
+Destination root account public id.
+destinationSmartAccountAddress
+string
+Destination smart-account address.
+destinationSubaccountId
+string
+/^[1-9A…m-z]+$/
+Destination subaccount public id.
+idempotencyKey
+string
+Stable client-supplied idempotency key used to collapse safe retries.
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Optional source subaccount public id. When omitted, the authenticated caller's root account is used as the source account.
+Response
+Form
+JSON
+acceptedAtTsNs
+string
+/^[0-9]+$/
+Acceptance timestamp in nanoseconds since epoch (server time).
+Example
+1735689600000000000
+amount
+string
+/^[0-9]…9]+)?$/
+Echoed transfer amount in canonical 18-decimal unified asset units.
+Example
+18.446744073709551617
+assetCode
+string
+Resolved asset code for convenience.
+Example
+USDC
+assetId
+integer (int32)
+Echoed canonical public unified asset id.
+Example
+100
+destination
+object
+Server-resolved destination summary.
+3 fields
+rootAccountPublicId
+string
+Destination root account public id.
+Example
+7563897446546
+smartAccountAddress
+string
+Destination smart-account address resolved by the server.
+Example
+0x2222222222222222222222222222222222222222
+subaccountPublicId
+string
+Destination subaccount public id when the destination targets a subaccount.
+Example
+6789012345678
+requestId
+string
+Stable server-owned request identifier for this intake.
+Example
+request_01J0EXAMPLE
+status
+enum
+Public status for the transfer request.
+ACCEPTED
+REJECTED
+FAILED
+Example
+ACCEPTED
+transferId
+string
+Stable transfer identifier for the settled internal transfer.
+Example
+9155001234569
+uAssetId
+string
+Resolved unified asset id used by downstream settlement.
+Example
+100
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/trading/internal-transfers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s381" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/trading/internal-transfers' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"amount": "18.446744073709551617",
+"assetId": 100,
+"destinationAccountId": "4Rh4iXdT",
+"idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+"subaccountId": "45LUmqjT"
+}'
+Responses
+"acceptedAtTsNs": "1735689600000000000",
+"amount": "18.446744073709551617",
+"assetCode": "USDC",
+"assetId": 100,
+"destination": {
+"rootAccountPublicId": "7563897446546",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountPublicId": "6789012345678"
+},
+"requestId": "request_01J0EXAMPLE",
+"status": "ACCEPTED",
+"transferId": "9155001234569",
+"uAssetId": "100"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/trading/internal-transfers' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "amount": "18.446744073709551617",
+  "assetId": 100,
+  "destinationAccountId": "4Rh4iXdT",
+  "idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+  "subaccountId": "45LUmqjT"
+}'
+
+---
+
+{
+  "acceptedAtTsNs": "1735689600000000000",
+  "amount": "18.446744073709551617",
+  "assetCode": "USDC",
+  "assetId": 100,
+  "destination": {
+    "rootAccountPublicId": "7563897446546",
+    "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+    "subaccountPublicId": "6789012345678"
+  },
+  "requestId": "request_01J0EXAMPLE",
+  "status": "ACCEPTED",
+  "transferId": "9155001234569",
+  "uAssetId": "100"
+}

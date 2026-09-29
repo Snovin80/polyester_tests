@@ -1,0 +1,684 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/trading
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Trading · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Trading
+Trading
+Copy page
+View as Markdown
+Open in
+Use an API-key client (
+polyester.FromEnv
+or
+polyester.New
+). Orders spend
+trading
+balance.
+if
+err
+client
+WaitForCatalogs
+(
+ctx
+);
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+Place and cancel
+symbol
+"BTC-USDT"
+tif
+"gtc"
+clientOrderID
+"mm-bot-001"
+price
+models
+PriceFromDecimal
+(
+"64250.5"
+)
+result
+,
+err
+client
+Orders
+Create
+(
+ctx
+,
+models
+CreateOrderRequest
+Symbol
+&
+symbol
+,
+Side
+"buy"
+,
+OrderType
+"limit"
+,
+TIF
+&
+tif
+,
+Qty
+models
+QtyFromDecimal
+(
+"0.25"
+),
+Price
+&
+price
+,
+PostOnly
+true
+,
+// limit GTC only
+ClientOrderID
+&
+clientOrderID
+,
+},
+nil
+)
+// Create synthesizes Status: "accepted" (admission ack). Lifecycle states come
+// from ListOpen / Get / Subscribe, not Create.
+fmt
+Println
+(
+result
+Status
+,
+result
+OrderID
+)
+_
+,
+err
+=
+client
+Orders
+Cancel
+(
+ctx
+,
+nil
+,
+nil
+,
+&
+clientOrderID
+,
+&
+symbol
+,
+nil
+,
+nil
+)
+Client order IDs accept 1 to 36 ASCII letters, digits,
+,
+_
+,
+,
+/
+, and
+-
+use the same character set and accept 1 to 64 characters.
+Size and preview deliberately
+Create with exactly one sizing mode: base
+Qty
+, or
+MaxQuoteDebitScaled
+, a hard all-in quote
+budget for BUY market and limit IOC orders.
+FeeAsset
+is
+"quote"
+(default) or
+"base"
+(BUY-only), replacing fee-source /
+received
+ResolvedBaseQtyScaled
+and
+SubmittedMaxQuoteDebitScaled
+client.Orders.Preview(ctx, request, account)
+for an
+admissibility check: whether the intent is currently admissible, any typed rejection, resolved
+base size, and a protected price bound when price protection applied. Preview does not return fee
+or quote-debit estimates. Create always re-evaluates the intent.
+Modify, cancel-all, batch
+newPrice
+models
+PriceFromDecimal
+(
+"64100"
+)
+reqID
+"mod-1"
+_
+,
+err
+=
+client
+Orders
+Modify
+(
+ctx
+,
+nil
+,
+symbol
+,
+&
+result
+OrderID
+,
+nil
+,
+nil
+,
+&
+reqID
+,
+&
+newPrice
+,
+nil
+,
+nil
+,
+nil
+)
+preview
+,
+err
+client
+Orders
+CancelAll
+(
+ctx
+,
+nil
+,
+nil
+,
+&
+symbol
+,
+nil
+,
+true
+,
+nil
+)
+// Final bool is allowPartial, retained for compatibility and ignored on the wire.
+// Inspect per-item Accepted/Rejected on the result.
+batch
+,
+err
+client
+Orders
+BatchCreate
+(
+ctx
+,
+nil
+,
+items
+,
+nil
+,
+&
+symbol
+,
+nil
+,
+false
+)
+_
+,
+err
+=
+client
+Orders
+CancelAllAfter
+(
+ctx
+,
+nil
+,
+15
+,
+nil
+,
+&
+symbol
+,
+nil
+,
+nil
+)
+_
+=
+preview
+_
+=
+batch
+Batch size contracts:
+BatchCreate
+max
+20
+;
+BatchReplace
+/
+BatchCancel
+max
+50
+Use
+BatchReplace
+for same-symbol quote refresh and poll
+GetBatchReplaceStatus
+with the
+admission
+BatchRequestID
+(retry briefly on 404 / not-found). Admission makes predecessor order
+and client IDs stale: immediately use each
+ReplacementOrderID
+and new client order ID from the
+receipt. A predecessor
+Get
+returning
+not_found
+/
+ORDER_UNKNOWN
+is expected. Poll phases
+admitted
+,
+working
+,
+rejected
+, and
+terminal
+models.IsBatchReplaceSettled(status)
+or
+models.BatchReplaceStatusSettled(status)
+treats
+working
+,
+rejected
+, and
+terminal
+as reconciled, not execution-final;
+working
+means the
+successor is live. Reuse the same
+requestID
+for an ambiguous retry and never replace against a
+stale predecessor. These are API-side contracts; the SDK does not preflight every count. A batch
+timeout is not proof of no commit; reconcile before retry.
+After fills, prefer
+WaitForOrderTradesComplete
+because
+CumQty
+can lead trade projection.
+Cancellation is an admission acknowledgement. Confirm the order has disappeared from
+ListOpen
+before releasing local state and retry the same cancel if reconciliation still shows it.
+Modify and replace operations require enough available balance for the replacement order. Leave
+headroom when most of the trading balance is reserved, and reconcile the original order after an
+ambiguous response before deciding whether to retry or cancel and recreate it.
+For long-running automated trading, renew
+CancelAllAfter
+continuously:
+Arm it only after startup reconciliation has confirmed open orders.
+Refresh well before
+EffectiveTimeoutSec
+(for example every 5 seconds on a 15-second timer).
+Give each deliberate refresh a new
+requestID
+, but reuse that ID when retrying the same
+ambiguous refresh.
+Verify
+Status
+,
+EffectiveTimeoutSec
+, and
+ExpiresAtTsNs
+on every response.
+Stop quoting and reconcile if a refresh fails or its deadline is uncertain.
+The timer is a last-resort venue control, not a replacement for explicit shutdown cancellation.
+Stream orders
+sub
+,
+err
+client
+Orders
+Subscribe
+(
+ctx
+,
+accountID
+)
+defer
+sub
+Close
+()
+for
+order
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+order
+Status
+)
+break
+}
+Triggers
+// "last" is the triggerPriceSource arg, accepted for compat, ignored (not on wire).
+created
+,
+err
+client
+Triggers
+Create
+(
+ctx
+,
+nil
+,
+symbol
+,
+"stop_loss"
+,
+&
+triggerPrice
+,
+"sell"
+,
+models
+QtyFromDecimal
+(
+"0.1"
+),
+"market"
+,
+nil
+,
+"last"
+,
+"ioc"
+,
+nil
+,
+&
+clientTriggerID
+,
+false
+,
+codecs
+CreateTriggerOptions
+// Create returns Status: "accepted" (admission). List filters still use lifecycle labels.
+_
+,
+err
+=
+client
+Triggers
+Modify
+(
+ctx
+,
+nil
+,
+created
+TriggerID
+,
+nil
+,
+codecs
+ModifyTriggerOptions
+TriggerPrice
+&
+newTrig
+,
+})
+_
+,
+err
+=
+client
+Triggers
+Cancel
+(
+ctx
+,
+nil
+,
+created
+TriggerID
+,
+nil
+)
+Status filters:
+created
+,
+armed
+,
+running
+,
+completed
+,
+cancelled
+,
+failed
+,
+paused
+Retry safely
+Reuse
+ClientOrderID
+/
+requestID
+/
+clientTriggerID
+on transport retries. See
+Error handling
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Examples
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+polyester-examples-go
+Related
+Orders
+Triggers
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Previous
+Market data
+Next
+Streaming
+On this page
+Place and cancel
+Size and preview deliberately
+Modify, cancel-all, batch
+Stream orders
+Triggers
+Retry safely
+Related
+Related Topics
+Share this page
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+
+---
+
+symbol := "BTC-USDT"
+tif := "gtc"
+clientOrderID := "mm-bot-001"
+price := models.PriceFromDecimal("64250.5")
+result, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+    Symbol:        &symbol,
+    Side:          "buy",
+    OrderType:     "limit",
+    TIF:           &tif,
+    Qty:           models.QtyFromDecimal("0.25"),
+    Price:         &price,
+    PostOnly:      true, // limit GTC only
+    ClientOrderID: &clientOrderID,
+}, nil)
+// Create synthesizes Status: "accepted" (admission ack). Lifecycle states come
+// from ListOpen / Get / Subscribe, not Create.
+fmt.Println(result.Status, result.OrderID)
+_, err = client.Orders.Cancel(ctx, nil, nil, &clientOrderID, &symbol, nil, nil)
+
+---
+
+newPrice := models.PriceFromDecimal("64100")
+reqID := "mod-1"
+_, err = client.Orders.Modify(ctx, nil, symbol, &result.OrderID, nil, nil, &reqID, &newPrice, nil, nil, nil)
+
+preview, err := client.Orders.CancelAll(ctx, nil, nil, &symbol, nil, true, nil)
+// Final bool is allowPartial, retained for compatibility and ignored on the wire.
+// Inspect per-item Accepted/Rejected on the result.
+batch, err := client.Orders.BatchCreate(ctx, nil, items, nil, &symbol, nil, false)
+_, err = client.Orders.CancelAllAfter(ctx, nil, 15, nil, &symbol, nil, nil)
+_ = preview
+_ = batch
+
+---
+
+sub, err := client.Orders.Subscribe(ctx, accountID)
+defer sub.Close()
+for order := range sub.Messages() {
+    fmt.Println(order.Status)
+    break
+}
+
+---
+
+// "last" is the triggerPriceSource arg, accepted for compat, ignored (not on wire).
+created, err := client.Triggers.Create(ctx, nil, symbol, "stop_loss", &triggerPrice,
+    "sell", models.QtyFromDecimal("0.1"), "market", nil, "last", "ioc",
+    nil, &clientTriggerID, false, codecs.CreateTriggerOptions{})
+// Create returns Status: "accepted" (admission). List filters still use lifecycle labels.
+_, err = client.Triggers.Modify(ctx, nil, created.TriggerID, nil, codecs.ModifyTriggerOptions{
+    TriggerPrice: &newTrig,
+})
+_, err = client.Triggers.Cancel(ctx, nil, created.TriggerID, nil)

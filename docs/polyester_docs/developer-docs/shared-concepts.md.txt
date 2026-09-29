@@ -1,0 +1,34 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Public IDs
+Understand what Polyester public IDs identify, why they are opaque, and how their representation differs per interface.
+Public IDs are the identifiers you see in Polyester APIs for accounts, subaccounts, orders, API keys, policies, invites, and similar resources.
+They are designed to be safe to expose publicly, stable enough for clients to store, and efficient for high-throughput exchange systems.
+***
+## Why public IDs exist
+Backend systems need identifiers that can be resolved quickly. Public API users need identifiers that do not reveal internal sequencing, record counts, or database-style IDs.
+Polyester public IDs solve both problems:
+- **Opaque to clients**: they look random and should not be parsed for meaning.
+- **Fast for Polyester**: the backend can resolve them without slow lookup tables.
+- **Stable in APIs**: clients can store and reuse them across requests.
+- **Interface-aware**: each interface uses the representation that suits it best.
+Do not treat a public ID as proof of access. Authorization is always checked separately for private resources.
+***
+## Representation differs per interface
+Every public ID is an unsigned 64-bit value underneath, but the representation you work with depends on the interface you use. Each interface documents its own identifier handling:
+- [REST identifiers](https://testnet.polyester.com/docs/developer-docs/rest/identifiers): short base58 strings in URLs and JSON.
+- [ConnectRPC identifiers](https://testnet.polyester.com/docs/developer-docs/connectrpc/identifiers): `fixed64` fields in typed Protobuf payloads.
+Different representations of the same ID refer to the same resource. Most integrations never need to convert between them; stay inside your interface's representation and follow its identifier guide.
+## Privacy model
+Public IDs are intentionally opaque. They are deterministic for Polyester, but they should look random to API users.
+This means:
+- a client cannot look at an ID and learn the internal record number
+- adjacent internal records do not produce obvious adjacent public IDs
+- converting between representations does not reveal the backend's internal record semantics
+- different resource types are kept separate, so an account ID should not be accepted where an order ID is expected
+This is a privacy and API-safety feature, not an authorization model. A leaked private-resource ID should still be useless without valid authentication and permission for that resource.
+> **Public IDs are not credentials**
+>
+> Public IDs are safe to expose as identifiers, but access to private resources still requires valid authentication and authorization.

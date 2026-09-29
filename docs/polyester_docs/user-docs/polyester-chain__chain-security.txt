@@ -1,0 +1,232 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/chain-security
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Validators · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Chain
+svg]:size-3.5">
+/
+Validators
+Validators
+Copy page
+View as Markdown
+Open in
+Polyester Chain
+validators use
+CometBFT consensus
+to agree on the order of transactions and the resulting public Chain state. They secure Polyester Chain blocks, contract execution, receipts, and event logs.
+Polyester also uses other validators, approvers, and signers for specific product actions. Those roles have separate responsibilities and do not replace Chain consensus.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+12 validators, with broader participation ahead
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Polyester Chain starts with 12 validators. The validator set will grow as the Network matures, with broader participation across independent operators, organizations, geographic regions, and infrastructure providers. Increasing operator diversity is part of the progressive decentralization plan.
+Separate approval roles
+Role
+Responsibility
+Polyester Chain validators
+Secure CometBFT blocks, transaction ordering, and canonical Chain state.
+Zipper
+validators
+Approve supported external deposits and withdrawals.
+Guard Signer
+Approves protected changes to the selected account’s external withdrawal and internal transfer whitelists.
+Cubist
+vault
+signing
+Applies TEE-backed signing policies before external vault assets can move.
+Safe owner
+Authorizes actions for the user's
+smart account
+An approval in one layer does not grant authority in another. For example, a Zipper validator approves a cross-chain request but does not produce Polyester Chain blocks or control a user's Safe.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Zipper quorum and Chain consensus are different
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Zipper validators review deposit and withdrawal requests. Polyester Chain validators secure blocks through CometBFT. Each system has its own responsibility and approval rules.
+Verifier nodes and Trading recovery
+The
+Escape Hatch
+adds a validator-controlled recovery path for the Trading Gateway. Validators assigned this responsibility run
+verifier nodes
+, assess matching and ledger evidence, and vote to enter exit-only mode or resume normal operation under the configured quorum rules.
+Polyester Chain continues processing valid emergency withdrawals while matching is halted. Private balance checkpoints support verification without publishing the complete account ledger.
+Running a public verifier is open to anyone. Voting rights belong to the authorized validator set; a verifier instance does not automatically receive consensus or recovery authority.
+Layered protection
+Polyester combines several security boundaries:
+Your owner credential and Safe rules authorize smart-account actions
+Protocol contracts enforce their account, balance, and asset rules
+Polyester Chain validators secure the resulting public state
+Zipper validators and Cubist protect cross-chain asset movement
+Guard approvals provide optional, opt-in protection for selected account-control changes
+PolyEngine
+keeps private trading execution and settlement separate from public Chain consensus.
+No single signer controls every layer.
+View public consensus activity
+Use
+Polyester Scan
+to browse blocks, transactions, receipts, contracts, token activity, and Zipper events recorded on Polyester Chain.
+Scan displays the public result of consensus. It does not participate in consensus, approve transactions, or change Chain state.
+See
+Zipper Security
+for request validation and vault signing, and
+Smart Account
+for account authorization.
+Related Topics
+Overview
+See how Polyester Chain supports your account, assets, and public on-chain activity.
+Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Gas Abstraction
+See how Polyester sponsors gas for your supported Polyester Chain actions.
+RPC Nodes
+Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+Previous
+Gas Abstraction
+Next
+RPC Nodes
+On this page
+Separate approval roles
+Verifier nodes and Trading recovery
+Layered protection
+View public consensus activity
+Related Topics
+Share this page
+Validators
+See how Polyester Chain validators secure blocks and how other approval roles remain separate.
+Share
+Copy Link

@@ -1,0 +1,235 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/sessions-alerts-and-recovery
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Sessions & Alerts · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Access & Security
+svg]:size-3.5">
+/
+Sessions & Alerts
+Sessions & Alerts
+Copy page
+View as Markdown
+Open in
+A session keeps you signed in to Polyester on a browser or device. Security alerts help you spot important account changes and activity that may need your attention.
+Your sessions
+A signed-in session lets that browser use your account until you sign out or the session ends. Polyester can still ask for
+MFA
+before a sensitive action.
+Signing out ends the session on the browser you are using.
+API keys
+are separate from browser sessions. Signing out does not disable them.
+Security alerts
+An alert tells you that something important happened, such as a new API key, MFA change, whitelist update, order, or transfer. Open the related account page for the complete details behind the alert.
+Device, IP address, and location descriptions can be approximate. Focus on the account, action, time, and related identifier when deciding whether the activity belongs to you.
+For unfamiliar activity, check the matching area:
+API Keys
+for key creation, permission changes, and recent use.
+Security
+for MFA methods and recovery-code changes.
+Address Book
+for destinations and whitelist changes.
+Orders and Trades
+for trading activity.
+Transfers and Ledger
+for deposits, withdrawals, and internal movement.
+If your account may be compromised
+1
+Secure your sign-in identity
+Use your wallet, Google, or email provider's official recovery tools. Change or strengthen access there if the owner identity may be exposed.
+2
+Revoke exposed credentials
+Disable unfamiliar API keys, remove unknown
+Subaccount
+members, and reduce permissions you did not approve.
+3
+Check security and balances
+Review MFA methods, recovery codes, whitelists, open orders, balances, and pending transfers. Avoid sending funds to a destination you have not independently verified.
+4
+Save useful evidence and contact support
+Keep event times, IDs, and screenshots that do not expose secrets. Send them through
+Support
+after immediate access risks are contained.
+Recover access
+Recover a connected wallet through its wallet provider.
+Recover Google or email access through the appropriate provider.
+Use another enrolled MFA method or an unused recovery code when one factor is unavailable.
+Revoke and replace an API key if its private key is lost or exposed.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Never send secrets as evidence
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Polyester support never needs your seed phrase, private key, email verification code, MFA code, recovery code, embedded-wallet export, or API private key.
+FAQ
+What should I do if I suspect the wallet, Google account, or email I use to access my Polyester account has been compromised?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+If you suspect the wallet, Google account, or email you use to sign in has been compromised but you can still sign in to your original Polyester account, act quickly to protect your assets. From a trusted device, create a new Polyester account with a different, secure sign-in identity. Account creation is free. Move your available assets to the new account as soon as possible. If you cannot sign in or complete a transfer, contact support through the chat icon in your new account. The team can investigate, but recovery is not guaranteed.
+What happens if I lose access to my sign-in method?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Recovery options depend on your sign-in method. For Google or email, use your provider’s recovery steps to restore access. If you previously exported your Turnkey wallet’s seed phrase or private key, you can import it into a supported wallet on a secure device and connect to the same Polyester account. For an external wallet, use its recovery phrase or private key to restore it on a secure device and connect again. If you cannot regain access to the wallet that owns your account, Polyester cannot replace it with another wallet. MFA methods and recovery codes do not restore wallet access or change ownership of your Polyester account.
+Learn about account creation.
+Related Topics
+Sign-In & Ownership
+Understand how your wallet, Google account, or email connects you to your Polyester account.
+MFA & Recovery
+Add a passkey or authenticator app and keep recovery codes available if you lose a method.
+Address Book & Whitelists
+Save trusted destinations and control where withdrawals and internal transfers can be sent.
+GuardSigner
+Set up and manage the additional signer that protects withdrawal and internal transfer whitelist changes.
+API Keys
+Create API keys, choose what they can access, and keep their private signing keys safe.
+Previous
+MFA & Recovery
+Next
+Address Book & Whitelists
+On this page
+Your sessions
+Security alerts
+If your account may be compromised
+Recover access
+FAQ
+Related Topics
+Share this page
+Sessions & Alerts
+Manage account sessions, understand security alerts, and respond to unfamiliar activity.
+Share
+Copy Link

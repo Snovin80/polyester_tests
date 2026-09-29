@@ -1,0 +1,232 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/spot/markets/symbol/candles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketDataService
+Get Candles
+Retrieve OHLCV candles for a spot symbol and timeframe, ordered newest first. Supports inclusive time bounds, optional current open candle inclusion, and optional composite reference candles.
+Copy URL
+Method
+GET
+Path
+/v1/spot/markets/{symbol}/candles
+Visibility
+Public endpoint
+GET
+/v1/spot/markets/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/BTC-USDT/candles?includeIncomplete=false&includeReference=false&limit=500&timeframe=1s' \
+--header 'Accept: */*'
+Responses
+"candles": [
+"1735689600",
+"42000.5",
+"42150",
+"41900",
+"42080",
+"1234567890000000000",
+"12.3456"
+]
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"referenceCandles": [
+"1735689600",
+"42000500000000",
+"42150000000000",
+"41900000000000",
+"42080000000000",
+"1234567890000000000"
+]
+],
+"symbol": "BTC-USDT",
+"timeframe": "1s"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+symbol
+string
+required
+Trading pair symbol, e.g. BTC-USDT
+Query parameters
+Example
+endTime
+string (date-time)
+Filter candles with bucket start time at or before this time (inclusive, RFC3339).
+includeIncomplete
+boolean
+Include the current open candle when available. It is prepended to the newest-first candle list and does not count toward limit.
+Unset
+False
+True
+includeReference
+boolean
+Include the composite reference market candle series when available.
+Unset
+False
+True
+limit
+integer
+≤ 10000
+Maximum closed candles to return. Default 500, max 10000.
+pageToken
+string
+max 512 chars
+Opaque cursor from the previous response.
+startTime
+string (date-time)
+Filter candles with bucket start time at or after this time (inclusive, RFC3339).
+timeframe
+enum
+required
+must be defined value
+Candle bucket timeframe, such as 1m, 5m, 1h, or 1d.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s335-timeframe" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+1s
+Response
+Form
+JSON
+candles
+string[]
+Primary market candle series, ordered newest-first by ts_sec.
+Example
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+referenceCandles
+string[]
+Composite reference market candle series, ordered newest-first by ts_sec. Populated only when include_reference is true and reference data is available.
+Example
+symbol
+string
+Numeric spot market identifier echoed from the request.
+Example
+BTC-USDT
+timeframe
+enum
+Candle bucket size used for the returned series.
+1s
+1m
+5m
+15m
+30m
+1h
+4h
+1d
+12h
+1w
+1mo
+Example
+1s
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/spot/markets/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s385" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/BTC-USDT/candles?includeIncomplete=false&includeReference=false&limit=500&timeframe=1s' \
+--header 'Accept: */*'
+Responses
+"candles": [
+"1735689600",
+"42000.5",
+"42150",
+"41900",
+"42080",
+"1234567890000000000",
+"12.3456"
+]
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"referenceCandles": [
+"1735689600",
+"42000500000000",
+"42150000000000",
+"41900000000000",
+"42080000000000",
+"1234567890000000000"
+]
+],
+"symbol": "BTC-USDT",
+"timeframe": "1s"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/spot/markets/BTC-USDT/candles?includeIncomplete=false&includeReference=false&limit=500&timeframe=1s' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "candles": [
+    [
+      "1735689600",
+      "42000.5",
+      "42150",
+      "41900",
+      "42080",
+      "1234567890000000000",
+      "12.3456"
+    ]
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "referenceCandles": [
+    [
+      "1735689600",
+      "42000500000000",
+      "42150000000000",
+      "41900000000000",
+      "42080000000000",
+      "1234567890000000000"
+    ]
+  ],
+  "symbol": "BTC-USDT",
+  "timeframe": "1s"
+}

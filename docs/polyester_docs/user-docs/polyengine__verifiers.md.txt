@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/verifiers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+> **In development, coming soon**
+>
+> The verifier is in development and will be released as open-source software for Mac, Windows, and Linux. This page describes its functionality.
+A verifier node independently checks that [PolyEngine](https://testnet.polyester.com/docs/user-docs/polyengine/overview) applies its documented matching rules to the recorded order stream. Anyone can inspect the source code, run a node, and compare the results with PolyEngine's published output.
+This makes execution independently checkable by anyone. Trading continues through the existing matching and settlement path while verifiers add a separate layer of scrutiny.
+## What a verifier checks
+The verifier streams order-level events, called Level 3 data. It rebuilds each order book from the beginning or a verified checkpoint, then replays the recorded actions in sequence.
+It checks price-time priority, partial fills, cancellations, time-in-force behavior, and self-trade prevention against the published rules and the verification data supplied for them. Sequence identifiers and cryptographic commitments help detect missing records or changes to already committed history.
+If replay produces a different result, the verifier identifies the affected events so others can reproduce the discrepancy. A complete, consistent result means the recorded actions match the rules being checked.
+## Public checks with private accounts
+The public verification stream separates order activity from account identity. It excludes names, wallet-to-order mappings, and private balance records. Publication controls, including delayed disclosure where needed, reduce exposure of active trading strategies.
+Verification does not require publishing the complete account ledger. [Private balance checkpoints](https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch#private-balance-checkpoints) provide a separate way to check accounting and withdrawal claims without exposing everyone's balances.
+Order-book replay covers the committed inputs available to the verifier. It does not, by itself, establish that every instruction submitted before admission was included or that every private balance update was correct.
+## How validators use verifiers
+Validators run their own verifier instances and assess reproducible findings from other operators. They combine matching checks with ledger consistency evidence and balance-checkpoint verification.
+When those checks reveal a problem, the authorized validator set can vote to activate the [Escape Hatch](https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch). Validators also vote on returning to normal operation after recovery checks are complete.
+Running a public verifier does not require a validator appointment or custody access. Voting authority follows the protocol's validator membership and quorum rules; downloading additional verifier copies does not create extra votes.
+## Running a verifier
+The open-source client runs on Mac, Windows, and Linux devices.
+| Component    | Preliminary planning estimate                                                                 |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| Processor    | Modern processor with 4 or more cores; 8 cores provides additional headroom                   |
+| Memory       | 32 GB RAM; 64 GB for heavier replay workloads                                                 |
+| Storage      | 2 TB NVMe SSD; 4 TB for additional retained history                                           |
+| Internet     | Stable, unmetered connection around 50 Mbps download and 25 Mbps upload                       |
+| Availability | Continuous operation for ongoing monitoring; initial synchronization requires additional time |

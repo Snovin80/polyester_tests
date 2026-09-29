@@ -1,0 +1,140 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/rate-limits.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Rate limits
+Weighted quotas, default limits, rejection metadata, and retry behavior.
+Polyester rate-limits trading, account, security, and money-movement operations with weighted pools. REST, ConnectRPC, and trade WebSocket aliases for the same action share one quota.
+Pools refill continuously. Capacity returns gradually; it does not reset on a fixed minute or hour boundary.
+| Concept        | Meaning                                                                   |
+| -------------- | ------------------------------------------------------------------------- |
+| Pool           | Shared unit bucket. Same string as `policy_class` in rejection responses. |
+| Sustained rate | Refill speed, for example 120 units/min.                                  |
+| Burst capacity | Max units a full pool can spend immediately.                              |
+| Cost           | Units charged for one request or admitted batch item.                     |
+> **Example: ACCOUNT\_ADMIN**
+>
+> `ACCOUNT_ADMIN` refills at **120 units/min** (2 units/sec) and stores at most **30 units**.
+>
+> Most account-admin mutations cost 2 units, so a full pool allows **15 immediate mutations** (30 ÷ 2). After that, one more 2-unit mutation every second; full again in 15 seconds.
+Defaults below can be overridden per account or API key. `GET /v1/rate-limits` returns the active public VIP0-VIP10 placement and cancellation catalog. Authenticated clients can call `GET /v1/trading/rate-limits` to resolve the effective limits for their root account or an accessible Subaccount. API-key callers receive both the account-scoped and API-key-scoped rules because both scopes are enforced.
+These endpoints return policy configuration, not live remaining capacity. Response headers and rejection details remain authoritative for current usage and retry timing.
+## Limits by pool
+Each pool lists its unit capacity and scopes, then the operations that spend from it. A blank Pool cell means the row shares the pool above. Sustained and burst already include cost.
+Same pool = shared capacity. Extra API keys do not add capacity. Any exhausted scope rejects the request.
+### Authentication and account management
+| Pool               | Capacity                 | Scopes                             |
+| ------------------ | ------------------------ | ---------------------------------- |
+| `AUTH_PUBLIC`      | 30 units/min · burst 30  | `CLIENT_IP`, `AUTH_SUBJECT`        |
+| `ACCOUNT_ADMIN`    | 120 units/min · burst 30 | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| `ACCOUNT_SECURITY` | 60 units/min · burst 20  | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| `SOCIAL_PROVIDER`  | 10 units/hour · burst 3  | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| Pool               | Operation                                                     |    Cost |   Sustained |  Burst |
+| ------------------ | ------------------------------------------------------------- | ------: | ----------: | -----: |
+| `AUTH_PUBLIC`      | Wallet nonce or login                                         |  1 unit |  30 req/min | 30 req |
+| `ACCOUNT_ADMIN`    | Profile, Subaccount, member, invite, or address-book mutation | 2 units |  60 req/min | 15 req |
+| `ACCOUNT_SECURITY` | MFA challenge or step-up                                      |  1 unit |  60 req/min | 20 req |
+|                    | Access-policy, MFA enrollment, or MFA factor mutation         | 2 units |  30 req/min | 10 req |
+|                    | API key create, update, or delete; recovery-code regeneration | 5 units |  12 req/min |  4 req |
+| `SOCIAL_PROVIDER`  | Start external social verification                            |  1 unit | 10 req/hour |  3 req |
+`AUTH_PUBLIC` is dual-scoped: client IP and wallet subject (`AUTH_SUBJECT`). Hitting either limit rejects the request.
+### Deposits, withdrawals, and internal transfers
+| Pool                | Capacity                 | Scopes                             |
+| ------------------- | ------------------------ | ---------------------------------- |
+| `DEPOSIT_CREATE`    | 10 units/min · burst 3   | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| `INTERNAL_TRANSFER` | 60 units/min · burst 10  | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| `WITHDRAW_SUBMIT`   | 10 units/min · burst 5   | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| `WITHDRAW_VALIDATE` | 120 units/min · burst 30 | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| Pool                | Operation                         |   Cost |   Sustained |  Burst |
+| ------------------- | --------------------------------- | -----: | ----------: | -----: |
+| `DEPOSIT_CREATE`    | Create a deposit address          | 1 unit |  10 req/min |  3 req |
+| `INTERNAL_TRANSFER` | Create an internal transfer       | 1 unit |  60 req/min | 10 req |
+| `WITHDRAW_SUBMIT`   | Submit a trading withdrawal       | 1 unit |  10 req/min |  5 req |
+| `WITHDRAW_VALIDATE` | Validate a withdrawal destination | 1 unit | 120 req/min | 30 req |
+`WITHDRAW_SUBMIT`: 5 immediate when full, then one every six seconds. Long-term: 10/min.
+### Guard signer
+| Pool         | Capacity                  | Scopes                             |
+| ------------ | ------------------------- | ---------------------------------- |
+| `GUARD_SIGN` | 300 units/min · burst 100 | `ACCOUNT`, `API_KEY`, `SUBACCOUNT` |
+| Pool         | Operation                                  |         Cost |    Sustained |    Burst |
+| ------------ | ------------------------------------------ | -----------: | -----------: | -------: |
+| `GUARD_SIGN` | Create a wallet or sign a protected action |      5 units |   60 req/min |   20 req |
+|              | Batch sign protected actions               | 5 units/item | 60 items/min | 20 items |
+|              | Rotate or export a Guard signer wallet     |     10 units |   30 req/min |   10 req |
+### Trading
+Placement and cancellation are separate pools per trading account (root or Subaccount). All keys and transports for that account share those pools. Limits are account-wide across symbols: BTC and ETH orders draw from the same placement pool. Placement exhaustion does not reduce cancellation capacity. Replaying an already admitted trading request with the same idempotency key does not charge again.
+Scopes for both pools: `ACCOUNT`, `API_KEY`, `SUBACCOUNT`. Batch rows charge per admitted item; other rows charge per request. Place and cancel columns are `TRADING_PLACE` and `TRADING_CANCEL` weighted capacity from the public catalog.
+| VIP tier | Place   | Place burst | Cancel  | Cancel burst |
+| -------- | ------- | ----------- | ------- | ------------ |
+| VIP 0    | 250/s   | 500         | 500/s   | 1,000        |
+| VIP 1    | 500/s   | 1,000       | 1,000/s | 2,000        |
+| VIP 2    | 1,000/s | 2,000       | 2,000/s | 4,000        |
+| VIP 3    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 4    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 5    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 6    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 7    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 8    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 9    | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| VIP 10   | 2,500/s | 5,000       | 5,000/s | 10,000       |
+| Operation                               |   Cost |
+| --------------------------------------- | -----: |
+| Place: create, modify, resume           |      1 |
+| Place: batch create/replace             | 1/item |
+| Cancel: single, pause, `CancelAllAfter` |      1 |
+| Cancel: batch                           | 1/item |
+| Cancel all                              |     10 |
+Sustained and burst for each operation are the VIP catalog quota divided by that cost. Higher professional or market-maker capacity requires an account-specific override and is not granted automatically by retail VIP status.
+Read and realtime quotas are not published yet. Other ingress and abuse controls can still reject requests outside these pools.
+## Rejection contracts
+`policy_class` in the error is the pool name (`WITHDRAW_SUBMIT`, `ACCOUNT_SECURITY`, …).
+## REST
+Quota exceeded: HTTP `429` with `application/problem+json`.
+| Header                                 | Meaning                                       |
+| -------------------------------------- | --------------------------------------------- |
+| `RateLimit-Limit`                      | Active weighted limit for the rejected pool   |
+| `RateLimit-Remaining`                  | Remaining capacity at rejection               |
+| `RateLimit-Reset` / `Retry-After`      | Seconds until a retry may succeed, rounded up |
+| `X-Polyester-RateLimit-Policy-Version` | Policy version used                           |
+Body includes millisecond precision:
+```json
+"type": "https://polyester.dev/problems/rate-limit-exceeded",
+"title": "Rate limit exceeded",
+"status": 429,
+"detail": "Rate limit exceeded",
+"code": "RATE_LIMIT_EXCEEDED",
+"rate_limit": {
+"reason": "QUOTA_EXCEEDED",
+"limit": "10",
+"remaining": "0",
+"retry_after_ms": "6000",
+"policy_version": "3",
+"operation_id": "withdraw.submit",
+"policy_class": "WITHDRAW_SUBMIT",
+"scope": "ACCOUNT",
+"refill_model": "CONTINUOUS"
+}
+}
+```
+`uint64` fields are JSON strings. `scope` is which dimension rejected the call: `CLIENT_IP`, `AUTH_SUBJECT`, `API_KEY`, `ACCOUNT`, or `SUBACCOUNT`.
+## ConnectRPC
+`resource_exhausted`, same rate-limit headers, plus `polyester.ratelimit.v1.RateLimitDetail` in error details.
+## Trade WebSocket
+Protobuf: `RATE_LIMIT_EXCEEDED` with `RateLimitDetail` on the order error. SBE carries the same fields in fixed-width form. A quota rejection does not close the connection.
+## Retry on 429
+For `503` / `RATE_LIMIT_AUTHORITY_UNAVAILABLE`, see [Authority failures](#authority-failures).
+1. Wait
+Use `retry_after_ms` if present, else `Retry-After`. Add a little jitter.
+2. Keep the same request
+Keep replayable idempotency keys and payloads unchanged. For a single-order create, preserve the client order ID for reconciliation. If that ID was already retained, resubmission returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID` instead of replaying the earlier result.
+3. Re-sign API keys
+Fresh timestamp and signature on each retry.
+4. Stop eventually
+Do not hammer a rejected batch or instantly fan it into many single requests.
+See [Client order IDs and idempotency](https://testnet.polyester.com/docs/developer-docs/shared-concepts/client-order-ids).
+## Authority failures
+> **503 is not a rate limit**
+>
+> If the limiter cannot evaluate the quota, REST returns `503` with `RATE_LIMIT_AUTHORITY_UNAVAILABLE` (ConnectRPC: `unavailable`, reason `AUTHORITY_UNAVAILABLE`).
+>
+> That is not proof the mutation failed or succeeded. Keep the idempotency key, back off, and reconcile before sending a new logical request.

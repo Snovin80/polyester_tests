@@ -1,0 +1,116 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/lifecycle.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+`client.lifecycle` tracks cross-chain flows (deposits, withdrawals, transfers) as they move from a source chain, through the Polyester chain, to the ledger. Each flow carries a kind, a current step, a progress timeline, and a terminal state. Use it to list history, open one flow in detail, resolve a flow from a transaction hash, and stream live progress.
+The read methods (`listFlows`, `getFlow`, `listFlowsByTx`) are public. Streaming is public too, except `subscribeOpenFlows`: pass an `accountId` and it rides a private channel scoped to that account; omit it and you get the public open-flow feed.
+## Methods
+| Method                | Summary                                                            |
+| --------------------- | ------------------------------------------------------------------ |
+| `listFlows`           | List flow summaries with kind, state, scope, account, and filters. |
+| `getFlow`             | Fetch one flow by id with summary, steps, and live detail.         |
+| `listFlowsByTx`       | Find flows that reference a transaction hash.                      |
+| `subscribeOpenFlows`  | Stream open-flow summaries, account-scoped or public.              |
+| `subscribeFlowDetail` | Stream detail updates for one flow.                                |
+### `listFlows(input, options?)`
+Returns `{ flows, nextPageToken }` for flow summaries, filtered and ordered by the fields you pass. Every filter is optional; call it with `{}` for a recent-first page across everything you can see.
+```ts
+const { flows, nextPageToken } = await client.lifecycle.listFlows({
+flowKind: "deposit",
+flowState: "pending_polyester_chain",
+scope: "open",
+limit: 50,
+});
+for (const flow of flows) {
+console.log(flow.flowId, flow.flowKind, flow.currentStep, flow.isTerminal);
+}
+```
+#### `ListLifecycleFlowsInput`
+| Field               | Type                                    | Notes                                                             |
+| ------------------- | --------------------------------------- | ----------------------------------------------------------------- |
+| `flowKind`          | `"deposit" \| "withdraw" \| "transfer"` | Omit for all kinds.                                               |
+| `flowState`         | flow-state string                       | See the state values below.                                       |
+| `scope`             | `"all" \| "open" \| "terminal"`         | Defaults to `"all"`.                                              |
+| `accountSelector`   | account selector (see below)            | Restrict to one account.                                          |
+| `txRef`             | `string`                                | A transaction reference to match.                                 |
+| `polyesterChainIds` | `number[]`                              | Filter by Polyester chain id.                                     |
+| `zippedAssetIds`    | `number[]`                              | Filter by route id.                                               |
+| `unifiedAssetIds`   | `number[]`                              | Filter by unified asset id.                                       |
+| `sort`              | `"newest" \| "oldest"`                  | Defaults to `"newest"`.                                           |
+| `orderBy`           | `"last_activity" \| "started_at"`       | Which timestamp `sort` applies to. Defaults to `"last_activity"`. |
+| `limit`             | `number` (1 to 500)                     | Defaults to `100`.                                                |
+| `pageToken`         | `string`                                | Opaque token from a prior page.                                   |
+`flowState` is one of `"pending_source"`, `"pending_polyester_chain"`, `"pending_ledger"`, `"completed"`, `"failed"`, `"dropped"`, or `"refunded"`.
+The `accountSelector` is a tagged object: `{ kind: "accountId", accountId }`, `{ kind: "ownerAccountId", ownerAccountId }`, or `{ kind: "smartAccountAddress", smartAccountAddress }` (a canonical `0x` address).
+Page through the full history with the returned token:
+```ts
+let pageToken = "";
+do {
+const page = await client.lifecycle.listFlows({ scope: "terminal", pageToken, limit: 200 });
+console.log(page.flows.length);
+pageToken = page.nextPageToken;
+} while (pageToken !== "");
+```
+### `getFlow(input, options?)`
+Fetches one flow by its public `flowId` and returns `{ flow }`, where `flow` (when present) carries the summary, the factual `observedSteps`, and a `fromLiveState` flag telling you whether the detail came from live state or from persisted history.
+```ts
+const { flow } = await client.lifecycle.getFlow({ flowId });
+if (flow?.summary) {
+console.log(flow.summary.currentStep, flow.summary.isOpen);
+console.log(`${flow.observedSteps.length} observed steps`, "live:", flow.fromLiveState);
+}
+```
+The summary includes `currentProgress` (confirmations, approvals, and the current step's start and expected duration) and a `progressTimeline` of `{ sequence, step, status, expectedDurationMs }` items you can render as a stepper.
+### `listFlowsByTx(input, options?)`
+Finds flows that reference a `0x`-prefixed transaction hash and returns `{ txHash, matches, nextPageToken }`. A single transaction may match zero, one, or many flows. Choose the match mode with `lookupKind`: `"source"` matches only flows whose source transaction is this hash, while `"any"` matches any flow that references it anywhere.
+```ts
+const { matches } = await client.lifecycle.listFlowsByTx({
+txHash: "0xabc...",
+lookupKind: "any",
+});
+for (const match of matches) {
+console.log(match.flowId, match.flowKind, match.currentStep);
+}
+```
+`ListLifecycleFlowsByTxInput` also accepts an optional `limit` (1 to 500, default `100`) and `pageToken`.
+### `subscribeOpenFlows(input)`
+Streams open-flow summary updates and returns an idempotent unsubscribe function. Pass an `accountId` to subscribe to that account's private open-flow channel; omit it for the public feed. Each event is a `LifecycleFlowSummary`. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.lifecycle.subscribeOpenFlows({
+accountId, // omit for the public feed
+onEvent: (flow) => console.log(flow.flowId, flow.currentStep, flow.isOpen),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+> **Private open-flow streams need auth**
+>
+> When you pass an `accountId`, the stream rides the client's private connection and its token requests carry your auth headers, so subscribe from an authenticated client. This works from any long-lived runtime, browser or server; only a framework's SSR render pass rejects it. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime).
+### `subscribeFlowDetail(input)`
+Streams detail updates for one flow on its public channel and returns an idempotent unsubscribe function. Each event is a `LifecycleFlowDetail` (summary, `observedSteps`, `fromLiveState`). An invalid or empty `flowId` is rejected locally and returns a no-op unsubscribe, so the returned function is always safe to call.
+```ts
+const unsubscribe = client.lifecycle.subscribeFlowDetail({
+flowId,
+onEvent: (detail) => {
+console.log(detail.summary?.currentStep, "live:", detail.fromLiveState);
+},
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+In a web app, a common pattern is to seed the UI with `getFlow` during the server render, then keep it current with `subscribeFlowDetail` after the page hydrates. A standalone process can call both directly.
+## The `LifecycleFlowSummary` shape
+List and open-flow stream results share one parsed shape. Amounts are decimal strings; all `*UnixMs` fields are epoch milliseconds.
+```ts
+import type { LifecycleFlowSummary } from "@polyester/sdk";
+```
+`lifecycleReason` decodes uncataloged backend codes to `"unknown_reason_${code}"` rather than dropping the flow, so new server reason codes never freeze a flow out of your UI. `latestLifecycleSource` is `"ledger" | "relayer" | "polyester_chain" | "executor" | "unspecified"`.
+## Related
+- [Deposits and withdrawals guide](https://testnet.polyester.com/docs/sdk/typescript/guides/deposits-and-withdrawals) for the task-oriented walkthrough.
+- [Zipper](https://testnet.polyester.com/docs/sdk/typescript/reference/zipper) for the chains, assets, and routes a flow moves across.
+- [Realtime client](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the subscription handler contract and public-versus-private connections.
+- [Deposit](https://testnet.polyester.com/docs/sdk/typescript/reference/deposit) for initiating the flows you track here.

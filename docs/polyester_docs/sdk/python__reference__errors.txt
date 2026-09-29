@@ -1,0 +1,406 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/errors
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Errors · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Errors
+Errors
+Copy page
+View as Markdown
+Open in
+Every SDK-raised failure extends
+PolyesterError
+TransientError
+/
+RequestError
+hierarchy, classify with
+isinstance
+and, for
+MFA
+control flow,
+structured auth codes.
+For usage patterns see the
+Error handling guide
+Hierarchy
+PolyesterError
+├── PolyesterAuthError
+├── PolyesterValidationError
+├── PolyesterResponseContractError
+├── PolyesterTransportError
+│   ├── PolyesterRateLimitError      # .retry_after: float | None
+│   └── PolyesterServerError
+├── PolyesterApiError                # .code, .metadata, .raw
+│   └── PolyesterRouteNotFoundError  # .procedure
+└── PolyesterRealtimeError
+└── PolyesterRealtimeOverflowError
+Class notes
+Class
+When
+PolyesterAuthError
+Missing/rejected credentials; realtime HTTP errors include structured context
+PolyesterValidationError
+Bad SDK input (shape, enums,
+post_only
+misuse, precision)
+PolyesterResponseContractError
+Successful mutation response is empty, malformed, or internally inconsistent
+PolyesterTransportError
+Network / timeout / transport failures, usually retryable with backoff
+PolyesterRateLimitError
+Rate limited;
+retry_after
+is optional and usually absent on Connect errors
+PolyesterServerError
+Backend 5xx
+PolyesterApiError
+Structured Connect/API error with optional
+code
+PolyesterRouteNotFoundError
+Gateway has no
+route
+for the RPC (incomplete env)
+PolyesterRealtimeError
+Realtime connect / subscribe / decode failures
+PolyesterRealtimeOverflowError
+Consumer too slow; subscription failed closed
+There is no separate
+CatalogConversionError
+/
+CatalogLookupError
+class tree like TypeScript.
+Catalog and precision failures typically surface as
+PolyesterValidationError
+or API errors.
+is_retryable_error(err)
+identifies failures that may succeed after backoff.
+PolyesterResponseContractError
+is deliberately non-retryable because an immediate replay is not
+safe, while
+mutation_outcome_unknown(err)
+returns
+True
+an unusable success response. Reconcile first and reuse the original request identity.
+PolyesterRateLimitError
+can also represent exhausted local signing-timestamp capacity during an
+exceptionally large burst. Normal async Connect and realtime calls wait cooperatively for bounded
+capacity without blocking the event loop. The low-level synchronous
+polyester.auth.sign_request
+helper does not sleep: it raises immediately with
+retry_after
+Connect error metadata currently does not recover a server retry delay, so use bounded exponential
+backoff when
+retry_after is None
+Realtime token HTTP failures populate
+PolyesterAuthError.status_code
+,
+code
+,
+context
+,
+endpoint
+,
+label
+, and a bounded
+body
+code
+and provision the required API-key policy before retrying.
+MFA helpers (API / session products)
+API-key trading bots rarely hit interactive MFA. Helpers exist for session/JWT products that
+share the same error module, prefer structured codes over message text:
+Helper
+Code
+is_mfa_enrollment_required(err)
+AUTH_MFA_NOT_ENROLLED
+is_step_up_required(err)
+AUTH_STEP_UP_REQUIRED
+is_mfa_elevation_required(err)
+AUTH_MFA_ELEVATION_REQUIRED
+is_mfa_last_factor_required(err)
+AUTH_MFA_LAST_FACTOR_REQUIRED
+auth_error_code(err)
+returns the code string or
+None
+Creating
+API keys
+requires a JWT/session client, these API-key SDKs do
+not
+expose create-key
+flows.
+Retry sketch
+from
+polyester
+import
+(
+PolyesterError,
+PolyesterRateLimitError,
+PolyesterTransportError,
+PolyesterRealtimeOverflowError,
+)
+import
+asyncio
+async
+def
+with_retry
+(fn,
+*
+, attempts
+=
+3
+):
+for
+i
+in
+range
+(attempts):
+try
+return
+await
+fn()
+except
+PolyesterRealtimeOverflowError:
+raise
+# resubscribe; not a unary retry
+except
+PolyesterRateLimitError
+as
+err:
+await
+asyncio.sleep(err.retry_after
+or
+(
+0.5
+*
+2
+**
+i))
+except
+PolyesterTransportError:
+if
+i
+==
+attempts
+-
+1
+raise
+await
+asyncio.sleep(
+0.5
+*
+2
+**
+i)
+except
+PolyesterError:
+raise
+# permanent: fix input / auth / state
+For a single-order create, reconcile by the stable
+client_order_id
+before resubmitting; retained
+reuse returns a duplicate conflict, not the earlier result. Reuse replayable
+request_id
+/
+client_trigger_id
+values for their logical mutations. See
+Requests & idempotency
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Deposit
+Next
+Guard signer
+On this page
+Hierarchy
+Class notes
+MFA helpers (API / session products)
+Retry sketch
+Related Topics
+Share this page
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+PolyesterError
+├── PolyesterAuthError
+├── PolyesterValidationError
+├── PolyesterResponseContractError
+├── PolyesterTransportError
+│   ├── PolyesterRateLimitError      # .retry_after: float | None
+│   └── PolyesterServerError
+├── PolyesterApiError                # .code, .metadata, .raw
+│   └── PolyesterRouteNotFoundError  # .procedure
+└── PolyesterRealtimeError
+    └── PolyesterRealtimeOverflowError
+
+---
+
+from polyester import (
+    PolyesterError,
+    PolyesterRateLimitError,
+    PolyesterTransportError,
+    PolyesterRealtimeOverflowError,
+)
+import asyncio
+
+async def with_retry(fn, *, attempts=3):
+    for i in range(attempts):
+        try:
+            return await fn()
+        except PolyesterRealtimeOverflowError:
+            raise  # resubscribe; not a unary retry
+        except PolyesterRateLimitError as err:
+            await asyncio.sleep(err.retry_after or (0.5 * 2**i))
+        except PolyesterTransportError:
+            if i == attempts - 1:
+                raise
+            await asyncio.sleep(0.5 * 2**i)
+        except PolyesterError:
+            raise  # permanent: fix input / auth / state

@@ -1,0 +1,9 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/whiteboard.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Whiteboard
+Whiteboard collaboration APIs (reference-only).
+`client.whiteboard` wraps `create_board`, `get_board`, `list_boards`, `update_board`, `update_board_acl`, `archive_board`, and `mint_join_token`. Each accepts the matching generated `polyester::proto::collab::v1` request and returns `ApiData`.
+Whiteboard is an interactive JWT/session feature, **not a supported API-key flow**. The wrappers remain for protocol coverage; an environment may reject the calls or leave the routes unmounted. Use the TypeScript session client.
+Join tokens and ACL payloads are credentials: never log them. Whiteboard availability must not be included in a trading bot's health gate.

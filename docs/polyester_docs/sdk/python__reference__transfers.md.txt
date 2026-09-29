@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Transfers
+Transfer history reads.
+`client.transfers` reads and streams ledger transfer history. Creating a movement uses a purpose-specific service: `client.internal_transfers`, `client.withdraw`, or an on-chain helper.
+```python
+page = await client.transfers.list(limit=50, reversed=True)
+for transfer in page.transfers:
+print(
+transfer.tx_id,
+transfer.asset_id,
+transfer.amount,
+transfer.transfer_type,
+transfer.is_debit,
+transfer.pending,
+)
+# Continue from the numeric cursor when returned.
+if page.next_cursor is not None:
+next_page = await client.transfers.list(since=page.next_cursor, limit=50)
+```
+`list` accepts `account` / `sub_account_id`, `limit`, `reversed`, and `since`. `since` is a numeric ledger cursor, not a string page token.
+```python
+sub = await client.transfers.subscribe(account_id=client.default_account_id)
+async with sub:
+async for transfer in sub:
+print(transfer.tx_id, transfer.amount)
+break
+```
+The stream is private and requires API key + Account ID.
+Related: [Internal transfers](https://testnet.polyester.com/docs/sdk/python/reference/internal-transfers), [Withdrawals](https://testnet.polyester.com/docs/sdk/python/reference/withdrawals).

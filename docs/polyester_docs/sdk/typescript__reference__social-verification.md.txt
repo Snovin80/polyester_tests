@@ -1,0 +1,59 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/social-verification.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+`client.socialVerification` proves that the authenticated caller controls an external social account. Every method is authenticated. These calls need a wallet session. An API key gets `AuthenticationError`.
+`start` begins or restarts verification, and `get` reports the current status, attempts, and any last error. For Twitter, provide a handle and place the returned `poly_...` code in the selected profile location, then call `markReady` to queue the check. For Discord, omit the handle: the authenticated bot supplies the provider identity. Discord supports `"channel"` and `"dm"` methods and defaults to `"channel"`; it can return an empty `challengeCode` when no new challenge is issued.
+## Methods
+| Method      | Summary                                                   |
+| ----------- | --------------------------------------------------------- |
+| `start`     | Begin (or restart) verification and get a challenge code. |
+| `markReady` | Queue the provider check once the code is placed.         |
+| `get`       | Read the current verification status.                     |
+### `start(input, options?)`
+Begins or restarts verification and returns the `challengeCode`, its `expiresAt` (about 15 minutes out), and the current `verification` record. Twitter trims whitespace and strips leading `@` characters from its required handle. Discord does not accept a handle.
+```ts
+const { challengeCode, expiresAt } = await client.socialVerification.start({
+provider: "twitter",
+handle: "@satoshi", // stored as "satoshi"
+method: "profile", // optional, defaults to "profile"
+});
+// Tell the user to place challengeCode in the Twitter profile before it expires.
+console.log(challengeCode); // "poly_..."
+```
+For Discord, let the SDK use the provider default or choose one of its supported methods:
+```ts
+const { challengeCode } = await client.socialVerification.start({
+provider: "discord",
+method: "channel",
+});
+```
+#### `StartVerificationInput`
+| Field      | Type                             | Required | Notes                                                                                                 |
+| ---------- | -------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `provider` | `"twitter" \| "discord"`         | yes      | The social provider.                                                                                  |
+| `handle`   | `string`                         | Twitter  | Required only for Twitter; a leading `@` is removed.                                                  |
+| `method`   | `"profile" \| "channel" \| "dm"` | no       | Twitter supports `"profile"`; Discord supports `"channel"` or `"dm"`. Defaults are provider-specific. |
+Twitter handles must contain 1 to 15 ASCII letters, digits, or underscores. Twitter accepts only the `"profile"` method. Discord accepts only `"channel"` or `"dm"` and supplies its identity through the authenticated bot.
+### `markReady(input, options?)`
+Queues the provider check after the caller has placed the challenge code. Returns the updated `verification` record. Call this once the code is live at the location the method requires.
+```ts
+const { verification } = await client.socialVerification.markReady({ provider: "twitter" });
+console.log(verification?.status); // e.g. "queued"
+```
+### `get(input, options?)`
+Returns the caller's current verification state for a provider: `status`, challenge metadata, `attempts`, `lastError`, and the `verifiedAt` timestamp once it succeeds.
+```ts
+const { verification } = await client.socialVerification.get({ provider: "twitter" });
+if (verification?.status === "verified") {
+console.log("verified at", verification.verifiedAt);
+} else if (verification?.status === "failed") {
+console.error(verification.lastError);
+}
+```
+`status` is one of `"pending_user_action"`, `"queued"`, `"in_progress"`, `"verified"`, `"failed"`, `"expired"`, or `"cancelled"`. Poll `get` after `markReady` until the status settles.
+## Related
+- [Profile](https://testnet.polyester.com/docs/sdk/typescript/reference/profile) for the account identity these handles attach to.
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for the error type reference.

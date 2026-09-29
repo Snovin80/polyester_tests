@@ -1,0 +1,267 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/orders.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+`client.orders` is the spot order surface: create, modify, cancel, list, batch, and stream your orders. Every method is authenticated and account-scoped. Pass optional `account` (`"main"`, `"active"`, or `{"subaccount_id": "..."}`) or `sub_account_id` when you need a scope other than the client default. See [Accounts & balances](https://testnet.polyester.com/docs/sdk/python/guides/accounts-and-balances).
+Prices and quantities should be decimal strings (or `Price` / `Quantity`). Excess precision relative to the catalog should fail validation rather than silently round. Create/modify/batch paths auto-await catalog hydration when enabled; you can still call `await client.wait_for_catalogs()` before other decimal helpers.
+> **post\_only is limit GTC only**
+>
+> `post_only=True` is valid only for limit GTC. Market, limit IOC, and limit FOK raise `PolyesterValidationError` before the request is sent.
+> **price is limit-only**
+>
+> `price` on a market create is rejected by the SDK. Use `market_client_ref_price` when you need a reservation / slippage reference. The server may still accept a stray price if you bypass the SDK.
+> **Create status is admission only**
+>
+> `create` / `batch_create` synthesize `status="accepted"`. That is an admission ack, not a lifecycle state. Do not assert `"created"` on the create response. Use `list_open` / `get` / `subscribe` for `working` / `partial` / terminal statuses. Spot orders spend **trading** balance, not funding.
+## Methods
+| Method                     | Summary                                                       |
+| -------------------------- | ------------------------------------------------------------- |
+| `create`                   | Place a limit or market order, optionally with attached risk. |
+| `modify`                   | Patch price, quantity, client id, behavior, or attached risk. |
+| `cancel`                   | Cancel one order by `order_id` or `client_order_id`.          |
+| `cancel_all`               | Cancel matching open orders (supports `dry_run`).             |
+| `cancel_all_after`         | Arm a dead-man switch that cancels after `timeout_sec`.       |
+| `batch_create`             | Create many orders in one RPC.                                |
+| `batch_replace`            | Same-symbol quote refresh; returns an admission receipt.      |
+| `get_batch_replace_status` | Poll recoverable execution status for one batch.              |
+| `batch_cancel`             | Cancel many orders in one RPC.                                |
+| `list_open`                | List currently open orders.                                   |
+| `list_history`             | List historical orders (paginated).                           |
+| `get`                      | Fetch one order plus related user trades.                     |
+| `subscribe`                | Stream private order updates (handshake-before-return).       |
+There is no `get_details` name in Python, use `get`.
+### Create
+Places a spot order and returns `OrderMutationResult` (`status`, `order_id`, `client_order_id`). You can pass a `CreateOrderRequest` or keyword arguments.
+```python
+result = await client.orders.create(
+symbol="BTC-USDT",
+side="buy",
+order_type="limit",
+tif="gtc",
+qty="0.25",
+price="64250.5",
+post_only=True,
+client_order_id="mm-bot-001",
+)
+print(result.status, result.order_id, result.client_order_id)  # status == "accepted"
+```
+#### Create fields
+| Field                        | Type                          | Required        | Notes                                                       |
+| ---------------------------- | ----------------------------- | --------------- | ----------------------------------------------------------- |
+| `symbol`                     | `str`                         | yes             | Required for create, e.g. `"BTC-USDT"`.                     |
+| `symbol_id`                  | `int`                         | no              | Model field exists; symbol-ID-only create is not supported. |
+| `side`                       | `"buy"` \| `"sell"`           | yes             |                                                             |
+| `order_type`                 | `"limit"` \| `"market"`       | yes             |                                                             |
+| `tif`                        | `"gtc"` \| `"ioc"` \| `"fok"` | limit           | Time in force.                                              |
+| `qty`                        | decimal / `Quantity`          | one sizing mode | Base quantity. Exactly one of `qty` or `max_quote_debit`.   |
+| `max_quote_debit`            | decimal / `Quantity`          | one sizing mode | Hard all-in quote budget for BUY market or limit IOC.       |
+| `price`                      | decimal / `Price`             | limit           | Limit price.                                                |
+| `post_only`                  | `bool`                        | no              | Default `False`. Limit GTC only.                            |
+| `fee_asset`                  | `"quote"` \| `"base"`         | no              | Fee asset. `quote` is default; `base` is BUY-only.          |
+| `client_order_id`            | `str` (1 to 36)               | no              | Account-scoped duplicate guard; see constraints below.      |
+| `sub_account_id` / `account` | scope                         | no              | Account override.                                           |
+| `attached_risk`              | `dict`                        | no              | TP / SL / trailing (proto-shaped).                          |
+| `market_client_ref_price`    | decimal / `Price`             | market          | Slippage reference.                                         |
+| `expires_at`                 | `str`                         | unsupported     | Model field is not encoded by the current SDK.              |
+The SDK does not generate `client_order_id`. Omission is valid, but production callers should provide and persist a stable value whenever a create might need reconciliation. Reuse of a retained ID, including an identical request, returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`; it does not replay the earlier result. Reconcile by client order ID before deciding whether to resubmit.
+`fee_asset` replaces the prior `fee_source` / `"received"` vocabulary. Use `"quote"` or `"base"`; SELL orders require `"quote"`. A create response can include the resolved base quantity and, for quote-budget sizing, the submitted maximum quote debit. Call `preview_order` with the same create shape for an admissibility check (`admissible`, optional typed `rejection`, resolved base size, and `protected_price_bound` when price protection applied). Preview does not return fee or quote-debit estimates. Create always re-evaluates the intent.
+`PreviewOrderResult` exposes:
+- `admissible`: whether the intent passed current admission checks.
+- `rejection`: optional `OrderErrorDetail` with a stable `code` label such as `BAD_QTY` and field-level `violations` (`field_path`, `rule_id`, `message`).
+- `resolved_base_qty_scaled` and typed `resolved_base_qty` when the service resolved a base size.
+- `protected_price_bound`: optional protective execution boundary, not an expected fill price.
+- `evaluated_at_ms`: evaluation time in Unix milliseconds.
+### Modify
+Patches an open order. Identify by exactly one of `order_id` or `client_order_id`. Supply at least one of `new_price`, `new_qty`, or `new_attached_risk`.
+```python
+await client.orders.modify(
+symbol="BTC-USDT",
+order_id=result.order_id,
+new_price="64100",
+new_qty="0.2",
+request_id="mod-stable-1",  # reuse on retry
+)
+```
+Optional: `behavior` (`"amend_or_replace"`, `"amend_only"`, `"replace_only"`), `new_client_order_id`, `new_attached_risk`, `request_id`. If you omit `request_id`, the SDK generates one for that single call; supply a stable value when retrying the same logical modify. See [Requests & idempotency](https://testnet.polyester.com/docs/sdk/python/concepts/requests-and-idempotency). Returns `ModifyOrderResult` (`action_taken`, `old_order_id`, `final_order_id`, `code`).
+#### Modify parameters
+| Parameter                      | Type                                 | Required    | Contract                                                         |
+| ------------------------------ | ------------------------------------ | ----------- | ---------------------------------------------------------------- |
+| `account`                      | `AccountScope \| None`               | no          | Uses configured account when omitted                             |
+| `symbol`                       | `str`                                | yes         | Pair symbol used for routing and scale                           |
+| `order_id` / `client_order_id` | `str \| int \| None` / `str \| None` | exactly one | Existing order identity                                          |
+| `sub_account_id`               | `str \| None`                        | no          | Explicit scope override                                          |
+| `request_id`                   | `str \| None`                        | no          | SDK generates one when absent; provide and reuse one for retries |
+| `new_price`                    | object / money input                 | no\*        | Exact replacement price                                          |
+| `new_qty`                      | object / money input                 | no\*        | Exact replacement quantity                                       |
+| `new_attached_risk`            | `dict \| None`                       | no\*        | Proto-shaped replacement risk                                    |
+| `behavior`                     | `str \| None`                        | no          | `"amend_or_replace"`, `"amend_only"`, or `"replace_only"`        |
+| `new_client_order_id`          | `str \| None`                        | no          | Replacement identity, locally validated                          |
+\* At least one of `new_price`, `new_qty`, or `new_attached_risk` is required.
+Leave balance headroom when repricing a heavily reserved book. A replacement requires sufficient available balance for the new order. Reconcile after an ambiguous response before retrying or canceling and recreating the order.
+### Cancel
+```python
+await client.orders.cancel(order_id=result.order_id)
+await client.orders.cancel(client_order_id="mm-bot-001", symbol="BTC-USDT")
+```
+Optional `symbol` / `symbol_id` speeds routing. Omit both to send zero/unspecified routing. If supplied, pass exactly one; an unknown symbol is rejected locally rather than silently becoming zero. Returns `OrderMutationResult`. Cancellation acknowledges admission. Confirm the order has disappeared from `list_open` before releasing local state; retry the same cancel if it remains visible after a bounded reconciliation window.
+For process-owned cleanup, select owned client IDs and cancel them individually. A targeted cancel that raises `PolyesterApiError` with code `not_found` is idempotent success because the order may have filled or left the book after the preceding read; every other cancel error remains an error. Do not use account-wide `cancel_all` as an ownership filter.
+Pass at least one of `order_id` and `client_order_id`. Omitting both raises `PolyesterValidationError`.
+### Cancel all
+```python
+preview = await client.orders.cancel_all(symbol="BTC-USDT", dry_run=True)
+print(preview.matched_orders)
+await client.orders.cancel_all(symbol="BTC-USDT", side="buy", request_id="ca-1")
+```
+If you omit `request_id`, the SDK generates one for that single call; supply a stable value when retrying the same logical bulk cancel. Returns `CancelAllOrdersResult` (`status`, `matched_orders`, `submitted_cancels`, `failed_cancels`).
+`cancel_all` accepts only backend statuses `submitted` / `dry_run`; `cancel_all_after` accepts `armed` / `disabled`. Empty or unknown statuses raise `PolyesterResponseContractError` rather than returning an ambiguous success result.
+### Cancel all after
+```python
+armed = await client.orders.cancel_all_after(timeout_sec=15, symbol="BTC-USDT")
+print(armed.status, armed.effective_timeout_sec, armed.expires_at_ts_ns)
+```
+Use `timeout_sec=0` to disable or `10`–`120` to arm. The API enforces this range; the Python SDK currently passes it through without local preflight.
+### Batch helpers
+```python
+batch = await client.orders.batch_create(
+items=[
+"symbol": "BTC-USDT",
+"side": "buy",
+"order_type": "limit",
+"tif": "gtc",
+"qty": "0.01",
+"price": "64000",
+"client_order_id": "mm-a",
+"post_only": True,
+},
+"symbol": "BTC-USDT",
+"side": "sell",
+"order_type": "limit",
+"tif": "gtc",
+"qty": "0.01",
+"price": "65000",
+"client_order_id": "mm-b",
+"post_only": True,
+},
+],
+)
+# allow_partial is retained for compatibility but ignored on the current wire.
+print(batch.accepted_count, batch.rejected_count)
+await client.orders.batch_cancel(
+items=[{"client_order_id": "mm-a"}, {"client_order_id": "mm-b"}],
+request_id="bc-1",
+)
+from polyester.models import ClientOrderId
+receipt = await client.orders.batch_replace(
+symbol="BTC-USDT",
+items=[
+],
+request_id="br-1",
+)
+print(receipt.batch_request_id, receipt.status, receipt.accepted_count)
+status = await client.orders.get_batch_replace_status(
+batch_request_id=receipt.batch_request_id,
+)
+print(status.admission_status, len(status.items))
+```
+`batch_replace` is a same-symbol quote refresh only (no per-item `behavior`, no `behavior_default`, no `allow_partial`). The write RPC returns a durable admission receipt (`batch_request_id`, accepted/rejected counts), not a final execution outcome. After successful admission, the predecessor order and client IDs are stale. Switch immediately to each `replacement_order_id` and the new client order ID in the receipt. A predecessor `get` may return `not_found` / `ORDER_UNKNOWN`; that is expected. Poll `get_batch_replace_status` to reconcile the phases `admitted`, `working`, `rejected`, and `terminal`. A status read can briefly return 404 after admission, so retry the poll.
+For quote-refresh bots, `is_batch_replace_settled(status)` means every item is `working`, `rejected`, or `terminal`. It is a reconciliation checkpoint, not a final execution outcome: `working` means the successor is live. Reuse the same `request_id` for an ambiguous retry and never submit another replacement against a stale predecessor.
+**Batch size contracts:** `batch_create` max **20**; `batch_replace` / `batch_cancel` max **50**. These are API-side contracts; enforce them in the bot because the Python SDK does not preflight the counts. `allow_partial` on `batch_create` is accepted for compatibility but is not encoded.
+Every successful batch-create response item is either `accepted` or `rejected`. The SDK reconciles the aggregate counts for create, replace, and cancel batches with their per-item outcomes. A malformed or inconsistent success response raises `PolyesterResponseContractError` instead of returning an ambiguous result. Unknown rejection enums remain visible as `unknown_error_code(
+)`.
+### Read orders
+```python
+open_orders = await client.orders.list_open(include_attached_risk=True)
+for order in open_orders.orders:
+print(order.order_id, order.status, order.leaves_qty)
+page_token = None
+while True:
+page = await client.orders.list_history(
+symbol="BTC-USDT",
+limit=100,
+page_token=page_token,
+)
+for order in page.orders:
+print(order.order_id, order.status)
+page_token = page.next_page_token or None
+if not page_token:
+break
+details = await client.orders.get(order_id="order-id-from-create", include_attached_risk=True)
+if details.order:
+print(details.order.status, len(details.trades))
+```
+`list_history` can filter by `symbol` or `symbol_id`. `get` accepts `order_id` or `client_order_id`.
+### Batch timeouts and reconciliation
+A timeout on a batch mutation is an unknown outcome, not proof that nothing committed. Do not blindly resubmit the batch with new identifiers. Give the batch a stable `request_id`, give every create item a unique `client_order_id`, and reconcile every item with `get`, `list_open`, or order history before retrying. The SDK sends each call once and does not promise server-side atomicity.
+### Trade projection after fills
+`get` can report `cum_qty` before every fill is visible on the trades list. Prefer `orders.wait_for_order_trades_complete` (also exported as `polyester.wait_for_order_trades_complete`) after fills when you need trade rows to match `cum_qty`:
+```python
+details = await client.orders.wait_for_order_trades_complete(
+order_id="order-id-from-create",
+timeout=15.0,
+)
+print(details.order.cum_qty if details.order else None, len(details.trades))
+```
+Market BUY quantities may be normalized by the venue (for example `0.04` → `0.03997`). For cleanup, use the completed trade projection and convert `fee_amount_e18` to the symbol's base quantity scale for BUY fills whose `fee_asset` is `"base"`; subtract when `fee_is_rebate` is false and add when it is true. Sell that net received base quantity, not the requested decimal or gross `cum_qty`.
+### Subscribe
+Streams private order updates. Waits for the Centrifugo handshake (including private token fetch) before returning. Requires Account ID (`account_id=` or client `default_account_id`).
+```python
+sub = await client.orders.subscribe(account_id=account_id)
+async with sub:
+async for order in sub:
+scale = client.catalogs.base_quantity_scale_for_symbol_id(order.symbol_id)
+if scale is None:
+raise RuntimeError(f"stream symbol {order.symbol_id} quantity scale is unavailable")
+leaves = order.leaves_qty.format(scale=scale) if order.leaves_qty else None
+print(order.status, order.order_id, leaves)
+break
+```
+See [Realtime](https://testnet.polyester.com/docs/sdk/python/reference/realtime) for overflow and delivery rules. Private order payloads may omit quantity scale metadata (`scale is None`). Resolve scale from the hydrated catalog by `symbol_id` (or the corresponding symbol) before formatting `orig_qty`, `cum_qty`, or `leaves_qty`. Never trust or invent a stream scale; fail closed when catalog lookup fails.
+## Identifier constraints
+`client_order_id` and `new_client_order_id` accept 1 to 36 characters. Allowed characters are ASCII letters, digits, `.`, `_`, `:`, `/`, and `-`. Invalid values are rejected locally before send, including singular lookup and cancel by client-order-id. A create request may omit the ID. Request IDs use the same character set and accept 1 to 64 characters.
+## Attached risk
+Pass `attached_risk` on create (and `new_attached_risk` on modify) as a dict matching the risk policy wire shape:
+```python
+await client.orders.create(
+symbol="BTC-USDT",
+side="buy",
+order_type="limit",
+tif="gtc",
+price="64000",
+qty="0.1",
+attached_risk={
+"take_profit": {"trigger_price_ticks": 70_000_000_000},  # or use decoded helpers
+"stop_loss": {"trigger_price_ticks": 60_000_000_000},
+"oco": True,
+},
+)
+```
+Attached risk always evaluates against last trade on the current wire contract. Supplying the dead `trigger_price_source` / `triggerPriceSource` field is rejected instead of being silently ignored.
+Attached `trailing_stop` requires a positive `trailing_distance_ticks` or `trailing_distance_bps` (exactly one). Optional `max_slippage_ticks` / `max_slippage_bps` must also be positive when set. `order_type` under `trailing_stop` is rejected — the child is always market. On decode, a trailing leg with a missing or non-positive distance is omitted (no zero-distance fabrication).
+For standalone automations not tied to a parent order, use [triggers](https://testnet.polyester.com/docs/sdk/python/reference/triggers).
+## The Order shape
+```python
+# msgspec struct fields (selected)
+order.order_id          # str
+order.symbol_id         # int
+order.client_order_id   # str
+order.side              # "buy" | "sell" | ...
+order.status            # working / partial / filled / cancelled / ...
+order.order_type
+order.tif
+order.orig_qty          # Quantity | None
+order.cum_qty
+order.leaves_qty
+order.price             # Price | None
+order.avg_px
+order.created_ts_ns     # str
+order.post_only
+order.attached_risk     # AttachedRisk | None when requested
+```
+List responses return `{ orders, next_page_token }`.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/python/guides/trading)
+- [Triggers](https://testnet.polyester.com/docs/sdk/python/reference/triggers)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/python/concepts/requests-and-idempotency)
+- [Errors](https://testnet.polyester.com/docs/sdk/python/reference/errors)

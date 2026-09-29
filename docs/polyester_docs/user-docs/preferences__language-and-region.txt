@@ -1,0 +1,575 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/language-and-region
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Language & Region · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Preferences
+svg]:size-3.5">
+/
+Language & Region
+Language & Region
+Copy page
+View as Markdown
+Open in
+Language and regional settings make Polyester easier to use wherever you are. They change how information is displayed without changing your assets, transactions, or account history.
+Open
+Preferences
+from the gear in the top nav to choose the formats that feel most familiar to you.
+Language
+Choose the language used for supported buttons, labels, and messages. Asset names, trading pairs, wallet addresses, and transaction IDs stay the same.
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+English
+Default
+Français
+中文
+Buy Sell Order
+English
+Timezone
+Your timezone controls how transaction, order, and account activity times appear. Changing it changes the displayed time, not when the event happened.
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+Universal
+(UTC)
+UTC
+Default
+North & South America
+(UTC-10)
+Honolulu
+(UTC-8)
+Anchorage
+(UTC-8)
+Juneau
+(UTC-7)
+Los Angeles
+(UTC-7)
+Phoenix
+(UTC-7)
+Vancouver
+(UTC-6)
+Denver
+(UTC-6)
+Mexico City
+(UTC-6)
+San Salvador
+(UTC-5)
+Bogota
+(UTC-5)
+Chicago
+(UTC-5)
+Lima
+(UTC-4)
+Caracas
+(UTC-4)
+New York
+(UTC-4)
+Toronto
+(UTC-3)
+Buenos Aires
+(UTC-3)
+Santiago
+(UTC-3)
+Sao Paulo
+Atlantic & Western Europe
+(UTC)
+Azores
+(UTC)
+Reykjavik
+(UTC+1)
+Casablanca
+(UTC+1)
+Dublin
+(UTC+1)
+Lagos
+(UTC+1)
+Lisbon
+(UTC+1)
+London
+(UTC+1)
+Tunis
+Central & Eastern Europe /Africa
+(UTC+2)
+Amsterdam
+(UTC+2)
+Belgrade
+(UTC+2)
+Berlin
+(UTC+2)
+Bratislava
+(UTC+2)
+Brussels
+(UTC+2)
+Budapest
+(UTC+2)
+Copenhagen
+(UTC+2)
+Johannesburg
+(UTC+2)
+Luxembourg
+(UTC+2)
+Madrid
+(UTC+2)
+Malta
+(UTC+2)
+Oslo
+(UTC+2)
+Paris
+(UTC+2)
+Prague
+(UTC+2)
+Rome
+(UTC+2)
+Stockholm
+(UTC+2)
+Vienna
+(UTC+2)
+Warsaw
+(UTC+2)
+Zurich
+Middle East & Eastern Africa
+(UTC+3)
+Athens
+(UTC+3)
+Bahrain
+(UTC+3)
+Bucharest
+(UTC+3)
+Cairo
+(UTC+3)
+Helsinki
+(UTC+3)
+Istanbul
+(UTC+3)
+Jerusalem
+(UTC+3)
+Kuwait
+(UTC+3)
+Moscow
+(UTC+3)
+Nairobi
+(UTC+3)
+Nicosia
+(UTC+3)
+Qatar
+(UTC+3)
+Riga
+(UTC+3)
+Riyadh
+(UTC+3)
+Tallinn
+(UTC+3)
+Vilnius
+(UTC+3:30)
+Tehran
+(UTC+4)
+Dubai
+(UTC+4)
+Muscat
+Central & South Asia
+(UTC+5)
+Ashgabat
+(UTC+5)
+Karachi
+(UTC+5:30)
+Colombo
+(UTC+5:30)
+Kolkata
+(UTC+5:45)
+Kathmandu
+(UTC+5)
+Almaty
+(UTC+6)
+Dhaka
+(UTC+6:30)
+Yangon
+Southeast & East Asia
+(UTC+7)
+Bangkok
+(UTC+7)
+Ho Chi Minh
+(UTC+7)
+Jakarta
+(UTC+8)
+Chongqing
+(UTC+8)
+Hong Kong
+(UTC+8)
+Kuala Lumpur
+(UTC+8)
+Manila
+(UTC+8)
+Perth
+(UTC+8)
+Shanghai
+(UTC+8)
+Singapore
+(UTC+8)
+Taipei
+(UTC+9)
+Seoul
+(UTC+9)
+Tokyo
+Oceania & Pacific
+(UTC+10)
+Brisbane
+(UTC+9:30)
+Adelaide
+(UTC+10)
+Sydney
+(UTC+11)
+Norfolk Island
+(UTC+13)
+New Zealand
+(UTC+13)
+Tokelau
+(UTC+13:45)
+Chatham Islands
+3:37:09 AM
+UTC
+Time format
+Choose a 12-hour or 24-hour clock.
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+12 Hour
+(3:37 AM)
+Default
+24 Hour
+(03:37)
+3:37:09 AM
+12 Hour
+Currency
+Choose the currency Polyester uses when showing estimated values, such as USD. This does not convert the assets in your account.
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+US Dollar
+Default
+Euro
+British Pound
+Japanese Yen
+$
+1,234.56
+US Dollar
+Number format
+Number format controls decimal and thousands separators. For example, the same value can appear as
+1,234.56
+or
+1.234,56
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+1,234,567.89
+(US)
+Default
+1.234.567,89
+(EU)
+1 234 567,89
+(SPACE)
+1'234'567.89
+(CH)
+12,34,567.89
+(IN)
+1234567.89
+(NONE)
+1,234,567.89
+1,234,567.89
+Date format
+Choose the order used for day, month, and year.
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+Sep 29, 2026
+09/29/2026
+Default
+29/09/2026
+2026-09-29
+2026/09/29
+2026.09.29
+29-09-2026
+29.09.2026
+29 Sep 2026
+09/29/2026
+MM/dd/yyyy
+Week begins on
+Choose the first day of the week in calendar views.
+Interactive
+Localization
+Language
+English
+Currency
+US Dollar
+Number format
+1,234,567.89
+Date format
+09/29/2026
+Time format
+12 Hour
+Timezone
+UTC
+Week begins on
+Monday
+Monday
+Default
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+Mo
+Tu
+We
+Th
+Fr
+Sa
+Su
+Monday
+Your preferences save automatically in the current browser.
+Related Topics
+Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Appearance
+Choose your theme, colors, and typeface.
+Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Notifications
+Choose which Polyester updates you receive and how they appear.
+Balances
+Hide account amounts on screen without changing the balances themselves.
+Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Previous
+Appearance
+Next
+Sounds
+On this page
+Language
+Timezone
+Time format
+Currency
+Number format
+Date format
+Week begins on
+Related Topics
+Share this page
+Language & Region
+Choose how Polyester displays language, dates, times, currencies, and numbers.
+Share
+Copy Link

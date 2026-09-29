@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/auth.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Auth
+Auth service helpers including nested profile access.
+`client.auth` is the API-key identity surface. It exposes `me()` and the nested `client.auth.profile` realtime service.
+```python
+me = await client.auth.me()
+print(me.account_id, me.api_key_id, me.username)
+print(me.root_smart_account_address)
+```
+`MeResult` fields are `account_id`, `api_key_id`, `username`, `root_smart_account_address`, and optional raw `session` data. An API-key caller should not depend on a browser session being present. The Account ID is sufficient identity for API-key auth. `username` may be `None`/empty; do not reject the identity or substitute `"-"` as though it were required.
+`me.api_key_id` is the API key's base58 public ID. It is not the `ak_...` credential handle passed as `api_key_id=` or sent in `X-API-KEY-ID`; do not compare or substitute the two representations.
+## Profile identity stream
+The Python SDK deliberately omits profile get/update/history methods because they require an interactive session. The API-key-safe profile operation is:
+```python
+sub = await client.auth.profile.subscribe_identity()
+async with sub:
+async for identity in sub:
+print(identity.account_id, identity.username, identity.avatar_url)
+break
+```
+Wallet login, JWT refresh, MFA enrollment, and account resolve are **not** wrapped. See [Authentication](https://testnet.polyester.com/docs/sdk/python/guides/authentication) and [Limitations](https://testnet.polyester.com/docs/sdk/python/concepts/limitations-and-non-features).

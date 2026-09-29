@@ -1,0 +1,50 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# WebSocket session model
+Understand shared connection, authentication, subscription, and recovery behavior for Polyester realtime channels.
+Polyester WebSocket subscriptions deliver live market and account updates without polling. Use them alongside REST or ConnectRPC: unary APIs establish or reconcile state, while WebSocket channels deliver subsequent changes.
+> **Use an official SDK**
+>
+> Official SDKs expose realtime clients and generated Protobuf types. Connection reuse and automatic reconnect behavior vary by SDK, so review the selected SDK's lifecycle behavior when designing recovery.
+## Available streams
+## Public streams
+- market trades, candles, and order-book changes
+- market overview and other public market data
+- public lifecycle and configuration events
+## Private streams
+- order, trigger, and user-trade updates
+- balances and ledger transfers
+- subaccount, API-key, policy, and account events
+## Connection flow
+1. Prepare private authentication
+Public clients skip this step. Private clients use a JWT session or Ed25519 API-key identity to obtain a connection token from `/v1/rt/token`. The token is valid for 5 minutes from issuance. The response includes `expires_unix`, the authoritative expiration timestamp in Unix seconds.
+2. Open the realtime connection
+Connect to the environment API host at:
+```text
+/connection/websocket
+```
+Private clients include the connection token. Open the connection through the selected SDK's realtime client or a custom WebSocket client.
+3. Authorize and subscribe
+Before subscribing to a private channel, obtain its channel-bound token from `/v1/rt/subscribe`. Subscription tokens are valid for 1 minute from issuance and the response includes their `expires_unix` value. Public subscriptions need no token. Realtime tokens do not replace authentication for unary write methods.
+4. Decode the matching payload
+Use the relevant SDK product method or the exact channel name and payload schema for a custom client. Encoding support is channel-specific.
+5. Reconcile after reconnecting
+Restore subscriptions, reload the relevant snapshot or history through REST or ConnectRPC, and reconcile local state before applying new updates.
+> **Refresh expiring tokens**
+>
+> Official SDK realtime clients request replacement connection and subscription tokens automatically. Custom clients must refresh each token before its returned `expires_unix` time. Refreshing a realtime token still requires a valid JWT session or API-key identity.
+> **Keep private tokens client-side**
+>
+> Do not log connection or subscription tokens, place them in URLs you persist, or share them across accounts.
+## Delivery and recovery
+Within an active subscription, realtime delivery is at least once. Reconnects and backend rebalances can cause duplicate messages, while a disconnected client can miss live messages.
+Apply state and configuration snapshots idempotently as replacement state. Use revisions when the schema exposes them, and allow repeated invalidations to trigger the same safe refresh. For event streams, deduplicate with stable identifiers and ordering fields from the payload, never with the number or arrival position of a message.
+After reconnecting, reload the relevant snapshot or history through REST or ConnectRPC before resuming live application. Unary APIs remain the authority for reconnect recovery.
+## Choose a payload guide
+- Use [WebSocket JSON](https://testnet.polyester.com/docs/developer-docs/rest/websocket-json) for JSON channels and custom JSON-oriented clients.
+- Use [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf) for typed channels and official SDK realtime clients.
+Encoding support remains channel-specific. Do not assume that every channel has both variants.
+Treat WebSocket delivery as the live update path, not the sole durable record for application state.
+See the [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix) for official SDK repositories and the [TypeScript streaming guide](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming) for an implementation example.

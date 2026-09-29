@@ -1,0 +1,27 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/audit-logs.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Audit Logs
+See membership, permission, API-key, and account-setting changes for a Subaccount.
+Audit Logs give you a clear history of access and setting changes for a Subaccount. Open the Subaccount, select **Security**, and find **Audit Log** to see who made each change and when it happened.
+## What appears in the Audit Log
+The Audit Log includes changes such as:
+- creating, renaming, disabling, or reactivating a Subaccount
+- sending or responding to member invitations
+- changing a member's role or access
+- creating, updating, or removing an API key
+- updating or locking permissions
+- changing the member MFA requirement.
+## Read an Audit Log entry
+Each entry shows the time, the type of item that changed, the action, where the change came from, and the account that made it. When available, Polyester also shows the source IP address.
+The newest entries appear first. Select **Load more** to continue through earlier entries.
+## Trading and balance history
+The Audit Log focuses on access and account settings. Other records remain in the part of Polyester where they belong:
+- **[Manage Orders](https://testnet.polyester.com/docs/user-docs/trade/manage-orders)** shows orders and fills.
+- **[Overview](https://testnet.polyester.com/docs/user-docs/account/ledger/ledger-overview)** shows balance entries.
+- Deposit, withdrawal, and transfer pages show the progress of fund movements.
+- **[Polyester Scan](https://testnet.polyester.com/docs/user-docs/polyester-scan/chain-activity)** shows public Polyester Chain activity.
+> **A focused account history**
+>
+> Audit Logs keep membership, permission, credential, and account-setting changes together without mixing them with trading or balance records.

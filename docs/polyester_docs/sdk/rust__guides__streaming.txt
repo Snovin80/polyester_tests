@@ -1,0 +1,372 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/streaming
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Streaming · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Streaming
+Streaming
+Copy page
+View as Markdown
+Open in
+Realtime uses the
+binary Centrifugo Protobuf WebSocket protocol
+(always included; the Cargo
+realtime
+feature flag is a no-op stub). Helpers return
+TypedSubscription<T>
+recv_result().await
+so a failed feed cannot look like a clean end of stream.
+The SDK negotiates the
+centrifuge-protobuf
+WebSocket subprotocol. Both Centrifugo control frames
+and
+channel publications are binary Protobuf. ConnectRPC's optional JSON wire mode is
+unrelated and never changes realtime framing.
+Managed order-book / market-overview subscriptions expose
+updates().recv().await
+plus
+set_on_error(...)
+and
+err()
+Contract
+use
+polyester
+Error
+;
+let
+mut
+sub
+=
+client
+orders
+subscribe
+(
+client
+default_account_id
+as_deref
+())
+;
+// handshake done
+sub
+set_on_error
+(
+|
+error
+|
+eprintln!
+(
+"realtime interruption: {error}"
+));
+while
+let
+Some
+(
+order
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{} {}"
+,
+order
+status,
+order
+order_id);
+}
+Private channels need
+API key
++ Account ID.
+Overflow is fail-closed (
+Error::QueueOverflow
+).
+Reconnect uses capped exponential backoff with per-subscription jitter.
+Hyphenated channel segments (e.g.
+api-keys
+) must be signed with RFC 3986-preserving query
+encoding (built into the SDK).
+What you can stream
+Stream
+Method
+Auth
+Consume
+Public trades
+market_data.subscribe_trades
+public
+recv_result()
+Candles
+market_data.subscribe_candles
+public
+recv_result()
+Order book (managed)
+orderbook.create_subscription
+public
+updates()
+Market overview (managed)
+market_overview.create_subscription
+public
+updates()
+Heatmap
+heatmap.subscribe_live
+public
+recv_result()
+Lifecycle
+lifecycle.subscribe_open_flows
+/
+subscribe_flow_detail
+public or private
+recv_result()
+Zipped-asset supply
+zipper.subscribe_zipped_asset_supply
+public
+recv_result()
+Profile identity
+auth.profile.subscribe_identity
+public
+recv_result()
+Orders / triggers / balances / trades
+matching
+subscribe
+helpers
+private
+recv_result()
+Transfers
+transfers.subscribe
+private
+recv_result()
+API keys
+api_keys.subscribe
+private
+recv_result()
+API/
+subaccount
+policies
+policies.subscribe_*_policies
+private
+recv_result()
+Subaccounts / address book
+matching subscribe helpers
+private
+recv_result()
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Account-administration streams
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Account-administration streams require the corresponding API-key read permission and an Account
+ID. An HTTP 403
+Error::PermissionDenied
+is non-transient; inspect
+code
+,
+context
+, and
+endpoint
+, then update the key policy before reconnecting.
+Public trades
+client
+wait_for_catalogs
+()
+;
+let
+mut
+sub
+=
+client
+market_data
+subscribe_trades
+(
+"BTC-USDT"
+)
+;
+while
+let
+Some
+(
+trade
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{trade:?}"
+);
+break
+;
+}
+Snapshot-then-stream
+Managed order-book subscriptions snapshot via REST, then stream deltas with gap recovery. Prefer
+these helpers over wiring raw channels yourself. The create call returns only after both the
+WebSocket handshake and initial snapshot succeed.
+Market overview uses the same managed pattern. For entity streams (orders, balances, trades,
+transfers, triggers), events are
+not
+a complete starting snapshot: subscribe first, fetch the
+corresponding list/snapshot, buffer events during the read, then reconcile by entity ID plus
+version/timestamp. After reconnect, re-read authoritative state before declaring the bot healthy.
+Typed subscriptions do
+not
+recover missed publications across reconnect (no Centrifugo resume
+cursor). Poll
+sub.take_resubscribed()
+(or watch
+sub.resubscribes()
+) after each receive and
+treat a latch as a gap: rebuild from REST before trusting the stream again. A WebSocket read
+timeout is treated as connection death so half-open sockets reconnect instead of freezing.
+Never quote from raw order-book deltas. Use
+orderbook.create_subscription
+, which detects gaps
+and refreshes its snapshot.
+Overflow
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Fail-closed overflow
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Updates are never silently dropped when the queue fills. Resubscribe and rebuild authoritative
+state, a new stream alone does not recover missed entity events.
+Related
+Realtime
+WebSocket session model
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Trading
+Next
+Accounts & balances
+On this page
+Contract
+What you can stream
+Public trades
+Snapshot-then-stream
+Overflow
+Related
+Related Topics
+Share this page
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::Error;
+
+let mut sub = client
+    .orders
+    .subscribe(client.default_account_id.as_deref())
+    .await?; // handshake done
+sub.set_on_error(|error| eprintln!("realtime interruption: {error}"));
+while let Some(order) = sub.recv_result().await? {
+    println!("{} {}", order.status, order.order_id);
+}
+
+---
+
+client.wait_for_catalogs().await?;
+let mut sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+while let Some(trade) = sub.recv_result().await? {
+    println!("{trade:?}");
+    break;
+}

@@ -1,0 +1,46 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/internal-transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+`client.internalTransfers` moves funds between Polyester accounts without touching a chain: from your account to another root account, a subaccount, or a smart-account address. Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`) that identifies the source. See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Transfers are idempotent on `idempotencyKey`: repeat requests with the same key return the existing transfer instead of creating a second one.
+## Methods
+| Method   | Summary                                                     |
+| -------- | ----------------------------------------------------------- |
+| `create` | Create (or return) an idempotent transfer between accounts. |
+### `create(input, options?)`
+Creates an internal transfer from the resolved source account to a destination, and returns a `CreateInternalTransferResult`. Pass `quantity` as a decimal string; the SDK validates it against the asset's precision, encodes it to the wire format (`amountE18` U128), and decodes the echoed amount back to a decimal string in the result. Callers never need to construct U128 values.
+```ts
+const result = await client.internalTransfers.create({
+destination: { type: "subaccount", subaccountId: "sub_123" },
+assetId: 2,
+quantity: "125.50",
+idempotencyKey: crypto.randomUUID(),
+});
+console.log(result.transferId, result.quantity, result.acceptedAtUnixMs);
+```
+#### `CreateInternalTransferInput`
+| Field            | Type                          | Required | Notes                                 |
+| ---------------- | ----------------------------- | -------- | ------------------------------------- |
+| `destination`    | `InternalTransferDestination` | yes      | Where the funds go (see below).       |
+| `assetId`        | `number`                      | yes      | Integer from 1 through 4,294,967,295. |
+| `quantity`       | decimal string                | yes      | Amount to move. Strict precision.     |
+| `idempotencyKey` | `string`                      | yes      | Reuse it to retry safely.             |
+| `account`        | `AccountScope`                | no       | Source scope override.                |
+`destination` is a tagged union:
+- `{ type: "account", accountId }` for another root account.
+- `{ type: "subaccount", subaccountId }` for a subaccount.
+- `{ type: "smartAccountAddress", address }` for a smart-account address.
+To turn a human-facing target into one of these shapes, resolve it first with [`client.accounts.resolve(...)`](https://testnet.polyester.com/docs/sdk/typescript/reference/accounts), or look it up in your [address book](https://testnet.polyester.com/docs/sdk/typescript/reference/address-book) via `listTransferDestinations()`.
+#### `CreateInternalTransferResult`
+```ts
+import type { CreateInternalTransferResult } from "@polyester/sdk";
+```
+The result echoes `requestId`, `transferId`, `quantity` as a decimal string, `acceptedAtUnixMs`, asset ids, and the resolved `destination` (`rootAccountId` / `subaccountId` / `smartAccountAddress`) so you can confirm where the funds landed.
+## Related
+- [Accounts](https://testnet.polyester.com/docs/sdk/typescript/reference/accounts) to resolve a destination account or subaccount.
+- [Address book](https://testnet.polyester.com/docs/sdk/typescript/reference/address-book) for saved transfer destinations.
+- [Transfers](https://testnet.polyester.com/docs/sdk/typescript/reference/transfers) to see the resulting ledger rows.
+- [Balances](https://testnet.polyester.com/docs/sdk/typescript/reference/balances) for the updated totals.

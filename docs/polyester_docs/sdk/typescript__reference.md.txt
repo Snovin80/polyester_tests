@@ -1,0 +1,50 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+`client.accounts` resolves user-entered identifiers into concrete account destinations. Its main job is turning what someone types (a username, an account ID, or a wallet address) into the root or subaccount you can send to. Every method is authenticated. `resolve` needs a wallet session. An API key gets `AuthenticationError`.
+## Methods
+| Method    | Summary                                                        |
+| --------- | -------------------------------------------------------------- |
+| `resolve` | Resolve a query into matching root or subaccount destinations. |
+### `resolve(input, options?)`
+Resolves a `query` (a username, an opaque account or subaccount ID, or a smart-account EVM address) into matching destinations, returning `ResolvedAccount[]`. Set `includeSubaccounts` when the flow may target a subaccount, such as picking a destination for an internal transfer.
+```ts
+const matches = await client.accounts.resolve({
+query: "satoshi",
+includeSubaccounts: true,
+});
+for (const match of matches) {
+console.log(match.accountId, match.kind, match.rootUsername ?? match.subaccountLabel);
+}
+```
+#### `ResolveAccountInput`
+| Field                | Type      | Required | Notes                                                      |
+| -------------------- | --------- | -------- | ---------------------------------------------------------- |
+| `query`              | `string`  | yes      | Username, account/subaccount ID, or smart-account address. |
+| `includeSubaccounts` | `boolean` | no       | Include subaccount matches. Defaults to `false`.           |
+The query is trimmed and must be non-empty.
+#### `ResolvedAccount`
+```ts
+interface ResolvedAccount {
+accountId: string;
+smartAccountAddress: string;
+kind: "unspecified" | "root" | "sub";
+rootUsername?: string;
+subaccountLabel?: string;
+}
+```
+`rootUsername` is populated for root matches and `subaccountLabel` for subaccounts. The list is empty when nothing matches.
+```ts
+const [destination] = await client.accounts.resolve({ query: "0xSmartAccountAddress" });
+if (destination) {
+// use destination.accountId as an internal-transfer target
+}
+```
+To move funds to a resolved destination, see [internal transfers](https://testnet.polyester.com/docs/sdk/typescript/reference/internal-transfers).
+## Related
+- [Internal transfers](https://testnet.polyester.com/docs/sdk/typescript/reference/internal-transfers) for sending funds to a resolved account.
+- [Profile](https://testnet.polyester.com/docs/sdk/typescript/reference/profile) for the caller's own public profile.
+- [Subaccounts](https://testnet.polyester.com/docs/sdk/typescript/reference/subaccounts) for creating and managing subaccounts you own.

@@ -1,0 +1,315 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/error-handling
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Error handling · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Error handling
+Error handling
+Copy page
+View as Markdown
+Open in
+Use
+errors.As
+/
+errors.Is
+against
+github.com/Fabric-Labs/polyester-sdk-go/errors
+list:
+Errors reference
+Use
+sdkerrors.IsRetryable(err)
+for backoff classification. For mutations,
+sdkerrors.MutationOutcomeUnknown(err)
+means you must reconcile state and reuse the original
+request identity before retrying; it does not mean the request was rejected.
+import
+sdkerrors
+"
+github.com/Fabric-Labs/polyester-sdk-go/errors
+"
+_
+,
+err
+client
+Orders
+Create
+(
+ctx
+,
+req
+,
+nil
+)
+if
+err
+!=
+nil
+var
+rl
+*
+sdkerrors
+RateLimitError
+var
+transport
+*
+sdkerrors
+TransportError
+var
+validation
+*
+sdkerrors
+ValidationError
+var
+overflow
+*
+sdkerrors
+QueueOverflowError
+switch
+case
+errors
+As
+(
+err
+,
+&
+overflow
+):
+// subscription only, resubscribe after catching up
+case
+errors
+As
+(
+err
+,
+&
+rl
+):
+// sleep rl.RetryAfter; reconcile this create by ClientOrderID
+case
+errors
+As
+(
+err
+,
+&
+transport
+):
+// outcome may be unknown; reconcile before resubmitting
+case
+errors
+As
+(
+err
+,
+&
+validation
+):
+// fix input (e.g. post_only on non-GTC)
+default
+if
+errors
+Is
+(
+err
+,
+sdkerrors
+ErrPolyester
+) {
+log
+Println
+(
+err
+)
+}
+else
+return
+err
+}
+}
+}
+Retry rules
+Retry transport / rate-limit failures with backoff. For a single-order create, reconcile by the
+stable
+ClientOrderID
+before resubmitting; retained reuse returns a duplicate conflict, not the
+earlier result.
+Keep replayable
+requestID
+and
+clientTriggerID
+values stable for the same logical action.
+Do not invent a new client order ID while the first create is unresolved.
+On subscriptions,
+*QueueOverflowError
+means resubscribe after catching up, not a unary retry.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Client order IDs do not replay creates
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+means the ID is retained. Reconcile the original create; the
+conflict does not return its outcome.
+Validation & precision
+*ValidationError
+covers client-side encode failures (unknown enums,
+post_only
+on non-GTC,
+bad shapes). Catalog miss / excess precision usually surfaces here or as
+*APIError
+MFA
+Step-up / elevation helpers exist for shared auth codes. API-key SDKs do not implement wallet login,
+MFA
+enrollment UX, or create-API-key session flows.
+Streaming errors
+Unary methods return
+error
+sub.Err()
+after the
+Messages()
+channel closes, including
+*QueueOverflowError
+Streaming
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Previous
+Server-side usage
+Next
+Production trading operations
+On this page
+Retry rules
+Validation & precision
+MFA
+Streaming errors
+Related Topics
+Share this page
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import sdkerrors "github.com/Fabric-Labs/polyester-sdk-go/errors"
+
+_, err := client.Orders.Create(ctx, req, nil)
+if err != nil {
+    var rl *sdkerrors.RateLimitError
+    var transport *sdkerrors.TransportError
+    var validation *sdkerrors.ValidationError
+    var overflow *sdkerrors.QueueOverflowError
+    switch {
+    case errors.As(err, &overflow):
+        // subscription only, resubscribe after catching up
+    case errors.As(err, &rl):
+        // sleep rl.RetryAfter; reconcile this create by ClientOrderID
+    case errors.As(err, &transport):
+        // outcome may be unknown; reconcile before resubmitting
+    case errors.As(err, &validation):
+        // fix input (e.g. post_only on non-GTC)
+    default:
+        if errors.Is(err, sdkerrors.ErrPolyester) {
+            log.Println(err)
+        } else {
+            return err
+        }
+    }
+}

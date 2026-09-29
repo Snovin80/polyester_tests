@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# WebSocket Protobuf
+Consume typed Polyester realtime channels with Protobuf payloads alongside ConnectRPC.
+WebSocket Protobuf is the realtime companion for typed ConnectRPC and SDK integrations. It uses binary Protobuf payloads over WebSocket while ConnectRPC continues to handle request-response calls.
+> **This is not ConnectRPC streaming**
+>
+> The payloads use Protobuf message types, but connection tokens, subscriptions, and reconnects follow the [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model).
+## When to use Protobuf channels
+Choose WebSocket Protobuf when:
+- you use an official SDK realtime client
+- your application already uses generated Protobuf message types
+- compact typed payloads matter more than direct inspection
+- the required stream is available only as Protobuf
+Encoding support is channel-specific. A Protobuf channel does not guarantee an equivalent JSON channel.
+## Channel implementation
+1. Choose a Protobuf channel
+Use the official SDK product method or identify the exact channel and published message type for a custom client.
+2. Decode with generated types
+Decode each binary publication with the message type assigned to that channel. Apply the integer and identifier conventions defined by the field contract.
+> **Protobuf is not SBE**
+>
+> Do not decode realtime Protobuf frames with the [SBE WebSocket](https://testnet.polyester.com/docs/developer-docs/sbe-websocket/getting-started) schema. SBE WebSocket is a separate binary order-entry session.

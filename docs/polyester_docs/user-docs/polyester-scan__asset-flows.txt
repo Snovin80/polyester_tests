@@ -1,0 +1,240 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Asset Flows · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Scan
+svg]:size-3.5">
+/
+Asset Flows
+Asset Flows
+Copy page
+View as Markdown
+Open in
+An
+Asset Flow
+connects every stage of one deposit, withdrawal, or internal transfer. Instead of making you follow several separate records,
+Polyester Scan
+brings the movement, status, amounts, and linked transactions into one journey.
+The three Flow types
+Flow
+What it follows
+Deposit
+An asset moving from an external chain into your Polyester account
+Withdrawal
+An asset moving from Polyester to an address on a supported external chain
+Internal transfer
+An asset moving between supported Polyester accounts or balance areas
+A Flow is not one blockchain transaction. It can link an external transaction, one or more
+Polyester Chain
+transactions, validator activity, and a private ledger settlement into one understandable record.
+Find a Flow
+Open the
+Flows directory
+to browse recent activity. You can filter by Flow type, account, chain, transaction, asset, or status.
+Each row shows the direction, asset, linked records, elapsed time, current stage, and overall status. Open a row to see its complete Summary and Journey.
+Read the Summary and Journey
+The
+Summary
+shows what moved and where it went. It includes the asset, principal amount, fee, final amount, source, destination, account, and available transaction links.
+The
+Journey
+shows how the movement progressed. Depending on the Flow, it can include:
+source-chain confirmations
+Zipper
+validator approval
+a
+Zipped Asset
+mint or burn
+a Funding or Trading balance update
+destination-chain delivery.
+Deposit and
+withdrawal Flows
+contain more stages because they cross networks. An internal transfer usually contains only the observed transfer and its ledger settlement.
+Deposit
+Withdrawal
+Internal transfer
+Understand the status
+Status
+Meaning
+Pending
+The Flow is still moving through its required stages
+Completed
+The expected final stage has finished
+Failed or Dropped
+Processing ended without the intended completion
+Refunded
+The Flow ended through its supported refund path
+The progress bar shows how far the Flow has moved through its lifecycle. A terminal Flow can show 100% whether it completed, failed, or refunded, so the written status remains the clearest result.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+A Flow can contain different kinds of records
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A linked hexadecimal hash usually opens a blockchain transaction. A ledger settlement reference records a Polyester balance step and is clearly labeled as not being a Polyester Chain transaction.
+Follow the linked records
+Transaction links take you to the public record for that stage. External-chain links open the relevant network explorer, while Polyester Chain links remain in Polyester Scan.
+You can also open the related account, Zipped Asset,
+Unified Asset
+, or source chain directly from the Flow. This makes the Flow the easiest starting point when you want to understand the complete journey of one asset movement.
+Related Topics
+Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Chain Activity
+Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Previous
+zAssets & uAssets
+Next
+Chain Activity
+On this page
+The three Flow types
+Find a Flow
+Read the Summary and Journey
+Understand the status
+Follow the linked records
+Related Topics
+Share this page
+Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+Share
+Copy Link

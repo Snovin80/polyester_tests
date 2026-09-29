@@ -1,0 +1,59 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/error-handling.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Error handling
+Classify failures, retry safely with idempotency keys, and handle realtime overflow.
+Catch `PolyesterError` subclasses. Full tree: [Errors reference](https://testnet.polyester.com/docs/sdk/python/reference/errors).
+```python
+from polyester import (
+PolyesterError,
+PolyesterTransportError,
+PolyesterRateLimitError,
+PolyesterValidationError,
+PolyesterRealtimeOverflowError,
+is_retryable_error,
+mutation_outcome_unknown,
+)
+import asyncio
+try:
+await client.orders.create(
+symbol="BTC-USDT",
+side="buy",
+order_type="limit",
+tif="gtc",
+qty="0.01",
+price="60000",
+client_order_id=client_order_id,
+)
+except PolyesterRealtimeOverflowError:
+# Only relevant for subscriptions, resubscribe after catching up
+except PolyesterRateLimitError as err:
+await asyncio.sleep(err.retry_after or 1.0)
+# reconcile this create by client_order_id before resubmitting
+except PolyesterTransportError:
+# outcome may be unknown; reconcile before resubmitting
+except PolyesterValidationError as err:
+# bad input / post_only misuse / encode failure, do not retry blindly
+print(err)
+except PolyesterError as err:
+print(err)
+```
+## Retry rules
+- Use `is_retryable_error(err)` and capped exponential backoff.
+- If `mutation_outcome_unknown(err)` is true, reconcile state before retrying.
+- For a single-order create, reconcile by the stable **`client_order_id`** before resubmitting. Retained reuse returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`, not the earlier result.
+- Reuse replayable **`request_id`** or **`client_trigger_id`** values for the same logical action.
+- Withdrawals also reuse the same required **idempotency key, nonce, and signed payload**.
+- Do **not** generate a fresh idempotency key inside the retry loop.
+- Realtime **overflow** is fail-closed: treat it as fatal for that subscription.
+The async client also applies cooperative backpressure if a burst exhausts the bounded authentication timestamp window. This does not block the event loop. Direct users of the synchronous `polyester.auth.sign_request` helper instead receive `PolyesterRateLimitError` immediately and should honor `retry_after`.
+> **Do not replace an unresolved client order ID**
+>
+> Creating a new `client_order_id` can double-place an order if the first attempt already applied. Keep the original ID for reconciliation; a duplicate conflict does not replay the earlier outcome.
+## Validation & precision
+`PolyesterValidationError` covers client-side encode failures (unknown enums, `post_only` on non-GTC limit, bad shapes). Catalog miss / excess precision usually surfaces here or as an API error, there is no separate `CatalogConversionError` class in Python.
+## MFA / step-up
+Interactive MFA step-up and session elevation are JWT/session product flows. API-key bots should not expect to create keys or complete MFA challenges through this SDK. Helpers `is_step_up_required` / `is_mfa_elevation_required` exist for shared error codes if you integrate with session products elsewhere.
+## Streaming errors
+Unary methods raise. Subscriptions surface terminal errors via the async iterator / `sub.error`, including `PolyesterRealtimeOverflowError`. See [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming).

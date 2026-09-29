@@ -1,0 +1,233 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/zipper
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Zipper · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Zipper
+Zipper
+Copy page
+View as Markdown
+Open in
+client.zipper
+exposes
+route
+configuration and live zipped-asset supply updates.
+config
+=
+await
+client.zipper.get_deposit_withdraw_config()
+client.catalogs.hydrate_zipper_config(config)
+Client construction starts catalog hydration when
+hydrate_catalogs=True
+wait_for_catalogs()
+returns an error when hydration fails (HTTP/transport error,
+malformed config, or invalid scales). Call
+hydrate_zipper_config
+directly for an explicit
+refresh.
+sub
+=
+await
+client.zipper.subscribe_zipped_asset_supply(
+patch_catalog
+=
+True
+)
+async
+with
+sub:
+async
+for
+batch
+in
+sub:
+for
+update
+in
+batch.updates:
+print
+(update.zipped_asset_id, update.supply)
+break
+With
+patch_catalog=True
+(default), supply events update the shared catalog before being
+delivered. Disable it only if your application owns reconciliation. The stream is public.
+Route configuration is not a fee quote and can change. Quote immediately before an on-chain
+withdraw and enforce your own maximum fee/slippage.
+Related:
+Catalog
+,
+Funds & Transfers
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Previous
+Withdrawals
+Next
+Live market ticker
+On this page
+Related Topics
+Share this page
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+config = await client.zipper.get_deposit_withdraw_config()
+client.catalogs.hydrate_zipper_config(config)
+
+---
+
+sub = await client.zipper.subscribe_zipped_asset_supply(patch_catalog=True)
+async with sub:
+    async for batch in sub:
+        for update in batch.updates:
+            print(update.zipped_asset_id, update.supply)
+        break

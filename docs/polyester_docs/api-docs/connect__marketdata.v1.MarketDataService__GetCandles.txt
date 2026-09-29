@@ -1,0 +1,356 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketdata.v1.MarketDataService/GetCandles
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketdata.v1.MarketDataService
+GetCandles
+Retrieve OHLCV candles for a spot market and timeframe.
+Results are ordered newest-first and support inclusive time bounds, optional
+current open candle inclusion, and optional composite reference candles.
+Copy URL
+Method
+POST
+Path
+marketdata.v1.MarketDataService/GetCandles
+Service
+marketdata.v1.MarketDataService
+Visibility
+Public endpoint
+POST
+marketdata.v1.MarketDataService/GetCandles
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetCandles' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"endTime": "2025-01-01T00:00:00Z",
+"includeIncomplete": false,
+"includeReference": false,
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"startTime": "2025-01-01T00:00:00Z",
+"symbolId": 1,
+"timeframe": "SEC_1"
+}'
+Responses
+"candles": [
+"close": "42080000000000",
+"high": "42150000000000",
+"isClosed": false,
+"low": "41900000000000",
+"open": "42000500000000",
+"quoteVolume": "12.3456",
+"tsSec": "1735689600",
+"volume": "1234567890000000000"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"referenceCandles": [
+"close": "42080000000000",
+"high": "42150000000000",
+"isClosed": false,
+"low": "41900000000000",
+"open": "42000500000000",
+"quoteVolume": "12.3456",
+"tsSec": "1735689600",
+"volume": "1234567890000000000"
+}
+],
+"symbolId": 1,
+"timeframe": "SEC_1"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketdata.v1.GetCandlesRequest
+Response
+marketdata.v1.GetCandlesResponse
+Request body
+Form
+JSON
+Example
+symbolId
+integer (int32)
+> 0
+Numeric spot market identifier.
+timeframe
+enum
+must be defined value
+Candle bucket size. Required for ConnectRPC clients.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s352" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+SEC_1
+limit
+integer (int32)
+≤ 10000
+Maximum number of closed candles to return. Defaults to 500 when unset;
+max 10000.
+startTime
+string (date-time)
+Inclusive lower bound for candle bucket start time, as a UTC timestamp.
+Must not be more than 5 minutes in the future.
+endTime
+string (date-time)
+Inclusive upper bound for candle bucket start time, as a UTC timestamp.
+Must be greater than or equal to start_time when both are set, and must not
+be more than 5 minutes in the future.
+includeIncomplete
+boolean
+Include the current open candle when it is available and inside the
+requested range.
+The open candle is prepended to the newest-first candle list and does not
+count toward the closed-candle limit.
+Unset
+False
+True
+includeReference
+boolean
+Include the composite reference market candle series for the same market,
+timeframe, and time range.
+The reference series can be empty when no reference series is available for
+the requested timeframe.
+Unset
+False
+True
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to symbol, timeframe, time bounds, and newest-first candle ordering.
+Inclusion flags affect response enrichment and may change between pages.
+Response
+Form
+JSON
+symbolId
+integer (int32)
+Numeric spot market identifier echoed from the request.
+timeframe
+enum
+Candle bucket size used for the returned series.
+SEC_1
+MIN_1
+MIN_5
+MIN_15
+MIN_30
+HOUR_1
+HOUR_4
+DAY_1
+HOUR_12
+WEEK_1
+MONTH_1
+candles
+object[]
+Primary market candle series, ordered newest-first by ts_sec.
+8 fields
+tsSec
+string (uint64)
+Candle bucket start timestamp, in seconds since epoch (UTC).
+open
+string (int64)
+Opening price in quote units. Primary candles use scale 9; composite
+reference candles use the pair's reference_price_scale from GetSpotConfig.
+high
+string (int64)
+Highest traded price, using the same scale as open.
+low
+string (int64)
+Lowest traded price, using the same scale as open.
+close
+string (int64)
+Closing price, using the same scale as open.
+volume
+string (int64)
+Traded base-asset quantity scaled by the base asset's
+market_data_volume_scale from GetSpotConfig.
+isClosed
+boolean
+True only for WebSocket terminal updates of a closed bucket.
+Historical API rows and current open-candle rows set this to false.
+quoteVolume
+string
+Exact traded quote-asset volume as a human-readable decimal string.
+This is sum(execution price × execution quantity), not close × base volume.
+referenceCandles
+object[]
+Composite reference market candle series, ordered newest-first by ts_sec.
+Populated only when include_reference is true and reference data is
+available.
+8 fields
+tsSec
+string (uint64)
+Candle bucket start timestamp, in seconds since epoch (UTC).
+open
+string (int64)
+Opening price in quote units. Primary candles use scale 9; composite
+reference candles use the pair's reference_price_scale from GetSpotConfig.
+high
+string (int64)
+Highest traded price, using the same scale as open.
+low
+string (int64)
+Lowest traded price, using the same scale as open.
+close
+string (int64)
+Closing price, using the same scale as open.
+volume
+string (int64)
+Traded base-asset quantity scaled by the base asset's
+market_data_volume_scale from GetSpotConfig.
+isClosed
+boolean
+True only for WebSocket terminal updates of a closed bucket.
+Historical API rows and current open-candle rows set this to false.
+quoteVolume
+string
+Exact traded quote-asset volume as a human-readable decimal string.
+This is sum(execution price × execution quantity), not close × base volume.
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+marketdata.v1.MarketDataService/GetCandles
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s405" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetCandles' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"endTime": "2025-01-01T00:00:00Z",
+"includeIncomplete": false,
+"includeReference": false,
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"startTime": "2025-01-01T00:00:00Z",
+"symbolId": 1,
+"timeframe": "SEC_1"
+}'
+Responses
+"candles": [
+"close": "42080000000000",
+"high": "42150000000000",
+"isClosed": false,
+"low": "41900000000000",
+"open": "42000500000000",
+"quoteVolume": "12.3456",
+"tsSec": "1735689600",
+"volume": "1234567890000000000"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"referenceCandles": [
+"close": "42080000000000",
+"high": "42150000000000",
+"isClosed": false,
+"low": "41900000000000",
+"open": "42000500000000",
+"quoteVolume": "12.3456",
+"tsSec": "1735689600",
+"volume": "1234567890000000000"
+}
+],
+"symbolId": 1,
+"timeframe": "SEC_1"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketdata.v1.MarketDataService/GetCandles' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "endTime": "2025-01-01T00:00:00Z",
+  "includeIncomplete": false,
+  "includeReference": false,
+  "limit": 100,
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "startTime": "2025-01-01T00:00:00Z",
+  "symbolId": 1,
+  "timeframe": "SEC_1"
+}'
+
+---
+
+{
+  "candles": [
+    {
+      "close": "42080000000000",
+      "high": "42150000000000",
+      "isClosed": false,
+      "low": "41900000000000",
+      "open": "42000500000000",
+      "quoteVolume": "12.3456",
+      "tsSec": "1735689600",
+      "volume": "1234567890000000000"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "referenceCandles": [
+    {
+      "close": "42080000000000",
+      "high": "42150000000000",
+      "isClosed": false,
+      "low": "41900000000000",
+      "open": "42000500000000",
+      "quoteVolume": "12.3456",
+      "tsSec": "1735689600",
+      "volume": "1234567890000000000"
+    }
+  ],
+  "symbolId": 1,
+  "timeframe": "SEC_1"
+}

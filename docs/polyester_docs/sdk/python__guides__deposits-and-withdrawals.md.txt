@@ -1,0 +1,69 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/deposits-and-withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, lifecycle, and chain helpers.
+## How funds move
+| Flow               | How                                                             |
+| ------------------ | --------------------------------------------------------------- |
+| External → funding | Deposit address route configured to stop in Funding             |
+| External → trading | Deposit address route configured to continue to Trading         |
+| Funding → funding  | On-chain Funding Account transfer                               |
+| Funding → trading  | On-chain `TradingGateway.deposit` via `chain` (not ConnectRPC)  |
+| Funding → external | On-chain `FundingAccount.withdrawToChain` plus Zipper fee quote |
+| Trading → funding  | `client.withdraw.create_to_funding` (signed intent)             |
+| Trading → external | `client.withdraw.create_to_external_chain`                      |
+| Trading → trading  | `client.internal_transfers.create`                              |
+Also: Zipper config (`client.zipper`), lifecycle reads/streams (`client.lifecycle`), address book for destinations.
+Product overview: [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).
+## Deposit addresses
+```python
+addr = await client.deposit.create_address(chain_id=1)
+listed = await client.deposit.list_addresses(chain_id=1)
+```
+See [Deposit](https://testnet.polyester.com/docs/sdk/python/reference/deposit).
+## Trading withdraws
+API-key bots pass a precomputed `payload_signature` (no browser wallet signer on this SDK):
+```python
+from polyester import new_trading_withdraw_idempotency_key, new_trading_withdraw_nonce
+idempotency_key = new_trading_withdraw_idempotency_key()
+nonce = new_trading_withdraw_nonce()
+# Persist both values and use them when producing signature_bytes.
+result = await client.withdraw.create_to_funding(
+asset_id=2,
+quantity="100.00",
+payload_signature=signature_bytes,
+idempotency_key=idempotency_key,
+nonce=nonce,
+)
+```
+Reuse the same idempotency key, nonce, and signed payload on retry. Details: [Withdrawals](https://testnet.polyester.com/docs/sdk/python/reference/withdrawals).
+## Internal transfers
+```python
+await client.internal_transfers.create(
+asset_id=2,
+quantity="10",
+idempotency_key="xfer-1",
+destination_subaccount_id="123",
+)
+```
+## On-chain Funding helpers
+```python
+from polyester.chain import (
+POLYESTER_TESTNET_ENVIRONMENT,
+PolyesterSmartAccount,
+encode_trading_gateway_deposit,
+)
+account = PolyesterSmartAccount(owner_private_key="0x...")  # your EOA
+deposit = encode_trading_gateway_deposit(
+trading_gateway=POLYESTER_TESTNET_ENVIRONMENT.contracts.trading_gateway_address,
+u_asset_id="0x...",
+quantity_scaled=10**18,
+)
+account.send_calls([deposit])
+```
+Full surface: [Chain helpers](https://testnet.polyester.com/docs/sdk/python/reference/chain).
+> **Security**
+>
+> High-risk money movement may require additional account controls. See [Withdrawals & transfers security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security).

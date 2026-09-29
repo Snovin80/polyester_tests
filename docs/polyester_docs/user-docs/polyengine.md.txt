@@ -1,0 +1,36 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+**PolyEngine** is the system that powers spot trading, lending, and margin trading on Polyester. When you submit an order, PolyEngine checks that it can be placed, protects the balance it may use, matches it against the order book, and records every completed trade in your account.
+PolyEngine records all transfers, trades, and settlement in an immutable ledger. Open-source [Verifier Nodes](https://testnet.polyester.com/docs/user-docs/polyengine/verifiers) are designed to let anyone independently check matching fairness and ledger integrity while preserving the privacy of account-level trading activity and balances.
+PolyEngine works off-chain, so orders submitted through its trading APIs do not need to wait for a Polyester Chain block. Its account-level balances, orders, fills, and ledger records remain private to your account.
+PolyEngine is built for high-performance, institutional-grade trading. It supports significant order throughput and can achieve end-to-end latency below one millisecond in a co-located server setting.[1](#user-content-fn-latency) This supports high-frequency trading, market making, API-driven strategies, and fast interactive trading.
+PolyEngine's core is located in Tokyo, Japan, with edge gateways around the world providing fast access to market data and updates. For optimal latency, high-frequency traders and market makers should run their trading infrastructure near Tokyo.
+## How your order moves
+1. **You submit an order.** Your instruction includes the account, market, side, order type, amount, and any price or execution settings.
+2. **Admission checks the order.** PolyEngine checks your permissions, the market rules, and your available Trading balance. It reserves the amount the order may spend.
+3. **Matching finds eligible orders.** Buy and sell orders meet on the market's order book using price and time priority.
+4. **Settlement records each fill.** PolyEngine updates the base asset, quote asset, fee or rebate, and reserved balance for both sides of the trade.
+5. **Your account updates.** Open Orders, Order History, Trades, Trading balances, and Ledger entries reflect the result.
+An order may move through several of these stages almost instantly. Its Order ID connects the instruction, fills, and financial records.
+## Dedicated order books
+Every trading pair has its own order book. PolyEngine matches buyers and sellers directly; it does not use an AMM or pull assets from a shared liquidity pool.
+Assets deposited from different supported chains trade through their unified asset. For example, USDT deposited through two supported chains enters the same USDT market instead of creating a separate order book for each chain.
+## Public markets, private accounts
+The Order Book and Market Trades show the market's combined activity. They do not show who owns an order, a user's balance, or the fee attached to a private fill.
+Your open orders, order history, fills, fees, rebates, reservations, and Trading balances are available only inside your account. Funds entering or leaving your Trading Account can create visible on-chain activity, but your trading activity inside PolyEngine remains private.
+Instructions submitted through PolyEngine Relay can also expose the submitting smart account and transaction data on Polyester Chain.
+## Escape Hatch
+If checks identify an issue, validators can vote to activate the [Escape Hatch](https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch) for eligible fund withdrawals.
+## Explore each stage
+- **[Admission](https://testnet.polyester.com/docs/user-docs/polyengine/admission)** explains the checks that happen before your order can work.
+- **[Matching](https://testnet.polyester.com/docs/user-docs/polyengine/matching)** explains order-book priority, maker and taker fills, partial fills, and self-trade prevention.
+- **[Settlement](https://testnet.polyester.com/docs/user-docs/polyengine/settlement)** explains how fills, fees, rebates, and reservations update your account.
+- **[PolyEngine Relay](https://testnet.polyester.com/docs/user-docs/polyengine/relay)** covers direct on-chain calls for trading, transfers, and withdrawal requests from your smart account.
+- **[Verifier Nodes](https://testnet.polyester.com/docs/user-docs/polyengine/verifiers)** covers open-source checks of recorded matching activity without publishing account identities.
+- **[Escape Hatch](https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch)** explains validator-controlled recovery, private balance checkpoints, and emergency withdrawals.
+## Footnotes
+1. The sub-millisecond figure refers to servers co-located with PolyEngine's Tokyo core. Actual latency varies with client location, network conditions, production configuration, and load. [↩](#user-content-fnref-latency)

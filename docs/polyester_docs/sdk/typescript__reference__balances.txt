@@ -1,0 +1,763 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/balances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Balances · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Balances
+Balances
+Copy page
+View as Markdown
+Open in
+client.balances
+reads your current ledger balances and their history, root-portfolio equity, and
+streams live updates. Every method is authenticated. Ledger reads and account equity history are
+account-scoped, so each input accepts an optional
+account
+field (
+"main"
+,
+"active"
+, or
+). Root-portfolio methods always read the caller's
+main account
+and its owned
+subaccounts
+Account scoping
+for how the
+default resolves.
+Amounts are decimal strings, never floats. A single
+LedgerBalance
+splits an asset across four
+buckets:
+trading
+,
+funding
+,
+reserved
+, and
+available
+(parallel arrays keyed by a shared timeline) so they drop straight into a chart.
+Methods
+Method
+Summary
+list
+Read current balances for the account scope.
+getBalanceHistory
+Columnar balance history over a range, by asset and bucket.
+getEquityHistory
+Columnar equity history over a range, grouped by account or asset.
+getPortfolioEquityHistory
+Root-portfolio history by main account and owned subaccounts.
+getPortfolioEquitySnapshot
+Current root-portfolio equity by account and asset.
+subscribe
+Stream live balance updates over a private channel.
+list(input?, options?)
+Returns a
+LedgerBalance[]
+for the resolved account scope. Input is optional; pass
+account
+to
+override the default.
+const
+balances
+=
+await
+client
+balances
+list
+();
+for
+(
+const
+b
+of
+balances
+) {
+console
+log
+(
+b
+assetId
+,
+b
+available
+,
+b
+trading
+,
+b
+funding
+,
+b
+reserved
+);
+}
+// A specific subaccount
+const
+sub
+=
+await
+client
+balances
+list
+({ account: { subaccountId:
+"sub_123"
+} });
+LedgerBalance
+Every amount is a decimal string. There are no floating-point values in the shape.
+interface
+LedgerBalance
+assetId
+number
+;
+trading
+string
+;
+// held in the trading venue
+funding
+string
+;
+// held in funding
+reserved
+string
+;
+// locked by open orders or pending intents
+available
+string
+;
+// free to trade or move
+tradingRevision
+string
+;
+// monotonic revision for trading balances
+fundingRevision
+string
+;
+// monotonic revision for funding balances
+}
+getBalanceHistory(input, options?)
+Returns a
+BalanceHistoryResponse
+for the account scope: a fixed set of time buckets plus one
+balance
+series per (asset, bucket) pair. Choose a
+range
+, and optionally narrow to specific
+accountCodes
+const
+history
+=
+await
+client
+balances
+getBalanceHistory
+({
+range:
+"30d"
+,
+accountCodes: [
+"trading"
+,
+"funding"
+],
+});
+console
+log
+(
+history
+bucket
+,
+history
+points
+,
+history
+startTsSec
+,
+history
+endTsSec
+);
+for
+(
+const
+series
+of
+history
+series
+) {
+// series.balance is a decimal-string array aligned to the response's timeline
+console
+log
+(
+series
+assetId
+,
+series
+accountCode
+,
+series
+balance
+length
+);
+}
+range
+is one of
+"1d"
+,
+"7d"
+,
+"30d"
+,
+"90d"
+,
+"180d"
+,
+"365d"
+accountCodes
+is any subset of
+"funding"
+and
+"trading"
+; omit it for both.
+ledger
+is an optional numeric ledger filter (defaults to
+0
+).
+Each
+series.balance
+is a decimal-string array whose length matches
+points
+getEquityHistory(input, options?)
+Returns an
+EquityHistoryResponse
+account or by asset. Equity is quoted in the response's
+quoteAsset
+, and the response also carries
+a
+btcPrices
+array (decimal strings) for the same timeline.
+const
+equity
+=
+await
+client
+balances
+getEquityHistory
+({
+range:
+"90d"
+,
+groupBy:
+"asset"
+,
+});
+console
+log
+(
+equity
+quoteAsset
+,
+equity
+points
+);
+for
+(
+const
+series
+of
+equity
+series
+) {
+if
+(
+series
+grouping
+type
+===
+"asset"
+) {
+console
+log
+(
+series
+grouping
+symbol
+,
+series
+equity
+length
+);
+}
+else
+console
+log
+(
+series
+grouping
+name
+,
+series
+equity
+length
+);
+}
+}
+groupBy
+is
+"account"
+(the default) or
+"asset"
+range
+and
+accountCodes
+behave the same as in
+getBalanceHistory
+Each
+series.equity
+is a decimal-string array;
+btcPrices
+gives BTC priced in the
+quote asset
+at each timestamp.
+getPortfolioEquityHistory(input, options?)
+Returns root-portfolio equity history over a
+range
+, grouped by the main account, leading owned
+subaccounts, and an optional remaining-subaccounts series. This method always reads the root
+portfolio and does not accept
+account
+const
+history
+=
+await
+client
+balances
+getPortfolioEquityHistory
+({ range:
+"30d"
+});
+for
+(
+const
+series
+of
+history
+series
+) {
+console
+log
+(
+series
+grouping
+,
+series
+equity
+length
+);
+}
+series.grouping
+is either
+or
+equity
+and
+btcPrices
+are decimal-string
+arrays aligned to the response timeline. The response also includes
+quoteAsset
+,
+bucket
+,
+points
+,
+startTsSec
+, and
+endTsSec
+getPortfolioEquitySnapshot(options?)
+Returns current root-portfolio equity, grouped by logical account and asset. This method always
+reads the root portfolio.
+const
+snapshot
+=
+await
+client
+balances
+getPortfolioEquitySnapshot
+();
+console
+log
+(
+snapshot
+quoteAsset
+,
+snapshot
+totalEquity
+,
+snapshot
+btcPrice
+);
+for
+(
+const
+account
+of
+snapshot
+accounts
+) {
+console
+log
+(
+account
+accountId
+,
+account
+equity
+,
+account
+topAssetIds
+);
+}
+totalEquity
+,
+btcPrice
+, account
+equity
+, asset
+balance
+, and asset
+equity
+are decimal
+strings. Each asset row includes its numeric
+assetId
+; each account row includes its
+accountId
+and
+topAssetIds
+subscribe(input)
+Streams live balance updates over a private channel. Takes an
+accountId
+plus the standard handler
+fields, and returns an idempotent unsubscribe function. See the
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+balances
+subscribe
+({
+accountId
+,
+onEvent
+balance
+)
+=>
+console
+log
+(
+balance
+assetId
+,
+balance
+available
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+Each event is a
+LedgerBalance
+route
+a
+CatalogLookupError
+to
+onError
+rather than silently dropping.
+Related
+Accounts and balances guide
+for the
+task-oriented walkthrough and account scoping.
+Transfers
+for every balance movement behind these
+numbers.
+Deposit
+and
+Withdrawals
+for moving funds in and out.
+Realtime client reference
+for the streaming
+handler contract.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Auth
+Next
+Candles
+On this page
+Methods
+list(input?, options?)
+LedgerBalance
+getBalanceHistory(input, options?)
+getEquityHistory(input, options?)
+getPortfolioEquityHistory(input, options?)
+getPortfolioEquitySnapshot(options?)
+subscribe(input)
+Related
+Related Topics
+Share this page
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const balances = await client.balances.list();
+
+for (const b of balances) {
+	console.log(b.assetId, b.available, b.trading, b.funding, b.reserved);
+}
+
+// A specific subaccount
+const sub = await client.balances.list({ account: { subaccountId: "sub_123" } });
+
+---
+
+interface LedgerBalance {
+	assetId: number;
+	trading: string; // held in the trading venue
+	funding: string; // held in funding
+	reserved: string; // locked by open orders or pending intents
+	available: string; // free to trade or move
+	tradingRevision: string; // monotonic revision for trading balances
+	fundingRevision: string; // monotonic revision for funding balances
+}
+
+---
+
+const history = await client.balances.getBalanceHistory({
+	range: "30d",
+	accountCodes: ["trading", "funding"],
+});
+
+console.log(history.bucket, history.points, history.startTsSec, history.endTsSec);
+
+for (const series of history.series) {
+	// series.balance is a decimal-string array aligned to the response's timeline
+	console.log(series.assetId, series.accountCode, series.balance.length);
+}
+
+---
+
+const equity = await client.balances.getEquityHistory({
+	range: "90d",
+	groupBy: "asset",
+});
+
+console.log(equity.quoteAsset, equity.points);
+
+for (const series of equity.series) {
+	if (series.grouping.type === "asset") {
+		console.log(series.grouping.symbol, series.equity.length);
+	} else {
+		console.log(series.grouping.name, series.equity.length);
+	}
+}
+
+---
+
+const history = await client.balances.getPortfolioEquityHistory({ range: "30d" });
+
+for (const series of history.series) {
+	console.log(series.grouping, series.equity.length);
+}
+
+---
+
+const snapshot = await client.balances.getPortfolioEquitySnapshot();
+
+console.log(snapshot.quoteAsset, snapshot.totalEquity, snapshot.btcPrice);
+for (const account of snapshot.accounts) {
+	console.log(account.accountId, account.equity, account.topAssetIds);
+}
+
+---
+
+const unsubscribe = client.balances.subscribe({
+	accountId,
+	onEvent: (balance) => console.log(balance.assetId, balance.available),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();

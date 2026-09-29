@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Balances
+Hide account amounts on screen without changing the balances themselves.
+Balance settings control whether Polyester shows account amounts on screen. Hiding them does not change the balances themselves.
+Open **[Personalization](https://testnet.polyester.com/account/settings/personalization)** from the gear in the top nav to make changes.
+## Hide account balances
+Turn **Hide Balances** on before sharing your screen or working in a public place. Amounts appear as asterisks until you turn it off.
+Interactive
+Personalization
+Mode
+- Theme
+Polyester
+- Trading Palette
+Polyester Classic
+- Fonts
+Inter
+Footer
+Hide Balances
+Audio
+Muted
+$1,234.56 Balance
+Your choice saves automatically in the current browser.

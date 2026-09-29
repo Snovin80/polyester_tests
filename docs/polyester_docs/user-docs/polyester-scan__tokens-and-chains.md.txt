@@ -1,0 +1,44 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/tokens-and-chains.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Polyester Scan connects each asset on Polyester Chain to its contract and, for Zipped Assets, its source chain. This makes it easy to see which route an asset represents and where its public activity appears.
+## Choose what to browse
+| Page                                                         | What it shows                                                        |
+| ------------------------------------------------------------ | -------------------------------------------------------------------- |
+| [Tokens](https://polyesterscan.com/tokens)                   | ERC-20 tokens and configured Zipped Asset routes                     |
+| [Token Transfers](https://polyesterscan.com/token-transfers) | Recent transfers, mints, and burns                                   |
+| [Unified Assets](https://polyesterscan.com/unified-assets)   | The account-facing assets shared across compatible routes            |
+| [Chains](https://polyesterscan.com/chains)                   | Source chains, asset coverage, confirmation rules, and chain details |
+## Read a token page
+The Tokens directory shows the token name and symbol, source chain, Polyester contract, source-chain contract, type, price, supply, and TVL when that data is available.
+![Tokens directory with ERC-20 and Zipped Asset routes, contracts, and supply](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/e6eb2763304406b143eaf8b9527f2babcf454d4c99140fd4775eb303ab58cd71/source.webp)
+A configured Zipped Asset includes a **Verified** badge and route information. Open it to see:
+- its source chain and source asset
+- its contract on Polyester Chain
+- the Unified Asset it maps to
+- transfers, holders, and related Flows
+- public contract information.
+A generic ERC-20 token can still appear in Scan, but it does not include the configured route or Unified Asset relationship.
+> **A Verified badge identifies a configured asset**
+>
+> The badge means Scan recognizes the token from Polyester's asset catalog. It does not apply to every token with the same symbol and is separate from a contract audit.
+## Read token transfers
+The Token Transfers page shows the transaction, method, block, sender, recipient, amount, and token for each indexed ERC-20 action.
+Open a transaction to see whether the action was a transfer, mint, or burn and how it fits into the rest of the transaction. If it belongs to a supported cross-chain movement, the related Asset Flow provides the complete journey.
+## Read a chain page
+The Chains directory lists the external chains configured for Zipper routes. It includes each chain's ID, native asset, number of configured routes, required confirmations, and estimated confirmation time.
+![Chains directory with popular networks, asset routes, confirmations, and confirmation time](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/c17717aba0c7ecb6b48b80a20ee9b10bcb3bd336bdbf7c32e5a34d615ac77285/source.webp)
+Open a chain to see its:
+- related deposit and withdrawal Flows
+- configured Zipped Assets
+- chain and native-asset identifiers
+- address format
+- external explorer link.
+![Base Sepolia chain page with confirmations, native currency, assets, and related Flows](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/f35e8c7926b31997954d6783b711e483c876e66bb731ddfd764f6f144cb90825/source.webp)
+Confirmation time is an estimate based on the configured number of blocks and typical block time. It can change with the source chain.
+## Connect a chain to an asset
+The source chain and source contract identify what arrives from the external chain. The Polyester contract identifies the matching Zipped Asset on Polyester Chain. The Unified Asset link shows the balance identity that you use inside your Polyester account.
+Use **[zAssets & uAssets](https://testnet.polyester.com/docs/user-docs/polyester-scan/zassets-and-uassets)** for a closer look at that relationship.

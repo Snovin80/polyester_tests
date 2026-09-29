@@ -1,0 +1,686 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/order-book
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order book · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Order book
+Order book
+Copy page
+View as Markdown
+Open in
+client.orderbook
+reads spot depth snapshots and maintains a stateful live book. It uses the
+public transport, so no authentication is required.
+Levels come back as
+pairs of decimal strings, best-first (bids descending, asks
+ascending). Each response carries a
+bookSeq
+, the backend sequence number used to detect gaps.
+Methods
+Method
+Summary
+get
+Fetch a one-shot depth snapshot.
+createSubscription
+Build a managed live book with a stateful handle.
+subscribe
+Shorthand that returns just the unsubscribe function.
+get(input, options?)
+Fetches a depth snapshot for a
+symbolId
+and returns
+OrderbookData
+1 through 4,294,967,295.
+depth
+defaults to
+50
+and is snapped to the nearest supported level
+(
+1, 5, 10, 20, 50, 100, 200, 500, 1000
+).
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+const
+book
+=
+await
+client
+orderbook
+get
+({
+symbolId
+, depth:
+20
+});
+console
+log
+(
+book
+bids
+0
+]);
+// { price: "64250.5", qty: "0.35" }
+console
+log
+(
+book
+asks
+0
+]);
+console
+log
+(
+book
+bookSeq
+);
+createSubscription(input)
+Builds a managed live order book. It fetches an initial snapshot, applies sequence-checked deltas,
+and refetches when it observes a sequence gap or the socket reconnects.
+onEvent
+then sees a
+consistent book relative to the last applied snapshot or delta. The return value is an
+OrderbookSubscription
+handle, not a bare unsubscribe function.
+const
+sub
+=
+client
+orderbook
+createSubscription
+({
+symbolId
+,
+depth:
+10
+,
+onEvent
+book
+)
+=>
+console
+log
+(
+book
+depth
+,
+book
+bids
+0
+],
+book
+asks
+0
+],
+book
+bookSeq
+);
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// Re-aggregate locally into 1.0-wide price buckets without reconnecting
+sub
+setBucket
+(
+"1.0"
+);
+// later
+sub
+unsubscribe
+();
+onEvent
+is required.
+onOpen
+,
+onClose
+, and
+onError
+are optional. See the
+realtime client reference
+for the handler contract.
+Depth
+get
+snaps
+depth
+to the nearest REST snapshot step (
+1, 5, 10, 20, 50, 100, 200, 500, 1000
+).
+Default is
+50
+createSubscription
+accepts any integer in
+500
+clamp to
+500
+subscribes to a published channel that covers the request and slices levels back down. Emitted
+events use the depth you asked for, not the channel's depth.
+Any depth in that range works. You do not pick from a channel list. The published set is backend
+config and can change; the SDK absorbs it.
+Silent feeds
+Refetch runs only on an observed sequence gap (
+bookSeqStart > currentBookSeq + 1
+) or a reconnect.
+There is no idle or staleness check. A subscription that stays connected but stops publishing will
+not fire
+onError
+, will not reconnect, and will not refetch. The SDK cannot tell a dead feed from
+a quiet market.
+OrderbookSubscription
+exposes
+unsubscribe
+and
+setBucket
+connection-state accessor.
+Continuity across a silent-but-connected feed is your job. Track the time of the last
+onEvent
+When that age exceeds a threshold you choose, call
+orderbook.get()
+to resync, and tear down and
+resubscribe if you want a fresh stream. Pick the threshold from how actively the market trades.
+function
+subscribeBookWithIdleWatchdog
+(
+idleThresholdMs
+number
+) {
+let
+lastEventAt
+=
+Date
+now
+();
+let
+sub
+=
+start
+();
+function
+start
+() {
+return
+client
+orderbook
+createSubscription
+({
+symbolId
+,
+depth:
+10
+,
+onEvent
+book
+)
+=>
+lastEventAt
+=
+Date
+now
+();
+render
+(
+book
+);
+},
+});
+}
+const
+timer
+=
+setInterval
+(
+async
+()
+=>
+if
+(
+Date
+now
+()
+-
+lastEventAt
+<
+idleThresholdMs
+)
+return
+;
+const
+snapshot
+=
+await
+client
+orderbook
+get
+({
+symbolId
+, depth:
+10
+});
+render
+(
+snapshot
+);
+lastEventAt
+=
+Date
+now
+();
+sub
+unsubscribe
+();
+sub
+=
+start
+();
+},
+idleThresholdMs
+);
+return
+()
+=>
+clearInterval
+(
+timer
+);
+sub
+unsubscribe
+();
+};
+}
+// you choose idleThresholdMs from how actively this market trades
+const
+stop
+=
+subscribeBookWithIdleWatchdog
+(
+idleThresholdMs
+);
+subscribe(input)
+A shorthand for
+createSubscription(...).unsubscribe
+the stream and do not need the handle.
+const
+unsubscribe
+=
+client
+orderbook
+subscribe
+({
+symbolId
+,
+onEvent
+book
+)
+=>
+console
+log
+(
+book
+bids
+length
+,
+book
+asks
+length
+),
+});
+// later
+unsubscribe
+();
+Shapes
+interface
+OrderbookLevel
+price
+string
+;
+// decimal string
+qty
+string
+;
+// decimal string
+}
+interface
+OrderbookData
+symbolId
+number
+;
+depth
+number
+;
+bookSeq
+string
+;
+// backend sequence number
+bids
+OrderbookLevel
+// descending by price
+asks
+OrderbookLevel
+// ascending by price
+}
+interface
+OrderbookSubscription
+unsubscribe
+()
+=>
+void
+;
+setBucket
+(
+bucket
+string
+|
+null
+|
+undefined
+)
+=>
+void
+;
+}
+Pass
+bucket
+in the input (or call
+setBucket
+later) to aggregate levels into coarser price
+buckets. Passing
+null
+or an empty value clears bucketing back to raw levels.
+Related
+Market data guide
+for the task-oriented walkthrough.
+Streaming guide
+for the subscription model.
+Market overview
+for per-market stats.
+Public trades
+for prints.
+Heatmap
+for depth over time.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+MFA
+Next
+Orders
+On this page
+Methods
+get(input, options?)
+createSubscription(input)
+Depth
+Silent feeds
+subscribe(input)
+Shapes
+Related
+Related Topics
+Share this page
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const book = await client.orderbook.get({ symbolId, depth: 20 });
+
+console.log(book.bids[0]); // { price: "64250.5", qty: "0.35" }
+console.log(book.asks[0]);
+console.log(book.bookSeq);
+
+---
+
+const sub = client.orderbook.createSubscription({
+	symbolId,
+	depth: 10,
+	onEvent: (book) => {
+		console.log(book.depth, book.bids[0], book.asks[0], book.bookSeq);
+	},
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// Re-aggregate locally into 1.0-wide price buckets without reconnecting
+sub.setBucket("1.0");
+
+// later
+sub.unsubscribe();
+
+---
+
+function subscribeBookWithIdleWatchdog(idleThresholdMs: number) {
+	let lastEventAt = Date.now();
+	let sub = start();
+
+	function start() {
+		return client.orderbook.createSubscription({
+			symbolId,
+			depth: 10,
+			onEvent: (book) => {
+				lastEventAt = Date.now();
+				render(book);
+			},
+		});
+	}
+
+	const timer = setInterval(async () => {
+		if (Date.now() - lastEventAt < idleThresholdMs) return;
+		const snapshot = await client.orderbook.get({ symbolId, depth: 10 });
+		render(snapshot);
+		lastEventAt = Date.now();
+		sub.unsubscribe();
+		sub = start();
+	}, idleThresholdMs);
+
+	return () => {
+		clearInterval(timer);
+		sub.unsubscribe();
+	};
+}
+
+// you choose idleThresholdMs from how actively this market trades
+const stop = subscribeBookWithIdleWatchdog(idleThresholdMs);
+
+---
+
+const unsubscribe = client.orderbook.subscribe({
+	symbolId,
+	onEvent: (book) => console.log(book.bids.length, book.asks.length),
+});
+
+// later
+unsubscribe();
+
+---
+
+interface OrderbookLevel {
+	price: string; // decimal string
+	qty: string; // decimal string
+}
+
+interface OrderbookData {
+	symbolId: number;
+	depth: number;
+	bookSeq: string; // backend sequence number
+	bids: OrderbookLevel[]; // descending by price
+	asks: OrderbookLevel[]; // ascending by price
+}
+
+interface OrderbookSubscription {
+	unsubscribe: () => void;
+	setBucket: (bucket: string | null | undefined) => void;
+}

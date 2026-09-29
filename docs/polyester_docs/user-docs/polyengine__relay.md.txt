@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/relay.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+PolyEngine Relay gives you direct on-chain access to almost all PolyEngine order types and core account actions. Place orders, transfer funds, and request withdrawals by calling Relay functions directly from your [smart account](https://testnet.polyester.com/docs/user-docs/polyester-chain/smart-account) on Polyester Chain.
+You do not need to sign in to the Polyester website or create an API key. Your smart account authorizes each call using its existing ownership and permission rules.
+Gas for Relay calls is [sponsored through your smart account](https://testnet.polyester.com/docs/user-docs/polyester-chain/gasless-transactions). You only need to authorize the call; there is no separate gas token to acquire or hold.
+> **In development, coming soon**
+>
+> PolyEngine Relay is in development. Contract addresses, function signatures, and the full supported-action reference will accompany its release. This page describes the intended interface.
+## What you can do
+Core actions available through Relay include:
+| Action                                                                                             | What the call does                                                            |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Place limit orders](https://testnet.polyester.com/docs/user-docs/trade/order-types/limit-order)   | Submit a buy or sell order at a specified price or better.                    |
+| [Place market orders](https://testnet.polyester.com/docs/user-docs/trade/order-types/market-order) | Submit an order to trade against available liquidity within price protection. |
+| [Cancel orders](https://testnet.polyester.com/docs/user-docs/trade/manage-orders)                  | Request cancellation of an open order's remaining quantity.                   |
+| [Transfer funds](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)            | Move available funds between supported accounts and balance areas.            |
+| [Withdraw funds](https://testnet.polyester.com/docs/user-docs/funds/withdraw-assets)               | Request withdrawal of available funds through a supported route.              |
+The function reference defines the supported order types, execution settings, and transfer routes. Account permissions, available balances, market rules, and withdrawal requirements still apply.
+## How on-chain calls work
+Your smart account submits the selected Relay call on Polyester Chain. Relay passes the authorized instruction to PolyEngine for processing through the same admission, matching, and settlement systems used by other trading interfaces.
+You can submit these actions entirely through on-chain calls. A confirmed transaction does not by itself mean an order was accepted or filled, or that a withdrawal has completed.
+On-chain calls can expose the submitting smart account and transaction data.

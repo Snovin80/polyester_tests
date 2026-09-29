@@ -1,0 +1,27 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Address book
+Saved destinations and whitelist views.
+The Go SDK exposes address-book **reads and invalidation streaming**. Entry/tag mutations require a JWT/session and are not included.
+| Method                                 | Purpose                             |
+| -------------------------------------- | ----------------------------------- |
+| `ListBooks` / `ListEntries`            | Saved books and entries             |
+| `ListTransferCounterparties`           | Eligible counterparties             |
+| `ListTransferDestinations`             | Saved transfer destinations         |
+| `ListInternalTransferWhitelistEntries` | Internal allowlist view             |
+| `GetWithdrawWhitelistView`             | External withdrawal allowlist state |
+| `GetView`                              | Composite view                      |
+| `SubscribeViewInvalidations`           | Private invalidation stream         |
+```go
+page, err := client.AddressBook.ListEntries(ctx, nil, nil, nil, 50, nil)
+if err != nil { log.Fatal(err) }
+for _, entry := range page.Entries {
+fmt.Println(entry.AddressBookEntryID, entry.Label, entry.Kind)
+}
+view, err := client.AddressBook.GetWithdrawWhitelistView(ctx, nil, nil)
+```
+**Whitelists are enforced allowlists**: a saved destination does not itself authorize a withdrawal. Re-fetch the relevant view after an invalidation; the event is not a full snapshot.
+All calls are authenticated. The invalidation stream additionally requires Account ID and the address-book read permission. The method returns only after the private token and Centrifugo handshake succeed.
+In shared live fixtures, a denied address-book stream is usually fixture API-key policy, not proof that the stream or SDK is broken. Verify the key's explicit address-book read permission first.

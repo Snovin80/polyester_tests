@@ -1,0 +1,214 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyengine/verifiers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Verifier Nodes · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+PolyEngine
+svg]:size-3.5">
+/
+Verifier Nodes
+Verifier Nodes
+Copy page
+View as Markdown
+Open in
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+In development, coming soon
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The verifier is in development and will be released as open-source software for Mac, Windows, and Linux. This page describes its functionality.
+A verifier node independently checks that
+PolyEngine
+applies its documented matching rules to the recorded order stream. Anyone can inspect the source code, run a node, and compare the results with PolyEngine's published output.
+This makes execution independently checkable by anyone. Trading continues through the existing matching and settlement path while verifiers add a separate layer of scrutiny.
+What a verifier checks
+The verifier streams order-level events, called Level 3 data. It rebuilds each order book from the beginning or a verified checkpoint, then replays the recorded actions in sequence.
+It checks price-time priority, partial fills, cancellations, time-in-force behavior, and self-trade prevention against the published rules and the verification data supplied for them. Sequence identifiers and cryptographic commitments help detect missing records or changes to already committed history.
+If replay produces a different result, the verifier identifies the affected events so others can reproduce the discrepancy. A complete, consistent result means the recorded actions match the rules being checked.
+Public checks with private accounts
+The public verification stream separates order activity from account identity. It excludes names, wallet-to-order mappings, and private balance records. Publication controls, including delayed disclosure where needed, reduce exposure of active trading strategies.
+Verification does not require publishing the complete account ledger.
+Private balance checkpoints
+provide a separate way to check accounting and withdrawal claims without exposing everyone's balances.
+Order-book replay covers the committed inputs available to the verifier. It does not, by itself, establish that every instruction submitted before admission was included or that every private balance update was correct.
+How validators use verifiers
+Validators run their own verifier instances and assess reproducible findings from other operators. They combine matching checks with ledger consistency evidence and balance-checkpoint verification.
+When those checks reveal a problem, the authorized validator set can vote to activate the
+Escape Hatch
+Running a public verifier does not require a validator appointment or custody access. Voting authority follows the protocol's validator membership and quorum rules; downloading additional verifier copies does not create extra votes.
+Running a verifier
+The open-source client runs on Mac, Windows, and Linux devices.
+Component
+Preliminary planning estimate
+Processor
+Modern processor with 4 or more cores; 8 cores provides additional headroom
+Memory
+32 GB RAM; 64 GB for heavier replay workloads
+Storage
+2 TB NVMe SSD; 4 TB for additional retained history
+Internet
+Stable, unmetered connection around 50 Mbps download and 25 Mbps upload
+Availability
+Continuous operation for ongoing monitoring; initial synchronization requires additional time
+Related Topics
+Overview
+See how PolyEngine checks, matches, and settles your spot orders.
+Admission
+See how PolyEngine checks your order and protects the balance it may use.
+Matching
+See how your eligible order receives priority and becomes one or more fills.
+Settlement
+See how each fill updates your assets, fees, rebates, and reserved balance.
+PolyEngine Relay
+Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+Escape Hatch
+Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+Previous
+PolyEngine Relay
+Next
+Escape Hatch
+On this page
+What a verifier checks
+Public checks with private accounts
+How validators use verifiers
+Running a verifier
+Related Topics
+Share this page
+Verifier Nodes
+See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+Share
+Copy Link

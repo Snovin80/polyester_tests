@@ -1,0 +1,15 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/audits.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Audits
+Open published security reviews for Polyester and Zipper.
+Published security reviews are listed below.
+| Product         | Reviewer           | Date        | Report                                                                                                                                       |
+| --------------- | ------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Zipper Protocol | Trail of Bits      | May 5, 2025 | [Open security review](https://github.com/trailofbits/publications/blob/master/reviews/2025-05-fabriclabs-zipperprotocol-securityreview.pdf) |
+| Zipper Protocol | Pashov Audit Group | May 2025    | [Open security review](https://github.com/pashov/audits/blob/master/team/pdf/Zipper-security-review_2025-05-05.pdf)                          |
+Each report describes the code, version, scope, findings, and remediation reviewed during that engagement.
+## FAQ
+### Where can I find Polyester's security audits, and what do they cover?
+Visit [Audits](https://testnet.polyester.com/docs/user-docs/reference/audits) in the user docs for published reports from Trail of Bits and Pashov Audit Group. These reviews cover Zipper Protocol. Each report identifies the code and version reviewed, the scope of the assessment, its findings, and the remediation reviewed during that engagement.

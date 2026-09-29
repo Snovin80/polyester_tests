@@ -1,0 +1,534 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/errors
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Errors · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Errors
+Errors
+Copy page
+View as Markdown
+Open in
+All fallible SDK APIs use
+polyester::Result<T>
+=
+Result<T, Error>
+For usage patterns see the
+Error handling guide
+Use
+err.is_retryable()
+for backoff classification,
+err.retry_after()
+for a server-requested
+delay, and
+err.mutation_outcome_unknown()
+to identify mutations that require reconciliation
+before retrying. These helpers never prove that a mutation was unapplied.
+Variants
+Variant
+When
+Error::Auth
+Unary
+Unauthenticated
+/
+PermissionDenied
+Error::PermissionDenied { message, status, code, context, endpoint }
+Realtime token HTTP 403 with structured context
+Error::Validation
+Bad input (
+post_only
+, ids, enums, shapes, scale)
+Error::Transport
+Network / deadline, usually retryable with backoff
+Error::ResponseContract { context, message }
+Successful RPC returned an invalid response shape
+Error::RateLimit { message, retry_after }
+Server rate limit or local signing-capacity limit
+Error::Server
+Backend 5xx-class
+Error::Api { message, code, metadata }
+Structured Connect/API error
+Error::RouteNotFound { procedure }
+RPC not exposed
+Error::Realtime
+Realtime connect / decode
+Error::QueueOverflow
+Subscription queue full (fail-closed)
+use
+polyester
+models
+CreateOrderParams
+,
+CreateOrderType
+,
+CreateSide
+};
+use
+polyester
+Error
+,
+Quantity
+};
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+params
+=
+CreateOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+side
+CreateSide
+Buy
+,
+order_type
+CreateOrderType
+Limit
+,
+quantity
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.01"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+),
+max_quote_debit_scaled
+None
+,
+price
+None
+,
+time_in_force
+None
+,
+client_order_id
+Some
+(
+"mm-bot-001"
+into
+()),
+subaccount_id
+None
+,
+post_only
+None
+,
+market_client_ref_price
+None
+,
+fee_asset
+None
+,
+self_trade_prevention
+None
+,
+market_max_slippage
+None
+,
+attached_risk
+None
+,
+};
+match
+client
+orders
+create
+(
+params
+)
+Ok
+(
+r
+)
+=>
+println!
+(
+"{}"
+,
+r
+order_id),
+Err
+(
+err
+)
+if
+err
+mutation_outcome_unknown
+()
+=>
+// reconcile by client_order_id before deciding whether to resubmit
+return
+Err
+(
+err
+);
+}
+Err
+(
+err
+)
+if
+err
+is_retryable
+()
+=>
+let
+_
+=
+err
+retry_after
+();
+// sleep when present; reconcile this create
+}
+Err
+(
+Error
+Validation
+(
+msg
+))
+=>
+eprintln!
+(
+"fix input: {msg}"
+),
+Err
+(
+Error
+QueueOverflow
+(
+_
+))
+=>
+/* resubscribe, not a unary retry */
+}
+Err
+(
+err
+)
+=>
+return
+Err
+(
+err
+),
+}
+There is no separate catalog-conversion error type like TypeScript. Catalog / precision failures
+typically surface as
+Error::Validation
+or
+Error::Api
+Error::ResponseContract
+is deliberately
+not retryable
+SDK could not safely interpret the response. For an order mutation,
+mutation_outcome_unknown()
+is still
+true
+because the mutation may have been accepted. Reconcile
+by the original stable identifier; do not turn this error into a blind retry loop.
+Unary Connect order APIs map both
+Unauthenticated
+and
+PermissionDenied
+to
+Error::Auth
+Error::PermissionDenied
+is not their unary mapping; it carries structured context specifically
+for an HTTP 403 while acquiring a private realtime token.
+MFA helpers
+On
+Error
+auth_error_code()
+,
+is_mfa_enrollment_required()
+,
+is_step_up_required()
+,
+is_mfa_elevation_required()
+,
+is_mfa_last_factor_required()
+, for shared auth codes.
+API-key create-key / wallet
+MFA
+UX is
+not
+part of this SDK (JWT/session only).
+Retry sketch
+Use
+is_retryable()
+for backoff. When
+mutation_outcome_unknown()
+is true, reconcile first and
+reuse the same
+client_order_id
+/
+request_id
+/
+client_trigger_id
+fail-closed for that subscription.
+High-level async calls apply signing backpressure with Tokio-aware waits; they do not block an
+executor worker. Direct synchronous
+Credentials::sign_request
+returns a retryable rate-limit
+error immediately when the bounded timestamp window is full. Async low-level integrations should
+use
+Credentials::sign_request_async
+See
+Requests & idempotency
+Class notes
+Concern
+Guidance
+Auth
+Fix credentials / Account ID before retrying
+Validation
+Includes
+post_only
+on non-limit-GTC
+Transport / rate limit
+Backoff; reconcile when outcome is unknown
+Response contract
+Reconcile; non-retryable without new evidence
+Queue overflow
+Resubscribe; do not treat as unary retry
+Route
+not found
+Wrong host / incomplete env
+Related
+Error handling guide
+Streaming
+Requests & idempotency
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Deposit
+Next
+Guard signer
+On this page
+Variants
+MFA helpers
+Retry sketch
+Class notes
+Related
+Related Topics
+Share this page
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide};
+use polyester::{Error, Quantity};
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let params = CreateOrderParams {
+    symbol: "BTC-USDT".into(),
+    side: CreateSide::Buy,
+    order_type: CreateOrderType::Limit,
+    quantity: Some(Quantity::from_decimal_str("0.01", quantity_scale, Some("BTC-USDT".into()), None)?),
+    max_quote_debit_scaled: None,
+    price: None,
+    time_in_force: None,
+    client_order_id: Some("mm-bot-001".into()),
+    subaccount_id: None,
+    post_only: None,
+    market_client_ref_price: None,
+    fee_asset: None,
+    self_trade_prevention: None,
+    market_max_slippage: None,
+    attached_risk: None,
+};
+match client.orders.create(params).await {
+    Ok(r) => println!("{}", r.order_id),
+    Err(err) if err.mutation_outcome_unknown() => {
+        // reconcile by client_order_id before deciding whether to resubmit
+        return Err(err);
+    }
+    Err(err) if err.is_retryable() => {
+        let _ = err.retry_after(); // sleep when present; reconcile this create
+    }
+    Err(Error::Validation(msg)) => eprintln!("fix input: {msg}"),
+    Err(Error::QueueOverflow(_)) => { /* resubscribe, not a unary retry */ }
+    Err(err) => return Err(err),
+}

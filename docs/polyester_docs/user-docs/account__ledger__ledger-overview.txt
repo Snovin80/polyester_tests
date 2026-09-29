@@ -1,0 +1,236 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/ledger/ledger-overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Ledger
+Overview
+Copy page
+View as Markdown
+Open in
+Your
+Ledger
+is the complete history of changes to your Polyester balances. It includes deposits, withdrawals, transfers, trades, fees, and rebates.
+Ledger activity is private to your account. Public explorers show on-chain transactions, while the Ledger shows how those events affected your Polyester balance.
+Find the activity you need
+Use
+All
+for the complete history,
+Transfers
+for deposits, withdrawals, and internal movement, or
+Trades
+for executions, fees, and rebates. Search by asset, Flow ID, source, destination, or activity type.
+Turn on
+Group transactions
+to combine entries created by the same action. Turn it off when you want to see every debit, credit, fee, or rebate separately.
+What each entry shows
+Field
+What it tells you
+Time
+When the balance change was recorded
+Type
+The action, such as Deposit, Withdraw, Transfer, Buy, Sell, Fee, or Rebate
+Amount
+How much of the asset was added or removed
+Asset
+The balance that changed
+Balance After
+Your balance immediately after that entry
+Source and Destination
+Where the value came from and where it went
+Flow ID
+The deposit, withdrawal, or transfer connected to the entry
+Select an entry with a Flow ID to open the related transaction and see its complete progress.
+Why one action can create several entries
+One trade or transfer can affect more than one balance:
+A
+spot buy
+removes the
+quote asset
+, adds the
+base asset
+, and records the fee or rebate.
+A
+spot sell
+removes the base asset, adds the quote asset, and records the fee or rebate.
+A
+Funding-to-Trading transfer
+removes the amount from Funding and adds it to Trading.
+An
+internal transfer
+records the amount leaving one account and entering another.
+A
+withdrawal
+can reserve the amount before the final debit is completed.
+Grouped transactions keep those connected entries together.
+Available and reserved balances
+An open order, transfer, or withdrawal can reserve part of your Trading balance. The reserved amount still belongs to your account, but it is not available for another action. The
+Unified Trading Account
+shows the amount currently reserved by open orders. The Ledger does not reflect balances being reserved or released.
+When an order fills, the Ledger records the completed trade and its fee or rebate. If the order is canceled or fails, the unused amount returns to your available balance. A partially filled order keeps its completed trades and releases only the unused remainder.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Several requests can reserve one asset
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Your available balance can be lower because of multiple open orders, transfers, or withdrawals. Check the Unified Trading Account and active requests to understand the difference. The Ledger does not show the current reserved amounts.
+Ledger and statements
+The Ledger shows individual balance changes.
+Account Statements
+groups those records into a report for a selected period.
+Related Topics
+Account Statements
+Create a report of your balances, trades, fees, and account activity for a selected period.
+Previous
+API Keys
+Next
+Account Statements
+On this page
+Find the activity you need
+What each entry shows
+Why one action can create several entries
+Available and reserved balances
+Ledger and statements
+Related Topics
+Share this page
+Overview
+See every balance change in your account and connect it to the trade, transfer, or fee that created it.
+Share
+Copy Link

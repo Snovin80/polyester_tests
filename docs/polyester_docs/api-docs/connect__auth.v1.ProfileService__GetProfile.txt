@@ -1,0 +1,216 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.ProfileService/GetProfile
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.ProfileService
+GetProfile
+Get the caller's profile.
+Copy URL
+Method
+POST
+Path
+auth.v1.ProfileService/GetProfile
+Service
+auth.v1.ProfileService
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+POST
+auth.v1.ProfileService/GetProfile
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.ProfileService/GetProfile' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"avatarUrl": "https://placehold.co/128x128.png",
+"bio": "Professional crypto trader and liquidity provider.",
+"createdAt": "2025-01-01T00:00:00Z",
+"currentTermsAccepted": false,
+"discord": "polyester_trader",
+"discordVerified": false,
+"nextUsernameChangeAt": "2025-01-01T00:00:00Z",
+"twitter": "@polyester_exchange",
+"twitterVerified": false,
+"username": "trader_alpha",
+"usernameUnlocked": false,
+"vipTier": 1,
+"website": "https://example.com"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.GetProfileRequest
+Response
+auth.v1.UserProfile
+Response
+Form
+JSON
+username
+string
+max 32 chars
+/^[a-zA…3,32}$/
+Public username for the root account. Usernames are unique
+case-insensitively and use 3 to 32 letters, digits, underscores, dots, or
+hyphens. Empty means no username is set.
+bio
+string
+max 256 chars
+Short public bio. Maximum length is 256 characters.
+website
+string
+max 256 chars
+Public website URL, if set. Maximum length is 256 characters.
+twitter
+string
+max 15 chars
+/^[A-Za…1,15}$/
+X/Twitter handle without "@". Maximum length is 15 characters.
+twitterVerified
+boolean
+Whether the X/Twitter handle for this account has been verified.
+discord
+string
+max 64 chars
+Discord handle or username without "@". Maximum length is 64 characters.
+discordVerified
+boolean
+Whether the Discord handle for this account has been verified.
+avatarUrl
+string
+max 256 chars
+Avatar URL, if set. Maximum length is 256 characters.
+createdAt
+string (date-time)
+Account creation time in UTC. This is the canonical "member since"
+timestamp.
+nextUsernameChangeAt
+string (date-time)
+Next time in UTC when the username can be changed again. Omitted when no
+cooldown applies.
+vipTier
+integer (int32)
+Current VIP tier for this root account. A value of 0 is the base tier.
+Read-only.
+usernameUnlocked
+boolean
+Whether this account is currently allowed to claim/change a username.
+currentTermsAccepted
+boolean
+Whether the caller's root account accepted the terms required for restricted actions.
+False when the required terms have not been accepted.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.ProfileService/GetProfile
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s375" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.ProfileService/GetProfile' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"avatarUrl": "https://placehold.co/128x128.png",
+"bio": "Professional crypto trader and liquidity provider.",
+"createdAt": "2025-01-01T00:00:00Z",
+"currentTermsAccepted": false,
+"discord": "polyester_trader",
+"discordVerified": false,
+"nextUsernameChangeAt": "2025-01-01T00:00:00Z",
+"twitter": "@polyester_exchange",
+"twitterVerified": false,
+"username": "trader_alpha",
+"usernameUnlocked": false,
+"vipTier": 1,
+"website": "https://example.com"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.ProfileService/GetProfile' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "avatarUrl": "https://placehold.co/128x128.png",
+  "bio": "Professional crypto trader and liquidity provider.",
+  "createdAt": "2025-01-01T00:00:00Z",
+  "currentTermsAccepted": false,
+  "discord": "polyester_trader",
+  "discordVerified": false,
+  "nextUsernameChangeAt": "2025-01-01T00:00:00Z",
+  "twitter": "@polyester_exchange",
+  "twitterVerified": false,
+  "username": "trader_alpha",
+  "usernameUnlocked": false,
+  "vipTier": 1,
+  "website": "https://example.com"
+}

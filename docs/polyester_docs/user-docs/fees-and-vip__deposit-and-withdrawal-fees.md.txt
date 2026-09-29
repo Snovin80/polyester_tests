@@ -1,0 +1,54 @@
+Источник: https://testnet.polyester.com/docs/user-docs/fees-and-vip/deposit-and-withdrawal-fees.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposit & Withdrawal Fees
+View current deposit and withdrawal fees for each supported asset and chain.
+Polyester charges deposit and withdrawal fees **in the asset being deposited or withdrawn**. You do not need to hold the destination chain's **native gas asset** for Polyester to complete the transaction.
+**Example: withdraw USDT on Ethereum**
+When you withdraw USDT on Ethereum , Polyester pays the Ethereum gas fee in ETH and charges you the displayed withdrawal fee in USDT. This lets you withdraw USDT without also keeping ETH in your Polyester balance.
+Fees can change as network gas costs and asset prices change. Always use the current fee shown for the exact asset and chain you select. A **deposit fee** is deducted from the amount credited, while a **withdrawal fee** is included in the final withdrawal review.
+The fee charged by Polyester is separate from any **gas fee** your external wallet charges when you send a deposit to Polyester.
+## Current fees
+Search by token or chain to compare network fees, minimum amounts, and estimated confirmation time.
+> **The same fee applies to deposits and withdrawals**
+>
+> The Network fee shown for each asset and chain is the fee Polyester charges in both directions. There is no separate deposit rate or withdrawal rate for the same route.
+| Token | Chain                    | Network fee  | Deposit min | Withdraw min | AVG     |
+| ----- | ------------------------ | ------------ | ----------- | ------------ | ------- |
+| AVAX  | Ethereum Sepolia         | 0.004 AVAX   | 0.008 AVAX  | 0.008 AVAX   | \~1 min |
+| BCH   | Ethereum Sepolia         | 0.0002 BCH   | 0.002 BCH   | 0.002 BCH    | \~1 min |
+| BNB   | Ethereum Sepolia         | 0.00001 BNB  | 0.0005 BNB  | 0.0005 BNB   | \~1 min |
+| BTC   | Ethereum Sepolia         | 0.00002 BTC  | 0.0001 BTC  | 0.0001 BTC   | \~1 min |
+| DOGE  | Ethereum Sepolia         | 4 DOGE       | 8 DOGE      | 8 DOGE       | \~1 min |
+| ETC   | Ethereum Sepolia         | 0.004 ETC    | 0.02 ETC    | 0.02 ETC     | \~1 min |
+| ETH   | Ethereum Sepolia         | 0.0001 ETH   | 0.002 ETH   | 0.002 ETH    | \~1 min |
+| HYPE  | Ethereum Sepolia         | 0.025 HYPE   | 0.05 HYPE   | 0.05 HYPE    | \~1 min |
+| LTC   | Ethereum Sepolia         | 0.0001 LTC   | 0.002 LTC   | 0.002 LTC    | \~1 min |
+| POL   | Ethereum Sepolia         | 0.25 POL     | 0.44 POL    | 0.44 POL     | \~1 min |
+| SOL   | Ethereum Sepolia         | 0.001 SOL    | 0.01 SOL    | 0.01 SOL     | \~1 min |
+| tAVAX | Avalanche Fuji Testnet   | 0.004 tAVAX  | 0.008 tAVAX | 0.008 tAVAX  | 2s      |
+| tBCH  | Bitcoin Cash Testnet     | 0.0002 tBCH  | 0.002 tBCH  | 0.002 tBCH   | \~2 min |
+| tBNB  | BNB Smart Chain Testnet  | 0.00001 tBNB | 0.0005 tBNB | 0.0005 tBNB  | 50s     |
+| tBTC  | Bitcoin Testnet          | 0.00002 tBTC | 0.0001 tBTC | 0.0001 tBTC  | \~2 min |
+| tDOGE | Dogecoin Testnet         | 4 tDOGE      | 8 tDOGE     | 8 tDOGE      | 50s     |
+| tETC  | Ethereum Classic Testnet | 0.004 tETC   | 0.02 tETC   | 0.02 tETC    | \~1 min |
+| tETH  | Ethereum Sepolia         | 0.0001 tETH  | 0.002 tETH  | 0.002 tETH   | \~1 min |
+| tETH  | Base Sepolia             | 0.00005 tETH | 0.002 tETH  | 0.002 tETH   | \~1 min |
+| tETH  | Arbitrum Sepolia         | 0.00002 tETH | 0.0003 tETH | 0.0003 tETH  | \~1 min |
+| tETH  | Robinhood Testnet        | 0.00002 tETH | 0.0003 tETH | 0.0003 tETH  | 6s      |
+| tHYPE | HyperEVM Testnet         | 0.025 tHYPE  | 0.05 tHYPE  | 0.05 tHYPE   | 4s      |
+| tLTC  | Litecoin Testnet         | 0.0001 tLTC  | 0.002 tLTC  | 0.002 tLTC   | 50s     |
+| tPOL  | Polygon PoS Testnet      | 0.25 tPOL    | 0.44 tPOL   | 0.44 tPOL    | 12s     |
+| TRX   | Ethereum Sepolia         | 1.5 TRX      | 20 TRX      | 20 TRX       | \~1 min |
+| tSOL  | Solana Devnet            | 0.001 tSOL   | 0.01 tSOL   | 0.01 tSOL    | \~1 min |
+| tTRX  | Tron Nile                | 1.5 tTRX     | 20 tTRX     | 20 tTRX      | \~1 min |
+| tXRP  | Ripple Testnet           | 0.2 tXRP     | 2 tXRP      | 2 tXRP       | 30s     |
+| USDC  | Ethereum Sepolia         | 0.4 USDC     | 5 USDC      | 5 USDC       | \~1 min |
+| USDT  | Ethereum Sepolia         | 0.4 USDT     | 5 USDT      | 5 USDT       | \~1 min |
+| XRP   | Ethereum Sepolia         | 0.2 XRP      | 2 XRP       | 2 XRP        | \~1 min |
+## FAQ
+### What are the deposit, withdrawal, and transfer fees on Polyester?
+Deposit and withdrawal fees depend on the asset and network. They cover network gas costs plus a small service fee and are charged in the asset you move. Any network fee you pay to send a deposit from an external wallet is separate. Internal transfers within Polyester are free. Polyester sponsors the gas for transactions on Polyester Chain. See the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) table in the user docs for current deposit and withdrawal fees.
+### Why do fees or minimums differ between networks?
+Each network has its own transaction costs and transfer requirements. Polyester sets fees and minimums for each asset and network, and fees can change as gas costs and asset prices change. See [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) in the user docs for the current fees and minimums for each network.

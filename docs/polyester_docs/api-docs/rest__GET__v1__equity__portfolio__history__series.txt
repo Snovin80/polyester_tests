@@ -1,0 +1,226 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/equity/portfolio/history/series
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LedgerReadService
+Get Portfolio Equity History Series
+Retrieve root portfolio equity history for the master account, top owned subaccounts, and remaining owned subaccounts.
+Copy URL
+Method
+GET
+Path
+/v1/equity/portfolio/history/series
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+GET
+/v1/equity/portfolio/history/series
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/equity/portfolio/history/series' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"btcPrices": [
+"0.005"
+],
+"bucket": "1m",
+"endTsSec": 1735689600,
+"points": 1,
+"quoteAsset": "USDT",
+"range": "1d",
+"series": [
+"equity": [
+"0.0001"
+]
+}
+],
+"startTsSec": 1735689600
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+range
+enum
+must be defined value
+History window (defaults to 1d).
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s339-range" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-placeholder="" data-select-trigger="" type="button">
+Select range
+Response
+Form
+JSON
+btcPrices
+string[]
+BTC-USDT close price at each timestamp, scaled by 1e9 (same as price_ticks). Enables client-side conversion to BTC denomination without refetch.
+Example
+bucket
+string
+Sampling interval between points, such as "5m" or "1h".
+Example
+1m
+endTsSec
+integer (int32)
+Last point timestamp in seconds since epoch (UTC).
+Example
+1735689600
+points
+integer (int32)
+Number of aligned points in each returned series.
+Example
+1
+quoteAsset
+string
+Human-readable quote asset symbol (always "USDT").
+Example
+USDT
+range
+enum
+Resolved history window.
+1d
+7d
+30d
+90d
+180d
+365d
+Example
+1d
+series
+object[]
+Master account first, followed by up to nine owned subaccounts ordered by current equity descending, then Remaining when other subaccounts exist.
+2 fields
+equity
+string[]
+Equity in quote currency (USDT) scaled by 1e4 (4 decimals). Values align 1:1 with timestamps.
+Example
+portfolioAccount
+object
+set for root portfolio history
+2 fields
+accountId
+string
+/^[1-9A…m-z]+$/
+Public account or subaccount ID. Its encoded entity type distinguishes the master account from an owned subaccount. Omitted for Remaining.
+remaining
+boolean
+True when this series combines all non-selected owned subaccounts.
+startTsSec
+integer (int32)
+First point timestamp in seconds since epoch (UTC).
+Example
+1735689600
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/equity/portfolio/history/series
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s372" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/equity/portfolio/history/series' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"btcPrices": [
+"0.005"
+],
+"bucket": "1m",
+"endTsSec": 1735689600,
+"points": 1,
+"quoteAsset": "USDT",
+"range": "1d",
+"series": [
+"equity": [
+"0.0001"
+]
+}
+],
+"startTsSec": 1735689600
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/equity/portfolio/history/series' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "btcPrices": [
+    "0.005"
+  ],
+  "bucket": "1m",
+  "endTsSec": 1735689600,
+  "points": 1,
+  "quoteAsset": "USDT",
+  "range": "1d",
+  "series": [
+    {
+      "equity": [
+        "0.0001"
+      ]
+    }
+  ],
+  "startTsSec": 1735689600
+}

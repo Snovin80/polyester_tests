@@ -1,0 +1,321 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/catalog-and-precision
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Catalog & precision · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Catalog & precision
+Catalog & precision
+Copy page
+View as Markdown
+Open in
+Every market has tick size, step size, and minimums. The SDK loads
+spot
+and
+Zipper
+catalogs so decimal inputs can be converted to wire integers safely.
+Wait for ready
+Order and trigger
+write
+paths wait for background catalog hydration when
+HydrateCatalogs: true
+(default via
+FromEnv
+). You can still call this explicitly before reads
+that need symbol ids/scales:
+if
+err
+client
+WaitForCatalogs
+(
+ctx
+);
+err
+!=
+nil
+return
+err
+}
+Hydration is fail-closed:
+WaitForCatalogs
+returns an error when the attempt fails. See
+Catalog
+Decimal inputs
+Use decimal strings (or money helpers) for human-facing qty/price.
+Do not pass floats.
+Strict decimal form is digits with an optional fractional part (
+65000
+/
+65000.5
+); bare trailing
+dots (
+65000.
+) are rejected. Leading/trailing whitespace is trimmed before validation.
+symbol
+"BTC-USDT"
+tif
+"gtc"
+price
+models
+PriceFromDecimal
+(
+"64250.5"
+)
+_
+,
+err
+client
+Orders
+Create
+(
+ctx
+,
+models
+CreateOrderRequest
+Symbol
+&
+symbol
+,
+Side
+"buy"
+,
+OrderType
+"limit"
+,
+TIF
+&
+tif
+,
+Qty
+models
+QtyFromDecimal
+(
+"0.01"
+),
+Price
+&
+price
+,
+PostOnly
+true
+,
+},
+nil
+)
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+post_only is limit GTC only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Invalid
+PostOnly
+combinations return
+*errors.ValidationError
+before send.
+Unscaled decimal quantities need a symbol (or an already-scaled quantity) so the SDK can resolve
+catalog scale.
+BaseQuantityScaleForSymbol
+returns
+(scale, ok)
+and never invents scale 8 for
+unknown or unhydrated symbols. Write paths return
+*errors.ValidationError
+instead of
+guessing. Scale-dependent reads and streams (orderbook, candles, public trades, and Zipper supply)
+also fail with a validation error when the required catalog scale is unavailable.
+Scale
+0
+is valid for whole-unit assets and is distinct from an unavailable scale (
+ok == false
+).
+Protocol scale ceiling
+Quantity and ledger formatters, parsers, and catalog hydration reject scales above
+codecs.MaxProtocolScale
+(
+36
+). That ceiling is an SDK safety bound against pathological
+padding — it is
+not
+the ledger canonical scale. Ledger balances and
+amount_e18
+remain
+fixed at scale
+18
+well below 36.
+Scaled integers (bots)
+Use tick / scaled quantity constructors from
+models
+when your strategy already works in wire
+units. Protocol price ticks use fixed 1e6 scale; the server still validates market tick size.
+Lookups:
+id
+client
+Catalogs
+SymbolIDForSymbol
+(
+"BTC-USDT"
+)
+scale
+,
+ok
+client
+Catalogs
+BaseQuantityScaleForSymbol
+(
+"BTC-USDT"
+)
+if
+id
+==
+nil
+||
+!
+ok
+return
+fmt
+Errorf
+(
+"BTC-USDT is not present in the hydrated catalog"
+)
+}
+Also see
+Scaled integers
+and
+Public IDs
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Environments
+Testnet endpoints and how to point the client at another deployment.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Authentication model
+Next
+Requests & idempotency
+On this page
+Wait for ready
+Decimal inputs
+Protocol scale ceiling
+Scaled integers (bots)
+Related Topics
+Share this page
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+if err := client.WaitForCatalogs(ctx); err != nil {
+    return err
+}
+
+---
+
+symbol := "BTC-USDT"
+tif := "gtc"
+price := models.PriceFromDecimal("64250.5")
+_, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+    Symbol:   &symbol,
+    Side:     "buy",
+    OrderType: "limit",
+    TIF:      &tif,
+    Qty:      models.QtyFromDecimal("0.01"),
+    Price:    &price,
+    PostOnly: true,
+}, nil)
+
+---
+
+id := client.Catalogs.SymbolIDForSymbol("BTC-USDT")
+scale, ok := client.Catalogs.BaseQuantityScaleForSymbol("BTC-USDT")
+if id == nil || !ok {
+    return fmt.Errorf("BTC-USDT is not present in the hydrated catalog")
+}

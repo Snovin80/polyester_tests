@@ -1,0 +1,368 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/market-overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market overview · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Market overview
+Market overview
+Copy page
+View as Markdown
+Open in
+client.market_overview
+returns one row per spot market (last price, 24h stats, and related
+fields). Unary
+list
+is public; realtime support is always included.
+Methods
+Method
+Summary
+list
+Overview rows (
+ListMarketOverviewOptions
+or
+Option<u32>
+limit).
+create_subscription
+Snapshot-then-stream merged rows (preferred).
+subscribe
+Raw Centrifugo batches (
+recv_result()
+).
+List
+use
+polyester
+services
+ListMarketOverviewOptions
+;
+let
+overview
+=
+client
+market_overview
+list
+(
+ListMarketOverviewOptions
+symbols
+Some
+(
+vec!
+"BTC-USDT"
+into
+()]),
+limit
+Some
+(
+50
+),
+include_sparklines
+false
+,
+Default
+default
+()
+})
+;
+for
+m
+in
+&
+overview
+markets {
+println!
+(
+"{} {} {:?}"
+,
+m
+symbol_id,
+m
+symbol,
+m
+last_price);
+}
+Create subscription
+Returns
+marketoverview::Subscription
+updates().recv().await
+use
+polyester
+services
+MarketOverviewCreateSubscriptionOptions
+;
+let
+mut
+sub
+=
+client
+market_overview
+create_subscription
+(
+MarketOverviewCreateSubscriptionOptions
+symbols
+Some
+(
+vec!
+"BTC-USDT"
+into
+()]),
+limit
+Some
+(
+50
+),
+Default
+default
+()
+})
+;
+while
+let
+Some
+(
+rows
+)
+=
+sub
+updates
+()
+recv
+()
+for
+m
+in
+&
+rows
+println!
+(
+"{} {:?}"
+,
+m
+symbol,
+m
+last_price);
+}
+break
+;
+}
+sub
+close
+();
+Subscribe
+Raw batches as
+TypedSubscription<MarketOverviewList>
+,
+recv().await
+create_subscription
+for dashboards.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prefer create_subscription
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Raw
+subscribe
+does not merge a REST snapshot for you.
+Related
+Market data guide
+Streaming
+Candles
+Order book
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Lifecycle
+Next
+Order book
+On this page
+Methods
+List
+Create subscription
+Subscribe
+Related
+Related Topics
+Share this page
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::services::ListMarketOverviewOptions;
+
+let overview = client
+    .market_overview
+    .list(ListMarketOverviewOptions {
+        symbols: Some(vec!["BTC-USDT".into()]),
+        limit: Some(50),
+        include_sparklines: false,
+        ..Default::default()
+    })
+    .await?;
+for m in &overview.markets {
+    println!("{} {} {:?}", m.symbol_id, m.symbol, m.last_price);
+}
+
+---
+
+use polyester::services::MarketOverviewCreateSubscriptionOptions;
+
+let mut sub = client
+    .market_overview
+    .create_subscription(MarketOverviewCreateSubscriptionOptions {
+        symbols: Some(vec!["BTC-USDT".into()]),
+        limit: Some(50),
+        ..Default::default()
+    })
+    .await?;
+
+while let Some(rows) = sub.updates().recv().await {
+    for m in &rows {
+        println!("{} {:?}", m.symbol, m.last_price);
+    }
+    break;
+}
+sub.close();

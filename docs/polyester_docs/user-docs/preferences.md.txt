@@ -1,0 +1,20 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Preferences change how Polyester looks, sounds, and displays information in this browser. They do not change your balances, orders, or account security.
+## Open Settings
+Click the gear in the top nav to open **Settings**. On the trading page, the same settings are also in the footer.
+Update a control under **Personalization** or **Localization**. The change applies as you choose it.
+![Settings menu opened from the gear in the top nav](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/95871696978321d4330794194432457b1d66b94814b6da3fc954c96e7ef864de/source.webp)
+## Where choices are saved
+Your choices save in cookies on this browser only. They are not stored on your Polyester account. Another browser, another device, or cleared cookies starts from the defaults.
+## Available settings
+- [**Appearance**](https://testnet.polyester.com/docs/user-docs/preferences/appearance): theme, color tone, trading colors, and typeface
+- [**Language & Region**](https://testnet.polyester.com/docs/user-docs/preferences/language-and-region): language, dates, times, currency, and numbers
+- [**Sounds**](https://testnet.polyester.com/docs/user-docs/preferences/sounds): master volume and category levels
+- [**Notifications**](https://testnet.polyester.com/docs/user-docs/preferences/notifications): which updates you receive and where they appear
+- [**Balances**](https://testnet.polyester.com/docs/user-docs/preferences/balances): hide account amounts on screen
+- [**Footer**](https://testnet.polyester.com/docs/user-docs/preferences/footer): the market ticker at the bottom of the trading screen

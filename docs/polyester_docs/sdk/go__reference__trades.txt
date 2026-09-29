@@ -1,0 +1,418 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+User trades · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+User trades
+User trades
+Copy page
+View as Markdown
+Open in
+client.Trades
+is your authenticated trade history and private fill stream. For the public tape,
+see
+Public trades
+(
+client.MarketData
+).
+Methods are account-scoped. Pass an
+AccountScope
+/
+subAccountID
+when you need a scope other
+than the client default. Streams use
+Messages()
+, Go has no
+Recv()
+Methods
+Method
+Summary
+List
+Paginated private user trades.
+Subscribe
+Stream private fills for an account.
+List(ctx, account, subAccountID, symbol, symbolID, limit, pageToken)
+symbol
+"BTC-USDT"
+page
+,
+err
+client
+Trades
+List
+(
+ctx
+,
+nil
+,
+nil
+,
+&
+symbol
+,
+nil
+,
+50
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+t
+range
+page
+Trades
+fmt
+Println
+(
+t
+MatchID
+,
+t
+OrderID
+,
+t
+Side
+,
+t
+Price
+,
+t
+Qty
+,
+t
+FeeAmountE18
+,
+t
+FeeAsset
+,
+t
+FeeIsRebate
+)
+}
+if
+page
+NextPageToken
+!=
+""
+tok
+page
+NextPageToken
+page
+,
+err
+=
+client
+Trades
+List
+(
+ctx
+,
+nil
+,
+nil
+,
+&
+symbol
+,
+nil
+,
+50
+,
+&
+tok
+)
+}
+Each
+UserTrade
+includes
+FeeAmountE18
+,
+FeeAsset
+,
+ReferralShareAmountE18
+, and
+FeeIsRebate
+U128
+) strings in units of
+FeeAsset
+FeeAsset
+is
+"quote"
+or
+"base"
+(with unknown future enum values preserved as
+"unknown(<number>)"
+).
+FeeIsRebate
+is sparse:
+true
+means
+FeeAmountE18
+is a rebate credit
+rather than a fee debit (proto3 omits
+false
+).
+When
+FeeAsset
+is
+"base"
+on a BUY, convert
+FeeAmountE18
+to the symbol's base quantity scale
+before adjusting fill quantity: subtract for a fee, add for a rebate. Do not assume a BUY's gross
+fill quantity is fully available to sell.
+Subscribe(ctx, accountID)
+Private channel
+private:spot:trades:{account_id}:proto
+API key
++ Account ID.
+sub
+,
+err
+client
+Trades
+Subscribe
+(
+ctx
+,
+client
+DefaultAccountID
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+for
+trade
+range
+sub
+Messages
+() {
+fmt
+Println
+(
+trade
+MatchID
+,
+trade
+OrderID
+,
+trade
+Price
+,
+trade
+Qty
+)
+break
+}
+Related
+Orders
+Public trades
+Streaming
+Accounts & balances
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Subaccounts
+Next
+Transfers
+On this page
+Methods
+List(ctx, account, subAccountID, symbol, symbolID, limit, pageToken)
+Subscribe(ctx, accountID)
+Related
+Related Topics
+Share this page
+User trades
+List and stream your private spot fills (not the public tape).
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+symbol := "BTC-USDT"
+page, err := client.Trades.List(ctx, nil, nil, &symbol, nil, 50, nil)
+if err != nil { log.Fatal(err) }
+for _, t := range page.Trades {
+    fmt.Println(t.MatchID, t.OrderID, t.Side, t.Price, t.Qty, t.FeeAmountE18, t.FeeAsset, t.FeeIsRebate)
+}
+if page.NextPageToken != "" {
+    tok := page.NextPageToken
+    page, err = client.Trades.List(ctx, nil, nil, &symbol, nil, 50, &tok)
+}
+
+---
+
+sub, err := client.Trades.Subscribe(ctx, client.DefaultAccountID)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for trade := range sub.Messages() {
+    fmt.Println(trade.MatchID, trade.OrderID, trade.Price, trade.Qty)
+    break
+}

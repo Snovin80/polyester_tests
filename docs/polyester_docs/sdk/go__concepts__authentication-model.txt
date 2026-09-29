@@ -1,0 +1,235 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/authentication-model
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Authentication model · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Authentication model
+Authentication model
+Copy page
+View as Markdown
+Open in
+Programmatic access uses
+Ed25519
+API keys
+Credentials
+Value
+Where to find it
+API key id
+App →
+API
+→ create or view key
+API private key
+Shown
+once
+at creation (64-char hex seed)
+Account ID
+App →
+Profile
+→
+Account ID
+Use the Account ID string exactly as shown. Do not use internal numeric ids.
+Account-ID authentication is valid even when the account has no username; username is optional
+profile metadata, not an authentication requirement or a value that must be set to
+"-"
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Subaccount keys need their own policy
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A key scoped to a
+subaccount
+must have an attached
+API-key policy
+ledger reads for balance snapshots/private balance streams and the relevant trading actions for
+order mutations. This is separate from the subaccount policy; authorization evaluates both.
+Signing (what the SDK does)
+For each authenticated unary call the SDK builds a signature over:
+timestamp_ms
+METHOD
+pathname
+canonical_query
+hex(sha256(body))
+and sends headers
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+The client allocates a distinct timestamp for every call, including concurrent identical calls, so
+replay protection does not confuse them. You normally never assemble this yourself; pass
+credentials via
+polyester.Config
+Automatic timestamps may lead the local wall clock by at most five seconds, leaving half of the
+API's 10-second freshness window for clock and network skew. A burst that exhausts that capacity is
+backpressured; prolonged exhaustion returns a retryable
+*errors.RateLimitError
+instead of reusing
+an authentication tuple.
+Deep dive:
+Ed25519 API keys
+and
+API key replay policy
+Public vs private
+Public
+market-data calls work with no key.
+Private
+RPCs and
+private WebSocket channels
+need a key
+and
+Account ID.
+Consume private streams with
+Messages()
+, Go has no
+Recv()
+Hyphenated channel segments (for example
+api-keys
+,
+api-policies
+) are signed with RFC 3986
+unreserved-preserving query encoding (
+-
+_
+~
+stay unescaped). The SDK does this via
+url.QueryEscape
+/ Centrifugo token fetch, do not re-encode hyphens as
+%2D
+yourself.
+Key lifecycle on this SDK
+Action
+Supported
+GenerateKeypair
+Yes (local only)
+List
+/
+Get
+/
+Subscribe
+Yes (API-key auth)
+Create / update / revoke
+No, JWT/session (TypeScript / app)
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Not JWT
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+This SDK does not implement wallet login or session
+MFA
+Guide:
+Authentication
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Environments
+Testnet endpoints and how to point the client at another deployment.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Environments
+Next
+Catalog & precision
+On this page
+Credentials
+Signing (what the SDK does)
+Public vs private
+Key lifecycle on this SDK
+Related Topics
+Share this page
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+timestamp_ms
+METHOD
+pathname
+canonical_query
+hex(sha256(body))

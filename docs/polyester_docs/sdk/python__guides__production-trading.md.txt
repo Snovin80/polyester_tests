@@ -1,0 +1,56 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/production-trading.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Python trading system safely.
+This guide applies to automated execution, quoting, portfolio automation, and other long-running trading systems. Strategy selection and profitability are outside the SDK's scope.
+> **Fail closed**
+>
+> If book continuity, account state, or mutation outcome is uncertain, stop creating orders. Keep the dead-man switch armed and reconcile before resuming.
+## Health model
+| Dependency      | Healthy evidence                                          | Response when unhealthy             |
+| --------------- | --------------------------------------------------------- | ----------------------------------- |
+| Catalogs        | `wait_for_catalogs()` completed; symbol and scale resolve | Do not encode or submit             |
+| Managed book    | Recent update, bid below ask, no refresh in progress      | Pause book-dependent writes         |
+| Private orders  | Recent event or successful bounded reconciliation         | Reconcile before replacing          |
+| Balances        | Recent `balances.list()` snapshot                         | Stop the affected side              |
+| Dead-man switch | Last `armed` response has safe time remaining             | Stop new orders immediately         |
+| Event queue     | No `PolyesterRealtimeOverflowError`                       | Replace subscription and resnapshot |
+Track last book age and sequence, refresh/reconnect counts, owned open orders, reserved and available balance, mutation latency, rejected batch items, unknown outcomes, dead-man expiry margin, and reconciliation duration. Generic queues hold 1000 items; the managed book queue holds 200. Overflow is terminal.
+## Deployment and shutdown
+1. Start with writes disabled.
+2. Hydrate catalogs and validate configured symbols.
+3. Start managed public feeds and private order/balance streams.
+4. Reconcile open orders owned by this process prefix.
+5. Arm `cancel_all_after` with `timeout_sec` from 10 to 120.
+6. Enable writes only when all dependencies are healthy.
+For shutdown: disable new orders, cancel owned IDs, confirm they disappear from `list_open`, then close streams. Do not disarm the dead-man switch until cleanup is confirmed. Avoid account-wide cancellation as ownership cleanup; filter process-owned client IDs first. Treat `not_found` from those targeted cancels as idempotent success and propagate every other error.
+## Troubleshooting
+| Symptom                  | Safe action                                                  |
+| ------------------------ | ------------------------------------------------------------ |
+| Post-only rejection      | Refresh the book and calculate a new catalog-aligned price   |
+| Insufficient balance     | Refresh balances; reduce or disable the affected order flow  |
+| Stale/one-sided book     | Pause writes until a valid snapshot                          |
+| Mutation timeout         | Query known client/request IDs before retrying               |
+| Missing fills            | Use `wait_for_order_trades_complete`                         |
+| Realtime overflow        | Replace the subscription, snapshot, and reconcile            |
+| Dead-man refresh failure | Stop writes and continue cleanup/reconciliation              |
+| Authentication failure   | Stop; treat as configuration/policy, not transient transport |
+Create status `accepted` is admission, not working state. Batch RPC success does not mean every item was accepted.
+## Testing ladder
+1. Unit-test strategy math, rounding, limits, and reprice thresholds.
+2. Run SDK codec/service tests for invalid input and malformed outcomes.
+3. Type-check all documentation snippets against local SDK source.
+4. Run public testnet books, trades, and candles.
+5. Run authenticated reads on a dedicated account.
+6. Gate mutations behind an explicit flag with unique IDs and targeted cleanup.
+7. Run bounded scheduled canaries and assert final open-order state.
+Every mutation test needs a strict notional cap, total timeout, `finally` cleanup, and final `list_open` assertion.
+## Upgrade checklist
+Pin prereleases exactly (`polyester-sdk==0.1.0a55` here). Review request/default/status/stream changes, run tests and snippet checks, run public reads, execute one gated create-cancel-reconcile cycle, deploy canaries first, then roll out gradually. A model field is not proof that the current codec sends it; verify the service/codec path.
+## Tested recipes
+- [Two-sided order management](https://testnet.polyester.com/docs/sdk/python/tutorials/two-sided-quoting)
+- [Production trading bot](https://testnet.polyester.com/docs/sdk/python/tutorials/trading-bot)
+- [Portfolio tracker](https://testnet.polyester.com/docs/sdk/python/tutorials/portfolio-tracker)
+- Examples `05`, `07`, and `10` in [polyester-examples-python](https://github.com/Fabric-Labs/polyester-examples-python)

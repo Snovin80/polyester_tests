@@ -1,0 +1,345 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/streaming
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Streaming · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Streaming
+Streaming
+Copy page
+View as Markdown
+Open in
+Realtime uses the
+binary Centrifugo Protobuf WebSocket protocol
+, not ConnectRPC streaming and
+not SBE. Service
+subscribe*
+helpers return an
+AsyncSubscription
+you consume with
+async for
+/
+async with
+The SDK negotiates the
+centrifuge-protobuf
+WebSocket subprotocol. Both Centrifugo control frames
+and
+channel publications are binary Protobuf. ConnectRPC's optional JSON wire mode is
+unrelated and never changes realtime framing.
+Managed order-book and market-overview create methods return only after the WebSocket handshake
+and initial snapshot succeed. Pass
+on_error=
+so a terminal snapshot, decode, transport, or
+buffering failure is observable immediately; callback exceptions are isolated from the worker.
+Contract
+sub
+=
+await
+client.orders.subscribe(
+account_id
+=
+account_id)
+sub.set_on_error(
+lambda
+error:
+print
+(
+f
+"realtime interruption:
+error
+}
+"
+))
+async
+with
+sub:
+async
+for
+order
+in
+sub:
+print
+(order.status, order.order_id)
+Subscribe
+awaits handshake
+(including private token fetch) before returning.
+Initial auth failures raise; they do not spin forever in the background.
+On overflow,
+PolyesterRealtimeOverflowError
+faults the subscription (fail-closed).
+Reconnect uses capped exponential backoff with per-subscription jitter.
+What you can stream
+Stream
+Method
+Auth
+Public trades
+client.market_data.subscribe_trades
+public
+Candles
+client.market_data.subscribe_candles
+public
+Order book
+client.orderbook
+managed subscription
+public
+Market overview
+client.market_overview.subscribe*
+public
+Heatmap
+client.heatmap.subscribe_live
+public
+Lifecycle
+client.lifecycle.subscribe_open_flows
+/
+subscribe_flow_detail
+public or private
+Zipped-asset supply
+client.zipper.subscribe_zipped_asset_supply
+public
+Profile identity
+client.auth.profile.subscribe_identity
+public
+Your orders
+client.orders.subscribe
+private
+Your triggers
+client.triggers.subscribe
+/
+subscribe_events
+private
+Your trades
+client.trades.subscribe
+private
+Balances
+client.balances.subscribe
+private
+Transfers
+client.transfers.subscribe
+private
+API keys
+/
+subaccounts
+matching
+subscribe
+helpers
+private
+API/subaccount policies
+client.policies.subscribe_*
+private
+Address-book invalidations
+client.address_book.subscribe_view_invalidations
+private
+Private streams need API-key auth
+and
+Account ID.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Account-administration streams
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Account-administration streams require the corresponding API-key read permission and an Account
+ID. A 403
+PolyesterAuthError
+is non-transient; inspect its
+code
+,
+context
+, and
+endpoint
+, then
+update the key policy before reconnecting.
+Public trades example
+subscription
+=
+await
+client.market_data.subscribe_trades(
+symbol
+=
+"BTC-USDT"
+)
+async
+with
+subscription:
+async
+for
+trade
+in
+subscription:
+print
+(trade.price)
+break
+Snapshot-then-stream
+Managed order-book subscriptions snapshot via REST, then stream deltas. Sequence gaps trigger a
+REST snapshot refresh. Prefer these helpers over wiring raw channels yourself.
+Market overview uses the same managed snapshot-then-stream pattern. For entity streams (orders,
+balances, trades, transfers, triggers), the event channel is
+not
+a complete starting
+snapshot: subscribe first, fetch the corresponding list/snapshot, buffer events that arrive
+during the read, then reconcile by entity ID plus version/timestamp. After reconnect, re-read
+authoritative state before declaring the bot healthy.
+Typed subscriptions do
+not
+recover missed publications across reconnect. Poll
+sub.take_resubscribed()
+(or watch
+sub.resubscribes
+) after each receive and treat a latch as a
+gap: rebuild from REST before trusting the stream again. A WebSocket read timeout is treated as
+connection death so half-open sockets reconnect instead of freezing.
+Do not place or maintain quotes from a raw order-book delta stream. Use the managed order-book
+helper, which detects sequence gaps and refreshes state.
+Overflow
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Fail-closed overflow
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+If the consumer lags, the SDK raises
+PolyesterRealtimeOverflowError
+and closes the
+subscription. It does
+not
+silently drop updates. Fix consumer speed, then
+resubscribe and rebuild authoritative state. A new subscription alone does not recover missed
+entity events.
+Connection notes
+client.realtime
+is always present. You rarely call it directly. Hyphenated private channel names
+(for example segments containing
+api-keys
+) are valid for API-key signing.
+Session model:
+WebSocket session model
+Reference:
+Realtime
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers and risk attachments.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, lifecycle, and chain helpers.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify failures, retry safely with idempotency keys, and handle realtime overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Python trading system safely.
+Previous
+Trading
+Next
+Accounts & balances
+On this page
+Contract
+What you can stream
+Public trades example
+Snapshot-then-stream
+Overflow
+Connection notes
+Related Topics
+Share this page
+Streaming
+Subscribe to public and private WebSocket Protobuf channels with async iterators, handshake-before-return, and fail-closed overflow.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+sub = await client.orders.subscribe(account_id=account_id)
+sub.set_on_error(lambda error: print(f"realtime interruption: {error}"))
+async with sub:
+    async for order in sub:
+        print(order.status, order.order_id)
+
+---
+
+subscription = await client.market_data.subscribe_trades(symbol="BTC-USDT")
+async with subscription:
+    async for trade in subscription:
+        print(trade.price)
+        break

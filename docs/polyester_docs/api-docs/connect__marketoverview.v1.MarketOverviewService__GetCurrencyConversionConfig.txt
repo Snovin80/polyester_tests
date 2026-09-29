@@ -1,0 +1,194 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketoverview.v1.MarketOverviewService
+GetCurrencyConversionConfig
+Get supported fiat and stablecoin display metadata with default English names,
+symbols, and fraction digits. Clients may localize presentation.
+Copy URL
+Method
+POST
+Path
+marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig
+Service
+marketoverview.v1.MarketOverviewService
+Visibility
+Public endpoint
+POST
+marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"fiat": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+],
+"stablecoins": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketoverview.v1.GetCurrencyConversionConfigRequest
+Response
+marketoverview.v1.GetCurrencyConversionConfigResponse
+Response
+Form
+JSON
+fiat
+object[]
+Supported fiat currencies, including USD, ordered by code.
+4 fields
+code
+string
+Uppercase currency or stablecoin code, such as EUR or USDT.
+defaultEnglishName
+string
+Default English display name.
+symbol
+string
+Representative local display symbol; multiple currencies may share a symbol.
+Uses the code when the selected local display data has no distinct visible symbol.
+fractionDigits
+integer (int32)
+Default display fraction digits, including zero for currencies such as JPY.
+This is a formatting default, not rate precision, token decimals, or cash rounding.
+Stablecoins use two display fraction digits.
+stablecoins
+object[]
+Supported stablecoins (USDC and USDT), ordered by code.
+4 fields
+code
+string
+Uppercase currency or stablecoin code, such as EUR or USDT.
+defaultEnglishName
+string
+Default English display name.
+symbol
+string
+Representative local display symbol; multiple currencies may share a symbol.
+Uses the code when the selected local display data has no distinct visible symbol.
+fractionDigits
+integer (int32)
+Default display fraction digits, including zero for currencies such as JPY.
+This is a formatting default, not rate precision, token decimals, or cash rounding.
+Stablecoins use two display fraction digits.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+bad-request
+400
+Bad Request
+Bad request.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Service Unavailable
+Service unavailable.
+upstream-error
+502
+Upstream Error
+Upstream error.
+POST
+marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s366" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"fiat": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+],
+"stablecoins": [
+"code": "value",
+"defaultEnglishName": "value",
+"fractionDigits": 1,
+"symbol": "BTC-USDT"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetCurrencyConversionConfig' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "fiat": [
+    {
+      "code": "value",
+      "defaultEnglishName": "value",
+      "fractionDigits": 1,
+      "symbol": "BTC-USDT"
+    }
+  ],
+  "stablecoins": [
+    {
+      "code": "value",
+      "defaultEnglishName": "value",
+      "fractionDigits": 1,
+      "symbol": "BTC-USDT"
+    }
+  ]
+}

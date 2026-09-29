@@ -1,0 +1,198 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/orders.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+`client.Orders` is the spot order surface. Methods take `context.Context` and return `(result, error)`. Account scope is an `AccountScope` argument (`nil` uses the client default subaccount). Import `github.com/Fabric-Labs/polyester-sdk-go/models` for request helpers.
+Create/modify/batch paths wait for catalog hydration when enabled. You can still call `client.WaitForCatalogs(ctx)` before other decimal helpers.
+> **post\_only is limit GTC only**
+>
+> `PostOnly: true` is rejected for market, limit IOC, and limit FOK (`*errors.ValidationError`).
+> **price is limit-only**
+>
+> `Price` on a market create is rejected by the SDK. Use `MarketClientRefPrice` when you need a reservation / slippage reference. The server may still accept a stray price if you bypass the SDK.
+> **Create status is admission only**
+>
+> `Create` / `BatchCreate` synthesize `Status: "accepted"`. That is an admission ack, not a lifecycle state. Do not assert `"created"` on the create response. Use `ListOpen` / `Get` / `Subscribe` for working / partial / terminal statuses. Spot orders spend **trading** balance, not funding.
+## Methods
+| Method                                                                   | Summary                                      |
+| ------------------------------------------------------------------------ | -------------------------------------------- |
+| `Create`                                                                 | Place a limit or market order.               |
+| `Modify`                                                                 | Patch price / qty / behavior / client id.    |
+| `Cancel`                                                                 | Cancel by order id or client order id.       |
+| `CancelAll`                                                              | Cancel matching opens (`dryRun`).            |
+| `CancelAllAfter`                                                         | Dead-man switch.                             |
+| `BatchCreate` / `BatchReplace` / `GetBatchReplaceStatus` / `BatchCancel` | Batch mutations and replace status.          |
+| `ListOpen` / `ListHistory`                                               | List orders.                                 |
+| `Get`                                                                    | One order + related trades.                  |
+| `Subscribe`                                                              | Private order stream (`Messages()` channel). |
+| `WaitForOrderTradesComplete`                                             | Poll until terminal fills match `CumQty`.    |
+No `GetDetails`, use `Get`. No `Recv`, use `Messages()`.
+### Create
+```go
+symbol := "BTC-USDT"
+tif := "gtc"
+clientOrderID := "mm-bot-001"
+price := models.PriceFromDecimal("64250.5")
+result, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+Symbol:        &symbol,
+Side:          "buy",
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.25"),
+Price:         &price,
+PostOnly:      true,
+ClientOrderID: &clientOrderID,
+}, nil)
+if err != nil { log.Fatal(err) }
+fmt.Println(result.Status, result.OrderID) // Status == "accepted"
+```
+#### CreateOrderRequest fields
+| Field                  | Type                 | Required        | Contract                                                       |
+| ---------------------- | -------------------- | --------------- | -------------------------------------------------------------- |
+| `Symbol`               | `*string`            | yes             | Required for create; catalog hydration resolves decimal scales |
+| `SymbolID`             | `*uint32`            | no              | Model field exists, but symbol-ID-only create is not supported |
+| `Side`                 | `string`             | yes             | `"buy"` or `"sell"`                                            |
+| `OrderType`            | `string`             | yes             | `"limit"` or `"market"`                                        |
+| `TIF`                  | `*string`            | limit           | `"gtc"`, `"ioc"`, or `"fok"`                                   |
+| `Qty`                  | `models.QtyInput`    | one sizing mode | Base quantity; exactly one of this or `MaxQuoteDebitScaled`    |
+| `MaxQuoteDebitScaled`  | `*int64`             | one sizing mode | Hard all-in quote budget for BUY market or limit IOC           |
+| `Price`                | `*models.PriceInput` | limit           | Limit price; use `PriceFromDecimal` or ticks                   |
+| `SubAccountID`         | `*string`            | no              | Explicit subaccount override                                   |
+| `ClientOrderID`        | `*string`            | no              | Account-scoped duplicate guard, 1–36 allowed characters        |
+| `PostOnly`             | `bool`               | no              | `true` only for limit GTC                                      |
+| `FeeAsset`             | `*string`            | no              | `"quote"` default or BUY-only `"base"`                         |
+| `ExpiresAt`            | `*string`            | unsupported     | Model field is not encoded by the current SDK                  |
+| `AttachedRisk`         | `map[string]any`     | unsupported     | Non-nil input is rejected; it is never silently discarded      |
+| `MarketClientRefPrice` | `*models.PriceInput` | market          | Client reference price used for market reservation             |
+`ClientOrderID` and `NewClientOrderID` accept 1 to 36 ASCII letters, digits, `.`, `_`, `:`, `/`, and `-`. Invalid values are rejected locally before send, including singular lookup and cancel by client-order-id. A create request may omit the ID. Request IDs use the same character set and accept 1 to 64 characters.
+`ClientOrderID` is optional and the SDK does not generate one. A stable ID is strongly recommended for every create that may need reconciliation after an unknown outcome. Reuse of a retained ID, including an identical request, returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`; it does not replay the earlier result. Reconcile by client order ID before deciding whether to resubmit. Supplying the current `AttachedRisk` map is rejected locally because it has no supported wire encoder; it is never silently discarded.
+`FeeAsset` replaces the prior fee-source / `received` vocabulary. Use `"quote"` or `"base"`; SELL orders require `"quote"`. A create response can include `ResolvedBaseQtyScaled` and, for quote-budget sizing, `SubmittedMaxQuoteDebitScaled`. Call `client.Orders.Preview(ctx, request, account)` with the same request shape for an admissibility check (`Admissible`, optional typed `Rejection`, resolved base size, and `ProtectedPriceBound` when price protection applied). Preview does not return fee or quote-debit estimates. Create always re-evaluates the intent.
+`PreviewOrderResult` exposes:
+- `Admissible`: whether the intent passed current admission checks.
+- `Rejection`: optional `OrderErrorDetail` with a stable `Code` label such as `BAD_QTY` and field-level `Violations` (`FieldPath`, `RuleID`, `Message`).
+- `ResolvedBaseQtyScaled` and typed `ResolvedBaseQty` when the service resolved a base size.
+- `ProtectedPriceBound`: optional protective execution boundary, not an expected fill price.
+- `EvaluatedAtMs`: evaluation time in Unix milliseconds.
+### Modify
+```go
+newPrice := models.PriceFromDecimal("64100")
+newQty := models.QtyFromDecimal("0.2")
+requestID := "mod-1"
+_, err = client.Orders.Modify(
+ctx, nil, "BTC-USDT",
+&result.OrderID, nil, nil, &requestID,
+&newPrice, &newQty, nil, nil,
+)
+```
+Signature uses positional pointers for `orderID` / `clientOrderID` / `subAccountID` / `requestID` / `newPrice` / `newQty` / `behavior` / `newClientOrderID`. The exported `Modify` path does **not** accept attached-risk patches. If you pass a nil `requestID`, the SDK generates one for that single call; supply a stable value when retrying the same logical modify. See [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency).
+#### Modify parameters
+| Parameter                   | Required     | Contract                                                      |
+| --------------------------- | ------------ | ------------------------------------------------------------- |
+| `ctx`                       | yes          | One overall cancellation/deadline context                     |
+| `account`                   | no           | `nil` uses configured account scope                           |
+| `symbol`                    | yes          | Pair symbol used for routing and quantity scale               |
+| `orderID` / `clientOrderID` | exactly one  | Existing order identity                                       |
+| `subAccountID`              | no           | Explicit scope override                                       |
+| `requestID`                 | no           | SDK generates one when nil; provide and reuse one for retries |
+| `newPrice` / `newQty`       | at least one | Replacement decimal/ticks or quantity input                   |
+| `behavior`                  | no           | Backend modify behavior string                                |
+| `newClientOrderID`          | no           | Replacement client identity, locally validated                |
+Leave balance headroom when repricing a heavily reserved book. A replacement requires sufficient available balance for the new order. Reconcile after an ambiguous response before retrying or canceling and recreating the order.
+### Cancel / CancelAll / CancelAllAfter
+```go
+_, err = client.Orders.Cancel(ctx, nil, nil, &clientOrderID, &symbol, nil, nil)
+dry := true
+preview, err := client.Orders.CancelAll(ctx, nil, nil, &symbol, nil, dry, nil)
+fmt.Println(preview.MatchedOrders)
+timeout := 15
+_, err = client.Orders.CancelAllAfter(ctx, nil, timeout, nil, &symbol, nil, nil)
+```
+If you pass a nil `requestID` on `CancelAll` / `CancelAllAfter` / batch helpers, the SDK generates one for that single call; supply a stable value when retrying. Cancellation acknowledges admission. Confirm the order has disappeared from `ListOpen` before releasing local state; retry the same cancel if it remains visible after a bounded reconciliation window.
+For process-owned cleanup, select owned client IDs and cancel them individually. A targeted cancel that returns `*errors.APIError` code `not_found` is idempotent success because the order may have filled or left the book after the preceding read; every other cancel error remains an error. Do not use account-wide `CancelAll` as an ownership filter.
+Pass exactly one of `orderID` and `clientOrderID` to `Cancel` and `Get`; both or neither are local validation errors. Cancel with no symbol sends wire `symbol_id=0` for directory routing. A supplied symbol must resolve in hydrated catalogs, and supplying both `symbol` and `symbolID` is rejected. `CancelAllAfter` accepts `timeoutSec=0` to disable or `10`–`120` to arm; this range is enforced by the API, not preflighted by the Go SDK.
+`CancelAll` accepts only backend statuses `submitted` / `dry_run`; `CancelAllAfter` accepts `armed` / `disabled`. Empty or unknown statuses return `*errors.ResponseContractError` rather than an ambiguous success result.
+### Batch
+```go
+// Final bool is allowPartial, retained for compatibility and ignored on the wire.
+batchID := "mm-batch-001"
+batch, err := client.Orders.BatchCreate(ctx, nil, []models.CreateOrderRequest{
+Symbol:        &symbol,
+Side:          "buy",
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.01"),
+Price:         &price,
+PostOnly:      true,
+ClientOrderID: &batchID,
+},
+}, nil, &symbol, nil, false)
+fmt.Println(batch.AcceptedCount, batch.RejectedCount)
+cancelClientOrderID := "mm-a"
+_, err = client.Orders.BatchCancel(ctx, nil, []models.BatchCancelItem{
+}, nil, nil)
+newPrice := models.PriceFromDecimal("63900")
+receipt, err := client.Orders.BatchReplace(ctx, nil, []models.BatchReplaceItem{
+}, "BTC-USDT", nil, nil)
+fmt.Println(receipt.BatchRequestID, receipt.Status, receipt.AcceptedCount)
+status, err := client.Orders.GetBatchReplaceStatus(ctx, nil, receipt.BatchRequestID, nil)
+fmt.Println(status.AdmissionStatus, len(status.Items))
+```
+`BatchReplace` is a same-symbol quote refresh only (no per-item behavior, no behavior default, no `allowPartial`). The write RPC returns a durable admission receipt (`BatchRequestID`, accepted / rejected counts), not a final execution outcome. After successful admission, predecessor order and client IDs are stale. Switch immediately to each `ReplacementOrderID` and new client order ID in the receipt. A predecessor `Get` may return `not_found` / `ORDER_UNKNOWN`; that is expected. Poll `GetBatchReplaceStatus` to reconcile `admitted`, `working`, `rejected`, and `terminal`. Status can briefly return 404 after admission, so retry the poll.
+For quote-refresh bots, `models.IsBatchReplaceSettled(status)` and `models.BatchReplaceStatusSettled(status)` mean every item is `working`, `rejected`, or `terminal`. They are reconciliation checkpoints, not a final execution outcome: `working` means the successor is live. Reuse the same `requestID` for an ambiguous retry and never replace against a stale predecessor.
+**Batch size contracts:** `BatchCreate` max **20**; `BatchReplace` / `BatchCancel` max **50**. These are API-side contracts; the Go SDK does not preflight every count. `allowPartial` on `BatchCreate` is accepted for source compatibility but is not encoded on the current wire.
+Every successful batch-create response item is either `accepted` or `rejected`. The SDK reconciles the aggregate counts for create, replace, and cancel batches with their per-item outcomes. A malformed or inconsistent success response returns `*errors.ResponseContractError` instead of an ambiguous result. Unknown rejection enums remain visible as `UNKNOWN_ERROR_CODE(
+)`.
+### Batch timeouts and reconciliation
+A timeout on a batch mutation is an unknown outcome, not proof that nothing committed. Do not blindly resubmit the batch with new identifiers. Give the batch a stable request ID, give every create item a unique client order ID, and reconcile every item with `Get`, `ListOpen`, or order history before retrying. The SDK sends each call once and does not promise server-side atomicity.
+### Trade projection after fills
+`Get` can report `CumQty` before every fill is visible on the trades list. Prefer `Orders.WaitForOrderTradesComplete` after fills when you need trade rows to match `CumQty`:
+```go
+orderID := "order-id-from-create"
+got, err := client.Orders.WaitForOrderTradesComplete(
+ctx, nil, &orderID, nil, nil, 15*time.Second,
+)
+if err != nil { log.Fatal(err) }
+fmt.Println(len(got.Trades))
+```
+Market BUY quantities may be normalized by the venue (for example `0.04` → `0.03997`). For cleanup, use the completed trade projection and convert `FeeAmountE18` to the symbol's base quantity scale for BUY fills whose `FeeAsset` is `"base"`; subtract when `FeeIsRebate` is false and add when it is true. Sell that net received base quantity, not the requested decimal or gross `CumQty`.
+### Reads
+```go
+orderID := "order-id-from-create"
+open, err := client.Orders.ListOpen(ctx, nil, nil, nil, nil, true, false)
+hist, err := client.Orders.ListHistory(ctx, nil, nil, &symbol, nil, nil, 100, false, false)
+got, err := client.Orders.Get(ctx, nil, &orderID, nil, nil, true, false)
+if got.Order != nil {
+fmt.Println(got.Order.Status, len(got.Trades))
+}
+_ = open
+_ = hist
+```
+### Subscribe
+```go
+sub, err := client.Orders.Subscribe(ctx, accountID)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for order := range sub.Messages() {
+scale, ok := client.Catalogs.BaseQuantityScaleForSymbolID(order.SymbolID)
+if !ok {
+return fmt.Errorf("stream symbol %d quantity scale is unavailable", order.SymbolID)
+}
+leaves, err := order.LeavesQty.WithScale(scale).Format()
+if err != nil { return err }
+fmt.Println(order.Status, order.OrderID, leaves)
+break
+}
+if err := sub.Err(); err != nil {
+log.Printf("subscription ended: %v", err)
+}
+```
+Handshake completes before `Subscribe` returns. Overflow closes with `*errors.QueueOverflowError`. Private order payloads may omit quantity scale metadata (`Scale() == nil`). Resolve scale from the hydrated catalog by `SymbolID` (or the corresponding symbol) before formatting `OrigQty`, `CumQty`, or `LeavesQty`. Never trust or invent a stream scale; fail closed when catalog lookup fails.
+## Order shape
+Selected fields: `OrderID`, `SymbolID`, `ClientOrderID`, `Side`, `Status`, `OrderType`, `TIF`, `OrigQty` / `CumQty` / `LeavesQty` (`QtyScaled`), `Price` / `AvgPx` (`PriceTicks`), `CreatedTsNs`, `PostOnly`, `AttachedRisk`.
+When `includeAttachedRisk` is set, decoded `AttachedRisk.TrailingStop` requires a positive distance (ticks or bps). A trailing policy with missing/non-positive distance is omitted rather than projected as a zero-distance stop. Trailing `TriggerPriceSource` / `OrderType` are not on the wire and stay empty on decode.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/go/guides/trading)
+- [Triggers](https://testnet.polyester.com/docs/sdk/go/reference/triggers)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency)

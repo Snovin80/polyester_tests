@@ -1,0 +1,21 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/sounds.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Sound settings control the audio feedback you hear while using Polyester. Turn everything on or off at once, then adjust each type of sound separately.
+Open **[Audio Settings](https://testnet.polyester.com/account/settings/audio)** to choose your levels and preview the result.
+Interactive
+## Enable audio
+Turn **Enable audio** off when you want Polyester to stay silent. Your individual volume choices remain saved for the next time you turn audio on.
+## Set the overall volume
+Master volume controls the overall level for every Polyester sound. Start here, then fine-tune the categories underneath it.
+## Adjust each category
+- **Notifications** controls sounds for account and product alerts.
+- **UI sounds** controls feedback from buttons and other interface actions.
+- **Voice alerts** controls supported spoken updates.
+Use the play button beside a category to hear its current level.
+## Choose a sound pack
+Sound packs change the style of supported Polyester sounds without changing which alerts you receive. Choose a pack and use the preview before keeping it.
+If nothing plays, check Enable audio, Master volume, the category level, your device output, and whether the browser tab is muted.

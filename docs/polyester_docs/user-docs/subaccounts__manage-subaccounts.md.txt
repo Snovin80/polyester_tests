@@ -1,0 +1,29 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/manage-subaccounts.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Manage Subaccounts
+Create, switch, fund, disable, reactivate, or leave a Subaccount.
+The **[Subaccounts page](https://testnet.polyester.com/account/sub-accounts)** shows every Subaccount you own or have permission to use. From one place, you can create accounts, switch between them, move assets, manage access, and update each account's status.
+![Subaccounts list with labels, roles, status, and pending invitations](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/b0298faefb6c579aac2245ff5f90b4689b3047e92b1722eed91a2b27b687b2a3/source.webp)
+Pending invitations appear on the same page. Accept or decline them before they become Subaccounts you can use.
+## Create a Subaccount
+1. Open Subaccounts
+Open the Subaccounts page from your Main Account and select **Create Subaccount**.
+2. Choose a label
+Enter a **Label** that describes the account's purpose, such as a strategy, team, or automated workload.
+![Create Subaccount with a Label field](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/e01b78be955cee94ab5f4a6c5c6ffd61b5d3d5fd1efa210ba086fd703db47d9f/source.webp)
+3. Create it
+Select **Create Subaccount**. Polyester gives the new account its own account ID and smart account address.
+4. Set it up
+Add permissions, members, API keys, and assets based on how you plan to use the account.
+You can also save the Subaccount to your Address Book for faster internal transfers, or select **Skip for now**.
+![Add to Address Book after creating a Subaccount](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/4dcf45d8e613e4a166f507dc9062e4771658adb1ce2b68dd8e03c680d0cab6bd/source.webp)
+## Switch between accounts
+Select **Switch** to make a Subaccount your active account. Polyester then shows that account's balances, orders, settings, and available actions across the product.
+The account selector always shows which account you are currently using.
+![Subaccount detail with equity, asset breakdown, and Assets, Permissions, API Keys, and Members tabs](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/4bd70093ed903052683ce6566e758b15906246f486c5860c914a85aab2df8eb6/source.webp)
+## Add or move assets
+Use **[Internal Transfers](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers)** to move assets between your Main Account and Subaccounts or between two Subaccounts. To deposit directly into a Subaccount, switch to it so it is the active account, then open the **[Deposit page](https://testnet.polyester.com/docs/user-docs/funds/deposit-assets)**. Based on the Subaccount's Default Deposit Destination setting, Polyester credits the completed deposit to its Funding Account or Unified Trading Account.
+## Disable, reactivate, or leave a Subaccount
+An Owner can change a Subaccount from Active to Disabled to stop new activity and return it to Active later. A member can leave a shared Subaccount when they no longer need access.

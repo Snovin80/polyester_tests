@@ -1,0 +1,248 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/get-started/installation
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Installation · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Get started
+svg]:size-3.5">
+/
+Installation
+Installation
+Copy page
+View as Markdown
+Open in
+Install the package
+is public on npm:
+npm
+install
+# or
+bun
+add
+# or
+pnpm
+add
+Pre-1.0 versioning: compatible changes bump the patch, breaking changes bump the minor. Pin with
+^0.26.0
+if you only want patch updates inside
+0.26.x
+Source lives in
+polyester-sdk-typescript
+Requirements
+Runtime: anything with
+fetch
+and WebCrypto. Node.js 20+, Bun, Deno, Cloudflare Workers, and
+evergreen browsers all work.
+Module system: ESM only (
+"type": "module"
+).
+TypeScript 5+ with
+"moduleResolution": "bundler"
+or
+"nodenext"
+so subpath exports resolve
+(
+, and the others).
+Trading withdrawal nonces require
+crypto.getRandomValues
+IDs require
+crypto.randomUUID
+or
+crypto.getRandomValues
+; callers may supply an explicit
+requestId
+ConfigurationError
+The SDK talks HTTP APIs over ConnectRPC and realtime over Centrifugo WebSockets. Streams work in
+any long-lived runtime, browser or server. The one place they do not belong is a framework SSR
+render pass. See
+Streaming
+Verify the install
+This example connects to testnet with the
+POLYESTER_TESTNET_ENVIRONMENT
+preset. Market data
+needs no credentials:
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({ environment:
+POLYESTER_TESTNET_ENVIRONMENT
+});
+await
+client
+catalog
+ensureReady
+();
+const
+markets
+}
+=
+await
+client
+marketOverview
+list
+({ limit:
+5
+});
+for
+(
+const
+market
+of
+markets
+) {
+const
+symbol
+=
+client
+catalog
+market
+requirePairSymbolBySymbolId
+(
+market
+symbolId
+);
+console
+log
+(
+symbol
+,
+market
+lastPrice
+);
+}
+If that prints a few markets and prices, you are connected. Next up:
+Quickstart
+Related Topics
+Overview
+A typed TypeScript SDK for the Polyester exchange API: market data, trading, accounts, funding, and realtime streams.
+Quickstart
+From zero to a filled testnet order: create a client, read market data, stream candles, and place your first trade.
+Previous
+Overview
+Next
+Quickstart
+On this page
+Install the package
+Requirements
+Verify the install
+Related Topics
+Share this page
+Installation
+Install the SDK, check runtime requirements, and verify your setup with a first request.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+npm install @polyester/sdk
+# or
+bun add @polyester/sdk
+# or
+pnpm add @polyester/sdk
+
+---
+
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+
+const client = new PolyesterClient({ environment: POLYESTER_TESTNET_ENVIRONMENT });
+
+await client.catalog.ensureReady();
+const { markets } = await client.marketOverview.list({ limit: 5 });
+for (const market of markets) {
+	const symbol = client.catalog.market.requirePairSymbolBySymbolId(market.symbolId);
+	console.log(symbol, market.lastPrice);
+}

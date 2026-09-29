@@ -1,0 +1,347 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/orders.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+`client.orders` is the spot order surface: create, modify, cancel, list, and stream your orders. Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+The SDK validates input shape and decimal scale before a request leaves your process. Excess precision is an error, never silently rounded: `"0.123456789"` on a pair with 6-decimal quantities throws a `CatalogConversionError` from `@polyester/sdk/catalogs`. The same error occurs before network I/O when a decimal exceeds its protobuf wire-format ceiling. These ceilings are not exchange limits. The SDK does not automatically preflight tick, step, minimum-quantity, or minimum-notional rules.
+## Methods
+| Method                  | Summary                                                         |
+| ----------------------- | --------------------------------------------------------------- |
+| `preview`               | Evaluate a full order intent without placing it.                |
+| `create`                | Place a limit or market order, optionally with attached risk.   |
+| `batchCreate`           | Place up to 20 orders with ordered per-item results.            |
+| `modify`                | Patch an open order's price, quantity, client id, or risk.      |
+| `batchReplace`          | Replace up to 50 same-symbol orders, with an admission receipt. |
+| `getBatchReplaceStatus` | Read per-item execution status for a replacement receipt.       |
+| `cancel`                | Cancel one order by `orderId` or `clientOrderId`.               |
+| `batchCancel`           | Cancel up to 50 explicit orders with per-item results.          |
+| `cancelAll`             | Cancel matching orders at once, with a dry-run preview.         |
+| `cancelAllAfter`        | Arm, refresh, or disable the account dead-man switch.           |
+| `listOpen`              | List currently open orders.                                     |
+| `listHistory`           | List historical orders with status and time filters.            |
+| `getDetails`            | Fetch an order and one page of its lineage executions.          |
+| `subscribe`             | Stream live order updates over a private channel.               |
+### `preview(input, options?)`
+Evaluates one complete order intent against current market, policy, risk, and balance state without creating an order, reserving funds, or claiming its `clientOrderId`. It takes the same `NewOrderInput` as `create`.
+```ts
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const preview = await client.orders.preview({
+symbolId,
+side: "buy",
+qty: "0.25",
+execution: { type: "limit_gtc", price: "64250.5" },
+});
+if (!preview.admissible) {
+console.error(preview.rejection?.code, preview.rejection?.violations);
+}
+```
+The result carries only the fields the venue actually resolved, so an omitted field means the venue did not decide it rather than that it decided zero:
+```ts
+import type { OrderErrorDetail } from "@polyester/sdk";
+interface PreviewOrderResult {
+admissible?: boolean;
+rejection?: OrderErrorDetail;
+resolvedBaseQty?: string; // decimal string
+protectedPriceBound?: string; // decimal string
+evaluatedAt: number; // epoch milliseconds
+}
+```
+### `create(input, options?)`
+Places a spot order and returns a `CreateOrderResult`. The input shape and decimal scale are validated locally first.
+```ts
+const result = await client.orders.create({
+symbolId,
+side: "buy",
+qty: "0.25",
+execution: {
+type: "limit_gtc",
+price: "64250.5",
+postOnly: true,
+},
+clientOrderId: crypto.randomUUID(),
+});
+console.log(result.orderId, result.acceptedAt);
+```
+#### `NewOrderInput`
+| Field                     | Type                                                | Required | Notes                                                                             |
+| ------------------------- | --------------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `symbolId`                | `number`                                            | yes      | Stable market ID, an integer from 1 through 4,294,967,295.                        |
+| `side`                    | `"buy" \| "sell"`                                   | yes      |                                                                                   |
+| `qty`                     | decimal string                                      | one of   | Base-asset quantity. Strict precision. Use this **or** `maxQuoteDebit`, not both. |
+| `maxQuoteDebit`           | decimal string                                      | one of   | Quote-asset spend cap. Only for BUY `market_ioc` and BUY `limit_ioc`.             |
+| `execution`               | `OrderExecutionInput`                               | yes      | Exact execution behavior (see below).                                             |
+| `clientOrderId`           | `string`                                            | no       | Account-scoped duplicate guard; retained reuse returns a conflict.                |
+| `feeAsset`                | `"quote" \| "base"`                                 | no       | Which asset pays the fee. Defaults to `"quote"`.                                  |
+| `selfTradePreventionMode` | `"expire_taker" \| "expire_maker" \| "expire_both"` | no       | Behavior when your own orders would match.                                        |
+| `risk`                    | `RiskPolicyInput`                                   | no       | Attached TP / SL / trailing legs (see below).                                     |
+| `account`                 | `AccountScope`                                      | no       | Scope override.                                                                   |
+The SDK does not generate `clientOrderId`. Persist it before the first create when you may need to reconcile an uncertain outcome. Reuse of a retained ID, including an identical request, returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID`; it does not replay the earlier result. Reconcile by client order ID before deciding whether to resubmit. After an ambiguous timeout, call `getDetails({ clientOrderId })`; an immediate lookup miss does not prove admission failed. Without `clientOrderId`, the outcome may remain unknown.
+`OrderExecutionInput` is a discriminated union:
+- `{ type: "market_ioc", maxSlippage?, clientRefPrice? }`
+- `{ type: "limit_gtc", price, postOnly? }`
+- `{ type: "limit_gtd", price, expireAt, postOnly? }`
+- `{ type: "limit_ioc", price }`
+- `{ type: "limit_fok", price }`
+`maxSlippage` accepts `{ kind: "slippage", slippage: "0.25" }`, `{ kind: "bps", bps: 50 }`, or `{ kind: "none" }`. Absolute slippage is a quote price delta with up to nine decimal places, bounded by the catalog's `maxQuoteSlippage` wire ceiling.
+`limit_gtd` is a good-til-date limit order. Its `expireAt` is an exact UTC epoch-millisecond timestamp. The SDK accepts only integer milliseconds representable by the protocol; the venue enforces the allowed lead-time window. Reads report a GTD order as `timeInForce: "GTD"` and include its `expireAt` when supplied by the venue.
+`create` returns an admission acknowledgment:
+```ts
+interface CreateOrderResult {
+orderId: string;
+clientOrderId: string;
+acceptedAt: number; // epoch ms
+acceptedAtNs: string;
+resolvedBaseQty: string; // decimal string
+submittedMaxQuoteDebit?: string; // decimal string, when sized by maxQuoteDebit
+takeProfitTriggerId?: string;
+stopLossTriggerId?: string;
+trailingStopTriggerId?: string;
+}
+```
+Admission does not mean the order is working or filled. Use `listOpen`, `getDetails`, or `subscribe` for lifecycle state.
+> **Pre-validate order forms**
+>
+> To check user input without placing anything, use the catalog: `client.catalog.orders.validateSpotOrderDecimalInput(...)` returns a structured list of violations, and `getSpotOrderConstraints(pair)` exposes tick, step, minimum, and wire ceilings for building UI hints. Its decimal-string wire ceilings are `maxPrice`, `maxQtyBase`, `maxNotionalQuote`, and `maxQuoteSlippage`. The validator does not enforce those maxima. The backend remains authoritative because exchange rules and available balance can change. See the [catalog reference](https://testnet.polyester.com/docs/sdk/typescript/reference/catalog).
+### `modify(input, options?)`
+Patches an open order and returns a `ModifyOrderResult`. Identify the order by `orderId` or `clientOrderId`, then supply the fields you want to change.
+```ts
+// Change price and quantity
+await client.orders.modify({
+symbolId,
+orderId: order.orderId,
+newPrice: "64100",
+newQty: "0.2",
+});
+// Replace the attached risk
+await client.orders.modify({
+symbolId,
+orderId: order.orderId,
+risk: {
+stopLoss: {
+triggerPrice: "61000",
+execution: { type: "market_ioc" },
+},
+},
+});
+// Clear the attached risk
+await client.orders.modify({
+symbolId,
+orderId: order.orderId,
+clearRisk: true,
+});
+```
+`ModifyOrderInput` takes the key (`orderId` or `clientOrderId`), a required `symbolId`, optional `requestId` and `newClientOrderId`, a `behavior` flag, and the patch: `newPrice` and/or `newQty`, plus `risk` (replace) or `clearRisk: true` (mutually exclusive). `modify` generates a `requestId` automatically; pass your own stable value when you might retry the same logical change.
+The result includes `ts` (epoch milliseconds) and exact `tsNs` (an epoch-nanosecond decimal string). It is an acknowledgment: reconcile final state through a read or stream.
+```ts
+interface ModifyOrderResult {
+actionTaken: "unspecified" | "AMENDED" | "REPLACED";
+oldOrderId: string;
+finalOrderId: string;
+code: string;
+ts: number;
+tsNs: string;
+takeProfitTriggerId?: string;
+stopLossTriggerId?: string;
+trailingStopTriggerId?: string;
+}
+```
+`REPLACED` issues a new working order. Cancel and later modifies use `finalOrderId`, not `oldOrderId`. `AMENDED` keeps the same id (`oldOrderId === finalOrderId`).
+### `cancel(input, options?)`
+Cancels a single order by `orderId` or `clientOrderId`. `symbolId` is optional and speeds up routing. The result has a `status` of `"accepted"` or `"unspecified"`, plus `ts` (epoch milliseconds) and exact `tsNs`; read or stream the order to confirm terminal state.
+```ts
+await client.orders.cancel({ orderId: order.orderId });
+await client.orders.cancel({ clientOrderId: "my-key-123", symbolId });
+```
+### `cancelAll(input, options?)`
+Cancels every open order matching optional `symbolIds` and `side` filters, returning a `CancelAllOrdersResponse` with `status`, `matchedOrders`, `submittedCancels`, `failedCancels`, and `ts`. `status` is `"submitted"`, `"dry_run"`, or `"unspecified"`. Preview first with `dryRun: true` (counts matches without submitting cancels).
+```ts
+const preview = await client.orders.cancelAll({ symbolIds: [symbolId], dryRun: true });
+console.log(`${preview.matchedOrders} orders would be cancelled`);
+await client.orders.cancelAll({ symbolIds: [symbolId], side: "buy" });
+```
+Omit `symbolIds` (or pass `[]`) to match every symbol. It accepts at most 100 positive IDs; duplicates are ignored and ordering is immaterial. This is separate from `cancelAllAfter`, whose single `symbolId` filter scopes the dead-man switch.
+`cancelAll` generates a `requestId` when omitted. Reuse it with the same criteria only when retrying an ambiguous request. Completed results are retained for at least two minutes; use a fresh ID for each new cancellation. An `orders` detail with code `CANCEL_REQUEST_EXPIRED` means that replay window has elapsed.
+### `cancelAllAfter(input, options?)`
+Controls the account dead-man switch. `timeoutSec: 0` disables it; an integer from 10 through 120 arms or refreshes it. Optional `symbolId` and `side` fields narrow which orders are cancelled on expiry.
+```ts
+const heartbeat = await client.orders.cancelAllAfter({
+timeoutSec: 15,
+symbolId,
+requestId: crypto.randomUUID(),
+});
+console.log(heartbeat.status, heartbeat.expiresAt, heartbeat.expiresAtNs);
+await client.orders.cancelAllAfter({ timeoutSec: 0 });
+```
+`status` is `"armed"`, `"disabled"`, or `"unspecified"`. `expiresAt` and `ts` are epoch milliseconds. `expiresAtNs` and `tsNs` are exact decimal strings for bot reconciliation. For each deliberate refresh, create a new `requestId`. If that refresh has an ambiguous outcome, retry it with the same ID.
+### Batch mutations
+Batch calls are best effort, not atomic. They preserve input order and return one result per item. Do not treat an accepted create or cancel as final lifecycle state; reconcile through `listOpen`, `getDetails`, or `subscribe`.
+```ts
+const created = await client.orders.batchCreate({
+requestId: "quote-set-42",
+items: [
+symbolId,
+side: "buy",
+qty: "0.01",
+execution: { type: "limit_gtc", price: "64000", postOnly: true },
+clientOrderId: "quote-bid-42",
+},
+symbolId,
+side: "sell",
+qty: "0.01",
+execution: { type: "limit_gtc", price: "65000", postOnly: true },
+clientOrderId: "quote-ask-42",
+},
+],
+});
+for (const result of created.results) {
+if (result.status === "rejected") console.error(result.clientOrderId, result.error?.code);
+}
+```
+A rejected item is `status: "rejected"`. `error` can be missing when the server omitted a structured detail. Do not assume `result.error.code` is always there.
+`batchReplace` replaces 1 to 50 orders on a **single** symbol, so the batch carries one `symbolId` rather than a `symbol` per item. Each item targets an existing order by `orderId` or `clientOrderId`, and every target in the batch must be unique. Patch fields match `modify`: `newPrice`, `newQty`, `newClientOrderId`, `risk`, and `clearRisk`.
+```ts
+const receipt = await client.orders.batchReplace({
+symbolId,
+requestId: "move-quotes-43",
+items: [
+],
+});
+console.log(receipt.batchRequestId, receipt.status, receipt.acceptedCount);
+```
+Admission is not execution. The receipt tells you what the venue accepted, index-stable against the items you sent. Read the durable per-item outcome afterwards with `getBatchReplaceStatus`, keyed by the `batchRequestId` from the receipt:
+```ts
+const status = await client.orders.getBatchReplaceStatus({
+batchRequestId: receipt.batchRequestId,
+});
+for (const item of status.items) {
+console.log(item.itemIndex, item.phase, item.replacementOrderId ?? item.code);
+}
+```
+```ts
+import type { BatchReplaceOrdersResult, OrderErrorDetail } from "@polyester/sdk";
+```
+`getBatchReplaceStatus` returns the same `batchRequestId` and counts, plus an `items` array whose entries carry a `phase` of `"admitted"`, `"working"`, `"rejected"`, or `"terminal"`, the resulting `orderStatus`, and `updatedTs` / `updatedTsNs`.
+Admission and status items both carry `actionTaken`: `"REPLACED"`, `"AMENDED"`, or `"unspecified"`. `"AMENDED"` is a cancel-only outcome with no successor, so `replacementOrderId` is `undefined` and `orderStatus` describes `oldOrderId`. Keep tracking `oldOrderId` until its terminal state is confirmed.
+Cancellations stay a separate, order-explicit call:
+```ts
+await client.orders.batchCancel({
+requestId: "cancel-quotes-43",
+items: [{ clientOrderId: "quote-bid-42" }, { clientOrderId: "quote-ask-42" }],
+});
+```
+Batch limits are 20 creates, 50 replacements, and 50 cancellations. The SDK rejects larger requests instead of silently chunking them because chunking changes idempotency and reconciliation boundaries. For `batchCreate`, `requestId` is the idempotency boundary and the SDK generates one when omitted; provide and reuse a stable value for an ambiguous retry. Within 15 minutes, the same payload and account-scoped `requestId` replay the original results and timestamp; a different payload with that `requestId` returns `CONFLICT_IDEMPOTENCY_KEY_REUSE`. Per-item `clientOrderId` values are optional correlation identifiers and must be unique when supplied.
+### `listOpen(input?, options?)`
+Returns `{ orders, nextPageToken }` for currently open orders. Filters: `symbolId` (a numeric array), `triggerId`, `side`, pagination, and risk-inclusion flags. The list is paginated. Drain it with `nextPageToken` the same way as `listHistory`. A single page is not the full book.
+```ts
+let pageToken = "";
+const open = [];
+do {
+const page = await client.orders.listOpen({ symbolId: [symbolId], pageToken, limit: 100 });
+open.push(...page.orders);
+pageToken = page.nextPageToken;
+} while (pageToken !== "");
+```
+### `listHistory(input?, options?)`
+Same result shape as `listOpen`, plus `status`, `triggerId`, and nanosecond time-range filters. Page through it with the returned token:
+```ts
+let pageToken = "";
+do {
+const page = await client.orders.listHistory({ pageToken, limit: 100 });
+console.log(page.orders.length);
+pageToken = page.nextPageToken;
+} while (pageToken !== "");
+```
+### `getDetails(input, options?)`
+Fetches one physical order and one bounded page of executions in its lineage through that order's generation, or `null` if it is not found. Execution history is eventually consistent and need not equal the order's cumulative quantities.
+```ts
+let pageToken = "";
+do {
+const details = await client.orders.getDetails({
+orderId: order.orderId,
+limit: 100,
+pageToken,
+});
+if (!details) break;
+console.log(details.order.status, details.trades.length, details.transfers.length);
+pageToken = details.nextPageToken;
+} while (pageToken !== "");
+```
+Pass the returned `nextPageToken` as `pageToken` with the same `orderId`. `trades` contain executions from the requested order's lineage through its generation; `transfers` are settlement transfers for the matches on that page. A transfer can recur across pages, so deduplicate it by `txId`. For state-only polling, set `includeExecutionHistory: false` and omit `limit` and `pageToken`.
+Every order and trade can carry optional `lineage: { id, generation }`. The lineage `id` identifies the logical order across replacements; `generation` starts at 1 and identifies its physical version.
+### `subscribe(input)`
+Streams live order updates over a private channel. Takes an `accountId` plus the standard handler fields, and returns an idempotent unsubscribe function. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.orders.subscribe({
+accountId,
+onEvent: (order) => console.log(order.status, order.orderId),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+The first `onOpen` confirms the channel. Wait for it before a write that depends on observing this stream; later reconnects call `onOpen` again. Private subscriptions with no usable auth call `onError` when supplied, otherwise `subscribe` throws.
+## Attached risk
+`create` and `modify` accept a `risk` object that attaches take-profit, stop-loss, or trailing-stop legs that activate when the order fills.
+```ts
+await client.orders.create({
+symbolId,
+side: "buy",
+qty: "0.1",
+execution: { type: "limit_gtc", price: "64000" },
+risk: {
+takeProfit: {
+triggerPrice: "70000",
+execution: { type: "limit_gtc", price: "69950" },
+},
+stopLoss: {
+triggerPrice: "60000",
+execution: { type: "market_ioc" },
+},
+oco: true, // one-cancels-other between the two legs
+},
+});
+```
+### `RiskPolicyInput`
+Valid combinations: `takeProfit` + `stopLoss`, `takeProfit` + `trailingStop`, or any single leg. `oco: true` makes a pair one-cancels-other, so it requires `takeProfit` plus exactly one stop leg. On a single leg it is rejected rather than ignored.
+- `takeProfit` / `stopLoss`: `{ triggerPrice, execution }`, where `execution` is `{ type: "market_ioc" }` or `{ type: "limit_gtc", price }`.
+- `trailingStop`: `{ trailingDistance, maxSlippage?, activationPrice? }`; its child executes as market IOC.
+- Distances and slippage take a tagged shape: `{ kind: "distance", distance: "500" }`, `{ kind: "slippage", slippage: "0.25" }`, or `{ kind: "bps", bps: 50 }`. A `bps` value is a positive integer of at most 10,000. `{ kind: "none" }` is valid for `maxSlippage` only; `trailingDistance` requires a real distance.
+### Attached risk on reads
+Orders come back with an optional `attachedRisk` holding the configured legs plus `oco`. Legs with only a `"not_configured"` state are omitted, and `attachedRisk` is absent when none remain. A stop-loss and a trailing stop can both be present when the venue reports both. `getDetails` includes the legs and their live state by default; `includeAttachedRisk` and `includeAttachedRiskState` turn either off. Each leg carries an optional `state`:
+```ts
+interface AttachedRiskLegState {
+status:
+| "unspecified"
+| "not_configured"
+| "created"
+| "armed"
+| "running"
+| "completed"
+| "canceled"
+| "failed"
+| "paused";
+armedTs?: number; // epoch ms
+armedTsNs?: string; // exact, decimal string
+terminalTs?: number; // epoch ms
+terminalTsNs?: string; // exact, decimal string
+triggerId?: string;
+childOrderId?: string;
+}
+```
+`triggerId` is the standalone trigger the leg armed, and `childOrderId` is the order it placed when it fired. Both are absent until they exist.
+For risk that is not tied to a parent order, use standalone [triggers](https://testnet.polyester.com/docs/sdk/typescript/reference/triggers).
+## The `Order` shape
+List and stream results, and `getDetails().order`, share one parsed shape. Prices and quantities are decimal strings; timestamps are epoch milliseconds. Create/modify inputs use the tagged `execution` union above; the read model still exposes derived `orderType` / `timeInForce` labels plus optional market slippage fields when present.
+```ts
+import type { Order } from "@polyester/sdk";
+```
+`totalQty` is the current accepted total quantity, including an accepted amendment. Retain the original request if you need the initially submitted quantity; `cumQty` and `leavesQty` remain the filled and working quantities. `inheritedCumQty` is the filled quantity carried over from predecessors when a replacement was accepted (`"0"` when none). `status` is `"partial"` when a working order has a non-zero filled quantity. That label is SDK-only; the wire status stays `"working"`. `version` is the optimistic-concurrency token. Parsed enums include `"unspecified"` when the server omits a label or sends an unknown enum value. `lineage` is optional metadata linking a physical order to its logical replacement chain, and `expireAt` is the epoch-millisecond expiry reported for GTD orders. Orders on symbols missing from the catalog are filtered out of list responses rather than failing the page.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/typescript/guides/trading) for the task-oriented walkthrough.
+- [Triggers](https://testnet.polyester.com/docs/sdk/typescript/reference/triggers) for standalone automations.
+- [Trades](https://testnet.polyester.com/docs/sdk/typescript/reference/trades) for your fills.
+- [Requests and idempotency](https://testnet.polyester.com/docs/sdk/typescript/concepts/requests-and-idempotency) for retry semantics and `clientOrderId`.
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for validation and precision error types.

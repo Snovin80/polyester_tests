@@ -1,0 +1,1162 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/auth
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Auth · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Auth
+Auth
+Copy page
+View as Markdown
+Open in
+client.auth
+is the authentication surface. Every client exposes a base
+AuthService
+for caller
+introspection and wallet-challenge requests. The
+browser client
+(
+PolyesterBrowserClient
+) upgrades
+client.auth
+to an
+AccountSignerAuthService
+, which adds the
+managed login, session, and account-switching flow most browser apps use directly.
+Only wallet-challenge creation is public. Everything else on this page is authenticated. For the
+task-oriented walkthrough see
+Wallet Login
+,
+and for how sessions, tokens, and account scope fit together see the
+authentication model
+concept.
+Base
+AuthService
+Available on every client as
+client.auth
+Method
+Auth
+Summary
+acceptTerms
+interactive JWT
+Record explicit consent to the current terms.
+me
+authenticated
+Read the backend-verified caller identity.
+createWalletChallenge
+public
+Request a single-use EIP-4361 login message.
+profile
+authenticated
+Sub-service for the caller's public profile.
+me(options?)
+Returns the authenticated caller's
+Me
+or
+API key
+const
+me
+=
+await
+client
+auth
+me
+();
+console
+log
+(
+me
+accountId
+,
+me
+username
+,
+me
+apiKeyId
+??
+"session token"
+);
+import
+type
+MfaSessionInfo
+}
+from
+"@polyester/sdk"
+;
+interface
+Me
+accountId
+string
+;
+apiKeyId
+?:
+string
+;
+username
+string
+;
+session
+?:
+MfaSessionInfo
+;
+}
+apiKeyId
+is present only when the caller authenticated with an API key. It is the stable public
+ak_...
+handle.
+session
+carries
+MFA
+assurance details when the token was elevated.
+acceptTerms(options?)
+Records explicit consent to the current terms for the caller's root account and returns
+Promise<void>
+session; API keys cannot accept terms. No MFA is required. Repeated acceptance succeeds without
+changing the first acceptance time.
+// Run from the user's explicit terms-acceptance action.
+await
+client
+auth
+acceptTerms
+();
+const
+profile
+=
+await
+client
+auth
+profile
+get
+();
+console
+log
+(
+profile
+currentTermsAccepted
+);
+Login does not accept terms automatically. Creating
+subaccounts
+, API keys, or deposit addresses
+requires current acceptance. A provisioning rejection exposes
+error.detail.service === "auth"
+and
+error.detail.code === "AUTH_TERMS_NOT_ACCEPTED"
+on a
+PolyesterError
+createWalletChallenge(input, options?)
+Requests a short-lived EIP-4361 login message. This is the one public method here: no token is
+required. The challenge is single-use, replaced by any later login request for the same smart
+account, and expires after five minutes. Wallet challenges are login-only; subaccount creation uses
+client.subaccounts.createChallenge
+const
+message
+,
+expiresAt
+}
+=
+await
+client
+auth
+createWalletChallenge
+({
+smartAccountAddress:
+"0x1111111111111111111111111111111111111111"
+,
+signerAddress:
+account
+address
+,
+uri:
+window
+location
+origin
+,
+});
+interface
+WalletChallenge
+message
+string
+;
+expiresAt
+?:
+number
+;
+// epoch ms
+}
+Sign
+message
+exactly as returned with the owner
+EOA
+'s EIP-191
+personal_sign
+reconstruct it. Login accepts only the raw 65-byte EOA signature, not a Safe or ERC-6492-wrapped
+signature. The backend sets the SIWE Chain ID to Ethereum mainnet (
+1
+) and binds the Polyester
+chain in the message's Resources; do not rewrite either. If a wallet requires the signing network
+to match, such as Phantom, select Ethereum mainnet before signing. This does not change the
+Polyester environment used for Safe signing.
+Browser apps should call
+login()
+on
+PolyesterBrowserClient
+, which creates the
+challenge, signs it, and persists the session.
+loginWithWallet
+exists on the base service as a
+protected helper for that flow; it is not part of the public
+client.auth
+surface.
+profile
+client.auth.profile
+is a sub-service for the caller's public profile (username, socials, avatar,
+VIP tier) and realtime identity updates. It is documented on its own page:
+Profile
+VIP
+Browser
+AccountSignerAuthService
+On
+PolyesterBrowserClient
+,
+client.auth
+is an
+AccountSignerAuthService
+service and coordinates the account signer, session storage, subaccount selection, and refresh.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Configure an account signer
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The managed flow needs an account signer to sign login and subaccount-creation challenges. Pass one through the
+client's
+accountSigner
+config, or set it later with
+client.auth.setAccountSigner(signer)
+client configuration reference
+Method
+Summary
+login
+Sign a SIWE challenge and start an authenticated session.
+restoreSession
+Rehydrate state from a stored token, or return
+null
+refreshSession
+Re-sign and extend the current session.
+logout
+Clear state and disconnect the private realtime channel.
+getState
+Read the current auth state snapshot.
+getSessionTimeToExpiry
+Milliseconds left on the stored token.
+hydrateAuthState
+Seed state from SSR before
+restoreSession
+switchAccount
+Set the active account or subaccount.
+createSubaccount
+Create a subaccount for the authenticated account.
+setAccountSigner
+Attach the signer used for wallet challenges.
+getAccountSigner
+Read the attached signer, or
+null
+events
+Subscribe to auth lifecycle events.
+login(options)
+Requests a SIWE challenge, signs its exact message with the configured owner-EOA account signer,
+exchanges it for a session token, and persists the hydrated session. The signer's
+accountAddress
+is the target Safe, while
+ownerAddress
+is the EOA that produces the raw 65-byte EIP-191 signature.
+Returns a
+LoginResult
+const
+result
+=
+await
+client
+auth
+login
+({ provider:
+"metamask"
+});
+console
+log
+(
+result
+accountId
+,
+result
+username
+,
+result
+expiresAt
+);
+interface
+LoginOptions
+provider
+"metamask"
+|
+"phantom"
+|
+"turnkey"
+|
+"other"
+;
+uri
+?:
+string
+;
+loginMethod
+?:
+"google"
+|
+"email"
+|
+"metamask"
+|
+"rabby"
+|
+"phantom"
+|
+"walletconnect"
+|
+null
+;
+}
+interface
+LoginResult
+accountId
+string
+;
+username
+string
+;
+expiresAt
+Date
+;
+}
+On success the service emits both
+authenticated
+and
+stateChange
+logout, signer change, or hydration supersedes this login before it completes, it rejects with an
+AbortError
+and does not overwrite the newer state.
+restoreSession()
+Loads the stored token, verifies it still belongs to this environment, and calls
+me()
+to
+rehydrate state. Returns
+on success, or
+null
+when credentials are
+missing, malformed, expired, backend-rejected, or this restore was superseded by a newer auth
+operation. Missing, malformed, expired, and backend-rejected credentials clear stored auth state.
+A superseded restore returns
+null
+without changing the newer state. Transport failures and
+account-signer initialization failures reject instead, preserving the session so the caller can retry.
+const
+restored
+=
+await
+client
+auth
+restoreSession
+();
+if
+(
+restored
+) {
+console
+log
+(
+"welcome back"
+,
+restored
+username
+);
+}
+else
+// prompt login
+}
+refreshSession(params?)
+Re-signs the current session and extends it, returning a fresh
+LoginResult
+is not already authenticated. Handy ahead of
+getSessionTimeToExpiry()
+reaching zero.
+if
+(
+client
+auth
+getSessionTimeToExpiry
+()
+<
+60_000
+) {
+await
+client
+auth
+refreshSession
+();
+}
+interface
+RefreshSessionParams
+uri
+?:
+string
+;
+provider
+?:
+"metamask"
+|
+"phantom"
+|
+"turnkey"
+|
+"other"
+;
+loginMethod
+?:
+"google"
+|
+"email"
+|
+"metamask"
+|
+"rabby"
+|
+"phantom"
+|
+"walletconnect"
+|
+null
+;
+}
+provider
+and
+loginMethod
+default to the values from the current session.
+uri
+defaults to the
+origin remembered from login.
+logout()
+Clears stored auth state, removes the persisted token, disconnects the private realtime channel,
+and emits
+loggedOut
+await
+client
+auth
+logout
+();
+getState()
+Returns the current
+AuthState
+snapshot without a network call.
+const
+state
+=
+client
+auth
+getState
+();
+if
+(
+state
+isAuthenticated
+) {
+console
+log
+(
+state
+mainAccountId
+,
+state
+activeAccount
+?.
+accountId
+);
+}
+interface
+AuthState
+isAuthenticated
+boolean
+;
+accountAddress
+`0x${
+string
+}`
+|
+null
+;
+ownerAddress
+`0x${
+string
+}`
+|
+null
+;
+mainAccountId
+string
+|
+null
+;
+activeAccount
+ActiveAccount
+|
+null
+;
+}
+interface
+ActiveAccount
+accountId
+string
+;
+isMain
+boolean
+;
+mainAccountId
+string
+;
+smartAccountAddress
+?:
+string
+;
+label
+?:
+string
+;
+}
+getSessionTimeToExpiry()
+Returns the remaining lifetime of the stored token in milliseconds, or
+0
+when the token is
+missing, malformed, expired, or belongs to another environment.
+const
+msLeft
+=
+client
+auth
+getSessionTimeToExpiry
+();
+hydrateAuthState(data)
+Seeds auth state from server-rendered data before
+restoreSession
+runs, avoiding a flash of
+unauthenticated content. It only takes effect when a valid environment-bound token is present.
+client
+auth
+hydrateAuthState
+({
+mainAccountId
+,
+username
+,
+activeAccountId
+,
+smartAccountAddress
+,
+});
+await
+client
+auth
+restoreSession
+();
+interface
+AuthHydrationData
+mainAccountId
+string
+;
+username
+string
+|
+null
+;
+activeAccountId
+?:
+string
+;
+smartAccountAddress
+?:
+`0x${
+string
+}`
+;
+ownerAddress
+?:
+`0x${
+string
+}`
+;
+}
+switchAccount(accountId)
+Sets the active account or subaccount for later account-scoped calls, persisting the choice to the
+session. Returns
+const
+isMain
+}
+=
+client
+auth
+switchAccount
+(
+subaccountId
+);
+Pass
+as the second argument to record display metadata alongside the
+switch.
+createSubaccount(params)
+Creates a subaccount for the authenticated account using a dedicated account signer, and returns
+client.subaccounts.create
+subaccount challenge
+,
+which returns the server-derived
+smart account
+and salt nonce, then signs the exact message through
+that smart account. Its Safe or ERC-6492-wrapped signature is accepted.
+Pass
+accountSigner
+as a signer, or as a factory that derives the signer from the challenge (for
+example with
+challenge.smartAccountSaltNonce
+). The signer's
+accountAddress
+must equal
+challenge.smartAccountAddress
+; otherwise the call throws
+ConfigurationError
+before signing.
+ownerAddress
+is the root owner EOA bound to the challenge and defaults to the configured signer's
+owner.
+const
+subaccountId
+,
+smartAccountSaltNonce
+}
+=
+await
+client
+auth
+createSubaccount
+({
+accountSigner
+challenge
+)
+=>
+deriveSubaccountSigner
+(
+challenge
+smartAccountSaltNonce
+),
+label:
+"Trading bot"
+,
+uri:
+window
+location
+origin
+,
+});
+import
+type
+AccountSigner
+,
+SubaccountChallenge
+}
+from
+"@polyester/sdk"
+;
+interface
+CreateSubaccountParams
+accountSigner
+|
+AccountSigner
+|
+((
+challenge
+SubaccountChallenge
+)
+=>
+AccountSigner
+|
+Promise
+<
+AccountSigner
+>);
+label
+?:
+string
+;
+uri
+?:
+string
+;
+ownerAddress
+?:
+`0x${
+string
+}`
+;
+}
+A stale, replaced, or replayed challenge fails with
+SubaccountChallengeInvalidError
+; call
+createSubaccount
+again to request a fresh one.
+setAccountSigner(signer)
+/
+getAccountSigner()
+Attaches or reads the account signer that signs login and subaccount-creation challenges. Its login
+signature must be the owner EOA's raw 65-byte EIP-191 signature; a Safe-wrapped signer remains valid
+for subaccount creation. Passing
+null
+clears it.
+client
+auth
+setAccountSigner
+(
+signer
+);
+const
+current
+=
+client
+auth
+getAccountSigner
+();
+events
+An
+EventEmitter
+for the auth lifecycle. Subscribe to react to login, logout, and state changes.
+client
+auth
+events
+on
+(
+"authenticated"
+, ({
+accountId
+,
+username
+})
+=>
+console
+log
+(
+"logged in as"
+,
+username
+);
+});
+client
+auth
+events
+on
+(
+"stateChange"
+, (
+state
+)
+=>
+render
+(
+state
+));
+client
+auth
+events
+on
+(
+"loggedOut"
+, ()
+=>
+redirectToLogin
+());
+Event
+Payload
+Fires when
+authenticated
+A login succeeds.
+loggedOut
+void
+Logout runs or an expired session is cleared.
+error
+An auth operation fails.
+servicesReady
+void
+Dependent services finish wiring up.
+stateChange
+AuthState
+Any part of the auth state changes.
+Related
+Wallet Login
+for the end-to-end login walkthrough.
+Authentication model
+for tokens, sessions, and scope.
+Profile
+for the caller's public profile via
+client.auth.profile
+Subaccounts
+for creating and managing subaccounts.
+Client configuration
+for wiring an account signer and token storage.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+API keys
+Next
+Balances
+On this page
+Base AuthService
+me(options?)
+acceptTerms(options?)
+createWalletChallenge(input, options?)
+profile
+Browser AccountSignerAuthService
+login(options)
+restoreSession()
+refreshSession(params?)
+logout()
+getState()
+getSessionTimeToExpiry()
+hydrateAuthState(data)
+switchAccount(accountId)
+createSubaccount(params)
+setAccountSigner(signer) / getAccountSigner()
+events
+Related
+Related Topics
+Share this page
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const me = await client.auth.me();
+console.log(me.accountId, me.username, me.apiKeyId ?? "session token");
+
+---
+
+import type { MfaSessionInfo } from "@polyester/sdk";
+
+interface Me {
+	accountId: string;
+	apiKeyId?: string;
+	username: string;
+	session?: MfaSessionInfo;
+}
+
+---
+
+// Run from the user's explicit terms-acceptance action.
+await client.auth.acceptTerms();
+const profile = await client.auth.profile.get();
+console.log(profile.currentTermsAccepted);
+
+---
+
+const { message, expiresAt } = await client.auth.createWalletChallenge({
+	smartAccountAddress: "0x1111111111111111111111111111111111111111",
+	signerAddress: account.address,
+	uri: window.location.origin,
+});
+
+---
+
+interface WalletChallenge {
+	message: string;
+	expiresAt?: number; // epoch ms
+}
+
+---
+
+const result = await client.auth.login({ provider: "metamask" });
+console.log(result.accountId, result.username, result.expiresAt);
+
+---
+
+interface LoginOptions {
+	provider: "metamask" | "phantom" | "turnkey" | "other";
+	uri?: string;
+	loginMethod?: "google" | "email" | "metamask" | "rabby" | "phantom" | "walletconnect" | null;
+}
+
+interface LoginResult {
+	accountId: string;
+	username: string;
+	expiresAt: Date;
+}
+
+---
+
+const restored = await client.auth.restoreSession();
+if (restored) {
+	console.log("welcome back", restored.username);
+} else {
+	// prompt login
+}
+
+---
+
+if (client.auth.getSessionTimeToExpiry() < 60_000) {
+	await client.auth.refreshSession();
+}
+
+---
+
+interface RefreshSessionParams {
+	uri?: string;
+	provider?: "metamask" | "phantom" | "turnkey" | "other";
+	loginMethod?: "google" | "email" | "metamask" | "rabby" | "phantom" | "walletconnect" | null;
+}
+
+---
+
+await client.auth.logout();
+
+---
+
+const state = client.auth.getState();
+if (state.isAuthenticated) {
+	console.log(state.mainAccountId, state.activeAccount?.accountId);
+}
+
+---
+
+interface AuthState {
+	isAuthenticated: boolean;
+	accountAddress: `0x${string}` | null;
+	ownerAddress: `0x${string}` | null;
+	mainAccountId: string | null;
+	activeAccount: ActiveAccount | null;
+}
+
+interface ActiveAccount {
+	accountId: string;
+	isMain: boolean;
+	mainAccountId: string;
+	smartAccountAddress?: string;
+	label?: string;
+}
+
+---
+
+const msLeft = client.auth.getSessionTimeToExpiry();
+
+---
+
+client.auth.hydrateAuthState({
+	mainAccountId,
+	username,
+	activeAccountId,
+	smartAccountAddress,
+});
+await client.auth.restoreSession();
+
+---
+
+interface AuthHydrationData {
+	mainAccountId: string;
+	username: string | null;
+	activeAccountId?: string;
+	smartAccountAddress?: `0x${string}`;
+	ownerAddress?: `0x${string}`;
+}
+
+---
+
+const { isMain } = client.auth.switchAccount(subaccountId);
+
+---
+
+const { subaccountId, smartAccountSaltNonce } = await client.auth.createSubaccount({
+	accountSigner: (challenge) => deriveSubaccountSigner(challenge.smartAccountSaltNonce),
+	label: "Trading bot",
+	uri: window.location.origin,
+});
+
+---
+
+import type { AccountSigner, SubaccountChallenge } from "@polyester/sdk";
+
+interface CreateSubaccountParams {
+	accountSigner:
+		| AccountSigner
+		| ((challenge: SubaccountChallenge) => AccountSigner | Promise<AccountSigner>);
+	label?: string;
+	uri?: string;
+	ownerAddress?: `0x${string}`;
+}
+
+---
+
+client.auth.setAccountSigner(signer);
+const current = client.auth.getAccountSigner();
+
+---
+
+client.auth.events.on("authenticated", ({ accountId, username }) => {
+	console.log("logged in as", username);
+});
+client.auth.events.on("stateChange", (state) => render(state));
+client.auth.events.on("loggedOut", () => redirectToLogin());

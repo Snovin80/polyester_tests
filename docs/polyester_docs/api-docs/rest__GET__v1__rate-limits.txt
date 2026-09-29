@@ -1,0 +1,165 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/rate-limits
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+RateLimitService
+Get Rate Limit Config
+Get the complete active placement and cancellation quota catalog for VIP0 through VIP10.
+Copy URL
+Method
+GET
+Path
+/v1/rate-limits
+Visibility
+Public endpoint
+GET
+/v1/rate-limits
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/rate-limits' \
+--header 'Accept: */*'
+Responses
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"rules": [
+"burstWeight": "1",
+"periodMs": "1",
+"policyClass": "PLACE",
+"quotaWeight": "1",
+"vipTier": 1
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+effectiveFrom
+string (date-time)
+UTC time at which this policy version became effective.
+Example
+2025-01-01T00:00:00Z
+policyVersion
+string
+/^[0-9]+$/
+Positive identifier of the returned rate-limit policy version.
+Example
+1
+rules
+object[]
+Complete placement and cancellation catalog. Rules are ordered by policy class, then by tier ascending. The list contains one rule per class for each VIP0 through VIP10 tier and is not paginated.
+5 fields
+burstWeight
+string
+/^[0-9]+$/
+Maximum weighted capacity that may be consumed in a burst.
+Example
+1
+periodMs
+string
+/^[0-9]+$/
+Policy period duration in milliseconds.
+Example
+1
+policyClass
+enum
+Trading operation family governed by this rule. REST responses contain PLACE or CANCEL.
+PLACE
+CANCEL
+Example
+PLACE
+quotaWeight
+string
+/^[0-9]+$/
+Weighted request capacity available during each policy period. One operation consumes the weight assigned to that operation.
+Example
+1
+vipTier
+integer (int32)
+VIP tier for this rule, in the inclusive range 0 through 10.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/rate-limits
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s358" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/rate-limits' \
+--header 'Accept: */*'
+Responses
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"rules": [
+"burstWeight": "1",
+"periodMs": "1",
+"policyClass": "PLACE",
+"quotaWeight": "1",
+"vipTier": 1
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/rate-limits' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "effectiveFrom": "2025-01-01T00:00:00Z",
+  "policyVersion": "1",
+  "rules": [
+    {
+      "burstWeight": "1",
+      "periodMs": "1",
+      "policyClass": "PLACE",
+      "quotaWeight": "1",
+      "vipTier": 1
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/balances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Balances · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Preferences
+svg]:size-3.5">
+/
+Balances
+Balances
+Copy page
+View as Markdown
+Open in
+Balance settings control whether Polyester shows account amounts on screen. Hiding them does not change the balances themselves.
+Open
+Personalization
+from the gear in the top nav to make changes.
+Hide account balances
+Turn
+Hide Balances
+on before sharing your screen or working in a public place. Amounts appear as asterisks until you turn it off.
+Interactive
+Personalization
+Mode
+Theme
+Polyester
+Trading Palette
+Polyester Classic
+Fonts
+Inter
+Footer
+Hide Balances
+Audio
+Muted
+$
+1,234.56
+Balance
+Your choice saves automatically in the current browser.
+Related Topics
+Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Appearance
+Choose your theme, colors, and typeface.
+Language & Region
+Choose how Polyester displays language, dates, times, currencies, and numbers.
+Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Notifications
+Choose which Polyester updates you receive and how they appear.
+Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Previous
+Notifications
+Next
+Footer
+On this page
+Hide account balances
+Related Topics
+Share this page
+Balances
+Hide account amounts on screen without changing the balances themselves.
+Share
+Copy Link

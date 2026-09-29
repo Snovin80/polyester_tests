@@ -1,0 +1,61 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+`client.withdraw` (alias `client.trading_withdraws`) creates durable, signed withdrawal intents out of the **trading** venue: to funding or to an external chain via Zipper.
+API-key bots can use the SDK's prepare/sign/persist flow. It builds the deadline and nonce once, serializes the payload deterministically, signs those exact protobuf bytes with the configured Ed25519 API key, and returns an immutable `PreparedTradingWithdraw`. Persist it before the first submission and reuse it unchanged after an ambiguous timeout.
+## Methods (API-key surface)
+| Method                                           | Summary                                    |
+| ------------------------------------------------ | ------------------------------------------ |
+| `prepare_api_key_to_funding`                     | Build and sign Trading → funding once.     |
+| `prepare_api_key_to_external_chain`              | Build and sign Trading → external once.    |
+| `submit_prepared`                                | Submit persisted bytes without rebuilding. |
+| `create_api_key_to_funding`                      | One-call prepare, sign, and submit.        |
+| `create_api_key_to_external_chain`               | One-call prepare, sign, and submit.        |
+| `create_to_funding` / `create_to_external_chain` | Advanced precomputed-signature paths.      |
+Wallet-authorized `create_wallet_trading_withdraw` exists for session/custody products, market makers typically use the payload-signature helpers above.
+### Prepare, persist, and submit
+```python
+from pathlib import Path
+from polyester import PreparedTradingWithdraw, new_trading_withdraw_idempotency_key
+prepared = client.withdraw.prepare_api_key_to_funding(
+asset_id=2,
+quantity="100.00",
+idempotency_key=new_trading_withdraw_idempotency_key(),
+)
+# Persist before first submission. Protect this record like other mutation state.
+Path("withdraw-request.pb").write_bytes(prepared.request_bytes)
+result = await client.withdraw.submit_prepared(prepared)
+# After restart or an outcome-unknown failure, restore and submit unchanged.
+restored = PreparedTradingWithdraw.from_request_bytes(
+Path("withdraw-request.pb").read_bytes()
+)
+assert restored.deterministic_payload_bytes == prepared.deterministic_payload_bytes
+assert restored.payload_signature == prepared.payload_signature
+# retry = await client.withdraw.submit_prepared(restored)
+```
+`deadline_ts_sec` and `nonce` are optional on prepare methods. When omitted, they are generated once during preparation and become part of the persisted signed request. The one-call `create_api_key_to_*` methods are convenient when the caller does not need durable retry state.
+### Create to external chain
+Requires `destination_chain_id` and `destination_address`. Amount is gross (fees taken from it).
+```python
+from polyester import new_trading_withdraw_idempotency_key
+result = await client.withdraw.create_api_key_to_external_chain(
+asset_id=2,
+quantity="50.00",
+destination_chain_id=1,
+destination_address="0x...",
+idempotency_key=new_trading_withdraw_idempotency_key(),
+)
+```
+## Exact amount scaling
+The wire field is always `amount_e18`. `amount_scale` declares the input scale; the SDK then rescales exactly to 18 with checked overflow and no rounding. For example, `AssetAmount.from_scaled(125, scale=2)` becomes `1_250_000_000_000_000_000` (`1.25e18`). An inexact downscale is rejected.
+> **Advanced precomputed signatures**
+>
+> `create_to_funding`, `create_to_external_chain`, and `create_wallet_trading_withdraw` require a non-empty signature and an explicit non-zero `deadline_ts_sec`. The SDK never invents a deadline after a signature has already been supplied.
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/python/guides/deposits-and-withdrawals)
+- [Internal transfers](https://testnet.polyester.com/docs/sdk/python/reference/internal-transfers)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/python/concepts/requests-and-idempotency)
+- [Withdrawals & transfers security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security)

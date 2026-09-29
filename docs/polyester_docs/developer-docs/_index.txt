@@ -1,0 +1,92 @@
+Источник: https://testnet.polyester.com/docs/developer-docs
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+How to integrate with Polyester APIs and the platform.
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose flex gap-4! overflow-hidden rounded-lg px-5 py-4 my-0" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current">
+Not sure where to start?
+Use the Connectivity matrix
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP

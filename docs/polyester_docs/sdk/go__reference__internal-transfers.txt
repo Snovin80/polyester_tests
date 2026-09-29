@@ -1,0 +1,280 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/internal-transfers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Internal transfers · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Internal transfers
+Internal transfers
+Copy page
+View as Markdown
+Open in
+client.InternalTransfers
+moves funds between Polyester accounts without touching a chain:
+from your source scope to another root account, a
+subaccount
+, or a smart-account address.
+Transfers are idempotent on
+idempotencyKey
+existing transfer instead of creating a second one.
+Methods
+Method
+Summary
+Create
+Create (or return) an idempotent internal transfer.
+Create(...)
+Provide exactly one destination pointer:
+destinationAccountID
+,
+destinationSubaccountID
+, or
+destinationSmartAccountAddress
+import
+"
+github.com/Fabric-Labs/polyester-sdk-go/models
+"
+destSub
+"123"
+result
+,
+err
+client
+InternalTransfers
+Create
+(
+ctx
+,
+2
+,
+// assetID
+models
+AssetAmountFromDecimal
+(
+"125.50"
+),
+"xfer-stable-1"
+,
+nil
+,
+nil
+,
+// account / subAccountID source scope
+nil
+,
+&
+destSub
+,
+nil
+,
+// destination (one of three)
+nil
+,
+// quantityScale (default ledger 18)
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+fmt
+Println
+(
+result
+TransferID
+,
+result
+RequestID
+)
+The request always carries canonical fixed-scale-18
+amount_e18
+quantityScale
+describes the
+input when the amount does not already carry scale metadata. Conversion is exact: overflow and
+non-exact downscaling are rejected, and the SDK never rounds.
+Related
+Deposits & withdrawals guide
+Balances
+Withdrawals
+Requests & idempotency
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances, history, holds, and subscribe to live updates with the Go BalancesService.
+Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Go OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via MarketData.
+Realtime
+Shared Centrifugo client, Messages() delivery, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Heatmap
+Next
+Layout
+On this page
+Methods
+Create(...)
+Related
+Related Topics
+Share this page
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import "github.com/Fabric-Labs/polyester-sdk-go/models"
+
+destSub := "123"
+result, err := client.InternalTransfers.Create(
+    ctx,
+    2, // assetID
+    models.AssetAmountFromDecimal("125.50"),
+    "xfer-stable-1",
+    nil, nil, // account / subAccountID source scope
+    nil, &destSub, nil, // destination (one of three)
+    nil, // quantityScale (default ledger 18)
+)
+if err != nil { log.Fatal(err) }
+fmt.Println(result.TransferID, result.RequestID)

@@ -1,0 +1,346 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security/guard-signer
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Guard Signer · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Authentication & Security
+svg]:size-3.5">
+/
+Guard Signer
+Guard Signer
+Copy page
+View as Markdown
+Open in
+Guard Signer is a Polyester-managed secondary signer that provides an additional authorization for
+specific on-chain
+Funding Account
+actions. Polyester releases its approval only after the
+authorization checks described on this page. Guard Signer does not protect every account or wallet
+action, and it is not an independently user-held factor.
+Protection applies only when both conditions are true:
+Guard Signer is initialized for the selected account, meaning the signer stored by Polyester matches the signer registered on-chain.
+The contract action requires a Guard Signer approval.
+For those actions, the selected account's
+smart account
+authorizes and submits the contract call,
+while Guard Signer authorizes the exact protected action. Both authorizations are required for the
+call to succeed.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Protection starts after initialization
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Creating a Guard Signer wallet does not initialize it on-chain. Until the stored and on-chain signer addresses match, the account is not ready to use Guard Signer approvals.
+Protected actions
+The current approval API supports these Funding Account actions:
+Protected action
+Public enum
+Behavior
+Add external whitelist destinations
+PROTECTED_ACTION_FUNDING_ADD_EXTERNAL_WHITELIST
+Adds destinations for an external network
+Remove external whitelist destinations
+PROTECTED_ACTION_FUNDING_REMOVE_EXTERNAL_WHITELIST
+Removes destinations for an external network
+Add internal whitelist accounts
+PROTECTED_ACTION_FUNDING_ADD_INTERNAL_WHITELIST
+Adds Polyester account addresses
+Remove internal whitelist accounts
+PROTECTED_ACTION_FUNDING_REMOVE_INTERNAL_WHITELIST
+Removes Polyester account addresses
+Disable external whitelist requirement
+PROTECTED_ACTION_FUNDING_SET_EXTERNAL_WHITELIST_REQUIRED
+Sets
+required
+to
+false
+Disable internal whitelist requirement
+PROTECTED_ACTION_FUNDING_SET_INTERNAL_WHITELIST_REQUIRED
+Sets
+required
+to
+false
+Enabling either whitelist requirement does not use a Guard Signer approval. Disabling a requirement does.
+Authentication and authorization
+Guard Signer methods do not run a generic account-policy evaluation. They use authenticated account identity, optional
+subaccount
+selection, subaccount role checks where applicable, and method-specific
+MFA
+checks.
+Workflow
+Accepted caller
+Root target
+Subaccount target
+Create a signer wallet
+Authenticated JWT or
+API key
+Authenticated root caller
+Owner role
+Read signer status
+Authenticated JWT or API key
+Authenticated root caller
+Any granted subaccount role
+Request one or more approvals
+JWT only
+Authenticated root caller and fresh step-up
+Owner role and fresh step-up
+Rotate the managed signer
+JWT only
+Active root-account MFA and fresh step-up
+Owner role, active root-account MFA, and fresh step-up
+Export the signer private key
+JWT only
+Active root-account MFA and fresh step-up
+Owner role, active root-account MFA, and fresh step-up
+Approval signing, rotation, and export are interactive owner workflows. API-key callers are rejected for these methods.
+When
+subaccountId
+is omitted, JWT and root-scoped API-key callers target the root account. A
+subaccount-scoped API key instead targets its bound subaccount. To select another permitted
+subaccount explicitly, provide its public
+subaccountId
+; Polyester verifies access, the required
+role, and any API-key scope binding.
+Fresh step-up behavior
+Send the fresh step-up JWT in the
+X-Auth-Step-Up
+header. The approval API validates:
+the token signature and expiry
+fresh-step-up token use
+the presence of a step-up identifier
+binding to the authenticated account
+binding to the current session when the session has an identifier
+The API claims and consumes the server-backed proof before it decrypts managed key material, creates a
+signature, stores a pending rotation, or returns an exported private key. If claim or consumption
+cannot be confirmed, the protected operation fails without returning protected output.
+Single approvals bind the proof to the selected account and exact prepared action. Batch approvals
+also bind the ordered action list, so changing an action, target, selector, arguments, or batch order
+requires another proof. Rotation and export use separate bindings and cannot reuse a proof claimed
+for approval signing.
+All currently supported protected actions require fresh step-up. A batch requires step-up if any
+item is a protected high-risk action, which is currently every supported batch item. A successfully
+consumed proof is single-use and reuse is rejected.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A consumed proof may require new MFA
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+If the protected request fails after the proof is consumed, complete fresh step-up again before retrying. The API prioritizes preventing proof reuse over preserving a proof after an uncertain failure.
+See
+Multi-Factor Authentication
+for how interactive clients obtain fresh step-up proof.
+Setup and status
+Setup
+Status
+Create a Guard Signer wallet for the root account or selected subaccount.
+Read
+status.signerAddress
+Submit the on-chain signer initialization call through the selected account's smart account with
+that address.
+Wait for confirmation, then read status until
+initialized
+is
+true
+GetGuardSignerStatus
+returns a
+status
+object containing:
+Field
+Meaning
+signerAddress
+Signer address currently stored by Polyester
+onchainSignerAddress
+Signer address currently registered for the account on-chain
+initialized
+true
+only when the stored and on-chain addresses match
+nonce
+Current nonce for the default approval nonce space, as a decimal string
+nonceSpace
+Nonce space used for normal approvals, currently
+0
+If the on-chain signer is missing or differs from the stored signer, approval requests fail. A missing signer is reported as not found. A mismatch is reported as a failed precondition.
+This distinction is important during setup and rotation. A stored wallet can exist while the on-chain account still has no signer, or while it still points to a previous signer.
+Requesting an approval
+Build the protected business action and its arguments.
+Authenticate with the owner's JWT session.
+Complete fresh MFA step-up and send the proof in
+X-Auth-Step-Up
+Request the Guard Signer approval.
+Submit the matching contract call with the returned approval through the selected account's smart
+account.
+Wait for the on-chain transaction result.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+The API does not submit the contract call
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The API returns an approval payload. The client remains responsible for submitting the matching on-chain action.
+Clients send:
+the protected action identifier
+the action-specific business arguments
+an optional public
+subaccountId
+Polyester derives the account address, target contract, function selector, parameter hash, current nonce, nonce space, chain context, and deadline. Clients do not provide these as trusted approval inputs.
+The approval is bound to the selected account, contract action, encoded arguments, nonce, and deadline. Changing the destination list, destination order, action, or encoded arguments makes the approval invalid for that call.
+Action arguments
+Whitelist type
+Argument shape
+External whitelist
+polychainChainId
+from 1 to 65,535 and 1 to 100 unique destination payloads
+Internal whitelist
+1 to 100 unique, nonzero EVM account addresses
+Requirement change
+required: false
+External destinations are non-empty
+0x
+-prefixed byte payloads for the selected external network.
+For EVM destinations, lowercase the complete
+0x...
+address string, UTF-8 encode it, and then hex
+encode those bytes. For example, the string prefix
+0xab
+begins
+0x30786162
+after encoding. Do not
+send the raw 20-byte EVM address.
+Internal whitelist values are ordinary
+0x
+-prefixed EVM account addresses. Duplicate values and the
+zero address are rejected.
+Approval payload and batching
+A single-action response contains
+and preserves request order. In Connect and protobuf JSON, the approval
+fields are:
+Field
+Description
+nonceSpace
+Decimal nonce-lane string, currently
+"0"
+deadlineUnix
+Decimal Unix-seconds string
+signature
+Standard padded Base64 encoding of the 65-byte EIP-712 signature
+A batch can contain 1 to 20 actions. The response preserves request order, and nonces increase in that order from the current on-chain nonce. Submit each approval with its corresponding action in the same batched transaction.
+Issuing an approval does not reserve its nonce. Another transaction can consume that nonce first,
+which invalidates the approval or the remaining approvals in a batch.
+Do not reuse an approval after its nonce has been consumed or its deadline has passed.
+Rotating the signer
+Rotation is an interactive owner-only JWT flow. The account must have an active MFA factor, and the request must include valid fresh step-up proof.
+Request signer rotation.
+Receive the replacement signer address and rotation approval.
+Submit the on-chain rotation call with that approval.
+Wait for confirmation.
+Poll status until
+signerAddress
+and
+onchainSignerAddress
+match and
+initialized
+is
+true
+The replacement remains pending until the on-chain rotation is confirmed. Repeating the rotation
+request while that rotation is pending returns the same replacement signer rather than generating a
+different pending key. Approval signing continues to require an exact match between the active stored
+signer and the on-chain signer.
+Exporting the private key
+Export is an interactive owner-only JWT flow. It requires an active MFA factor and valid fresh
+step-up proof. The response field
+privateKey
+contains a
+0x
+-prefixed, 32-byte private key encoded
+as 64 hexadecimal characters.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Export changes the custody model
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Exporting the key is a sovereignty transition. Anyone who obtains a copy can produce Guard Signer signatures without returning to Polyester for approval. Secure storage, access control, backup, and incident response become your responsibility, and the managed protection assumptions described on this page no longer hold exclusively.
+If you export:
+move the key directly into secure custody, such as a hardware security module or dedicated signing service
+never place it in source control, logs, chat, analytics, browser storage, or unencrypted backups
+restrict who and what can request signatures
+treat any suspected exposure as a signer compromise
+Export does not automatically remove or replace the registered signer. To restore exclusive managed protection after export or suspected compromise, rotate to a newly managed signer, submit the rotation on-chain, and wait for status to show an exact match. For a new account with no signer registered on-chain, create and initialize a new managed signer instead.
+While rotation is pending, export returns the currently active signer key. The replacement key
+becomes active only after the on-chain rotation is confirmed and status reflects the new signer.
+See
+Withdrawals and Transfers Security
+for the broader transfer authorization model.
+Related Topics
+Ed25519 API Keys
+Create Ed25519 API keys and sign private Polyester API requests with the required canonical format.
+API key replay protection
+Understand signed-request freshness, replay rejection, and operation idempotency when using Ed25519 API keys.
+Multi-Factor Authentication
+How Polyester MFA works: TOTP, passkeys, recovery codes, elevated sessions, and fresh step-up for high-risk actions.
+Withdrawals and transfer security
+Understand authentication, MFA, signatures, policies, and whitelist checks for Trading withdrawals and internal transfers.
+API key IP allowlists
+Restrict Ed25519 API keys to approved IPv4 and IPv6 source networks.
+Previous
+Multi-Factor Authentication
+Next
+Withdrawals and transfer security
+On this page
+Protected actions
+Authentication and authorization
+Fresh step-up behavior
+Setup and status
+Requesting an approval
+Action arguments
+Approval payload and batching
+Rotating the signer
+Exporting the private key
+Related Topics
+Share this page
+Guard Signer
+How clients initialize Guard Signer and request approval for protected Funding Account whitelist actions.
+Share
+Copy Link

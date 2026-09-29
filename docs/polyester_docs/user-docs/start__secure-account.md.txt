@@ -1,0 +1,81 @@
+Источник: https://testnet.polyester.com/docs/user-docs/start/secure-account.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Secure Your Account
+Protect your owner credential, add MFA, save recovery codes, and configure withdrawal and transfer whitelists.
+Your Polyester account is protected in layers. The **owner wallet** controls your account, MFA verifies sensitive actions, and on-chain whitelists restrict where Assets can be sent. Each layer protects something different, so the strongest setup uses all three.
+Start with the owner wallet. Polyester cannot replace its private keys or transfer ownership to a new sign-in method if you lose access. The safeguards inside Polyester strengthen that foundation, but they do not replace it.
+> **Never share account secrets**
+>
+> Polyester support will never ask for your seed phrase, private key, verification code, MFA code, recovery code, or API private signing key. Anyone who obtains this information may be able to control your account.
+## Protect the wallet that owns your account
+The sign-in method you selected during [account creation](https://testnet.polyester.com/docs/user-docs/start/create-account) is the owner credential for your Main Account. It controls the account's Safe smart account on Polyester Chain.
+Google
+This Google identity unlocks a Turnkey embedded wallet that owns your Main Account. That wallet controls the account's Safe on Polyester Chain.
+Embedded wallet
+- Protect the exact Google account used at sign-in.
+- Keep Google recovery current, including a backup email, phone number, or passkey.
+- If you exported the Turnkey private key, store it offline and never send it to support.
+- MFA cannot replace this identity if you lose it.
+- [Secure your Google Account](https://support.google.com/accounts/answer/46526)
+MFA inside Polyester cannot recover or replace the owner wallet. Losing the wallet, Google identity, or email address may permanently remove your ability to control the account.
+## Add MFA
+MFA adds a separate verification check to sensitive actions started from an interactive Polyester session. You can enroll a passkey, an authenticator app, or both. A passkey can use Face ID, Touch ID, or a compatible hardware key. An authenticator app generates a rotating six-digit code.
+Polyester can require fresh MFA when you:
+- Withdraw Assets or send an internal transfer.
+- Weaken a whitelist requirement or change an approved destination.
+- Create, disable, or revoke an API key.
+- Remove an MFA method or regenerate recovery codes.
+Open [Security](https://testnet.polyester.com/account/settings/security), choose **Add a passkey** or **Add an authenticator app**, and follow the verification prompt. Give each method a recognizable name so you can identify the device or app later. When setup is complete, confirm that it appears under **Multi-Factor Authentication**.
+MFA confirms that you approved an action. It does not decide whether a destination is trusted, replace your owner wallet, or apply an on-chain restriction. Polyester may also request a fresh verification for a high-risk action even when your current session has already completed MFA.
+## Save your recovery codes
+Your first MFA enrollment provides a set of single-use recovery codes. Store them somewhere private and separate from the device you normally use to sign in. Before completing setup, make sure you can recover the saved copy.
+Recovery codes restore access when an MFA method is unavailable. They do not replace the owner wallet, Google identity, or email address that controls the account. Regenerating the set invalidates every previous code, so discard any older copies.
+> **Keep a backup method**
+>
+> Polyester prevents you from removing your final MFA method. Add and verify a replacement before retiring a device or authenticator app.
+## Restrict withdrawals and transfers
+On-chain whitelists restrict the destinations your [Funding Account](https://testnet.polyester.com/docs/user-docs/funds/funding-account) can send Assets to. They remain effective after you complete MFA because they are enforced by the account itself.
+- **External withdrawal whitelist:** Allows Withdrawals only to approved addresses on external chains.
+- **Internal transfer whitelist:** Allows internal transfers only to approved Polyester accounts.
+These controls are independent and off by default. Enable them separately for each Main Account or Subaccount you want to protect. Subaccounts do not inherit whitelist settings from the Main Account.
+Saving a destination in the [Address Book](https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist) gives it a reusable label, but does not approve it. Add the destination to the correct whitelist before enabling the requirement. Verify every address or Polyester account through another trusted channel first.
+Adding or removing an approved destination, or disabling a whitelist requirement, requires fresh MFA and GuardSigner approval. You cannot turn on either whitelist requirement until GuardSigner is set up for the active account. To set it up directly, open **Security**, find the **GuardSigner wallet** row, and select **Set up**. Review the window, select **Set up** again, and confirm in your connected wallet if prompted. Polyester can also start setup when you turn on a whitelist requirement or add a whitelist entry. Initial setup does not require MFA.
+MFA and whitelists serve different purposes. MFA verifies your approval. A whitelist limits where the Funding Account can send Assets, even after your identity has been verified.
+### Deposit routing is separate
+The **Default Deposit Destination** setting controls whether accepted Deposits credit your Funding Account or Unified Trading Account. It is not a whitelist and does not approve a Withdrawal address. An external Withdrawal still follows the Funding Account and Zipper security path regardless of where the Deposit was first credited.
+## Review your security before adding funds
+- Confirm that every enrolled MFA method has a recognizable name.
+- Store recovery codes separately from your primary device.
+- Make sure your owner wallet, Google identity, or email address has a working recovery method.
+- Review saved destinations and enable the appropriate whitelist requirements.
+- Remember that signing out affects only the current browser. Polyester does not currently provide cross-device session management or individual remote session revocation.
+Review these settings again whenever a device, owner identity, team member, API key, or trusted destination changes.
+## If you suspect a compromise
+Respond from a trusted device and secure the owner identity first. Lock down the connected wallet, Google identity, or mailbox through its verified provider before routine account cleanup.
+1. Secure the owner identity
+Lock down the connected wallet, Google identity, or mailbox through its verified provider. If the owner credential may be exposed, securing it is the first priority.
+> Polyester does not currently provide a Main Account emergency freeze. Disabling a Subaccount, applying a policy halt, or revoking an API key protects only that specific resource.
+2. Revoke unfamiliar access
+Sign out of every accessible browser and disable exposed or unfamiliar API keys. Polyester does not currently support cross-device session management or individual remote session revocation.
+3. Review every account scope
+Check Subaccount members, roles, permissions, trusted destinations, whitelists, recent activity, and open Orders. Send Assets only to verified destinations that you control.
+> Cancel unfamiliar open Orders to release any Assets held in reserved Trading balances before you try to move them.
+4. Preserve evidence
+Record timestamps, account identifiers, session details, and transaction IDs before contacting official support. Never include private keys, seed phrases, MFA codes, or recovery codes.
+## FAQ
+### Why do I need MFA if my wallet is already secure?
+The owner wallet controls your smart account. MFA separately verifies sensitive actions performed in an interactive Polyester session. One layer does not replace the other.
+### Should I choose a passkey or an authenticator app?
+Choose a method you can keep available on trusted devices. A passkey can use device biometrics or a hardware security key when supported. An authenticator app generates time-based six-digit codes. Enrolling both gives you a backup if one becomes unavailable.
+### What happens if I lose an MFA method?
+Use another enrolled method or one unused recovery code. After restoring access, add a replacement method and regenerate your recovery codes if their storage may have been exposed.
+### Can Polyester recover my owner wallet or bypass MFA?
+Polyester cannot recreate a non-custodial wallet's private keys, bypass the credential that owns your smart account, or replace a permanently lost embedded owner wallet through MFA. Recovery depends on the wallet provider, linked Google identity or mailbox, another enrolled MFA method, or recovery keys that already exist.
+### Should I export the Turnkey wallet's private key?
+Export is not required to use Polyester. An export reveals the private key that controls the embedded owner wallet, so use it only for a deliberate backup or migration. Keep it offline and never send it to support.
+### Does saving an Address Book entry automatically allow transfers?
+No. The Address Book saves destination information for convenience. External withdrawal and internal transfer whitelists separately determine which destinations are permitted when their requirements are active.
+### Does MFA replace an on-chain whitelist?
+No. MFA verifies who approved a protected action. Whitelists enforce where Assets may move. A Withdrawal can require valid MFA and still be restricted to an approved address.

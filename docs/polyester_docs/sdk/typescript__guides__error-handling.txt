@@ -1,0 +1,760 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Error handling · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Error handling
+Error handling
+Copy page
+View as Markdown
+Open in
+Every SDK error extends
+PolyesterError
+, with a stable
+code
+and a
+retryable
+flag. The tree
+splits on retryability, so triage is one
+instanceof
+import
+PolyesterError
+,
+TransientError
+,
+RateLimitError
+}
+from
+"@polyester/sdk"
+;
+await
+client
+catalog
+ensureReady
+();
+const
+input
+=
+symbolId:
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+),
+side:
+"buy"
+as
+const
+,
+qty:
+"0.001"
+,
+execution: { type:
+"limit_gtc"
+as
+const
+, price:
+"10000"
+, postOnly:
+true
+},
+clientOrderId:
+crypto
+randomUUID
+(),
+};
+try
+await
+client
+orders
+create
+(
+input
+);
+}
+catch
+(
+err
+) {
+if
+(
+err
+instanceof
+RateLimitError
+) {
+console
+log
+(
+err
+rateLimit
+?.
+remaining
+);
+// exact quota values are decimal strings
+await
+sleep
+(
+err
+retryAfterMs
+??
+1000
+);
+// reconcile this create by clientOrderId before resubmitting
+}
+else
+if
+(
+err
+instanceof
+TransientError
+) {
+// outcome may be unknown; reconcile before resubmitting
+}
+else
+if
+(
+err
+instanceof
+PolyesterError
+) {
+console
+error
+(
+err
+code
+,
+err
+message
+);
+// permanent: fix the input or auth
+}
+else
+throw
+err
+;
+}
+}
+Full tree:
+Errors reference
+TransientError
+(retryable):
+NetworkError
+,
+TimeoutError
+,
+RateLimitError
+,
+ServiceUnavailableError
+RequestError
+(permanent):
+ValidationError
+(includes
+PolicyScopeMismatchError
+),
+ResourceNotFoundError
+,
+NotImplementedError
+,
+AlreadyExistsError
+,
+PermissionError
+,
+AuthenticationError
+,
+PreconditionFailedError
+(includes
+RevisionConflictError
+,
+PolicyInUseError
+,
+PolicyLockedError
+,
+SubaccountChallengeInvalidError
+),
+ConfigurationError
+,
+MfaRequiredError
+(and subclasses),
+MfaVerificationError
+InternalServerError
+RPC failures keep the original ConnectRPC error as
+err.cause
+Retrying safely
+Transient failures may have happened after the backend applied a mutation. A single-order create
+must be reconciled by
+clientOrderId
+before resubmission. Reusing a retained client order ID returns
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+; it does not replay the earlier result. For a mutation with a
+replayable
+requestId
+, follow that operation's retry contract and reuse the request ID.
+The helper below is suitable for reads and for mutations whose endpoint documents a replayable
+request ID. Do not wrap
+orders.create
+in it without a reconciliation step:
+import
+isRetryableError
+}
+from
+"@polyester/sdk"
+;
+async
+function
+withRetry
+<
+T
+>(
+fn
+()
+=>
+Promise
+<
+T
+>,
+attempts
+=
+3
+)
+Promise
+<
+T
+> {
+for
+(
+let
+i
+=
+0
+; ;
+i
+++
+) {
+try
+return
+await
+fn
+();
+}
+catch
+(
+err
+) {
+if
+(
+i
+>=
+attempts
+-
+1
+||
+!
+isRetryableError
+(
+err
+))
+throw
+err
+;
+await
+sleep
+(
+500
+*
+2
+**
+i
+);
+}
+}
+}
+orders.modify
+and
+orders.cancelAll
+accept a
+requestId
+for the same purpose.
+Revision conflicts
+Address book entries,
+API keys
+,
+subaccounts
+, and their policies use optimistic concurrency.
+Updates (and some deletes) take
+expectedRevision
+from the entity you last read. If another
+writer got there first, you get
+RevisionConflictError
+Do not retry the same payload. Refetch, reconcile the draft against the latest values, then
+submit with the new
+revision
+import
+RevisionConflictError
+,
+isRevisionConflictError
+}
+from
+"@polyester/sdk"
+;
+try
+await
+client
+apiKeys
+update
+({
+keyId:
+key
+keyId
+,
+expectedRevision:
+key
+revision
+,
+label:
+"rotated bot"
+,
+});
+}
+catch
+(
+err
+) {
+if
+(
+err
+instanceof
+RevisionConflictError
+||
+isRevisionConflictError
+(
+err
+)) {
+const
+latest
+=
+await
+client
+apiKeys
+get
+({ keyId:
+key
+keyId
+});
+// show latest to the user, then retry with latest.revision
+}
+else
+throw
+err
+;
+}
+}
+Cancellation
+Every request method accepts an
+AbortSignal
+const
+controller
+=
+new
+AbortController
+();
+const
+promise
+=
+client
+marketOverview
+list
+({}, { signal:
+controller
+signal
+});
+controller
+abort
+();
+Aborts are not
+PolyesterError
+s. Detect caller-initiated cancellations with
+isAbortError(err)
+,
+treat them as flow control, and do not retry them. Transport cancellations are normalized only
+when the caller's signal is aborted; a server cancellation alone is not a caller abort. A signal that is already
+aborted prevents the request from starting.
+formatUserFacingError(err, fallback)
+returns
+"Request canceled."
+for a cancellation.
+MFA: step-up and elevation
+Sensitive mutations can require a second factor:
+Error
+Meaning
+Your move
+MfaEnrollmentRequiredError
+User has no
+MFA
+factor
+Send them through enrollment
+StepUpRequiredError
+Needs a fresh one-use proof
+Run a challenge, retry with
+stepUpToken
+SessionElevationRequiredError
+Needs a recently elevated session
+Run an elevation challenge, retry
+Step-up flow:
+import
+StepUpRequiredError
+}
+from
+"@polyester/sdk"
+;
+try
+await
+client
+apiKeys
+create
+(
+payload
+);
+}
+catch
+(
+err
+) {
+if
+(
+err
+instanceof
+StepUpRequiredError
+) {
+const
+challenge
+=
+await
+client
+mfa
+beginChallenge
+({ purpose:
+"freshStepUp"
+});
+const
+stepUpToken
+}
+=
+await
+client
+mfa
+verifyTotpChallenge
+({
+challengeId:
+challenge
+challengeId
+,
+code:
+userEnteredCode
+,
+});
+await
+client
+apiKeys
+create
+(
+payload
+, {
+stepUpToken
+});
+}
+else
+throw
+err
+;
+}
+}
+Catch
+MfaRequiredError
+for all three cases in one branch. Guards for unknown errors:
+isFreshStepUpRequiredError
+,
+isSessionElevationRequiredError
+,
+isMfaEnrollmentRequiredError
+Validation and precision errors
+Client-side validation throws before any network I/O:
+import
+CatalogConversionError
+,
+CatalogLookupError
+,
+CatalogNotReadyError
+,
+CatalogValidationFailedError
+,
+}
+from
+"@polyester/sdk/catalogs"
+;
+ValidationError
+A newer backend enum value in a read response decodes as
+"unspecified"
+rather than rejecting
+the whole response. Treat that value as an unknown state and keep the rest of the payload usable.
+CatalogConversionError
+protobuf wire-format ceiling (
+"0.1234567"
+on a 6-decimal field). Order and trigger methods
+throw before network I/O. The wire ceiling is not an exchange limit.
+CatalogValidationFailedError
+min notional) via
+catalog.orders.assertSpotOrderDecimalInput
+CatalogLookupError
+/
+CatalogNotReadyError
+before
+ensureReady()
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Validate before submit
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+For form UX, run
+client.catalog.orders.validateSpotOrderDecimalInput(...)
+for a
+structured list of parse, tick, step, and minimum violations instead of catching a thrown error.
+The validator does not enforce the protobuf wire ceilings.
+Streaming errors
+With
+onError
+, subscription failures arrive as
+SdkSubscriptionErrorContext
+(
+channel
+,
+type
+,
+error
+). A private subscription without usable auth throws when
+onError
+is omitted. Reconnects
+are automatic for transient failures. Non-retryable SDK token errors stop automatic retries and
+reach
+onError
+unchanged; correct the auth or inputs before explicitly subscribing again.
+Snapshot-then-stream subscriptions refetch after reconnect or an observed sequence
+gap; they do not detect a connected feed that goes quiet. Entity streams do not promise replay.
+See
+Streaming
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Trading
+Place, modify, and cancel spot orders, attach risk controls, and automate with standalone triggers.
+Streaming
+Subscribe to realtime market data and private account updates with typed events and a uniform unsubscribe contract.
+Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+Deposits & withdrawals
+Move assets in and out: deposit addresses, internal transfers, withdrawals, and lifecycle tracking.
+Server-side usage
+Build per-request clients from cookies, verify sessions, and hydrate browser clients from the server.
+Previous
+Server-side usage
+Next
+Architecture
+On this page
+Retrying safely
+Revision conflicts
+Cancellation
+MFA: step-up and elevation
+Validation and precision errors
+Streaming errors
+Related Topics
+Share this page
+Error handling
+Triage errors with one instanceof check, retry safely, and handle MFA step-up flows.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import { PolyesterError, TransientError, RateLimitError } from "@polyester/sdk";
+
+await client.catalog.ensureReady();
+const input = {
+	symbolId: client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT"),
+	side: "buy" as const,
+	qty: "0.001",
+	execution: { type: "limit_gtc" as const, price: "10000", postOnly: true },
+	clientOrderId: crypto.randomUUID(),
+};
+
+try {
+	await client.orders.create(input);
+} catch (err) {
+	if (err instanceof RateLimitError) {
+		console.log(err.rateLimit?.remaining); // exact quota values are decimal strings
+		await sleep(err.retryAfterMs ?? 1000);
+		// reconcile this create by clientOrderId before resubmitting
+	} else if (err instanceof TransientError) {
+		// outcome may be unknown; reconcile before resubmitting
+	} else if (err instanceof PolyesterError) {
+		console.error(err.code, err.message); // permanent: fix the input or auth
+	} else {
+		throw err;
+	}
+}
+
+---
+
+import { isRetryableError } from "@polyester/sdk";
+
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+	for (let i = 0; ; i++) {
+		try {
+			return await fn();
+		} catch (err) {
+			if (i >= attempts - 1 || !isRetryableError(err)) throw err;
+			await sleep(500 * 2 ** i);
+		}
+	}
+}
+
+---
+
+import { RevisionConflictError, isRevisionConflictError } from "@polyester/sdk";
+
+try {
+	await client.apiKeys.update({
+		keyId: key.keyId,
+		expectedRevision: key.revision,
+		label: "rotated bot",
+	});
+} catch (err) {
+	if (err instanceof RevisionConflictError || isRevisionConflictError(err)) {
+		const latest = await client.apiKeys.get({ keyId: key.keyId });
+		// show latest to the user, then retry with latest.revision
+	} else {
+		throw err;
+	}
+}
+
+---
+
+const controller = new AbortController();
+const promise = client.marketOverview.list({}, { signal: controller.signal });
+controller.abort();
+
+---
+
+import { StepUpRequiredError } from "@polyester/sdk";
+
+try {
+	await client.apiKeys.create(payload);
+} catch (err) {
+	if (err instanceof StepUpRequiredError) {
+		const challenge = await client.mfa.beginChallenge({ purpose: "freshStepUp" });
+		const { stepUpToken } = await client.mfa.verifyTotpChallenge({
+			challengeId: challenge.challengeId,
+			code: userEnteredCode,
+		});
+		await client.apiKeys.create(payload, { stepUpToken });
+	} else {
+		throw err;
+	}
+}
+
+---
+
+import {
+	CatalogConversionError,
+	CatalogLookupError,
+	CatalogNotReadyError,
+	CatalogValidationFailedError,
+} from "@polyester/sdk/catalogs";

@@ -1,0 +1,1281 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/tutorials/trading-bot
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Build a trading bot · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Tutorials
+svg]:size-3.5">
+/
+Build a trading bot
+Build a trading bot
+Copy page
+View as Markdown
+Open in
+In this tutorial you build a small but complete market-making bot that runs against the Polyester
+testnet. It authenticates with an
+API key
+, tracks the order book in real time, keeps one resting
+buy and one resting sell quote around the mid price, and re-quotes as the market moves. Along the
+way you handle the things that separate a toy script from a real bot: reconciliation-safe orders, retries,
+reconnects, and a clean shutdown.
+Plan on about thirty minutes. Everything runs on testnet with no real funds.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Testnet only, and not financial advice
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+This bot is a teaching example. The strategy is intentionally naive and has no inventory or risk
+management. Run it against the testnet environment only. Do not point it at real funds, and do not
+treat any of this as trading advice.
+What you build
+A single Node or Bun script that:
+signs in with an Ed25519 API key,
+streams the
+BTC-USDT
+order book,
+maintains a buy quote a little below mid and a sell quote a little above,
+reconciles its own orders after every reconnect, and
+cancels everything and disconnects cleanly on
+Ctrl+C
+1
+Set up the project and an API key
+Create a project and install the SDK:
+mkdir
+polyester-bot
+&&
+cd
+polyester-bot
+bun
+init
+-y
+bun
+add
+You need an Ed25519 API key. Generate the keypair locally and register only the public key from an
+already authenticated client (a browser session, or an existing key). The secret never leaves your
+machine:
+// scripts/create-key.ts, run once from an authenticated client
+const
+publicKey
+,
+secretKey
+}
+=
+await
+client
+apiKeys
+generateKeypair
+();
+const
+apiKey
+=
+await
+client
+apiKeys
+create
+({
+label:
+"tutorial-bot"
+,
+publicKeyEd25519:
+publicKey
+bytes
+,
+});
+if
+(
+!
+apiKey
+)
+throw
+new
+Error
+(
+"create returned no key"
+);
+await
+client
+apiKeys
+policies
+create
+({
+name:
+"tutorial-bot"
+,
+spotMarketScope:
+"all"
+,
+actions: [
+"read-balances"
+,
+"read-spot"
+,
+"trade-spot"
+],
+assignToKeyId:
+apiKey
+keyId
+,
+});
+console
+log
+(
+"POLYESTER_API_KEY_ID="
+,
+apiKey
+keyId
+);
+console
+log
+(
+"POLYESTER_API_SECRET_HEX=0x"
++
+secretKey
+hex
+);
+// store this now, it is never sent anywhere
+See the
+Authentication guide
+for the full key flow.
+Put the values in your environment:
+export
+POLYESTER_API_KEY_ID
+=
+"ak_..."
+export
+POLYESTER_API_SECRET_HEX
+=
+"0x..."
+2
+Create an authenticated client
+The client signs every request with your secret key. Both getters may be async, so in a real
+deployment you can load them from a secrets manager.
+// bot.ts
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+evmHexToBytes
+,
+isRetryableError
+,
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+auth: {
+kind:
+"api-key-ed25519"
+,
+getKeyId
+=>
+process
+env
+POLYESTER_API_KEY_ID
+??
+null
+,
+getSecretKey
+=>
+evmHexToBytes
+(
+process
+env
+POLYESTER_API_SECRET_HEX
+??
+"0x"
+),
+},
+});
+const
+me
+=
+await
+client
+auth
+me
+();
+console
+log
+(
+"authenticated as"
+,
+me
+username
+);
+3
+Load the catalog and read the pair constraints
+The catalog knows every pair's tick size, step size, and minimums. Load it once, then resolve the
+symbolId
+and the constraints you need to build valid orders.
+const
+SYMBOL
+=
+"BTC-USDT"
+;
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+SYMBOL
+);
+const
+constraints
+=
+client
+catalog
+orders
+getSpotOrderConstraints
+(
+SYMBOL
+);
+console
+log
+(
+"trading"
+,
+SYMBOL
+,
+"tick"
+,
+constraints
+tickSize
+,
+"step"
+,
+constraints
+stepSize
+);
+client.catalog.market.normalizePriceInput(...)
+truncates a computed price to the pair's decimal
+scale. It does not snap to the tick grid. Snap to
+constraints.tickSize
+yourself, then validate
+before sending.
+4
+Track the mid price from the order book
+Subscribe to the order book.
+createSubscription
+fetches a snapshot, applies sequence-checked
+deltas, and refetches after an observed sequence gap or reconnect. Your handler sees a complete
+book relative to the last applied snapshot or delta. Any
+depth
+in
+works. Keep the
+latest best bid and ask in memory.
+let
+bestBid
+string
+|
+undefined
+;
+let
+bestAsk
+string
+|
+undefined
+;
+const
+bookSub
+=
+client
+orderbook
+createSubscription
+({
+symbolId
+,
+depth:
+10
+,
+onEvent
+book
+)
+=>
+bestBid
+=
+book
+bids
+0
+]?.
+price
+;
+bestAsk
+=
+book
+asks
+0
+]?.
+price
+;
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+"book stream error"
+,
+ctx
+type
+,
+ctx
+error
+),
+});
+function
+mid
+()
+number
+|
+null
+if
+(
+!
+bestBid
+||
+!
+bestAsk
+)
+return
+null
+;
+return
+(
+Number
+(
+bestBid
+)
++
+Number
+(
+bestAsk
+))
+/
+2
+;
+}
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Use a decimal library for real math
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The SDK gives you exact decimal strings on purpose. This tutorial uses
+Number()
+to
+compute a target mid for brevity, then checks the finished order with the catalog. A real bot
+should calculate prices as integer ticks with a decimal library and only convert to
+number
+for display.
+5
+Place quotes with stable client order ids
+The strategy keeps two resting orders: a buy
+SPREAD
+below mid and a sell
+SPREAD
+above. Tag each
+with a stable
+clientOrderId
+for reconciliation. Do not automatically retry a single-order create:
+reuse of a retained ID returns a duplicate conflict instead of the earlier result. The retry helper
+below is used for mutations with replayable
+requestId
+values.
+const
+SPREAD
+=
+0.001
+;
+// 10 bps each side
+const
+QTY
+=
+"0.001"
+;
+async
+function
+withRetry
+<
+T
+>(
+fn
+()
+=>
+Promise
+<
+T
+>,
+attempts
+=
+3
+)
+Promise
+<
+T
+> {
+for
+(
+let
+i
+=
+0
+; ;
+i
+++
+) {
+try
+return
+await
+fn
+();
+}
+catch
+(
+err
+) {
+if
+(
+i
+>=
+attempts
+-
+1
+||
+!
+isRetryableError
+(
+err
+))
+throw
+err
+;
+await
+new
+Promise
+((
+r
+)
+=>
+setTimeout
+(
+r
+,
+500
+*
+2
+**
+i
+));
+}
+}
+}
+async
+function
+placeQuote
+(
+side
+"buy"
+|
+"sell"
+,
+rawPrice
+number
+,
+clientOrderId
+string
+) {
+const
+tick
+=
+Number
+(
+constraints
+tickSize
+);
+const
+tickDecimals
+=
+(
+constraints
+tickSize
+split
+(
+"."
+)[
+1
+]
+??
+""
+).
+length
+;
+const
+snapped
+=
+(
+Math
+round
+(
+rawPrice
+/
+tick
+)
+*
+tick
+).
+toFixed
+(
+tickDecimals
+);
+const
+price
+=
+client
+catalog
+market
+normalizePriceInput
+(
+snapped
+,
+SYMBOL
+);
+const
+validation
+=
+client
+catalog
+orders
+validateSpotOrderDecimalInput
+({
+pair:
+SYMBOL
+,
+price
+,
+quantity:
+QTY
+,
+});
+if
+(
+!
+validation
+valid
+)
+throw
+new
+Error
+(
+validation
+errors
+map
+((
+error
+)
+=>
+error
+message
+).
+join
+(
+", "
+));
+await
+client
+orders
+create
+({
+symbolId
+,
+side
+,
+qty:
+QTY
+,
+execution: {
+type:
+"limit_gtc"
+,
+price
+,
+postOnly:
+true
+,
+// never cross the book; we only want to make
+},
+clientOrderId
+,
+});
+}
+The
+postOnly: true
+flag rejects any quote that would immediately match, which keeps the bot a
+maker
+the sell with
+ValidationError: Insufficient funds.
+See
+Orders
+for every field.
+6
+Run the quoting loop and reconcile
+On each tick, cancel whatever is resting and place fresh quotes around the current mid. Cancelling
+first keeps the logic simple and correct: the bot always converges to exactly two live orders. A
+smarter bot would only re-quote when the mid drifts past a threshold, but cancel-and-replace is the
+clearest place to start.
+async
+function
+requote
+() {
+const
+m
+=
+mid
+();
+if
+(
+m
+===
+null
+)
+return
+;
+// no book yet
+// Clear our resting orders, then place the new pair.
+const
+cancelRequestId
+=
+crypto
+randomUUID
+();
+await
+withRetry
+(()
+=>
+client
+orders
+cancelAll
+({ symbolIds: [
+symbolId
+], requestId:
+cancelRequestId
+})
+);
+await
+Promise
+allSettled
+([
+placeQuote
+(
+"buy"
+,
+m
+*
+(
+1
+-
+SPREAD
+),
+`bot-bid-${
+Date
+now
+()
+}`
+),
+placeQuote
+(
+"sell"
+,
+m
+*
+(
+1
++
+SPREAD
+),
+`bot-ask-${
+Date
+now
+()
+}`
+),
+]).
+then
+((
+results
+)
+=>
+for
+(
+const
+result
+of
+results
+) {
+if
+(
+result
+status
+===
+"rejected"
+)
+console
+error
+(
+"quote failed"
+,
+result
+reason
+);
+}
+});
+}
+Watch your fills over a private stream before starting the quoting timer. The first
+onOpen
+confirms the private channel, so a startup auth or subscription error stops the bot before it can
+write orders:
+const
+tradeSub
+=
+await
+new
+Promise
+<()
+=>
+void
+>((
+resolve
+,
+reject
+)
+=>
+let
+stop
+=
+()
+=>
+let
+pending
+=
+true
+;
+stop
+=
+client
+trades
+subscribe
+({
+accountId:
+me
+accountId
+,
+onEvent
+trade
+)
+=>
+console
+log
+(
+"filled"
+,
+trade
+qty
+,
+"@"
+,
+trade
+price
+),
+onOpen
+=>
+if
+(
+!
+pending
+)
+return
+;
+pending
+=
+false
+;
+resolve
+(
+stop
+);
+},
+onError
+ctx
+)
+=>
+console
+error
+(
+"trade stream error"
+,
+ctx
+error
+);
+if
+(
+!
+pending
+)
+return
+;
+pending
+=
+false
+;
+stop
+();
+reject
+(
+ctx
+error
+);
+},
+});
+});
+// Start the timer only after the private stream is confirmed.
+const
+timer
+=
+setInterval
+(()
+=>
+requote
+().
+catch
+((
+err
+)
+=>
+console
+error
+(
+"requote failed"
+,
+err
+));
+},
+5_000
+);
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Reconcile after a gap or a silent book
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The order book subscription refetches after reconnect or a sequence gap, so
+mid()
+is
+fresh again after those events. It will not notice a connected feed that goes silent. If quotes
+depend on a live book, watch the age of the last
+onEvent
+and resync with
+orderbook.get()
+when it exceeds a threshold you choose. Private trade streams do not
+promise replay. After a disconnect, a silent book, or an ambiguous mutation, read
+orders.listOpen
+and recent trades before resuming quotes. A reopen callback is not
+proof that nothing was missed.
+7
+Shut down cleanly
+When you stop the bot, cancel resting orders and tear down the sockets so you do not leave live
+quotes on the book.
+async
+function
+shutdown
+() {
+clearInterval
+(
+timer
+);
+bookSub
+unsubscribe
+();
+tradeSub
+();
+try
+await
+client
+orders
+cancelAll
+({ symbolIds: [
+symbolId
+] });
+}
+finally
+client
+realtime
+disconnect
+();
+}
+console
+log
+(
+"bot stopped, book is clear"
+);
+process
+exit
+(
+0
+);
+}
+process
+on
+(
+"SIGINT"
+,
+shutdown
+);
+process
+on
+(
+"SIGTERM"
+,
+shutdown
+);
+8
+Run it
+bun
+run
+bot.ts
+You should see it authenticate, print the pair constraints, and then log a requote every few
+seconds. Leave it running and watch for fills. Press
+Ctrl+C
+to stop; it cancels its orders and
+exits.
+Where to take it next
+Only re-quote when the mid moves past a threshold, and skip the
+cancelAll
+when your quotes are
+still good. Reconcile against
+orders.listOpen
+instead of
+clearing everything.
+Attach protective risk to fills, or manage inventory with standalone
+triggers
+Track your position and PnL from
+balances
+and the equity
+history endpoint (see the
+portfolio tracker
+).
+Harden error handling with the full
+error taxonomy
+and the
+idempotency rules
+Related Topics
+Live market ticker
+Stream tickers, candles, and a live order book with no authentication, using the shared realtime contract.
+Portfolio tracker
+Read balances and equity history, scope requests to subaccounts, and stream live balance updates for an authenticated user.
+Previous
+Live market ticker
+Next
+Portfolio tracker
+On this page
+What you build
+Where to take it next
+Related Topics
+Share this page
+Build a trading bot
+A complete testnet market-making bot, from API key to a live quoting loop with idempotent orders, reconnects, and graceful shutdown.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+mkdir polyester-bot && cd polyester-bot
+bun init -y
+bun add @polyester/sdk
+
+---
+
+// scripts/create-key.ts, run once from an authenticated client
+const { publicKey, secretKey } = await client.apiKeys.generateKeypair();
+const apiKey = await client.apiKeys.create({
+	label: "tutorial-bot",
+	publicKeyEd25519: publicKey.bytes,
+});
+if (!apiKey) throw new Error("create returned no key");
+
+await client.apiKeys.policies.create({
+	name: "tutorial-bot",
+	spotMarketScope: "all",
+	actions: ["read-balances", "read-spot", "trade-spot"],
+	assignToKeyId: apiKey.keyId,
+});
+
+console.log("POLYESTER_API_KEY_ID=", apiKey.keyId);
+console.log("POLYESTER_API_SECRET_HEX=0x" + secretKey.hex); // store this now, it is never sent anywhere
+
+---
+
+export POLYESTER_API_KEY_ID="ak_..."
+export POLYESTER_API_SECRET_HEX="0x..."
+
+---
+
+// bot.ts
+import {
+	PolyesterClient,
+	POLYESTER_TESTNET_ENVIRONMENT,
+	evmHexToBytes,
+	isRetryableError,
+} from "@polyester/sdk";
+
+const client = new PolyesterClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	auth: {
+		kind: "api-key-ed25519",
+		getKeyId: () => process.env.POLYESTER_API_KEY_ID ?? null,
+		getSecretKey: () => evmHexToBytes(process.env.POLYESTER_API_SECRET_HEX ?? "0x"),
+	},
+});
+
+const me = await client.auth.me();
+console.log("authenticated as", me.username);
+
+---
+
+const SYMBOL = "BTC-USDT";
+
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol(SYMBOL);
+const constraints = client.catalog.orders.getSpotOrderConstraints(SYMBOL);
+
+console.log("trading", SYMBOL, "tick", constraints.tickSize, "step", constraints.stepSize);
+
+---
+
+let bestBid: string | undefined;
+let bestAsk: string | undefined;
+
+const bookSub = client.orderbook.createSubscription({
+	symbolId,
+	depth: 10,
+	onEvent: (book) => {
+		bestBid = book.bids[0]?.price;
+		bestAsk = book.asks[0]?.price;
+	},
+	onError: (ctx) => console.error("book stream error", ctx.type, ctx.error),
+});
+
+function mid(): number | null {
+	if (!bestBid || !bestAsk) return null;
+	return (Number(bestBid) + Number(bestAsk)) / 2;
+}
+
+---
+
+const SPREAD = 0.001; // 10 bps each side
+const QTY = "0.001";
+
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+	for (let i = 0; ; i++) {
+		try {
+			return await fn();
+		} catch (err) {
+			if (i >= attempts - 1 || !isRetryableError(err)) throw err;
+			await new Promise((r) => setTimeout(r, 500 * 2 ** i));
+		}
+	}
+}
+
+async function placeQuote(side: "buy" | "sell", rawPrice: number, clientOrderId: string) {
+	const tick = Number(constraints.tickSize);
+	const tickDecimals = (constraints.tickSize.split(".")[1] ?? "").length;
+	const snapped = (Math.round(rawPrice / tick) * tick).toFixed(tickDecimals);
+	const price = client.catalog.market.normalizePriceInput(snapped, SYMBOL);
+	const validation = client.catalog.orders.validateSpotOrderDecimalInput({
+		pair: SYMBOL,
+		price,
+		quantity: QTY,
+	});
+	if (!validation.valid)
+		throw new Error(validation.errors.map((error) => error.message).join(", "));
+
+	await client.orders.create({
+		symbolId,
+		side,
+		qty: QTY,
+		execution: {
+			type: "limit_gtc",
+			price,
+			postOnly: true, // never cross the book; we only want to make
+		},
+		clientOrderId,
+	});
+}
+
+---
+
+async function requote() {
+	const m = mid();
+	if (m === null) return; // no book yet
+
+	// Clear our resting orders, then place the new pair.
+	const cancelRequestId = crypto.randomUUID();
+	await withRetry(() =>
+		client.orders.cancelAll({ symbolIds: [symbolId], requestId: cancelRequestId })
+	);
+
+	await Promise.allSettled([
+		placeQuote("buy", m * (1 - SPREAD), `bot-bid-${Date.now()}`),
+		placeQuote("sell", m * (1 + SPREAD), `bot-ask-${Date.now()}`),
+	]).then((results) => {
+		for (const result of results) {
+			if (result.status === "rejected") console.error("quote failed", result.reason);
+		}
+	});
+}
+
+---
+
+const tradeSub = await new Promise<() => void>((resolve, reject) => {
+	let stop = () => {};
+	let pending = true;
+
+	stop = client.trades.subscribe({
+		accountId: me.accountId,
+		onEvent: (trade) => console.log("filled", trade.qty, "@", trade.price),
+		onOpen: () => {
+			if (!pending) return;
+			pending = false;
+			resolve(stop);
+		},
+		onError: (ctx) => {
+			console.error("trade stream error", ctx.error);
+			if (!pending) return;
+			pending = false;
+			stop();
+			reject(ctx.error);
+		},
+	});
+});
+
+// Start the timer only after the private stream is confirmed.
+const timer = setInterval(() => {
+	requote().catch((err) => console.error("requote failed", err));
+}, 5_000);
+
+---
+
+async function shutdown() {
+	clearInterval(timer);
+	bookSub.unsubscribe();
+	tradeSub();
+	try {
+		await client.orders.cancelAll({ symbolIds: [symbolId] });
+	} finally {
+		client.realtime.disconnect();
+	}
+	console.log("bot stopped, book is clear");
+	process.exit(0);
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+---
+
+bun run bot.ts

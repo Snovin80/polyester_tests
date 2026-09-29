@@ -1,0 +1,203 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+marketoverview.v1.MarketOverviewService
+GetCurrencyConversionRates
+Get fiat units per USD and USD per stablecoin unit, grouped with source freshness.
+Copy URL
+Method
+POST
+Path
+marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates
+Service
+marketoverview.v1.MarketOverviewService
+Visibility
+Public endpoint
+POST
+marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"fiat": {
+"rates": [
+"code": "value",
+"unitsPerUsdE8": "1"
+}
+],
+"sourceTsSec": "1735689600",
+"stale": false
+},
+"snapshotTsSec": "1735689600",
+"stablecoins": [
+"code": "value",
+"sourceTsSec": "1735689600",
+"stale": false,
+"usdPerUnitE8": "1"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+marketoverview.v1.GetCurrencyConversionRatesRequest
+Response
+marketoverview.v1.GetCurrencyConversionRatesResponse
+Response
+Form
+JSON
+fiat
+object
+Complete fiat snapshot; absent until a complete snapshot has been observed.
+3 fields
+rates
+object[]
+Complete fiat rates, including USD, ordered by code.
+2 fields
+code
+string
+Supported fiat currency code.
+unitsPerUsdE8
+string (int64)
+Fiat currency units per 1 USD, scaled by 1e8. USD has the identity value 1e8.
+sourceTsSec
+string (uint64)
+Shared source observation time in seconds since the Unix epoch (UTC).
+stale
+boolean
+True once the source observation is at least two hours old.
+stablecoins
+object[]
+Observed stablecoin rates ordered by code. Unobserved stablecoins are omitted.
+4 fields
+code
+string
+Supported stablecoin code (USDC or USDT).
+usdPerUnitE8
+string (int64)
+USD per 1 stablecoin unit, scaled by 1e8. This is an observed price, not a fixed peg.
+sourceTsSec
+string (uint64)
+This stablecoin's source observation time in seconds since the Unix epoch (UTC).
+stale
+boolean
+True once this stablecoin's source observation is at least five seconds old.
+snapshotTsSec
+string (uint64)
+Response construction time in seconds since the Unix epoch (UTC).
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+bad-request
+400
+Bad Request
+Bad request.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Service Unavailable
+Service unavailable.
+upstream-error
+502
+Upstream Error
+Upstream error.
+POST
+marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s369" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"fiat": {
+"rates": [
+"code": "value",
+"unitsPerUsdE8": "1"
+}
+],
+"sourceTsSec": "1735689600",
+"stale": false
+},
+"snapshotTsSec": "1735689600",
+"stablecoins": [
+"code": "value",
+"sourceTsSec": "1735689600",
+"stale": false,
+"usdPerUnitE8": "1"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/marketoverview.v1.MarketOverviewService/GetCurrencyConversionRates' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "fiat": {
+    "rates": [
+      {
+        "code": "value",
+        "unitsPerUsdE8": "1"
+      }
+    ],
+    "sourceTsSec": "1735689600",
+    "stale": false
+  },
+  "snapshotTsSec": "1735689600",
+  "stablecoins": [
+    {
+      "code": "value",
+      "sourceTsSec": "1735689600",
+      "stale": false,
+      "usdPerUnitE8": "1"
+    }
+  ]
+}

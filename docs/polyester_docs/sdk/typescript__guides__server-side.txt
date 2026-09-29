@@ -1,0 +1,525 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/server-side
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Server-side usage · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Server-side usage
+Server-side usage
+Copy page
+View as Markdown
+Open in
+PolyesterServerClient
+is the core client plus session awareness. It parses the cookies your
+browser client sets, uses the bearer token for authenticated calls, and exposes what it knows
+about the user for rendering.
+One client per request
+Create the client from the incoming request (or your framework's cookie API) in the handler:
+import
+createPolyesterServerClientFromRequest
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+}
+from
+"@polyester/sdk"
+;
+export
+async
+function
+handle
+(
+request
+Request
+) {
+const
+client
+=
+createPolyesterServerClientFromRequest
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+request
+,
+});
+if
+(
+client
+hasUsableBearerToken
+) {
+const
+balances
+=
+await
+client
+balances
+list
+();
+// ...
+}
+}
+Clients are cheap (services, realtime, and catalog are lazy), so per-request creation is the
+intended pattern.
+With a framework cookie API instead of a
+Request
+, await an asynchronous store before passing it
+to the SDK. For example, current Next.js versions:
+import
+cookies
+}
+from
+"next/headers"
+;
+import
+createPolyesterServerClientFromCookies
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+createPolyesterServerClientFromCookies
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+cookies:
+await
+cookies
+(),
+cookieLocation: { hostname:
+"localhost"
+, port:
+"3000"
+, protocol:
+"http:"
+},
+});
+The factory accepts a
+Request
+, a plain
+record, or a synchronous
+store that returns a string or
+Request
+supplies its own URL. For a framework
+cookie store on loopback,
+, or an RFC1918 private IPv4 host, provide
+cookieLocation
+for the page request. The SDK scopes local bearer and display-session cookie names by port, including
+default HTTP (
+80
+) and HTTPS (
+443
+) ports, so it needs that location to select the right cookies.
+Public hosts keep stable names.
+Display session vs authenticated session
+Two cookies. The SDK keeps them apart on purpose:
+Cookie
+Contents
+Trust level
+Session cookie
+Who the user appears to be: username, active account, wallets
+Unsigned. Display only.
+Auth token cookie
+The JWT bearer token
+Proof, but verify before trusting
+client
+hasDisplaySession
+;
+// can I render a username immediately?
+client
+session
+;
+// the parsed ServerSessionSnapshot
+client
+hasBearerToken
+;
+// is a token present?
+client
+hasUsableBearerToken
+;
+// ...and not expired?
+const
+me
+=
+await
+client
+verifySession
+();
+// backend-verified identity, or null
+Use the display session for instant, non-sensitive rendering (avatar, username). Call
+verifySession()
+before anything that must be correct. It returns
+null
+only when credentials are
+missing or rejected as unauthenticated; transport and backend failures throw, so an outage is not
+mistaken for a logout. Data requests are still authorized by the backend on every call.
+A missing or malformed display cookie does not discard a valid bearer cookie. An explicitly
+different-environment display cookie is rejected as a whole, so its snapshot and bearer are not
+used for the requested environment.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Never authorize from the display session
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The session cookie is client-writable. The SDK types it as display-only
+(
+ServerSessionSnapshot
+) on purpose. Authorization belongs to the backend, which
+validates the bearer token on each request.
+Subaccount defaulting
+By default, server clients scope calls to the
+main account
+over to SSR, opt in:
+import
+createPolyesterServerClientFromRequest
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+createPolyesterServerClientFromRequest
+({
+environment
+,
+request
+,
+useDisplaySessionActiveAccountAsDefault:
+true
+,
+});
+That treats the display session's active account as caller intent for calls that omit
+account
+The backend still enforces access.
+Hydrating the browser
+Two handoffs keep client startup quiet.
+Auth state: render without a logged-out flash, then restore:
+import
+PolyesterBrowserClient
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterBrowserClient
+({
+environment
+});
+client
+auth
+hydrateAuthState
+({
+mainAccountId
+,
+username
+,
+activeAccountId
+,
+});
+await
+client
+auth
+restoreSession
+();
+Catalog snapshot: skip the reference-data fetch by baking the server's catalog into the page:
+import
+PolyesterBrowserClient
+}
+from
+"@polyester/sdk"
+;
+// server
+await
+serverClient
+catalog
+ensureReady
+();
+const
+snapshot
+=
+serverClient
+catalog
+snapshot
+();
+// browser
+const
+client
+=
+new
+PolyesterBrowserClient
+({
+environment
+,
+catalogSnapshot:
+snapshot
+,
+});
+Lower-level helpers
+exposes the primitives without a client:
+parseSessionCookie(cookies, environment, options?)
+,
+emptyServerSessionSnapshot()
+, and
+isJwtValid(token)
+import
+parseSessionCookie
+}
+from
+"@polyester/sdk/server-session"
+;
+const
+bearerToken
+}
+=
+parseSessionCookie
+(
+cookies
+,
+environment
+, {
+cookieLocation:
+new
+URL
+(
+request
+url
+),
+});
+Use the incoming request URL for
+cookieLocation
+when reading a framework store or cookie record.
+A
+Request
+source supplies its own location. Pass
+tokenCookieName
+in the options when browser
+storage uses a custom bearer-cookie base name.
+The root export has the cookie-name constants
+POLYESTER_AUTH_TOKEN_COOKIE_NAME
+and
+POLYESTER_SESSION_COOKIE_NAME
+isJwtValid
+accepts
+unknown
+and returns
+false
+for missing, malformed, or expired values.
+Edge runtimes
+The SDK runs on edge/serverless (Cloudflare Workers, Vercel Edge): fetch-based, ESM-only, heavy
+deps deferred. Realtime subscriptions work from any long-lived server process, but not from an
+SSR render pass. When rendering a page, fetch a snapshot server-side and subscribe after
+hydration. See
+Streaming
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Trading
+Place, modify, and cancel spot orders, attach risk controls, and automate with standalone triggers.
+Streaming
+Subscribe to realtime market data and private account updates with typed events and a uniform unsubscribe contract.
+Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+Deposits & withdrawals
+Move assets in and out: deposit addresses, internal transfers, withdrawals, and lifecycle tracking.
+Error handling
+Triage errors with one instanceof check, retry safely, and handle MFA step-up flows.
+Previous
+Deposits & withdrawals
+Next
+Error handling
+On this page
+One client per request
+Display session vs authenticated session
+Subaccount defaulting
+Hydrating the browser
+Lower-level helpers
+Edge runtimes
+Related Topics
+Share this page
+Server-side usage
+Build per-request clients from cookies, verify sessions, and hydrate browser clients from the server.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import {
+	createPolyesterServerClientFromRequest,
+	POLYESTER_TESTNET_ENVIRONMENT,
+} from "@polyester/sdk";
+
+export async function handle(request: Request) {
+	const client = createPolyesterServerClientFromRequest({
+		environment: POLYESTER_TESTNET_ENVIRONMENT,
+		request,
+	});
+
+	if (client.hasUsableBearerToken) {
+		const balances = await client.balances.list();
+		// ...
+	}
+}
+
+---
+
+import { cookies } from "next/headers";
+import {
+	createPolyesterServerClientFromCookies,
+	POLYESTER_TESTNET_ENVIRONMENT,
+} from "@polyester/sdk";
+
+const client = createPolyesterServerClientFromCookies({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	cookies: await cookies(),
+	cookieLocation: { hostname: "localhost", port: "3000", protocol: "http:" },
+});
+
+---
+
+client.hasDisplaySession; // can I render a username immediately?
+client.session; // the parsed ServerSessionSnapshot
+client.hasBearerToken; // is a token present?
+client.hasUsableBearerToken; // ...and not expired?
+
+const me = await client.verifySession(); // backend-verified identity, or null
+
+---
+
+import { createPolyesterServerClientFromRequest } from "@polyester/sdk";
+
+const client = createPolyesterServerClientFromRequest({
+	environment,
+	request,
+	useDisplaySessionActiveAccountAsDefault: true,
+});
+
+---
+
+import { PolyesterBrowserClient } from "@polyester/sdk";
+
+const client = new PolyesterBrowserClient({ environment });
+client.auth.hydrateAuthState({
+	mainAccountId,
+	username,
+	activeAccountId,
+});
+await client.auth.restoreSession();
+
+---
+
+import { PolyesterBrowserClient } from "@polyester/sdk";
+
+// server
+await serverClient.catalog.ensureReady();
+const snapshot = serverClient.catalog.snapshot();
+
+// browser
+const client = new PolyesterBrowserClient({
+	environment,
+	catalogSnapshot: snapshot,
+});
+
+---
+
+import { parseSessionCookie } from "@polyester/sdk/server-session";
+
+const { bearerToken } = parseSessionCookie(cookies, environment, {
+	cookieLocation: new URL(request.url),
+});

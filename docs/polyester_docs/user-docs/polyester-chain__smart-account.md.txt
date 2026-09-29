@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/smart-account.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Smart Account
+Understand the Safe smart account that represents your Polyester account.
+Every Main Account and Subaccount is represented on Polyester Chain by a **Safe smart account**. The Safe address is your account's on-chain identity. Your external or embedded owner wallet is the non-custodial credential that authorizes it.
+Your owner wallet and Safe have different addresses and different jobs. The owner approves actions; the Safe executes them.
+## Owner wallet and smart account
+Your owner wallet can be:
+- an external non-custodial wallet
+- an embedded non-custodial wallet created through an available Google or email sign-in.
+The owner wallet holds the credential used to authorize your Safe. Polyester does not become the owner because it sponsors gas, operates a bundler, or keeps you signed in.
+The Safe has no single private key or recovery phrase of its own. If you export an embedded wallet key, you are exporting the owner credential, not a separate Safe private key.
+## How your smart account takes action
+1. Polyester prepares the call for your active Safe and the relevant protocol contract.
+2. Your owner credential authorizes the action.
+3. Polyester packages it as an ERC-4337 UserOperation.
+4. The Safe validates the authorization and executes the call.
+5. Polyester Chain records the resulting transaction and contract events.
+Your application session, MFA, permissions, and destination controls can add protection before an action reaches the Safe. They do not replace the owner credential.
+## Your address can exist before deployment
+Polyester can calculate your Safe address before the account contract is deployed. This is called a **counterfactual smart account**.
+The address can already support account setup, deposit-address attribution, and product records. The first eligible on-chain action deploys the Safe and executes the requested call together.
+Creating your account, signing in, receiving a deposit, or trading through PolyEngine does not necessarily deploy the Safe. A Funding transfer, withdrawal, whitelist change, or another signed on-chain action can become its first deployment.
+> **Your first Chain action can deploy the Safe**
+>
+> Deployment does not create a new account or change its address. It places the already predicted Safe contract on Polyester Chain.
+## Main Accounts and Subaccounts
+Your Main Account and every Subaccount have separate Safe addresses. They can share the same owner wallet while keeping their balances, permissions, members, and activity separate.
+Switching accounts changes which Safe is active. It does not merge the accounts or move assets between them.
+## Your Safe and your balances
+The Safe is your account identity and authorization layer, but not every balance appears as tokens held directly at the Safe address.
+Funding contracts hold route-specific Zipped Assets and record your Unified Asset movements. Trading balances, orders, fills, fees, and reservations remain in Polyester's private Trading system. Zipper vaults separately hold native external assets that back Zipped Assets.
+See **[Sign-In & Ownership](https://testnet.polyester.com/docs/user-docs/account/access-and-security/sign-in-and-ownership)** for owner credentials and **[Gas Abstraction](https://testnet.polyester.com/docs/user-docs/polyester-chain/gasless-transactions)** for sponsored smart-account actions.

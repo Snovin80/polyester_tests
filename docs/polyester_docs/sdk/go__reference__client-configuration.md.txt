@@ -1,0 +1,63 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/client-configuration.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Client configuration
+Config fields, URLs, catalogs, wire format, and FromEnv behavior.
+Build a client with `polyester.New(Config{...})` and pass `Environment: &polyester.TestnetEnvironment` to target testnet. Defaults target API-key trading applications. Unary ConnectRPC responses are limited to 4 MiB after decompression.
+## Recommended constructor
+```go
+accountID := "..." // Profile → Account ID
+client, err := polyester.New(polyester.Config{
+Environment:      &polyester.TestnetEnvironment,
+APIKeyID:         "ak_...",
+APIPrivateKey:    "...", // 64-char hex from key creation
+DefaultAccountID: &accountID,
+HydrateCatalogs:  true,
+// APIURL: "https://api-testnet.polyester.com",
+// WSURL:  "wss://api-testnet.polyester.com",
+// Timeout: 10 * time.Second,
+// WireFormat: "binary", // or "json"
+// DefaultSubAccountID: &subID,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+```
+## Config fields
+| Field                        | Default                                   | Notes                                  |
+| ---------------------------- | ----------------------------------------- | -------------------------------------- |
+| `Environment`                | pass `&polyester.TestnetEnvironment`      | API, WebSocket, RPC, and contract pins |
+| `APIKeyID` / `APIPrivateKey` | empty                                     | Required for private RPCs / private WS |
+| `APIURL`                     | from `Environment`                        | ConnectRPC base override               |
+| `WSURL`                      | from `Environment`                        | Centrifugo WebSocket override          |
+| `DefaultAccountID`           | unset / env fallback                      | Private channel scoping                |
+| `DefaultSubAccountID`        | unset                                     | Default trading scope                  |
+| `Timeout`                    | `10s`                                     | HTTP timeout                           |
+| `WireFormat`                 | binary                                    | `"binary"` or `"json"`                 |
+| `HydrateCatalogs`            | false in zero `Config`; set true for bots | Background spot + Zipper hydrate       |
+| `HTTPClient`                 | SDK default                               | Optional custom `*http.Client`         |
+`FromEnv` sets `HydrateCatalogs: true` before applying overrides.
+## Aliases
+| Alias                     | Points to           |
+| ------------------------- | ------------------- |
+| `client.Candles`          | `client.MarketData` |
+| `client.TradingWithdraws` | `client.Withdraw`   |
+## FromEnv
+`polyester.FromEnv()` loads:
+- `POLYESTER_API_KEY_ID`
+- `POLYESTER_API_PRIVATE_KEY`
+- `POLYESTER_ACCOUNT_ID` (optional)
+- `POLYESTER_ENV`, set to `testnet`
+- `POLYESTER_API_URL` / `POLYESTER_WS_URL` (optional overrides)
+Override funcs run after these values load. Prefer explicit `Config` in production.
+> **Catalog readiness**
+>
+> Call `client.WaitForCatalogs(ctx)` before decimal order writes that need symbol scales. The wait fails if either required catalog cannot be hydrated or validated.
+> **Retries are application-controlled**
+>
+> The SDK does not automatically retry unary calls. Retry only transport and rate-limit failures with backoff and stable idempotency keys. Reconcile mutation outcomes before retrying.
+## Related
+- [Authentication](https://testnet.polyester.com/docs/sdk/go/guides/authentication)
+- [Catalog](https://testnet.polyester.com/docs/sdk/go/reference/catalog)
+- [Realtime](https://testnet.polyester.com/docs/sdk/go/reference/realtime)

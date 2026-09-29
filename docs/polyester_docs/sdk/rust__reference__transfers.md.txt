@@ -1,0 +1,30 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Transfers
+Transfer history reads.
+`client.transfers` reads and streams ledger transfer history. Create movements with `client.internal_transfers`, `client.withdraw`, or `polyester::chain`.
+```rust
+use polyester::proto::ledger::read::v1::ListTransfersRequest;
+let page = client.transfers.list(ListTransfersRequest {
+limit: 50,
+}).await?;
+for transfer in page.transfers {
+println!(
+"{} {} {} debit={}",
+transfer.tx_id,
+transfer.asset_id,
+transfer.amount,
+transfer.is_debit,
+);
+}
+```
+The generated request carries account/subaccount scope, sort direction, and the numeric `since` cursor. This cursor is not a string page token.
+```rust
+let mut sub = client.transfers.subscribe(None).await?;
+if let Some(transfer) = sub.recv_result().await? {
+println!("{} {}", transfer.tx_id, transfer.amount);
+}
+```
+The stream is private and `None` uses `Config.default_account_id`.

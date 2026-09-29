@@ -1,0 +1,233 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/profile
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Profile · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Profile
+Profile
+Copy page
+View as Markdown
+Open in
+Profile is nested at
+client.auth.profile
+let
+mut
+updates
+=
+client
+auth
+profile
+subscribe_identity
+()
+;
+if
+let
+Some
+(
+identity
+)
+=
+updates
+recv_result
+()
+println!
+(
+"{} {} {} {}"
+,
+identity
+account_id,
+identity
+username,
+identity
+avatar_url,
+identity
+root_smart_account_address,
+);
+}
+The public stream does not guarantee an initial snapshot. Use
+client.auth.me().await?
+for the
+current API-key identity and the Polyester app to manage profile fields.
+get
+,
+update
+, and username-history operations are unavailable because they require a
+JWT/session. Do not infer
+default_account_id
+from a startup stream event.
+Related
+Auth
+Realtime
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Public trades
+Public trade tape reads and subscribe via market_data.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Polychart
+Next
+Public trades
+On this page
+Related
+Related Topics
+Share this page
+Profile
+Profile identity reads and subscribe helpers.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+let mut updates = client.auth.profile.subscribe_identity().await?;
+if let Some(identity) = updates.recv_result().await? {
+    println!(
+        "{} {} {} {}",
+        identity.account_id,
+        identity.username,
+        identity.avatar_url,
+        identity.root_smart_account_address,
+    );
+}

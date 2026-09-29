@@ -1,0 +1,531 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/funds-transfers/withdraw-from-trading
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Withdraw from Trading · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Funds & Transfers
+svg]:size-3.5">
+/
+Withdraw from Trading
+Withdraw from Trading
+Copy page
+View as Markdown
+Open in
+Polyester supports Trading withdrawals authorized by either an
+API key
+or a wallet-signed session.
+Use the API-key path for server-side automation. Use the wallet path for JWT-authenticated
+integrations that collect an EIP-191
+personal_sign
+signature from the wallet bound to the
+selected account.
+This guide focuses on external-chain withdrawals from Trading. The same API family also supports
+Trading-to-Funding moves with different destination rules.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Destination must already be trusted
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+External Trading withdrawals require the destination to pass account policy, destination whitelist,
+network address, and Polyester safety checks. If the destination is not allowed, the request is
+rejected before funds leave Trading.
+What the withdrawal does
+A Trading withdraw creates a durable withdraw intent. Store
+intentId
+for correlation. Once the
+flow appears, use its public
+flowId
+for lifecycle detail reads and subscriptions.
+For an external-chain withdraw:
+1
+Polyester verifies the caller and the signed withdraw payload.
+2
+Polyester checks account policy, destination whitelist state, asset support, and the effective minimum amount.
+3
+Polyester reserves the requested amount from the Trading balance.
+4
+The withdraw lifecycle continues asynchronously until it is settled, completed, failed, dropped, or refunded.
+The accepted amount is the gross amount leaving Trading. Network and bridge fees are applied by the withdraw lifecycle according to the destination
+route
+Endpoints
+Operation
+Authorization
+REST
+ConnectRPC
+Destination validation
+Authenticated caller
+POST /v1/chain/withdraws:validate-destination
+ValidateWithdrawDestination
+Create withdrawal
+API key
+POST /v1/chain/trading-withdraws
+CreateTradingWithdraw
+Create withdrawal
+JWT,
+MFA
+step-up, wallet signature
+POST /v1/chain/trading-withdraws:wallet
+CreateWalletTradingWithdraw
+For external withdrawals, validate the destination before constructing and signing the withdrawal
+payload. Destination validation does not create an intent or reserve funds. See
+Funds transfer overview
+for its response codes and authority boundary.
+The two create methods support REST/JSON and ConnectRPC. The wallet REST route requires the same
+session JWT, fresh step-up proof, and wallet signature as
+CreateWalletTradingWithdraw
+methods return:
+"intentId"
+"..."
+}
+Store
+intentId
+as the durable withdraw correlation identifier. Lifecycle list and realtime
+responses expose a public
+flowId
+once the flow is available; use that
+flowId
+for lifecycle detail
+reads and subscriptions.
+Shared payload fields
+Both auth modes sign the same business payload.
+Field
+Required
+Meaning
+action
+yes
+Use
+TO_EXTERNAL_CHAIN
+for external withdraws.
+assetId
+yes
+Ledger/
+unified asset
+identifier from Polyester asset metadata.
+destinationChainId
+yes for external withdraws
+Destination chain id from Polyester route metadata. Omit only for Trading-to-Funding moves.
+amount
+yes
+REST decimal string for the withdraw amount, such as
+"0.5"
+amount_e18
+field.
+deadlineTsSec
+yes
+Unix seconds when the signed authorization expires. Must be in the future and within 15 minutes.
+nonce
+yes
+Client-generated non-zero replay nonce. REST uses an unsigned integer string; ConnectRPC uses U128. This is not a decimal amount.
+destinationAddress
+yes for external withdraws
+Address on the destination network.
+idempotencyKey
+yes
+Client-chosen key. Reusing it with the same signed request returns the same withdraw; reusing it with different signed fields fails.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Use exact integer math
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+REST sends
+"amount": "0.5"
+amount_e18 = 500000000000000000
+See
+Scaled Integers
+for U128 encoding details.
+API-key withdraw
+API-key withdrawals use two signatures:
+The normal API Key HTTP request signature in the
+X-API-*
+headers.
+A withdraw payload signature in the request body.
+The payload signature is an Ed25519 signature over the deterministic protobuf bytes of
+TradingWithdrawIntentPayload
+payloadSignature
+is base64-encoded because it is a protobuf bytes field.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Payload signature is separate from request auth
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The HTTP request signature proves the API request came from the API key. The payload signature proves the API key authorized the exact withdraw fields.
+REST request shape
+"payload"
+"action"
+"TO_EXTERNAL_CHAIN"
+,
+"assetId"
+1
+,
+"destinationChainId"
+"1"
+,
+"amount"
+"0.5"
+,
+"deadlineTsSec"
+"1710000000"
+,
+"nonce"
+"123"
+,
+"destinationAddress"
+"0x1111111111111111111111111111111111111111"
+,
+"idempotencyKey"
+"withdraw-2026-06-23-0001"
+},
+"payloadSignature"
+"<base64_ed25519_payload_signature>"
+}
+Convert
+amount
+and
+nonce
+to their canonical U128 values before deterministic protobuf
+serialization and payload signing. The REST strings are only a human-friendly wire view of those
+exact signed integers.
+Headers
+X-API-KEY-ID: <api_key_id>
+X-API-TIMESTAMP: <milliseconds_since_unix_epoch>
+X-API-NONCE: <unique_request_nonce>
+X-API-SIGNATURE: <request_signature>
+The API-key endpoint does not accept a
+subaccountId
+field. Polyester derives the target root account or
+subaccount
+from the API key binding, then enforces the key policy and account policy for external withdrawals.
+Implementation checklist:
+1
+Build
+TradingWithdrawIntentPayload
+2
+Encode the payload with deterministic protobuf serialization.
+3
+Sign those bytes with the API key's Ed25519 private key.
+4
+Base64-encode the payload signature for JSON.
+5
+Sign the HTTP request using the normal API-key request-signing rules over the exact body bytes you send.
+6
+Send the payload and payloadSignature to
+POST /v1/chain/trading-withdraws
+7
+Store the returned
+intentId
+and follow lifecycle progress.
+See
+Ed25519 API Keys
+for
+request-signing details.
+Wallet withdraw
+Wallet withdrawals use a JWT-authenticated session and an EIP-191
+personal_sign
+signature from
+the wallet bound to the selected Polyester account. Signing this message does not require the wallet
+to recognize or switch to the Polyester network.
+Wallet requests require:
+a JWT-authenticated session
+a fresh MFA step-up token for wallet withdraw intake
+a wallet EIP-191
+personal_sign
+signature over the withdraw intent
+the bound wallet address that produced the signature
+Request shape
+"payload"
+"action"
+"TO_EXTERNAL_CHAIN"
+,
+"assetId"
+1
+,
+"destinationChainId"
+"1"
+,
+"amount"
+"0.5"
+,
+"deadlineTsSec"
+"1710000000"
+,
+"nonce"
+"123"
+,
+"destinationAddress"
+"0x1111111111111111111111111111111111111111"
+,
+"idempotencyKey"
+"withdraw-2026-06-23-0001"
+},
+"signerWallet"
+"0x2222222222222222222222222222222222222222"
+,
+"payloadSignature"
+"<base64_wallet_personal_sign_signature>"
+}
+Headers
+Authorization: Bearer <session_jwt>
+X-Auth-Step-Up: <fresh_step_up_token>
+Omit
+subaccountId
+to withdraw from the root account's selected Trading account. Set
+subaccountId
+to the public base58 subaccount id only when withdrawing from a subaccount the
+session is allowed to operate.
+EIP-191 message
+Build this exact UTF-8 message, with one line-feed character between each displayed line. Render
+integer values in base 10 without separators. Render
+signerWallet
+and
+verifyingContract
+as
+lowercase
+0x
+addresses. Use the trimmed
+destinationAddress
+and
+idempotencyKey
+values directly;
+these values must not contain control characters.
+personal_sign message
+Polyester Trading Withdrawal
+Version: 1
+Environment: polyester
+Action: TO_EXTERNAL_CHAIN
+Signer Wallet: 0x2222222222222222222222222222222222222222
+Account ID: <public_root_account_uint64>
+Target Account ID: <public_selected_account_or_subaccount_uint64>
+Asset ID: 1
+Polyester Chain ID: <active_polyester_chain_id>
+Destination Chain ID: 1
+Amount E18: 500000000000000000
+Destination: 0x1111111111111111111111111111111111111111
+Verifying Contract: <lowercase_trading_gateway_address>
+Deadline: 1710000000
+Nonce: 123
+Idempotency Key: withdraw-2026-06-23-0001
+Use
+Action: TO_FUNDING
+,
+Destination Chain ID: 0
+, and the corresponding Funding destination for
+a Trading-to-Funding request. Pass the complete message to the wallet's standard message-signing
+method. Do not add the EIP-191 prefix yourself; wallet libraries apply it as part of
+personal_sign
+The wallet signature is a 65-byte secp256k1 EIP-191 signature. A REST or ConnectRPC JSON request
+carries it as Base64 in
+payloadSignature
+; generated binary clients handle the bytes encoding.
+Implementation checklist:
+1
+Get or refresh a JWT session.
+2
+Complete MFA step-up and send the returned token as
+X-Auth-Step-Up
+3
+Fetch the active
+Polyester chain
+id, TradingGateway address, asset id, and destination chain id from Polyester metadata.
+4
+Build the withdraw payload and matching canonical EIP-191 message.
+5
+Request a
+personal_sign
+signature over the message from the bound wallet.
+6
+Encode the signature for the selected REST or ConnectRPC wire format.
+7
+Call
+POST /v1/chain/trading-withdraws:wallet
+,
+CreateWalletTradingWithdraw
+, or an official SDK method that wraps one of those transports.
+8
+Store the returned
+intentId
+and follow lifecycle progress.
+See
+Multi-Factor Authentication
+for step-up behavior.
+Common validation failures
+Error cause
+How to fix it
+Missing
+destinationChainId
+for
+TO_EXTERNAL_CHAIN
+Set the destination chain id from Polyester route metadata.
+deadlineTsSec
+expired
+Use a deadline no more than 15 minutes out.
+Zero
+amount
+or zero nonce
+Generate non-zero canonical U128 values and render them as strings for REST.
+Destination not whitelisted
+Add or choose an allowed destination before withdrawing.
+Destination is not allowed by Polyester safety checks
+Choose a different destination. Restricted-address details are not exposed.
+Unsupported asset or destination chain route
+Choose an asset and destination chain combination supported by Polyester metadata.
+Amount below effective minimum
+Increase the gross withdraw amount to cover route minimums and fees.
+Insufficient available Trading balance
+Fund Trading or reduce the withdraw amount.
+Reused idempotencyKey with different signed fields
+Use a new key or retry with the exact same signed request.
+API key or account policy does not allow external withdraws
+Use a key and account role that are allowed to withdraw.
+Wallet signer is not bound to the account scope
+Sign with a wallet bound to the selected account or subaccount.
+Wallet endpoint called with an API key
+Use JWT auth for wallet withdraws.
+API-key endpoint called with JWT auth
+Use API-key auth for API-key withdraws.
+Production guidance
+Generate a new nonce for every newly signed payload.
+Keep deadlineTsSec short; 5 to 10 minutes is a practical default.
+Use stable idempotencyKey values only for retries of the same signed withdraw request.
+Store intentId immediately after acceptance.
+Treat accepted withdraws as asynchronous and follow lifecycle state instead of assuming same-request completion.
+Reconcile Trading balances and lifecycle state after failures or retries.
+For the broader security model, see Withdrawals and Transfers Security.
+Related Topics
+Overview
+Choose the correct API, on-chain, or delegated path for deposits, withdrawals, and transfers.
+Previous
+Overview
+Next
+Polyester MCP
+On this page
+What the withdrawal does
+Endpoints
+Shared payload fields
+API-key withdraw
+Wallet withdraw
+EIP-191 message
+Common validation failures
+Production guidance
+Related Topics
+Share this page
+Withdraw from Trading
+How to withdraw from Trading to Funding or to an external chain
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"intentId": "..."
+}
+
+---
+
+{
+	"payload": {
+		"action": "TO_EXTERNAL_CHAIN",
+		"assetId": 1,
+		"destinationChainId": "1",
+		"amount": "0.5",
+		"deadlineTsSec": "1710000000",
+		"nonce": "123",
+		"destinationAddress": "0x1111111111111111111111111111111111111111",
+		"idempotencyKey": "withdraw-2026-06-23-0001"
+	},
+	"payloadSignature": "<base64_ed25519_payload_signature>"
+}
+
+---
+
+X-API-KEY-ID: <api_key_id>
+X-API-TIMESTAMP: <milliseconds_since_unix_epoch>
+X-API-NONCE: <unique_request_nonce>
+X-API-SIGNATURE: <request_signature>
+
+---
+
+{
+	"payload": {
+		"action": "TO_EXTERNAL_CHAIN",
+		"assetId": 1,
+		"destinationChainId": "1",
+		"amount": "0.5",
+		"deadlineTsSec": "1710000000",
+		"nonce": "123",
+		"destinationAddress": "0x1111111111111111111111111111111111111111",
+		"idempotencyKey": "withdraw-2026-06-23-0001"
+	},
+	"signerWallet": "0x2222222222222222222222222222222222222222",
+	"payloadSignature": "<base64_wallet_personal_sign_signature>"
+}
+
+---
+
+Authorization: Bearer <session_jwt>
+X-Auth-Step-Up: <fresh_step_up_token>
+
+---
+
+Polyester Trading Withdrawal
+
+Version: 1
+Environment: polyester
+Action: TO_EXTERNAL_CHAIN
+Signer Wallet: 0x2222222222222222222222222222222222222222
+Account ID: <public_root_account_uint64>
+Target Account ID: <public_selected_account_or_subaccount_uint64>
+Asset ID: 1
+Polyester Chain ID: <active_polyester_chain_id>
+Destination Chain ID: 1
+Amount E18: 500000000000000000
+Destination: 0x1111111111111111111111111111111111111111
+Verifying Contract: <lowercase_trading_gateway_address>
+Deadline: 1710000000
+Nonce: 123
+Idempotency Key: withdraw-2026-06-23-0001

@@ -1,0 +1,93 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/connectrpc/getting-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Getting started
+Use Polyester's typed ConnectRPC methods with JSON or binary Protobuf, authentication metadata, and safe retry behavior.
+ConnectRPC exposes Polyester's protobuf service contracts over HTTP. Generated clients provide typed requests, responses, and errors without requiring a traditional gRPC transport.
+The official TypeScript, Python, and Go SDKs use ConnectRPC for typed unary API calls. The Polyester frontend uses the TypeScript SDK. The [Rust SDK](https://testnet.polyester.com/docs/sdk/rust/get-started) builds on Connect for Rust and the same public Protobuf contracts. Realtime subscriptions use WebSockets.
+> **Contract-first APIs**
+>
+> Public Protobuf definitions are the source contract for Polyester's typed APIs. Polyester's custom generation tooling uses those definitions for ConnectRPC clients, SDKs, and the REST/OpenAPI surface, keeping shared operations and validation aligned. See [Protobuf contracts](https://testnet.polyester.com/docs/developer-docs/connectrpc/protobuf-contracts).
+> **Recommended for latency-sensitive integrations**
+>
+> For latency-sensitive typed unary integrations, Polyester recommends an official SDK using ConnectRPC with binary Protobuf. Binary can reduce payload and serialization overhead, but actual latency depends on the request, network, and workload. Measure representative production traffic.
+REST remains a first-class option when readable payloads and broad HTTP tooling are more important. Compare the available methods in the [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix).
+## Unary requests
+A unary Connect procedure uses this path:
+```text
+/
+/
+```
+For example:
+```text
+/marketdata.v1.MarketDataService/GetSpotConfig
+```
+Unary Connect requests and successful responses support two wire formats:
+| Wire format     | Content type        | Body                        |
+| --------------- | ------------------- | --------------------------- |
+| ProtoJSON       | `application/json`  | Protobuf JSON encoding      |
+| Binary Protobuf | `application/proto` | Serialized protobuf message |
+Manually constructed unary POST requests should include `Connect-Protocol-Version: 1`. Generated clients handle the procedure path, protocol header, serialization, and error decoding.
+Streaming procedures use `application/connect+json` or `application/connect+proto`; unary procedures do not. Unary errors use a non-200 HTTP status and may include a JSON Connect error containing `code`, `message`, and `details`.
+## REST and ConnectRPC example
+`GetSpotConfig` uses an empty request message, which keeps the transport comparison concise.
+## REST (JSON)
+```http
+GET /v1/spot/config
+Accept: application/json
+```
+## ConnectRPC JSON
+```http
+POST /marketdata.v1.MarketDataService/GetSpotConfig
+Content-Type: application/json
+Connect-Protocol-Version: 1
+```
+## ConnectRPC binary
+```http
+POST /marketdata.v1.MarketDataService/GetSpotConfig
+Content-Type: application/proto
+Connect-Protocol-Version: 1
+```
+The binary body is zero bytes because the request message is empty. The successful response body is a binary `GetSpotConfigResponse`.
+## Selecting JSON or binary
+Wire format is configured by the transport, not by generated message types. The official TypeScript, Python, and Go SDKs default unary ConnectRPC calls to binary Protobuf. Other generated clients can have different defaults, so verify the transport configuration when building a custom client.
+## ProtoJSON conventions
+Connect JSON uses standard protobuf JSON mapping:
+- field names are emitted in lower camel case, such as `orderId`, `symbolId`, and `priceTicks`
+- 64-bit integer fields are emitted as decimal strings
+- `bytes` fields are standard padded Base64
+- enum values are emitted by name
+- absent fields follow protobuf presence and default-value rules
+Protobuf parsers may accept the original snake-case field name as input, but clients should emit and expect the canonical lower-camel-case form.
+> **Do not convert 64-bit IDs through Number**
+>
+> Generated TypeScript protobuf fields use `bigint`. Keep 64-bit values as `bigint` or decimal strings. Converting through JavaScript `Number` can lose precision.
+## Public IDs and scaled values
+Representation depends on the endpoint:
+- Public IDs may appear as numeric protobuf values or Base58 REST strings. This conversion does not apply to every identifier.
+- Trading values use scales defined by the field contract and current asset or pair metadata from `GetSpotConfig`; fee scales can depend on the fee asset.
+- REST responses may expose resolved symbols and decimal strings where protobuf responses use identifiers and scaled integers.
+See [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids) and [Scaled integers](https://testnet.polyester.com/docs/developer-docs/connectrpc/scaled-integers) before implementing manual conversion.
+For order entry, review [Order Sizing](https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing), [Fee Assets](https://testnet.polyester.com/docs/developer-docs/shared-concepts/fee-assets), and [Preview Order](https://testnet.polyester.com/docs/developer-docs/shared-concepts/preview-order).
+The TypeScript SDK normalizes public IDs at its API boundaries. It converts protobuf `fixed64` IDs to Base58 strings for application code and converts accepted ID inputs back to `fixed64` for ConnectRPC requests.
+## Authentication metadata
+Send authentication metadata with authenticated ConnectRPC calls:
+- JWT calls send `Authorization: Bearer
+`.
+- API-key calls send `X-API-KEY-ID`, `X-API-TIMESTAMP`, and `X-API-SIGNATURE`.
+- Interactive high-risk methods can also require `X-Auth-Step-Up`.
+For API-key authentication, the signature covers the exact serialized request body. Changing between JSON and binary changes those bytes and therefore changes the canonical request signature. Generate the signature after the transport format and body are final.
+Generated clients should apply metadata through an interceptor or shared transport wrapper instead of setting it independently at every call site.
+See [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys) and [API key replay protection](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy).
+## Retries and idempotency
+Retry a call only when it is read-only or protected by documented endpoint idempotency, and only for temporary or SDK-designated retryable failures. Never automatically retry an uncertain state-changing result without documented idempotency. Use bounded exponential backoff with jitter.
+For a state-changing method with a documented idempotency field:
+- generate and persist the endpoint's idempotency value before the first attempt
+- keep the logical request unchanged
+- preserve any endpoint-specific signed movement payload
+- create a fresh API-key timestamp and HTTP signature for every attempt
+- when the payload has a signed deadline, stop after it expires
+Read-only pagination tokens are opaque. Replay the token exactly as returned and keep the original filters and ordering.
+## Realtime subscriptions
+ConnectRPC covers request-response methods; Polyester realtime subscriptions use WebSockets. See [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf) for typed payloads and the [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model) for subscription authentication and reconnect guidance.

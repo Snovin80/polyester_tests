@@ -1,0 +1,259 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order Sizing · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Platform Concepts
+svg]:size-3.5">
+/
+Order Sizing
+Order Sizing
+Copy page
+View as Markdown
+Open in
+Order sizing defines which quantity a client controls when placing an order. Every
+OrderIntent.sizing
+selects exactly one of two alternatives.
+Sizing alternatives
+Intent
+Meaning
+Scale source
+Eligible orders
+base_qty_scaled
+Exact gross base quantity submitted for execution
+Pair
+base_quantity_scale
+BUY or SELL with any execution type
+max_quote_debit_scaled
+Hard all-in quote debit ceiling, including any quote-denominated fee
+Pair
+quote_quantity_scale
+BUY Market IOC or BUY Limit IOC
+REST uses the equivalent decimal-string fields
+baseQty
+and
+maxQuoteDebit
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Set exactly one sizing field
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+OrderIntent.sizing
+is a required Protobuf
+oneof
+application code, not as two unrelated optional values.
+Exact base quantity
+base_qty_scaled
+controls the gross base quantity sent for execution. It does not describe the net
+amount received after fees.
+For a BUY with a quote-denominated fee, the account must fund trade notional plus the fee. For a
+BUY with a base-denominated fee, the fee reduces the base amount received. See
+Fee Assets
+Maximum quote debit
+max_quote_debit_scaled
+controls the maximum quote amount that can be debited. Polyester resolves
+the largest legal, step-aligned gross base quantity that fits inside the ceiling at the protected
+price boundary.
+The final debit can be lower after a better-priced or partial fill, but it cannot exceed the
+submitted ceiling. This sizing mode is invalid for SELL, Limit GTC, and Limit FOK orders.
+Request examples
+REST JSON
+ConnectRPC ProtoJSON
+"order"
+"symbol"
+"BTC-USDT"
+,
+"side"
+"BUY"
+,
+"maxQuoteDebit"
+"100.00"
+,
+"feeAsset"
+"QUOTE"
+,
+"marketIoc"
+"maxSlippageBps"
+50
+}
+}
+}
+This example assumes the Pair's quote quantity scale has already been applied:
+"order"
+"symbol"
+"BTC-USDT"
+,
+"side"
+"BUY"
+,
+"maxQuoteDebitScaled"
+"100000000"
+,
+"feeAsset"
+"QUOTE"
+,
+"marketIoc"
+"maxSlippageBps"
+50
+}
+}
+}
+Use
+Scaled Integers
+to resolve Pair scales and
+Market Order Price Protection
+for price-boundary behavior.
+Create acknowledgement
+CreateOrderResponse
+acknowledges admission, not execution:
+resolved_base_qty_scaled
+is the authoritative gross base quantity accepted for execution.
+submitted_max_quote_debit_scaled
+is present only when quote-budget sizing was submitted.
+Do not infer fills from this response. Use order reads and realtime streams for working, filled,
+canceled, and terminal state.
+SBE WebSocket schema version 2
+The client-facing SBE
+CreateOrder
+command requires
+sizingKind
+sizingKind
+Selected field
+Unselected field requirement
+BASE_QUANTITY
+baseQtyScaled
+maxQuoteDebitScaled
+is null
+MAX_QUOTE_DEBIT
+maxQuoteDebitScaled
+baseQtyScaled
+is null
+Successful create acknowledgements expose
+resolvedBaseQtyScaled
+and, for quote-budget orders,
+submittedMaxQuoteDebitScaled
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+The sizing enum is required
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Populating
+baseQtyScaled
+is not sufficient. A zero-initialized or omitted
+sizingKind
+is
+rejected.
+Use
+Preview Order
+when an integration needs to
+check an order before submission.
+Related Topics
+Public IDs
+Understand what Polyester public IDs identify, why they are opaque, and how their representation differs per interface.
+Client order IDs and idempotency
+Use client order IDs to prevent duplicate placement, correlate client intents, and reconcile uncertain outcomes.
+Fee Assets
+Choose whether a BUY fee is charged in quote or deducted from received base, and decode fee amounts with the correct scale.
+Preview Order
+Check whether an order is currently admissible without creating an order, reserving funds, or presenting an execution quote.
+Market Order Price Protection
+Understand market-order slippage overrides, pair defaults, client reference drift, execution boundaries, and stale-quote errors.
+Self-Trade Prevention
+Prevent an incoming order from trading against a resting order from the same trading account.
+Rate limits
+Weighted quotas, default limits, rejection metadata, and retry behavior.
+WebSocket session model
+Understand shared connection, authentication, subscription, and recovery behavior for Polyester realtime channels.
+Previous
+Client order IDs and idempotency
+Next
+Fee Assets
+On this page
+Sizing alternatives
+Exact base quantity
+Maximum quote debit
+Request examples
+Create acknowledgement
+SBE WebSocket schema version 2
+Related Topics
+Share this page
+Order Sizing
+Choose exact base-quantity or maximum quote-debit sizing and read the authoritative quantity accepted for execution.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"order": {
+		"symbol": "BTC-USDT",
+		"side": "BUY",
+		"maxQuoteDebit": "100.00",
+		"feeAsset": "QUOTE",
+		"marketIoc": {
+			"maxSlippageBps": 50
+		}
+	}
+}
+
+---
+
+{
+	"order": {
+		"symbol": "BTC-USDT",
+		"side": "BUY",
+		"maxQuoteDebitScaled": "100000000",
+		"feeAsset": "QUOTE",
+		"marketIoc": {
+			"maxSlippageBps": 50
+		}
+	}
+}

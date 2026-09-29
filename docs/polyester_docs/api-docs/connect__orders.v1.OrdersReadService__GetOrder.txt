@@ -1,0 +1,1286 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/orders.v1.OrdersReadService/GetOrder
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+orders.v1.OrdersService
+GetOrder
+Retrieve order state and a bounded page of its lineage executions by order or client order ID.
+Use GetUserTrades for paginated execution history and optional settlement legs.
+Recent accepted orders may wait briefly for read availability; retry UNAVAILABLE with the same lookup key.
+Copy URL
+Method
+POST
+Path
+orders.v1.OrdersReadService/GetOrder
+Service
+orders.v1.OrdersReadService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+orders.v1.OrdersReadService/GetOrder
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersReadService/GetOrder' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"includeAttachedRisk": false,
+"includeAttachedRiskState": false,
+"includeExecutionHistory": false,
+"limit": 100,
+"orderId": "9876543210123",
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"subaccountId": "6789012345678"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"order": {
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"policy": {
+"child": {},
+"triggerPriceTicks": "5000000"
+},
+"state": {
+"armedTsNs": "1735689600000000000",
+"childOrderId": "9876543210123",
+"status": "NOT_CONFIGURED",
+"terminalTsNs": "1735689600000000000",
+"triggerId": "9155001234567"
+}
+},
+"takeProfit": {
+"policy": {
+"child": {},
+"triggerPriceTicks": "5000000"
+},
+"state": {
+"armedTsNs": "1735689600000000000",
+"childOrderId": "9876543210123",
+"status": "NOT_CONFIGURED",
+"terminalTsNs": "1735689600000000000",
+"triggerId": "9155001234567"
+}
+},
+"trailingStop": {
+"policy": {
+"activationPriceTicks": "5000000",
+"maxSlippageTicks": "1",
+"trailingDistanceTicks": "1"
+},
+"state": {
+"armedTsNs": "1735689600000000000",
+"childOrderId": "9876543210123",
+"status": "NOT_CONFIGURED",
+"terminalTsNs": "1735689600000000000",
+"triggerId": "9155001234567"
+}
+}
+},
+"avgPriceTicks": "5000000",
+"batchRequestId": "1",
+"clientOrderId": "cli-ord-20250101-001",
+"createdTsNs": "1735689600000000000",
+"cumQtyScaled": "100000",
+"expireAt": "2025-01-01T00:00:00Z",
+"feeAsset": "QUOTE",
+"inheritedCumQtyScaled": "100000",
+"leavesQtyScaled": "100000",
+"lineage": {
+"generation": 1,
+"id": "1"
+},
+"marketClientRefPriceTicks": "5000000",
+"marketMaxSlippageBps": 1,
+"marketMaxSlippageTicks": "1",
+"orderId": "9876543210123",
+"orderType": "LIMIT",
+"origQtyScaled": "100000",
+"origin": {
+"childSeq": 1,
+"parentOrderId": "9876543210123",
+"scope": "DIRECT",
+"triggerId": "9155001234567",
+"triggerType": "STOP_LOSS"
+},
+"postOnly": false,
+"priceTicks": "5000000",
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"side": "BUY",
+"status": "PENDING",
+"submittedMaxQuoteDebitScaled": "1",
+"symbolId": 1,
+"terminalReason": "USER_REQUEST",
+"terminalReasonCode": 1,
+"terminalTsNs": "1735689600000000000",
+"timeInForce": "GTC",
+"version": 1
+},
+"trades": [
+"feeAmountE18": {
+"hi": "1",
+"lo": "1"
+},
+"feeAsset": "QUOTE",
+"feeIsRebate": false,
+"isMaker": false,
+"lineage": {
+"generation": 1,
+"id": "1"
+},
+"matchId": "100001",
+"orderId": "9876543210123",
+"priceTicks": "5000000",
+"qtyScaled": "100000",
+"referralShareAmountE18": {
+"hi": "1",
+"lo": "1"
+},
+"side": "BUY",
+"symbolId": 1,
+"tsNs": "1735689600000000000"
+}
+],
+"transfers": [
+"accountCode": "FUNDING",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"isDebit": false,
+"matchId": "100001",
+"symbolId": 1,
+"transferCode": "DEPOSIT",
+"tsNs": "1735689600000000000",
+"txId": "0xabc123"
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+orders.v1.GetOrderRequest
+Response
+orders.v1.GetOrderResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+> 0
+Target sub-account numeric ID. When omitted, uses caller's root account.
+orderId
+string (fixed64)
+required one of
+> 0
+Public order ID (base58-encoded fixed64 on REST).
+clientOrderId
+string
+required one of
+1-36 chars
+/^[A-Za…:/-]+$/
+Client order ID. When provided, server resolves latest matching order for the account.
+one-of
+includeAttachedRisk
+boolean
+Include attached-risk policy details in response.order (defaults to false when unset).
+Unset
+False
+True
+includeAttachedRiskState
+boolean
+Include attached-risk state details in response.order (defaults to false when unset).
+Unset
+False
+True
+includeExecutionHistory
+boolean
+Include a page of lineage trades and their settlement transfers (default true).
+Set false for state-only polling; limit and page_token must then be omitted.
+Unset
+False
+True
+limit
+integer (int32)
+1–1000
+Maximum executions to return (1-1000, default 100).
+pageToken
+string
+max 512 chars
+Execution cursor from this order's previous response. Use order_id rather
+than a reused client_order_id to keep the requested generation stable.
+Response
+Form
+JSON
+order
+object
+Requested order, if found.
+30 fields
+orderId
+string (fixed64)
+Public order identifier as fixed64.
+symbolId
+integer (int32)
+Trading symbol numeric identifier.
+clientOrderId
+string
+max 36 chars
+/^[A-Za…:/-]*$/
+Client-provided, account-scoped identifier for correlation, lookup, and
+cancellation. Empty when none was supplied.
+side
+enum
+must be defined value
+Order side.
+BUY
+SELL
+status
+enum
+Current order lifecycle status.
+PENDING
+PENDING_CANCEL
+WORKING
+FILLED
+CANCELED
+REJECTED
+orderType
+enum
+Order type.
+LIMIT
+MARKET
+timeInForce
+enum
+Time-in-force policy.
+GTC
+IOC
+FOK
+GTD
+selfTradePreventionMode
+enum
+Self-trade prevention mode.
+EXPIRE_MAKER
+EXPIRE_TAKER
+EXPIRE_BOTH
+feeAsset
+enum
+Fee asset selected for fills.
+QUOTE
+BASE
+postOnly
+boolean
+True if the order was submitted as post-only (maker-only).
+origQtyScaled
+string (int64)
+Current accepted total order quantity, updated by successful modifies,
+scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id.
+cumQtyScaled
+string (int64)
+Cumulative filled quantity across the lineage through this generation,
+scaled by the pair's base_quantity_scale from GetSpotConfig for symbol_id.
+inheritedCumQtyScaled
+string (int64)
+Cumulative filled base quantity inherited from predecessors when this
+replacement was accepted, scaled by the pair's base_quantity_scale from
+GetSpotConfig for symbol_id. Zero for the original order and immutable
+within a generation. cum_qty_scaled minus this value is the quantity
+executed by this generation, not the quantity new to a client session.
+leavesQtyScaled
+string (int64)
+Remaining working quantity scaled by the pair's base_quantity_scale from
+GetSpotConfig for symbol_id. Zero for terminal orders.
+avgPriceTicks
+string (int64)
+Average execution price across the lineage through this generation,
+in quote units scaled by 1e9. Zero if no fills.
+priceTicks
+string (int64)
+Limit price in quote units scaled by 1e9. Zero for MARKET orders.
+createdTsNs
+string (uint64)
+Creation timestamp in nanoseconds since epoch (UTC).
+terminalTsNs
+string (uint64)
+Terminal timestamp in nanoseconds since epoch (UTC). Zero for open orders.
+terminalReasonCode
+integer (int32)
+Terminal reason code for canceled/rejected orders. Zero for non-terminal orders.
+terminalReason
+string
+Stable string for terminal_reason_code (e.g. "POST_ONLY_CROSS", "USER_REQUEST").
+Empty for non-terminal orders.
+attachedRisk
+object
+Attached risk controls + runtime state on the parent order.
+Empty when no attached risk exists.
+4 fields
+takeProfit
+object
+Take-profit leg, if configured or if state exists.
+2 fields
+policy
+object
+Take-profit policy configured on the parent order.
+2 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger price in quote units scaled by 1e9.
+child
+object
+Child execution when the threshold is crossed.
+state
+object
+Runtime state for the take-profit leg.
+5 fields
+status
+enum
+must be defined value
+Current runtime lifecycle status for this attached-risk leg.
+NOT_CONFIGURED
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+armedTsNs
+string (uint64)
+Time the leg was armed, in nanoseconds since epoch (UTC). Zero if not armed.
+terminalTsNs
+string (uint64)
+Time the leg reached a terminal state, in nanoseconds since epoch (UTC). Zero if not terminal.
+triggerId
+string (fixed64)
+Trigger identifier for this attached-risk leg.
+childOrderId
+string (fixed64)
+Child order ID created by this leg after it fires.
+stopLoss
+object
+Stop-loss leg, if configured or if state exists.
+2 fields
+policy
+object
+Stop-loss policy configured on the parent order.
+2 fields
+triggerPriceTicks
+string (int64)
+> 0
+Trigger price in quote units scaled by 1e9.
+child
+object
+Child execution when the threshold is crossed.
+state
+object
+Runtime state for the stop-loss leg.
+5 fields
+status
+enum
+must be defined value
+Current runtime lifecycle status for this attached-risk leg.
+NOT_CONFIGURED
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+armedTsNs
+string (uint64)
+Time the leg was armed, in nanoseconds since epoch (UTC). Zero if not armed.
+terminalTsNs
+string (uint64)
+Time the leg reached a terminal state, in nanoseconds since epoch (UTC). Zero if not terminal.
+triggerId
+string (fixed64)
+Trigger identifier for this attached-risk leg.
+childOrderId
+string (fixed64)
+Child order ID created by this leg after it fires.
+trailingStop
+object
+Trailing-stop leg, if configured or if state exists.
+2 fields
+policy
+object
+Trailing-stop policy configured on the parent order.
+5 fields
+trailingDistanceTicks
+string (int64)
+> 0
+Trailing distance as a price delta in 1e-9 quote-unit ticks.
+trailingDistanceBps
+integer (int32)
+> 0, ≤ 10000
+Trailing distance in basis points (1 bp = 0.01%).
+maxSlippageTicks
+string (int64)
+> 0
+Positive maximum absolute price delta in Q9 execution-price ticks (1 tick = 1e-9 quote units).
+maxSlippageBps
+integer (int32)
+> 0, ≤ 10000
+Maximum allowed slippage in basis points (1 bp = 0.01%).
+activationPriceTicks
+string (int64)
+Optional activation price: trailing only starts after this price is
+reached. If omitted, trailing starts immediately after the parent order
+fills. Expressed in quote units scaled by 1e9.
+state
+object
+Runtime state for the trailing-stop leg.
+5 fields
+status
+enum
+must be defined value
+Current runtime lifecycle status for this attached-risk leg.
+NOT_CONFIGURED
+CREATED
+ARMED
+RUNNING
+COMPLETED
+CANCELED
+FAILED
+PAUSED
+armedTsNs
+string (uint64)
+Time the leg was armed, in nanoseconds since epoch (UTC). Zero if not armed.
+terminalTsNs
+string (uint64)
+Time the leg reached a terminal state, in nanoseconds since epoch (UTC). Zero if not terminal.
+triggerId
+string (fixed64)
+Trigger identifier for this attached-risk leg.
+childOrderId
+string (fixed64)
+Child order ID created by this leg after it fires.
+oco
+boolean
+True when the take-profit and stop leg are linked as one-cancels-the-other.
+origin
+object
+Runtime lineage metadata (why the order exists and what generated it).
+5 fields
+scope
+enum
+must be defined value
+Broad class describing how the order was created.
+DIRECT
+ATTACHED_RISK
+STANDALONE_TRIGGER
+SYSTEM
+triggerType
+enum
+must be defined value
+Trigger strategy that created this order, or unspecified for direct orders.
+STOP_LOSS
+TAKE_PROFIT
+TRAILING_STOP
+TWAP
+LADDER
+triggerId
+string (fixed64)
+Trigger identifier when the order was created by a trigger.
+parentOrderId
+string (fixed64)
+Parent order ID for attached-risk child orders.
+childSeq
+integer (int32)
+Child sequence number for multi-child trigger strategies. Zero when not applicable.
+marketClientRefPriceTicks
+string (int64)
+Optional client-side reference price used for MARKET slippage protection,
+in quote units scaled by 1e9.
+marketMaxSlippageTicks
+string (int64)
+Non-negative MARKET maximum absolute price delta in Q9 execution-price ticks
+(1 tick = 1e-9 quote units). Zero means no absolute cap is configured.
+marketMaxSlippageBps
+integer (int32)
+Optional MARKET max slippage in basis points (1 bp = 0.01%).
+version
+integer (int32)
+1–2147483647
+Per-order state version. Starts at 1 and increases for every published
+state change. Use this field to reconcile API and realtime updates.
+batchRequestId
+string (fixed64)
+Batch-replace identity that admitted this order. Zero for other origins.
+submittedMaxQuoteDebitScaled
+string (int64)
+Submitted hard all-in quote debit limit, scaled by the pair's
+quote_quantity_scale from GetSpotConfig. Present only when that sizing
+method was submitted.
+lineage
+object
+Logical-order identity and requested generation. Always populated by order reads.
+2 fields
+id
+string (fixed64)
+> 0
+Stable logical-order ID: the first generation's public order ID.
+Replace preserves this ID; an independent new order starts a new lineage.
+generation
+integer (int32)
+> 0
+One-based replacement generation, distinct from per-order state version.
+expireAt
+string (date-time)
+Exact UTC expiry time for GTD orders, within the supported signed
+Unix-nanosecond range from 1677-09-21T00:12:43.145224193Z through
+2262-04-11T23:47:16.854775807Z. Omitted for all other time-in-force policies.
+The order cannot execute when the current time equals this value.
+trades
+object[]
+Lineage executions through the requested generation, newest first, retaining
+original executing order IDs. Omitted when execution history is disabled.
+13 fields
+symbolId
+integer (int32)
+Trading symbol numeric identifier.
+matchId
+string (uint64)
+Match identifier (monotonic per symbol).
+orderId
+string (fixed64)
+Order identifier as fixed64.
+side
+enum
+must be defined value
+Fill side.
+BUY
+SELL
+isMaker
+boolean
+True if this fill was maker-side.
+priceTicks
+string (int64)
+Execution price in quote units scaled by 1e9.
+qtyScaled
+string (int64)
+Executed quantity scaled by the pair's base_quantity_scale from
+GetSpotConfig for symbol_id.
+feeAmountE18
+object
+Exact fee magnitude in fixed 18-decimal units of fee_asset.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+feeAsset
+enum
+Fee asset charged or credited for this fill.
+QUOTE
+BASE
+referralShareAmountE18
+object
+Exact referral share magnitude in fixed 18-decimal units of fee_asset.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+tsNs
+string (uint64)
+Execution timestamp in nanoseconds since epoch.
+feeIsRebate
+boolean
+Whether this fill earned a rebate instead of paying a fee.
+lineage
+object
+Logical-order identity and the generation that executed this fill.
+Always populated by execution reads; order_id retains its original identity.
+2 fields
+id
+string (fixed64)
+> 0
+Stable logical-order ID: the first generation's public order ID.
+Replace preserves this ID; an independent new order starts a new lineage.
+generation
+integer (int32)
+> 0
+One-based replacement generation, distinct from per-order state version.
+transfers
+object[]
+Account settlement legs for matches on this page. Deduplicate by tx_id when
+multiple execution pages contain legs of the same match.
+9 fields
+matchId
+string (uint64)
+Match identifier that linked this transfer to an execution, scoped by symbol_id.
+symbolId
+integer (int32)
+Market of the execution; together with match_id identifies its match.
+assetId
+integer (int32)
+Asset identifier for the transferred asset.
+amountE18
+object
+Transfer amount at fixed 18-decimal ledger scale.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+isDebit
+boolean
+True when the transfer debits the account; false when it credits the account.
+transferCode
+enum
+Product reason for this transfer leg.
+DEPOSIT
+WITHDRAW
+MAKER_FEE
+TAKER_FEE
+INTERNAL_TRANSFER
+TRADE_BASE
+TRADE_QUOTE
+REBATE
+FUNDING_TO_TRADING
+TRADING_TO_FUNDING
+TRADING_WITHDRAW_RESERVE
+FUNDING_USER_TRANSFER
+TRADING_WITHDRAW_REQUEST_FEE
+accountCode
+enum
+Account bucket affected by this transfer leg.
+FUNDING
+TRADING
+tsNs
+string (uint64)
+Transfer timestamp in nanoseconds since epoch (UTC).
+txId
+string
+Transfer transaction identifier.
+nextPageToken
+string
+max 512 chars
+Cursor for the next execution page. Empty when no further rows are visible;
+this is not a settlement or order-state reconciliation watermark.
+Possible errors
+Possible errors: 70
+Key
+Status
+Error
+When
+account-unknown
+400
+Account Unknown
+Account not found.
+api-key-market-deny
+403
+API Key Market Deny
+API key policy does not allow trading this pair.
+api-key-policy-required
+400
+API Key Policy Required
+This API key must have a policy attached before it can be used for trading.
+api-key-root-scope-only
+400
+API Key Root Scope Only
+This API key is scoped to the master account and cannot trade on sub-accounts.
+api-key-subaccount-mismatch
+400
+API Key Subaccount Mismatch
+This API key is scoped to a different sub-account than the one requested.
+api-key-sub-scope-only
+400
+API Key Sub Scope Only
+This API key is scoped to a specific sub-account and cannot trade on the master account.
+api-key-unknown
+400
+API Key Unknown
+API key referenced in the request could not be resolved by the Orders service.
+bad-price
+400
+Bad Price
+Price is invalid.
+bad-qty
+400
+Bad Quantity
+Quantity is invalid.
+bad-request
+400
+Bad Request
+Invalid request payload.
+batch-too-large
+400
+Batch Too Large
+Batch size exceeds the maximum allowed for this operation.
+cancel-request-expired
+400
+Cancel Request Expired
+Cancel request expired before admission. Use a fresh request ID for a new cancellation.
+conflict-duplicate-client-order-id
+409
+Conflict: Duplicate Client Order ID
+Duplicate client order ID.
+conflict-duplicate-client-trigger-id
+409
+Conflict: Duplicate Client Trigger ID
+Duplicate client trigger ID.
+conflict-idempotency-key-reuse
+409
+Conflict: Idempotency Key Reused
+Idempotency key was already used with a different request payload.
+empty-book
+400
+Empty Book
+Market order cannot execute because the book is empty.
+fee-asset-not-allowed
+400
+Fee Source Not Allowed
+Fee source not permitted for this pair/side.
+fok-insufficient-liquidity
+400
+FOK Insufficient Liquidity
+FOK order cannot be fully filled with available liquidity.
+insufficient-funds
+400
+Insufficient Funds
+Insufficient funds.
+internal-error
+500
+Internal Error
+Internal error.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+market-cap-violation
+400
+Market Cap Violation
+Order violates market-cap limits.
+market-halted
+400
+Market Halted
+Market is halted.
+market-price-unavailable
+503
+Market Price Unavailable
+Cannot reserve MARKET BUY because no reference price is available.
+max-quote-debit-too-small
+400
+Max Quote Debit Too Small
+Max quote debit is too small to resolve one valid order step.
+max-slippage-invalid
+400
+Max Slippage Invalid
+Maximum slippage is invalid.
+min-notional
+400
+Min Notional
+Order notional is below the minimum allowed.
+min-qty
+400
+Min Quantity
+Order quantity is below the minimum allowed.
+modification-requires-replace
+400
+Modification Requires Replace
+Modify request in AMEND_ONLY mode requires replace semantics.
+not-found
+404
+Not Found
+Not found.
+order-already-terminal
+400
+Order Already Terminal
+Client order ID refers to an already terminal order.
+order-unknown
+404
+Order Unknown
+Order not found.
+overloaded
+400
+Service Overloaded
+Batch replace admission capacity is temporarily exhausted.
+pair-cancel-only
+400
+Pair Cancel Only
+Pair is in cancel-only mode; only cancellations are allowed.
+pair-delisted
+400
+Pair Delisted
+Pair has been delisted.
+pair-disabled
+400
+Pair Disabled
+Pair is temporarily disabled.
+pair-not-listed-yet
+400
+Pair Not Listed Yet
+Pair is not listed yet.
+pair-post-only
+400
+Pair Post Only
+Pair is in post-only mode; submit with post_only=true.
+pair-reduce-only
+400
+Pair Reduce Only
+Pair is in reduce-only mode; new spot orders are not allowed.
+permission-denied
+403
+Permission Denied
+Permission denied.
+policy-market-deny
+403
+Policy Market Deny
+Sub-account policy does not allow trading this pair.
+policy-max-notional
+400
+Policy Max Notional
+Order notional exceeds the maximum allowed for this sub-account.
+policy-max-open-orders
+400
+Policy Max Open Orders
+Sub-account policy maximum number of open orders has been reached.
+policy-spot-trade-deny
+403
+Spot Trading Denied
+Effective policy does not allow spot trading for this API key or sub-account.
+policy-trading-halted
+400
+Trading Halted
+Trading is halted for this sub-account.
+post-only-cross
+400
+Post-Only Cross
+Post-only order would cross the book.
+post-only-limit-only
+400
+Post-Only Limit Only
+Post-only is only supported for LIMIT orders.
+price-band-violation
+400
+Price Band Violation
+Order price violates price band limits.
+price-tick-size
+400
+Price Tick Size
+Price must align with the tick size.
+qty-step-size
+400
+Quantity Step Size
+Quantity must align with the step size.
+rate-limit-exceeded
+400
+Rate Limit Exceeded
+Order-admission rate limit exceeded.
+reduce-only-blocked
+400
+Reduce-Only Blocked
+Order is blocked by reduce-only constraints.
+request-too-large
+400
+Request Too Large
+Request body too large.
+risk-limit
+400
+Risk Limit Exceeded
+Order would exceed account risk limits.
+role-spot-trade-deny
+403
+Spot Trading Role Denied
+Your role on this sub-account is read-only for spot trading.
+stale-quote
+400
+Stale Quote
+Client reference price is stale relative to server market data.
+subaccount-inactive
+400
+Sub-account Inactive
+Sub-account is inactive (disabled or deleted).
+trailing-distance-invalid
+400
+Trailing Distance Invalid
+Trailing stop distance is invalid.
+trailing-stop-order-type-unsupported
+400
+Trailing Stop Order Type Unsupported
+Trailing stop attached to an order only supports MARKET child orders in v1.
+trigger-cancel-rejected
+400
+Trigger Cancel Rejected
+Trigger cannot be canceled in its current state.
+trigger-not-found
+404
+Trigger Not Found
+Trigger not found.
+trigger-not-modifiable
+400
+Trigger Not Modifiable
+Trigger does not support this lifecycle operation.
+trigger-price-invalid
+400
+Trigger Price Invalid
+Trigger price is invalid.
+trigger-price-source-unsupported
+400
+Trigger Price Source Unsupported
+Trigger price source not supported.
+trigger-status-invalid
+400
+Trigger Status Invalid
+Trigger cannot perform this action in its current status.
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+unavailable
+503
+Service Unavailable
+Service temporarily unavailable.
+unknown-symbol
+400
+Unknown Symbol
+Unknown symbol.
+upstream-error
+502
+Upstream Error
+Upstream error.
+validation-error
+400
+Validation Error
+Request validation failed.
+POST
+orders.v1.OrdersReadService/GetOrder
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s546" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/orders.v1.OrdersReadService/GetOrder' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"includeAttachedRisk": false,
+"includeAttachedRiskState": false,
+"includeExecutionHistory": false,
+"limit": 100,
+"orderId": "9876543210123",
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"subaccountId": "6789012345678"
+}'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"order": {
+"attachedRisk": {
+"oco": false,
+"stopLoss": {
+"policy": {
+"child": {},
+"triggerPriceTicks": "5000000"
+},
+"state": {
+"armedTsNs": "1735689600000000000",
+"childOrderId": "9876543210123",
+"status": "NOT_CONFIGURED",
+"terminalTsNs": "1735689600000000000",
+"triggerId": "9155001234567"
+}
+},
+"takeProfit": {
+"policy": {
+"child": {},
+"triggerPriceTicks": "5000000"
+},
+"state": {
+"armedTsNs": "1735689600000000000",
+"childOrderId": "9876543210123",
+"status": "NOT_CONFIGURED",
+"terminalTsNs": "1735689600000000000",
+"triggerId": "9155001234567"
+}
+},
+"trailingStop": {
+"policy": {
+"activationPriceTicks": "5000000",
+"maxSlippageTicks": "1",
+"trailingDistanceTicks": "1"
+},
+"state": {
+"armedTsNs": "1735689600000000000",
+"childOrderId": "9876543210123",
+"status": "NOT_CONFIGURED",
+"terminalTsNs": "1735689600000000000",
+"triggerId": "9155001234567"
+}
+}
+},
+"avgPriceTicks": "5000000",
+"batchRequestId": "1",
+"clientOrderId": "cli-ord-20250101-001",
+"createdTsNs": "1735689600000000000",
+"cumQtyScaled": "100000",
+"expireAt": "2025-01-01T00:00:00Z",
+"feeAsset": "QUOTE",
+"inheritedCumQtyScaled": "100000",
+"leavesQtyScaled": "100000",
+"lineage": {
+"generation": 1,
+"id": "1"
+},
+"marketClientRefPriceTicks": "5000000",
+"marketMaxSlippageBps": 1,
+"marketMaxSlippageTicks": "1",
+"orderId": "9876543210123",
+"orderType": "LIMIT",
+"origQtyScaled": "100000",
+"origin": {
+"childSeq": 1,
+"parentOrderId": "9876543210123",
+"scope": "DIRECT",
+"triggerId": "9155001234567",
+"triggerType": "STOP_LOSS"
+},
+"postOnly": false,
+"priceTicks": "5000000",
+"selfTradePreventionMode": "EXPIRE_MAKER",
+"side": "BUY",
+"status": "PENDING",
+"submittedMaxQuoteDebitScaled": "1",
+"symbolId": 1,
+"terminalReason": "USER_REQUEST",
+"terminalReasonCode": 1,
+"terminalTsNs": "1735689600000000000",
+"timeInForce": "GTC",
+"version": 1
+},
+"trades": [
+"feeAmountE18": {
+"hi": "1",
+"lo": "1"
+},
+"feeAsset": "QUOTE",
+"feeIsRebate": false,
+"isMaker": false,
+"lineage": {
+"generation": 1,
+"id": "1"
+},
+"matchId": "100001",
+"orderId": "9876543210123",
+"priceTicks": "5000000",
+"qtyScaled": "100000",
+"referralShareAmountE18": {
+"hi": "1",
+"lo": "1"
+},
+"side": "BUY",
+"symbolId": 1,
+"tsNs": "1735689600000000000"
+}
+],
+"transfers": [
+"accountCode": "FUNDING",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"isDebit": false,
+"matchId": "100001",
+"symbolId": 1,
+"transferCode": "DEPOSIT",
+"tsNs": "1735689600000000000",
+"txId": "0xabc123"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/orders.v1.OrdersReadService/GetOrder' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "includeAttachedRisk": false,
+  "includeAttachedRiskState": false,
+  "includeExecutionHistory": false,
+  "limit": 100,
+  "orderId": "9876543210123",
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "order": {
+    "attachedRisk": {
+      "oco": false,
+      "stopLoss": {
+        "policy": {
+          "child": {},
+          "triggerPriceTicks": "5000000"
+        },
+        "state": {
+          "armedTsNs": "1735689600000000000",
+          "childOrderId": "9876543210123",
+          "status": "NOT_CONFIGURED",
+          "terminalTsNs": "1735689600000000000",
+          "triggerId": "9155001234567"
+        }
+      },
+      "takeProfit": {
+        "policy": {
+          "child": {},
+          "triggerPriceTicks": "5000000"
+        },
+        "state": {
+          "armedTsNs": "1735689600000000000",
+          "childOrderId": "9876543210123",
+          "status": "NOT_CONFIGURED",
+          "terminalTsNs": "1735689600000000000",
+          "triggerId": "9155001234567"
+        }
+      },
+      "trailingStop": {
+        "policy": {
+          "activationPriceTicks": "5000000",
+          "maxSlippageTicks": "1",
+          "trailingDistanceTicks": "1"
+        },
+        "state": {
+          "armedTsNs": "1735689600000000000",
+          "childOrderId": "9876543210123",
+          "status": "NOT_CONFIGURED",
+          "terminalTsNs": "1735689600000000000",
+          "triggerId": "9155001234567"
+        }
+      }
+    },
+    "avgPriceTicks": "5000000",
+    "batchRequestId": "1",
+    "clientOrderId": "cli-ord-20250101-001",
+    "createdTsNs": "1735689600000000000",
+    "cumQtyScaled": "100000",
+    "expireAt": "2025-01-01T00:00:00Z",
+    "feeAsset": "QUOTE",
+    "inheritedCumQtyScaled": "100000",
+    "leavesQtyScaled": "100000",
+    "lineage": {
+      "generation": 1,
+      "id": "1"
+    },
+    "marketClientRefPriceTicks": "5000000",
+    "marketMaxSlippageBps": 1,
+    "marketMaxSlippageTicks": "1",
+    "orderId": "9876543210123",
+    "orderType": "LIMIT",
+    "origQtyScaled": "100000",
+    "origin": {
+      "childSeq": 1,
+      "parentOrderId": "9876543210123",
+      "scope": "DIRECT",
+      "triggerId": "9155001234567",
+      "triggerType": "STOP_LOSS"
+    },
+    "postOnly": false,
+    "priceTicks": "5000000",
+    "selfTradePreventionMode": "EXPIRE_MAKER",
+    "side": "BUY",
+    "status": "PENDING",
+    "submittedMaxQuoteDebitScaled": "1",
+    "symbolId": 1,
+    "terminalReason": "USER_REQUEST",
+    "terminalReasonCode": 1,
+    "terminalTsNs": "1735689600000000000",
+    "timeInForce": "GTC",
+    "version": 1
+  },
+  "trades": [
+    {
+      "feeAmountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "feeAsset": "QUOTE",
+      "feeIsRebate": false,
+      "isMaker": false,
+      "lineage": {
+        "generation": 1,
+        "id": "1"
+      },
+      "matchId": "100001",
+      "orderId": "9876543210123",
+      "priceTicks": "5000000",
+      "qtyScaled": "100000",
+      "referralShareAmountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "side": "BUY",
+      "symbolId": 1,
+      "tsNs": "1735689600000000000"
+    }
+  ],
+  "transfers": [
+    {
+      "accountCode": "FUNDING",
+      "amountE18": {
+        "hi": "1",
+        "lo": "1"
+      },
+      "assetId": 100,
+      "isDebit": false,
+      "matchId": "100001",
+      "symbolId": 1,
+      "transferCode": "DEPOSIT",
+      "tsNs": "1735689600000000000",
+      "txId": "0xabc123"
+    }
+  ]
+}

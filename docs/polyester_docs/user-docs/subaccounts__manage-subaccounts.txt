@@ -1,0 +1,219 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/manage-subaccounts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Manage Subaccounts · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Subaccounts
+svg]:size-3.5">
+/
+Manage Subaccounts
+Manage Subaccounts
+Copy page
+View as Markdown
+Open in
+The
+Subaccounts page
+shows every
+Subaccount
+you own or have permission to use. From one place, you can create accounts, switch between them, move assets, manage access, and update each account's status.
+Pending invitations appear on the same page. Accept or decline them before they become Subaccounts you can use.
+Create a Subaccount
+1
+Open Subaccounts
+Open the Subaccounts page from your
+Main Account
+and select
+Create Subaccount
+2
+Choose a label
+Enter a
+Label
+that describes the account's purpose, such as a strategy, team, or automated workload.
+3
+Create it
+Select
+Create Subaccount
+smart account
+address.
+4
+Set it up
+Add permissions, members,
+API keys
+, and assets based on how you plan to use the account.
+You can also save the Subaccount to your Address Book for faster internal transfers, or select
+Skip for now
+Switch between accounts
+Select
+Switch
+to make a Subaccount your active account. Polyester then shows that account's balances, orders, settings, and available actions across the product.
+The account selector always shows which account you are currently using.
+Add or move assets
+Use
+Internal Transfers
+to move assets between your Main Account and Subaccounts or between two Subaccounts. To deposit directly into a Subaccount, switch to it so it is the active account, then open the
+Deposit page
+Funding Account
+or
+Unified Trading Account
+Disable, reactivate, or leave a Subaccount
+An Owner can change a Subaccount from Active to Disabled to stop new activity and return it to Active later. A member can leave a shared Subaccount when they no longer need access.
+Related Topics
+Overview
+Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+Members & Roles
+Invite people to a Subaccount and choose what each role can do.
+Permissions & Policies
+Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+Audit Logs
+See membership, permission, API-key, and account-setting changes for a Subaccount.
+Previous
+Overview
+Next
+Members & Roles
+On this page
+Create a Subaccount
+Switch between accounts
+Add or move assets
+Disable, reactivate, or leave a Subaccount
+Related Topics
+Share this page
+Manage Subaccounts
+Create, switch, fund, disable, reactivate, or leave a Subaccount.
+Share
+Copy Link

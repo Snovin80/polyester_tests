@@ -1,0 +1,55 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/candles.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+`client.market_data` (alias `client.candles`) reads and streams public spot OHLCV data. No authentication is required. Resolve `symbol` → `symbol_id` via catalogs (or pass `symbol_id`).
+Supported timeframe aliases: `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `12h`, `1d`, `1w`, `1mo` (also accepts enum names like `MIN_1`).
+OHLCV fields are decimal strings. Candle times are epoch **seconds** (`ts_sec`). Row results are ordered **newest-first**. When requested, the open/incomplete candle is prepended at index `0`; never use `[-1]` as the latest candle. Reverse or sort row results by `ts_sec` before feeding them to chronological indicators. The columns API is **oldest-first**.
+## Methods
+\| Method | Summary | | --------------------- | ------------------------------------------------------ | ---------------------------------- | | `get_candles` | Fetch candles as row objects. | | `get_candles_columns` | Fetch columnar series, decoded to the same row result. | | `get_current_candle` | Latest candle (`Candle | None`; `None` when no rows exist). | | `subscribe_candles` | Stream live row candles. |
+### Get candles
+```python
+result = await client.candles.get_candles(
+symbol="BTC-USDT",
+timeframe="1h",
+limit=200,
+)
+if result.candles:
+latest = result.candles[0]
+print(latest.ts_sec, latest.open, latest.close, latest.volume, latest.is_closed)
+chronological = list(reversed(result.candles))
+# Feed chronological (oldest-first) to rolling indicators.
+```
+| Field                     | Required | Notes                  |
+| ------------------------- | -------- | ---------------------- |
+| `symbol` / `symbol_id`    | one of   | Pair or engine id      |
+| `timeframe`               | no       | Default `"1m"`         |
+| `limit`                   | no       | Default `100`          |
+| `start_time` / `end_time` | no       | `datetime` range       |
+| `include_incomplete`      | no       | Include forming bucket |
+### Get candles columns
+Same filters as `get_candles`, columnar wire form decoded into `CandlesResult` rows (chart-friendly upstream, same Python shape). Columnar decode does not populate `is_closed` (defaults to `False`); use row `get_candles` / stream when you need closed-bucket flags. The SDK verifies that every OHLCV column has exactly one value per timestamp and raises `PolyesterTransportError` if the response is misaligned.
+### Get current candle
+```python
+candle = await client.candles.get_current_candle(symbol="BTC-USDT", timeframe="1m")
+if candle is not None:
+print(candle.close, candle.is_closed)
+```
+### Subscribe candles
+```python
+sub = await client.candles.subscribe_candles(symbol="BTC-USDT", timeframe="1m")
+async with sub:
+async for candle in sub:
+print(candle.ts_sec, candle.close, candle.is_closed)
+break
+```
+## Candle shape
+`ts_sec`, `open`, `high`, `low`, `close`, `volume` (strings), `is_closed` (`bool`).
+`is_closed` comes from the wire `is_closed` / `isClosed` field on row candle points: `False` while the timeframe bucket is still forming, `True` when that bucket is complete. Streamed candles may still emit multiple updates for the same `ts_sec` bucket before `is_closed` becomes `True`. Use `include_incomplete` on unary reads when you want the still-forming bucket included. `CandlesResult` wraps `symbol_id`, `timeframe`, `candles`.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/python/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [Order book](https://testnet.polyester.com/docs/sdk/python/reference/order-book)
+- [Public trades](https://testnet.polyester.com/docs/sdk/python/reference/public-trades)

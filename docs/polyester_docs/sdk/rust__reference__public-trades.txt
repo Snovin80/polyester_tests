@@ -1,0 +1,357 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/public-trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Public trades · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Public trades
+Public trades
+Copy page
+View as Markdown
+Open in
+Public prints for a spot market live on
+client.market_data
+(not
+client.trades
+, which is your
+private fills). Unary reads need no authentication.
+subscribe_trades
+needs hydrated catalogs
+for symbol resolution; realtime support is always included.
+Methods
+Method
+Summary
+get_trades
+/
+get_trades_with
+Recent public trades.
+subscribe_trades
+Live public tape (
+recv_result()
+).
+Get trades and get trades with
+use
+polyester
+models
+GetTradesOpts
+;
+let
+result
+=
+client
+market_data
+get_trades
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+for
+t
+in
+&
+result
+trades {
+println!
+(
+"{} {} {:?}"
+,
+t
+match_id,
+t
+side,
+t
+price);
+}
+if
+!
+result
+next_page_token
+is_empty
+() {
+let
+more
+=
+client
+market_data
+get_trades_with
+(
+GetTradesOpts
+symbol
+Some
+(
+"BTC-USDT"
+into
+()),
+limit
+Some
+(
+20
+),
+page_token
+Some
+(
+result
+next_page_token),
+Default
+default
+()
+})
+;
+let
+_
+=
+more
+;
+}
+MarketTrade.side
+is a string:
+"buy"
+or
+"sell"
+(aggressor /
+taker
+side). There is no
+is_buy
+field on the decoded model. REST and realtime both attach the hydrated catalog scale to
+MarketTrade.qty
+; the SDK returns a validation error instead of guessing when that scale is
+unavailable.
+Subscribe trades
+client
+wait_for_catalogs
+()
+;
+let
+mut
+sub
+=
+client
+market_data
+subscribe_trades
+(
+"BTC-USDT"
+)
+;
+while
+let
+Some
+(
+trade
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{} {}"
+,
+trade
+side,
+trade
+match_id);
+break
+;
+}
+Related
+User trades
+for your private fills
+Market data guide
+Streaming
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Profile
+Next
+Realtime
+On this page
+Methods
+Get trades and get trades with
+Subscribe trades
+Related
+Related Topics
+Share this page
+Public trades
+Public trade tape reads and subscribe via market_data.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::GetTradesOpts;
+
+let result = client.market_data.get_trades("BTC-USDT", Some(20)).await?;
+for t in &result.trades {
+    println!("{} {} {:?}", t.match_id, t.side, t.price);
+}
+
+if !result.next_page_token.is_empty() {
+    let more = client
+        .market_data
+        .get_trades_with(GetTradesOpts {
+            symbol: Some("BTC-USDT".into()),
+            limit: Some(20),
+            page_token: Some(result.next_page_token),
+            ..Default::default()
+        })
+        .await?;
+    let _ = more;
+}
+
+---
+
+client.wait_for_catalogs().await?;
+let mut sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+while let Some(trade) = sub.recv_result().await? {
+    println!("{} {}", trade.side, trade.match_id);
+    break;
+}

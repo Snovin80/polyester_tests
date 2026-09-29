@@ -1,0 +1,47 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+An **Asset Flow** connects every stage of one deposit, withdrawal, or internal transfer. Instead of making you follow several separate records, Polyester Scan brings the movement, status, amounts, and linked transactions into one journey.
+## The three Flow types
+| Flow              | What it follows                                                            |
+| ----------------- | -------------------------------------------------------------------------- |
+| Deposit           | An asset moving from an external chain into your Polyester account         |
+| Withdrawal        | An asset moving from Polyester to an address on a supported external chain |
+| Internal transfer | An asset moving between supported Polyester accounts or balance areas      |
+A Flow is not one blockchain transaction. It can link an external transaction, one or more Polyester Chain transactions, validator activity, and a private ledger settlement into one understandable record.
+## Find a Flow
+Open the **[Flows directory](https://polyesterscan.com/flows)** to browse recent activity. You can filter by Flow type, account, chain, transaction, asset, or status.
+![Flows directory with type, account, chains, transactions, elapsed time, and status](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/6cefef772da7174a5f6dfd29674cacd448909c66e89b5727f0ffb49f85d613a1/source.webp)
+Each row shows the direction, asset, linked records, elapsed time, current stage, and overall status. Open a row to see its complete Summary and Journey.
+## Read the Summary and Journey
+The **Summary** shows what moved and where it went. It includes the asset, principal amount, fee, final amount, source, destination, account, and available transaction links.
+The **Journey** shows how the movement progressed. Depending on the Flow, it can include:
+- source-chain confirmations
+- Zipper validator approval
+- a Zipped Asset mint or burn
+- a Funding or Trading balance update
+- destination-chain delivery.
+Deposit and withdrawal Flows contain more stages because they cross networks. An internal transfer usually contains only the observed transfer and its ledger settlement.
+## Deposit
+![Deposit Flow Summary from Ethereum Sepolia into Polyester Funding](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/e70ace1ed5928b3ee7e0bd7dcc8594ec6e92c6d1e751c0394aa0c7bbac1907b8/source.webp)
+## Withdrawal
+![Withdrawal Flow Summary from Polyester Trading to Ethereum Sepolia](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/89873eb0d87066702d943a525c5692d8caa19fa3387958f2c81a2b90a4be41b8/source.webp)
+## Internal transfer
+![Internal transfer Flow Summary between Polyester accounts](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/7688a1d6b46e4233efbd8e767b7a9a33105345d8fb9c826cd71c9b747f0b95c1/source.webp)
+## Understand the status
+| Status            | Meaning                                              |
+| ----------------- | ---------------------------------------------------- |
+| Pending           | The Flow is still moving through its required stages |
+| Completed         | The expected final stage has finished                |
+| Failed or Dropped | Processing ended without the intended completion     |
+| Refunded          | The Flow ended through its supported refund path     |
+The progress bar shows how far the Flow has moved through its lifecycle. A terminal Flow can show 100% whether it completed, failed, or refunded, so the written status remains the clearest result.
+> **A Flow can contain different kinds of records**
+>
+> A linked hexadecimal hash usually opens a blockchain transaction. A ledger settlement reference records a Polyester balance step and is clearly labeled as not being a Polyester Chain transaction.
+## Follow the linked records
+Transaction links take you to the public record for that stage. External-chain links open the relevant network explorer, while Polyester Chain links remain in Polyester Scan.
+You can also open the related account, Zipped Asset, Unified Asset, or source chain directly from the Flow. This makes the Flow the easiest starting point when you want to understand the complete journey of one asset movement.

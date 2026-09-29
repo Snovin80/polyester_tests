@@ -1,0 +1,158 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/realtime.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+`client.realtime` is the single `RealtimeClient` that every `subscribe*` method on the SDK goes through. Order updates, market overview, order book, lifecycle flows, and zipper supply all multiplex over it. You rarely construct a subscription against it directly: the service methods build the channel names and decode the payloads for you. This page documents the shared handler contract those methods expose, and the lower-level `RealtimeClient` API for when you need it.
+For JWT authentication, the SDK calls the configured `getToken` provider for every realtime auth check and connection or subscription token request. Keep that provider cheap and have it return the current credential, so token rotation and logout take effect without rebuilding the client.
+## The subscription handler contract
+Every `subscribe*` method takes an input that extends `BaseSubscribeInput
+` and returns an idempotent `() => void` unsubscribe function. Calling it more than once is safe.
+| Handler   | Required | Fires when                                                                             |
+| --------- | -------- | -------------------------------------------------------------------------------------- |
+| `onEvent` | yes      | A decoded event `T` arrives.                                                           |
+| `onOpen`  | no       | The channel is confirmed, initially or after reconnect.                                |
+| `onClose` | no       | The channel closes. Transient connection failures reconnect; terminal closures do not. |
+| `onError` | no       | Something failed, with an `SdkSubscriptionErrorContext`.                               |
+```ts
+const unsubscribe = client.orders.subscribe({
+accountId,
+onEvent: (order) => console.log(order.status, order.orderId),
+onOpen: () => console.log("subscribed"),
+onClose: () => console.log("stream closed"),
+onError: (ctx) => console.error(ctx.channel, ctx.type, ctx.error),
+});
+// idempotent: safe to call once, or more than once
+unsubscribe();
+```
+Errors thrown inside your own handlers are caught and routed to `onError`, never rethrown into the transport. A handler that throws on one event will not tear down the connection or starve the other consumers of that channel.
+`subscribe` returns its cleanup function before the channel is confirmed. When a subsequent write depends on seeing this stream, wait for the first `onOpen`. `onOpen` also runs after reconnect, so do not put one-time writes inside it.
+```ts
+const unsubscribe = await new Promise
+void>((resolve, reject) => {
+let stop = () => {};
+let pending = true;
+stop = client.orders.subscribe({
+accountId,
+onEvent: (update) => applyOrderUpdate(update),
+onOpen: () => {
+if (!pending) return;
+pending = false;
+resolve(stop);
+},
+onError: (ctx) => {
+console.error(ctx.channel, ctx.error);
+if (!pending) return;
+pending = false;
+stop();
+reject(ctx.error);
+},
+});
+});
+await client.orders.create(order);
+```
+### `SdkSubscriptionErrorContext`
+Every error, whether it comes from the transport or from your handler, arrives as one shape:
+```ts
+type SdkSubscriptionErrorContext = {
+channel: string;
+type: string; // where the error arose (see below)
+error: Error | { code: number; message: string };
+};
+```
+`type` tells you where the error came from:
+- `"subscription_token"` / `"connection_token"`: fetching the token for a private subscription or the private connection failed.
+- `"subscription"`: the server rejected the subscription.
+- `"snapshot"`: the initial snapshot fetch failed for a snapshot-then-stream subscription (order book, market overview).
+- `"publication_handler"` / `"subscribed_handler"` / `"unsubscribed_handler"`: your `onEvent`, `onOpen`, or `onClose` threw.
+- `"decode"`: a frame could not be decoded.
+Because handler errors surface here rather than propagating, a bad `onEvent` never breaks the connection.
+`onError` covers auth, subscription, transport, decode, snapshot, and handler failures. It cannot report a publication that arrived before the first subscription or during a connection gap. It also cannot report a subscription that stays open but receives no publications.
+## Where subscriptions run
+Subscriptions run in any long-lived JavaScript runtime: a browser tab, a Node or Bun process, a trading bot, a backend service, or an edge worker that holds a persistent connection. A server is a perfectly good place to subscribe. The trading-bot tutorial, for example, streams the order book from a plain server process.
+The one exception is a framework's server-side render pass. The SDK detects it through `import.meta.env.SSR` and rejects the subscription with a clear error, because opening a persistent socket while rendering a single request is a mistake. This applies only inside SSR (SvelteKit, Next, and similar rendering a page), not to standalone server processes, where subscribing works normally.
+So the split is by task, not by environment:
+- **Standalone process (bot, worker, backend service):** subscribe directly. This is fully supported.
+- **Web app with SSR:** fetch a snapshot during the render pass, then subscribe after the page hydrates in the browser.
+## Loading
+The WebSocket engine (a Centrifuge protobuf build embedding the protobuf.js runtime, roughly 300 KB) is dynamically imported when the first subscription attaches. It stays out of the eager module graph, so importing the SDK does not pull it in. Once loaded, later subscriptions attach synchronously.
+For the SSR case, fetch a snapshot during render and open the subscription after hydration:
+```ts
+// during SSR render: seed with a snapshot
+const { orders } = await client.orders.listOpen();
+// after hydration, in the browser: keep it live
+const unsubscribe = client.orders.subscribe({
+accountId,
+onEvent: (order) => applyOrderUpdate(order),
+});
+```
+## Reconnection
+Transient failures reconnect automatically with backoff and refresh the connection token. Non-retryable SDK errors while fetching connection or subscription tokens stop automatic retries; `onError` receives the original SDK error. After correcting authentication or request inputs, explicitly subscribe again to restart the private subscription. On reconnect, `onOpen` fires again. Snapshot-then-stream subscriptions (order book, market overview) refetch their snapshot on reconnect or an observed sequence gap, so they do not apply live updates onto a book that skipped sequences.
+They do not watch for a connected feed that stops publishing. That case does not fire `onError` and does not refetch. Applications that require continuity must reconcile after connection gaps and after a silent-but-connected feed. Other streams do not promise replay: after a disconnect, an ambiguous mutation, or a quiet-but-open channel, reconcile with an authoritative read before relying on local state.
+## Terminal closures
+A terminal server disconnect, or a server unsubscribe with a terminal code, closes the affected channel instead of retrying it. Each active consumer receives `onError` first with `type` set to `"disconnected"` or `"unsubscribed"` and `error` set to `{ code, message }`. The raw `client.realtime.subscribe` API then calls `onUnsubscribed`; service `subscribe*` methods expose that same final callback as `onClose`. The SDK removes affected channels before either callback runs, so a callback can immediately subscribe again after it updates credentials or permissions.
+Caller-initiated unsubscribe and `disconnect()` remain silent teardown operations. They do not call `onError` or `onUnsubscribed`.
+## Public versus private connections
+Channels split into two connections under the hood:
+- Public subscriptions ride a single unauthenticated connection.
+- Private subscriptions ride a separate connection whose token requests carry the client's auth headers (a JWT `Bearer` token or an Ed25519 request signature, depending on how the client was built).
+Treat channel names as an internal detail. The service methods pick the right channel: for example, `orders.subscribe` is always private, `lifecycle.subscribeOpenFlows` is private only when you pass an `accountId`, and `zipper.subscribeZippedAssetSupply` is always public. A private subscription without usable auth calls `onError` when you provide one; without `onError`, `subscribe` throws.
+## The `RealtimeClient` API
+For advanced cases you can reach the client directly. Subscriptions are refcounted and shared: multiple consumers of one channel share a single server subscription, and the channel detaches when the last consumer unsubscribes.
+### `subscribe(channel, handlers)`
+Subscribes to a channel whose frames are JSON-decoded, and returns an idempotent unsubscribe function.
+```ts
+const unsubscribe = client.realtime.subscribe("public:example", {
+onPublication: (data) => console.log(data),
+onSubscribed: () => console.log("subscribed"),
+onUnsubscribed: () => console.log("unsubscribed"),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+```
+### `connectChannel(params)`
+Subscribes to a channel that carries protobuf frames, decoding each with a `@bufbuild/protobuf` schema. Takes `{ channel, schema, onPublication, onConnected?, onDisconnected?, onError? }` and returns an idempotent unsubscribe function.
+```ts
+import type { DescMessage } from "@bufbuild/protobuf";
+declare const ExampleMessageSchema: DescMessage;
+const unsubscribe = client.realtime.connectChannel({
+channel: "public:example:proto",
+schema: ExampleMessageSchema,
+onPublication: (message) => console.log(message),
+onConnected: () => console.log("subscribed"),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+```
+### `connectProtoChannel(params)`
+The variant used for the SDK's own `:proto` channels. Same parameters and return as `connectChannel`; it decodes protobuf frames that may arrive already framed.
+### `disconnect()`
+Disconnects the client from all channels, public and private, and clears every subscription.
+### `disconnectPrivate()`
+Tears down the private connection and its subscriptions without touching public channels. This is what `auth.logout` calls, so your public streams survive a sign-out.
+### Read-only status
+- `isConnected` (`boolean`): whether any connection (public or private) is open.
+- `activeChannels` (`number`): how many distinct channels are currently subscribed.
+- `totalConsumers` (`number`): the summed refcount across all channels.
+```ts
+console.log(client.realtime.isConnected, client.realtime.activeChannels);
+```
+## Custom realtime auth
+By default the client derives its realtime auth from how it was constructed (JWT provider or Ed25519 API key). To take over token requests, pass a `realtime` config with `getAuthHeaders` and `hasAuth`. `hasAuth` gates private subscriptions synchronously, and `getAuthHeaders` supplies the headers each token request carries. The SDK calls both when it needs them, so read the current credential in those functions instead of capturing one at client construction.
+```ts
+import { PolyesterClient } from "@polyester/sdk";
+const client = new PolyesterClient({
+environment,
+realtime: {
+hasAuth: () => Boolean(session.getToken?.()),
+getAuthHeaders: async ({ url, method }) => {
+const token = await session.getToken?.();
+const headers: HeadersInit = token ? { authorization: `Bearer ${token}` } : {};
+return headers;
+},
+},
+});
+```
+## Related
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming) for the task-oriented walkthrough of snapshot-then-stream and reconnection.
+- [Architecture](https://testnet.polyester.com/docs/sdk/typescript/concepts/architecture) for how the shared connection fits the rest of the client.
+- [Orders](https://testnet.polyester.com/docs/sdk/typescript/reference/orders), [Lifecycle](https://testnet.polyester.com/docs/sdk/typescript/reference/lifecycle), and [Zipper](https://testnet.polyester.com/docs/sdk/typescript/reference/zipper) for the service methods that ride this client.

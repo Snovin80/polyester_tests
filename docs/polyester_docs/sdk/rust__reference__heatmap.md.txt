@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/heatmap.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Heatmap
+L2 order book heatmap reads.
+`client.heatmap` reads recent L2 heatmap buckets and streams live buckets. It is an analytics surface, not an authoritative local order book.
+## Methods
+| Method           | Summary                                                      |
+| ---------------- | ------------------------------------------------------------ |
+| `get`            | Recent buckets for symbol, interval, depth, limit, and mode. |
+| `subscribe_live` | Live public buckets for a symbol and interval.               |
+```rust
+client.wait_for_catalogs().await?;
+let history = client
+println!("{}", history.raw);
+```
+The positional arguments are `symbol`, `interval`, `depth`, `limit`, and `quantity_mode`. `get` resolves the symbol from catalogs and requests the most recent five-minute window. Interval, depth, and quantity-mode labels are validated.
+```rust
+let mut sub = client.heatmap.subscribe_live("BTC-USDT", "1s").await?;
+if let Some(bucket) = sub.recv_result().await? {
+println!("{}", bucket.raw);
+}
+```
+The stream is public, but symbol resolution requires hydrated catalogs.
+For executable levels and sequence recovery use [Order book](https://testnet.polyester.com/docs/sdk/rust/reference/order-book).

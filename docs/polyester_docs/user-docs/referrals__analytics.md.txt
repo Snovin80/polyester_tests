@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/user-docs/referrals/analytics.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Analytics
+Track referred users, trading volume, and rewards across every referral link and date range.
+Referral Analytics shows what your invitations produce. See how your audience grows, compare the performance of every link, and understand which traders, assets, and periods contribute to your rewards.
+Open **[Referrals](https://testnet.polyester.com/account/referrals)** and select **Analytics** to explore the complete picture or narrow it to the link and date range you care about.
+## Track performance over time
+The summary and chart track referred users, eligible trading volume, and rewards across the same selected period. This makes it easy to see how changes in trading activity affect what you earn.
+View all links for your complete referral performance, or select one link to focus the chart on a specific audience or campaign.
+![Referral Analytics with total spot volume and total perpetual volume](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/c1727cc1072d2609b2288ae189b8958d68d81e3a9e3e869ab7cdc16bdf8e8a3d/source.webp)
+## Compare referral links
+Every link uses your referral ID, but its name keeps the source recognizable. You might create one link for a community, another for a social profile, and another for a specific campaign. Open **All Referral Links** to compare referred users, volume, and lifetime fees by link.
+![All Referral Links table with named codes, users, volume, and fees](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/a5aee9ffb392a277b872c2081a87df0594d50f18635b3d0ec5efb9a1752696e2/source.webp)
+This lets you compare distribution channels without creating separate referral accounts. Rename or stop sharing a link when a campaign ends; its historical performance remains available for comparison.
+## Review referred users
+The **Referred Users** view connects each referred account to the link they used. It shows when the relationship began, the trader's attributed activity, and the rewards their eligible fees produced.
+![Referred Users table with username, link, volume, fees, and status](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/799c0e2821d3e9e6d567da5d59b032b9815f41b5284f41980fc92eabc8cd15bf/source.webp)
+Use it to understand whether a link attracted one highly active trader or a larger group of occasional traders without losing the link-level view.
+## Trace rewards and conversions
+Open the Reward Ledger when you want the records behind an analytics total. Each entry identifies the referral link, eligible fee event, original reward asset, amount, and status.
+Conversion history connects the asset originally earned to the payout asset you selected. Together, these records let you move from a performance trend to the exact rewards behind it without maintaining a separate spreadsheet.
+See [Referral Rewards](https://testnet.polyester.com/docs/user-docs/referrals/fees) to understand how each reward is calculated, collected, and converted.

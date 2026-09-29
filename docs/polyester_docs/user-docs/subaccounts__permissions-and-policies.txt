@@ -1,0 +1,225 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/permissions-and-policies
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Permissions & Policies · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Subaccounts
+svg]:size-3.5">
+/
+Permissions & Policies
+Permissions & Policies
+Copy page
+View as Markdown
+Open in
+The
+Subaccount
+policy defines the maximum access available inside a Subaccount. It applies across the account and limits the access available through member roles and
+API keys
+Open a Subaccount and select
+Permissions
+to manage its trading, balance, Address Book, and safety controls.
+How permissions work
+The Subaccount policy supersedes the member's role and any API-key policy. A role or API-key policy can restrict access further, but it cannot allow an action that the Subaccount policy does not allow.
+A new Subaccount defaults to read-only until the Owner updates its policy. A role does not independently grant write access.
+Read and Write are access levels in one control, not separate permissions. Selecting Write also includes Read.
+For example, a member with the Trader role cannot place orders while the Subaccount policy allows only Read access for Spot Trading. The Owner must set Spot Trading to Write. If the member places orders through an API key, that key must also have Spot Trading Write access.
+What you can control
+Use the policy to choose:
+whether the account can view balances or trade
+which spot markets it can use
+the maximum size of one order
+the maximum number of open orders
+whether it can manage address-book or whitelist settings
+whether new trading activity is halted
+whether the policy is locked against changes.
+Manage internal transfer and external withdrawal destinations from
+Address Book & Whitelists
+Trading halt rejects new orders and order or trigger changes that can resume trading. Existing orders and triggers can still be canceled or paused.
+Set the policy
+1
+Open Permissions
+Choose the Subaccount you want to manage and open its Permissions tab.
+2
+Choose the available actions
+Set the trading, balance, Address Book, and safety access that fits the account's purpose.
+3
+Add useful limits
+Choose the spot markets, per-order size, open-order limit, and trading-halt setting that should apply across the Subaccount.
+4
+Review and save
+Review the complete policy and save your changes. Polyester may ask for
+MFA
+before applying a protected change.
+Lock the policy
+The Owner can lock a policy after it is configured. A locked policy continues to apply, but only the Owner can unlock it before making changes.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Roles and permissions have different jobs
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Roles describe what a person can manage. Permissions describe what the Subaccount allows. Both must allow an action before it is available.
+FAQ
+Can I give another person or bot access to trading and nothing else?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. For a team member, give them the Trader role on a Subaccount. For a bot, create an API key for the chosen
+Main Account
+or Subaccount with trading permissions enabled. To keep access limited to trading and nothing else, make sure to turn off all withdrawal and transfer permissions. You can further restrict a team member or bot to specific markets and trading actions in the respective permissions sections.
+Related Topics
+Overview
+Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+Manage Subaccounts
+Create, switch, fund, disable, reactivate, or leave a Subaccount.
+Members & Roles
+Invite people to a Subaccount and choose what each role can do.
+Audit Logs
+See membership, permission, API-key, and account-setting changes for a Subaccount.
+Previous
+Members & Roles
+Next
+Address Book & Whitelists
+On this page
+How permissions work
+What you can control
+Set the policy
+Lock the policy
+FAQ
+Related Topics
+Share this page
+Permissions & Policies
+Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+Share
+Copy Link

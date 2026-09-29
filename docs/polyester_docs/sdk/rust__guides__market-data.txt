@@ -1,0 +1,476 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/market-data
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market data · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Market data
+Market data
+Copy page
+View as Markdown
+Open in
+Unary market-data calls are public. Realtime is always included; the legacy
+realtime
+Cargo
+feature is a no-op compatibility flag. Subscribe helpers usually need hydrated catalogs for symbol
+resolution. There is no
+client.candles
+alias, use
+client.market_data
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+hydrate_catalogs
+true
+,
+Default
+default
+()
+})
+?
+;
+client
+wait_for_catalogs
+()
+;
+Typed streams use
+recv().await
+updates().recv().await
+Symbols
+Prefer
+"BTC-USDT"
+wait_for_catalogs().await?
+before symbol-string subscribe helpers.
+Market overview
+use
+polyester
+services
+ListMarketOverviewOptions
+,
+MarketOverviewCreateSubscriptionOptions
+};
+let
+overview
+=
+client
+market_overview
+list
+(
+Some
+(
+50
+))
+;
+println!
+(
+"{} markets"
+,
+overview
+markets
+len
+());
+let
+mut
+sub
+=
+client
+market_overview
+create_subscription
+(
+MarketOverviewCreateSubscriptionOptions
+limit
+Some
+(
+50
+),
+Default
+default
+()
+})
+;
+while
+let
+Some
+(
+rows
+)
+=
+sub
+updates
+()
+recv
+()
+let
+_
+=
+rows
+;
+break
+; }
+Candles
+let
+result
+=
+client
+market_data
+get_candles
+(
+"BTC-USDT"
+,
+"1h"
+,
+Some
+(
+200
+))
+;
+let
+mut
+live
+=
+client
+market_data
+subscribe_candles
+(
+"BTC-USDT"
+,
+"1m"
+)
+;
+while
+let
+Some
+(
+c
+)
+=
+live
+recv_result
+()
+println!
+(
+"{}"
+,
+c
+close);
+break
+; }
+Row candle results are newest-first, with an included open candle prepended; use
+for
+latest and reverse/sort by
+ts_sec
+for indicators. Candle columns are oldest-first.
+Order book
+use
+polyester
+services
+CreateSubscriptionOptions
+;
+let
+book
+=
+client
+orderbook
+get
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+let
+mut
+sub
+=
+client
+orderbook
+create_subscription
+(
+CreateSubscriptionOptions
+symbol
+"BTC-USDT"
+into
+(),
+depth
+Some
+(
+50
+),
+Default
+default
+()
+})
+;
+while
+let
+Some
+(
+b
+)
+=
+sub
+updates
+()
+recv
+()
+println!
+(
+"{}"
+,
+b
+book_seq);
+break
+; }
+Public trades
+let
+tape
+=
+client
+market_data
+get_trades
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+let
+mut
+sub
+=
+client
+market_data
+subscribe_trades
+(
+"BTC-USDT"
+)
+;
+while
+let
+Some
+(
+t
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{:?}"
+,
+t
+price);
+break
+; }
+Private fills are
+client.trades
+, not the public tape.
+Heatmap & chain analytics
+client.heatmap
+and
+client.chain_analytics
+for L2 heatmap and chain analytics reads.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Streaming model
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Centrifugo WebSocket + Protobuf. Details:
+Streaming
+Related
+Order book
+Candles
+Public trades
+Market overview
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Authentication
+Next
+Trading
+On this page
+Symbols
+Market overview
+Candles
+Order book
+Public trades
+Heatmap & chain analytics
+Related
+Related Topics
+Share this page
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    hydrate_catalogs: true,
+    ..Default::default()
+})?;
+client.wait_for_catalogs().await?;
+
+---
+
+use polyester::services::{ListMarketOverviewOptions, MarketOverviewCreateSubscriptionOptions};
+
+let overview = client.market_overview.list(Some(50)).await?;
+println!("{} markets", overview.markets.len());
+let mut sub = client
+    .market_overview
+    .create_subscription(MarketOverviewCreateSubscriptionOptions {
+        limit: Some(50),
+        ..Default::default()
+    })
+    .await?;
+while let Some(rows) = sub.updates().recv().await { let _ = rows; break; }
+
+---
+
+let result = client.market_data.get_candles("BTC-USDT", "1h", Some(200)).await?;
+let mut live = client.market_data.subscribe_candles("BTC-USDT", "1m").await?;
+while let Some(c) = live.recv_result().await? { println!("{}", c.close); break; }
+
+---
+
+use polyester::services::CreateSubscriptionOptions;
+
+let book = client.orderbook.get("BTC-USDT", Some(20)).await?;
+let mut sub = client
+    .orderbook
+    .create_subscription(CreateSubscriptionOptions {
+        symbol: "BTC-USDT".into(),
+        depth: Some(50),
+        ..Default::default()
+    })
+    .await?;
+while let Some(b) = sub.updates().recv().await { println!("{}", b.book_seq); break; }
+
+---
+
+let tape = client.market_data.get_trades("BTC-USDT", Some(20)).await?;
+let mut sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+while let Some(t) = sub.recv_result().await? { println!("{:?}", t.price); break; }

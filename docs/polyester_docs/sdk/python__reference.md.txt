@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Address book
+Saved destinations and whitelist views.
+The Python SDK exposes address-book **reads and invalidation streaming**. Entry/tag mutations are JWT/session-only and are not included in this API-key SDK.
+| Method                                          | Result                                       |
+| ----------------------------------------------- | -------------------------------------------- |
+| `list_books()`                                  | `AddressBooksList`                           |
+| `list_entries(...)`                             | `AddressBookEntriesList` + opaque page token |
+| `list_transfer_counterparties(...)`             | Eligible counterparties                      |
+| `list_transfer_destinations(...)`               | Saved transfer destinations                  |
+| `list_internal_transfer_whitelist_entries(...)` | Internal allowlist view                      |
+| `get_withdraw_whitelist_view(...)`              | External withdrawal allowlist state          |
+| `get_view(...)`                                 | Composite address-book view                  |
+| `subscribe_view_invalidations(...)`             | Private invalidation stream                  |
+```python
+page = await client.address_book.list_entries(limit=50)
+for entry in page.entries:
+print(entry.address_book_entry_id, entry.label, entry.kind)
+view = await client.address_book.get_withdraw_whitelist_view()
+```
+Address-book entries are saved metadata. **Whitelists are enforced allowlists**: saving or displaying a destination does not by itself authorize a withdrawal. Re-fetch the relevant view after an invalidation instead of treating the event as a complete snapshot.
+All methods are authenticated. The invalidation channel additionally requires Account ID and the address-book read permission. In live test accounts, that permission is fixture-policy configuration, not an intrinsic property of an API-key role; update the fixture policy when the read is intentionally allowed. The method returns only after the private token and Centrifugo handshake succeed.
+Related: [Withdrawals](https://testnet.polyester.com/docs/sdk/python/reference/withdrawals), [Withdrawals security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security).

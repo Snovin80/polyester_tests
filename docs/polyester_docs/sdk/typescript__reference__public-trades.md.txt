@@ -1,0 +1,83 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/public-trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+`client.marketData` reads and streams public spot trade prints, and exposes the raw spot configuration. It uses the public transport, so no authentication is required.
+Prices and quantities are decimal strings. Trade timestamps are nanosecond epochs (`tsNs`), with a millisecond convenience field (`tsMs`) alongside.
+## Methods
+| Method            | Summary                                               |
+| ----------------- | ----------------------------------------------------- |
+| `listTrades`      | List recent public trades for a market, newest-first. |
+| `getSpotConfig`   | Fetch the raw spot reference-data snapshot.           |
+| `subscribeTrades` | Stream live trade prints for a symbol.                |
+### `listTrades(input, options?)`
+Returns `{ trades, nextPageToken }`, ordered newest-first by execution time. Only `symbolId` is required.
+```ts
+const { trades } = await client.marketData.listTrades({
+symbolId: 1,
+limit: 100,
+side: "buy",
+});
+for (const t of trades) {
+console.log(t.tsMs, t.sideLabel, t.price, t.qty);
+}
+```
+Page through history with the returned token:
+```ts
+let pageToken = "";
+do {
+const page = await client.marketData.listTrades({ symbolId: 1, pageToken, limit: 200 });
+console.log(page.trades.length);
+pageToken = page.nextPageToken;
+} while (pageToken !== "");
+```
+#### `GetMarketTradesInput`
+| Field       | Type              | Required | Notes                                                       |
+| ----------- | ----------------- | -------- | ----------------------------------------------------------- |
+| `symbolId`  | `number`          | yes      | Positive uint32 engine symbol id (1 through 4,294,967,295). |
+| `limit`     | `number`          | no       | Integer from 1 through 1,000.                               |
+| `side`      | `"buy" \| "sell"` | no       | Filter to one aggressor side.                               |
+| `startTsNs` | `string`          | no       | Range start, epoch nanoseconds.                             |
+| `endTsNs`   | `string`          | no       | Range end, epoch nanoseconds.                               |
+| `pageToken` | `string`          | no       | Cursor from a previous `nextPageToken`.                     |
+### `getSpotConfig(options?)`
+Returns the raw `SpotConfig` snapshot: asset metadata, pair trading constraints, display scales, and market slippage defaults. This is the reference data the catalog is built from.
+```ts
+const config = await client.marketData.getSpotConfig();
+console.log(config.assets.length, config.pairs.length);
+```
+Most of the time you want the parsed, indexed [catalog](https://testnet.polyester.com/docs/sdk/typescript/reference/catalog) instead of raw config: reach for `getSpotConfig` only when you need the untransformed snapshot.
+### `subscribeTrades(input)`
+Streams live trade prints for one symbol. Returns an idempotent unsubscribe function.
+```ts
+const unsubscribe = client.marketData.subscribeTrades({
+symbolId: 1,
+onEvent: (trade) => console.log(trade.sideLabel, trade.price, trade.qty),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+`onEvent` is required. `onOpen`, `onClose`, and `onError` are optional. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+## The `MarketTrade` shape
+`listTrades` rows and `subscribeTrades` events share this shape.
+```ts
+interface MarketTrade {
+symbolId: number;
+matchId: string; // stable print id, also the pagination tie-breaker
+isBuy: boolean; // true when the aggressor bought
+sideLabel: "buy" | "sell";
+qty: string; // decimal string
+price: string; // decimal string
+tsNs: string; // execution time, epoch nanoseconds
+tsMs: number; // same time, epoch milliseconds
+}
+```
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/typescript/guides/market-data) for the task-oriented walkthrough.
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming) for the subscription model.
+- [Catalog reference](https://testnet.polyester.com/docs/sdk/typescript/reference/catalog) for the parsed reference data.
+- [Order book](https://testnet.polyester.com/docs/sdk/typescript/reference/order-book) for depth.
+- [Candles](https://testnet.polyester.com/docs/sdk/typescript/reference/candles) for OHLCV series.

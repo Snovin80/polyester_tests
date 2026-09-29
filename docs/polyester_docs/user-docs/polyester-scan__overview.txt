@@ -1,0 +1,228 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Scan
+Overview
+Copy page
+View as Markdown
+Open in
+Polyester Scan
+is the public browser for
+Polyester Chain
+Zipper
+flows in one searchable place.
+You do not need to connect an account to browse. Viewing records and using contract read methods are read-only, so they never change your account or submit a transaction. If you connect a wallet and use a contract write method, your wallet asks you to approve the transaction before it is submitted.
+What you can explore
+Area
+What it shows
+Chain activity
+Blocks, transactions, addresses, contract calls, logs, and token transfers
+Assets
+Tokens, route-specific
+Zipped Assets
+,
+Unified Assets
+, and supported chains
+Asset flows
+The complete journey of a deposit, withdrawal, or internal transfer
+Contracts
+Verified source code, public contract data, and available read or write methods
+The home page also shows live activity and network summaries. Open any row to see the complete record and its related links.
+Find a record
+Use the global search when you already have an identifier. Scan can search by:
+Address
+Transaction Hash
+Block Number or Hash
+Token Name, Symbol, or Contract
+Unified Asset
+Chain
+Flow ID
+An exact address, hash, contract, or Flow ID gives the most direct result. A broader search can show several result types together, which is useful when one symbol represents more than one asset
+route
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+The full asset identity matters
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Two assets can share the same name or symbol. The source chain and contract address identify the exact asset and route shown in Scan.
+Public activity and private account data
+Scan displays public Polyester Chain records and approved public Zipper flow information. This includes assets entering or leaving an account, public smart-account actions, contract events, and Zipped Asset supply changes.
+Your Trading balance, orders, fills, account permissions, sessions, and complete financial ledger remain private. Scan does not expose that information simply because the related account has a public blockchain address.
+Explore Polyester Scan
+zAssets & uAssets
+explains how route-specific Zipped Assets connect to one Unified Asset balance.
+Asset Flows
+follows deposits, withdrawals, and internal transfers from start to finish.
+Chain Activity
+covers blocks, transactions, addresses, and public execution details.
+Tokens & Chains
+helps you browse supported asset routes and their source chains.
+Contracts & Tools
+covers verified contracts, filters, exports, statistics, gas, and APIs.
+FAQ
+What can I verify independently on the blockchain, and where can I see it?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Polyester has its own blockchain explorer, Polyester Scan. It lets you inspect transactions, public contract data, and the on-chain stages of deposits, withdrawals, and transfers. You can check Zipped Asset supplies and their source-chain backing, and follow links to the relevant network’s explorer to inspect the underlying transfers. Your private Trading balances, orders, and fills are not published as part of those blockchain records.
+Related Topics
+zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+Chain Activity
+Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Previous
+RPC Nodes
+Next
+zAssets & uAssets
+On this page
+What you can explore
+Find a record
+Public activity and private account data
+Explore Polyester Scan
+FAQ
+Related Topics
+Share this page
+Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+Share
+Copy Link

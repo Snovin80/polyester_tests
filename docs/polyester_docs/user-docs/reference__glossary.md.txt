@@ -1,0 +1,165 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/glossary.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Glossary
+Search definitions for Polyester product and trading terms.
+This glossary defines Polyester terminology. Each entry links to the page where the concept is covered in depth. For a broader map of how these systems fit together, see [Key Concepts](https://testnet.polyester.com/docs/user-docs/start/key-concepts).
+Term
+Definition
+Applies to
+Term
+Definition
+A saved destination address and its label.
+Applies to
+Wallet, Withdrawals, Security
+Term
+Definition
+A revocable credential used to access Polyester programmatically.
+Applies to
+API, Security, Desktop
+Term
+Definition
+The first asset in a trading pair and the asset being bought or sold.
+Applies to
+Trading, Markets
+Term
+Definition
+The complete journey of an asset moving from an external chain into Polyester.
+Applies to
+Funds, Zipper, Scan
+Term
+Definition
+A blockchain account controlled directly by a private key.
+Applies to
+Accounts, Security
+Term
+Definition
+The point when a chain transaction is considered sufficiently permanent.
+Applies to
+Deposits, Withdrawals, Chains
+Term
+Definition
+The account area where deposits arrive and assets remain available for transfers or withdrawals.
+Applies to
+Funds, Transfers, Deposits
+Term
+Definition
+Polyester's system for sponsoring Polyester Chain gas on supported actions.
+Applies to
+Polyester Chain, Accounts
+Term
+Definition
+A security signer used to approve protected account actions.
+Applies to
+Accounts, Security
+Term
+Definition
+A volume-weighted reference price built from normalized Asset prices across leading centralized and decentralized exchanges.
+Applies to
+Trading, Funds, Lending
+Term
+Definition
+The main Polyester account that owns its Subaccounts.
+Applies to
+Accounts, Subaccounts
+Term
+Definition
+An order that rests on the order book and provides liquidity.
+Applies to
+Trading, Fees, API
+Term
+Definition
+A participant or strategy that quotes buy and sell orders to provide liquidity to a market.
+Applies to
+—
+Term
+Definition
+An additional identity check used to protect sensitive account actions.
+Applies to
+Accounts, Security
+Term
+Definition
+The external or embedded wallet that authorizes actions for your Polyester Smart account.
+Applies to
+Accounts, Security
+Term
+Definition
+The native gas asset of Polyester Chain. Polyester sponsors gas for supported product actions.
+Applies to
+Polyester Chain, Gas
+Term
+Definition
+Polyester's high-performance system for order admission, matching, and settlement.
+Applies to
+Trading, Matching, Settlement
+Term
+Definition
+Polyester's EVM-compatible blockchain for accounts, assets, and protocol activity.
+Applies to
+Polyester Chain, Accounts, Assets
+Term
+Definition
+The public explorer for Polyester Chain activity, contracts, assets, and Zipper Flows.
+Applies to
+Scan, Explorer
+Term
+Definition
+An order setting that prevents the order from immediately executing as a taker.
+Applies to
+Trading, Orders, API
+Term
+Definition
+The second asset in a pair and the asset used to express its price.
+Applies to
+Trading, Markets
+Term
+Definition
+The configured connection between one asset on an external chain and its matching Zipped Asset on Polyester Chain.
+Applies to
+Zipper, Funds, Deposits
+Term
+Definition
+The Safe account on Polyester Chain that represents a Polyester account.
+Applies to
+Accounts, Polyester Chain
+Term
+Definition
+A separate account under a Main Account with its own balances, members, and activity.
+Applies to
+Accounts, Trading, API
+Term
+Definition
+An incoming order that executes against liquidity already on the order book.
+Applies to
+Trading, Fees, API
+Term
+Definition
+The account-facing balance that combines compatible source-chain asset routes.
+Applies to
+Funds, Trading, Zipper
+Term
+Definition
+The private balance area used for trading, lending, collateral, and margin.
+Applies to
+Trading, Funds, Margin
+Term
+Definition
+A protected external custody location used by Zipper for a specific asset route.
+Applies to
+Zipper, Custody
+Term
+Definition
+The complete journey of an asset moving from Polyester to an external chain.
+Applies to
+Funds, Zipper, Scan
+Term
+Definition
+The Polyester Chain representation of one asset from one source chain.
+Applies to
+Funds, Zipper, Scan
+Term
+Definition
+Polyester's protocol for bringing supported external assets onto and off Polyester Chain.
+Applies to
+Funds, Deposits, Withdrawals

@@ -1,0 +1,307 @@
+Источник: https://testnet.polyester.com/docs/user-docs/start/first-deposit-and-trade
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+First Deposit & Trade · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Start Here
+svg]:size-3.5">
+/
+First Deposit & Trade
+First Deposit & Trade
+Copy page
+View as Markdown
+Open in
+Your first trade starts with an Asset you already hold. Deposit that Asset into Polyester, make the balance available in Trading, find a market that exchanges it for the Asset you want, and place an Order. After the Order fills, the Asset you received appears in your
+Unified Trading Account
+Before you deposit
+Confirm these first:
+Create an account
+so Polyester can assign a deposit address
+Secure your account
+so the
+owner wallet
+and
+MFA
+are in place
+Confirm the selected
+Main Account
+or
+Subaccount
+so the credited balance appears there
+Hold a
+supported Asset
+on the network you'll send from
+Deposit, trade, and check your new balance
+This journey works whether your completed Deposit credits Funding first or goes directly to Unified Trading.
+1
+Deposit an Asset
+Open
+Deposit
+, select the Asset, and choose the network where it currently exists. Copy the address directly from Polyester and send the Asset from your source wallet or exchange. Include the exact memo or destination tag when one is shown.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+Each account gets one deposit address per supported chain, not per Asset. Supported EVM networks share that EVM address. The wrong network, address, or memo can prevent a Deposit from crediting. Verify before sending.
+Wait for the required source-chain confirmations. If the completed Deposit appears in Funding, open
+Transfer
+and move the amount you want to trade into Unified Trading. If it already appears as an available Trading balance, continue to the next step.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+Your Default Deposit Destination can be Funding or Unified Trading. You can review this setting under
+Deposit Routing
+on
+Security
+Deposit Funds
+Learn more about depositing funds.
+Internal Transfers
+Learn more about internal transfers.
+2
+Find a market for the deposited Asset
+Open
+Spot Markets
+and search for the ticker you deposited. Choose a Pair that contains both the Asset you have and the Asset you want to receive.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+The first ticker is the
+Base Asset
+Quote Asset
+BTC/USDT
+, selling
+BTC
+gives you
+USDT
+, while buying
+BTC
+spends
+USDT
+Trading Screen
+Learn more about the trading screen.
+3
+Choose Buy or Sell and place the Order
+Choose
+Sell
+when you hold the Base Asset and want the Quote Asset. Choose
+Buy
+when you hold the Quote Asset and want the Base Asset. Confirm the active account, enter the amount, select a Market or Limit Order, review the estimated total and fees, then place the Order.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+Market or Limit?
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground mt-0.5">
+A
+Market Order
+prioritizes immediate execution within its protections. A
+Limit Order
+lets you control the worst execution price, but it may remain open until the market reaches that price.
+Example: Buy BTC with a Limit Order
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+You hold
+USDT
+in Unified Trading and want
+BTC
+Open the
+BTC/USDT
+market.
+USDT
+is the Quote Asset you spend, and
+BTC
+is the Base Asset you want to receive.
+Select
+Buy
+, choose a Limit Order, enter the amount of
+BTC
+, and set a Limit Price.
+Review the Order and place it. When it fills, the spent
+USDT
+decreases and the received
+BTC
+appears in the same Unified Trading Account.
+A filled Limit Buy shows Fill Progress at 100%, with no remaining quantity. Open the order to see the Limit Price, filled value, and the trades that completed it.
+If a Limit Order remains open, the unfilled quantity stays reserved. Cancel the remaining Order if you want to release that balance back to Unified Trading.
+Order Form
+Learn more about the order form.
+4
+Check the Asset you received
+After the Order fills, open your Unified Trading balance and confirm that the Asset you received is available.
+Open Orders
+shows any quantity still waiting to trade.
+Order History
+and
+Fills
+show what executed, including the quantity and price.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+An accepted Order is not always a completed trade. If a Limit Order is still open or partially filled, some of its balance remains reserved until it fills or you cancel it.
+The received Asset can support another eligible Order or be transferred back to Funding when it is available and not reserved.
+Manage Orders
+Learn more about managing orders.
+Once the received Asset appears in your Unified Trading balance, you can use it in another eligible Order or transfer it to Funding for a supported withdrawal.
+Withdraw Funds
+Learn more about withdrawing funds.
+FAQ
+Where do I start, and what do I need to use the testnet?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Start by creating a Polyester account with a supported wallet, Google, or email. If you want to claim paper assets, connect your Discord and X accounts to your Polyester account. You don’t need an existing crypto wallet if you sign up with Google or email. The
+Start Here
+section of the user docs guides you through protecting your account and making your first deposit and trade.
+What features can I test now?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+You can trade spot markets, manage your orders, deposit, withdraw, and transfer. You can also customize your trading workspace with widgets, manage sub-accounts, configure account security, create
+API keys
+for trading tools, and track transactions on PolyesterScan.
+Related Topics
+What is Polyester?
+How Polyester unifies Assets from supported chains for trading, lending, bridging, and swaps.
+Key Concepts
+Learn how Polyester moves Assets across chains, keeps balances on-chain, and processes order-book trades.
+Create Your Account
+Choose how to sign in, create your non-custodial Main Account, and protect the wallet that controls it.
+Secure Your Account
+Protect your owner credential, add MFA, save recovery codes, and configure withdrawal and transfer whitelists.
+Previous
+Secure Your Account
+Next
+Unified Assets
+On this page
+Before you deposit
+Deposit, trade, and check your new balance
+FAQ
+Related Topics
+Share this page
+First Deposit & Trade
+Deposit an Asset, make it available in Trading, and place your first spot Order.
+Share
+Copy Link

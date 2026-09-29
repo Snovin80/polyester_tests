@@ -1,0 +1,33 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/concepts/environments.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Environments
+Testnet endpoints and how to point the client at them.
+Pass the testnet preset to every client:
+```python
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+async with AsyncPolyester(environment=POLYESTER_TESTNET_ENVIRONMENT) as client:
+```
+| Setting       | `POLYESTER_TESTNET_ENVIRONMENT`     |
+| ------------- | ----------------------------------- |
+| API URL       | `https://api-testnet.polyester.com` |
+| WebSocket URL | `wss://api-testnet.polyester.com`   |
+| RPC URL       | `https://rpc.polyester.live`        |
+| Chain ID      | `888169`                            |
+| Name          | `polyester-testnet`                 |
+Always pass `environment`; omitting it does not select testnet.
+## Endpoint overrides
+Pass `api_url` / `ws_url` to override the preset's API and WebSocket URLs on one client. For custom or VPC endpoints, derive a complete environment with `with_urls(...)` or build one with `create_polyester_environment(...)`:
+```python
+vpc = POLYESTER_TESTNET_ENVIRONMENT.with_urls(
+api_url="https://polyester.internal.example",
+websocket_url="wss://polyester.internal.example",
+)
+client = AsyncPolyester(environment=vpc)
+```
+## From environment
+For scripts, `AsyncPolyester.from_env()` / `Polyester.from_env()` select the preset from `POLYESTER_ENV`. Set it to `testnet`. They also read `POLYESTER_API_URL` / `POLYESTER_WS_URL` as `api_url` / `ws_url` overrides. Prefer explicit config in production.
+## Chain helpers
+On-chain Funding helpers (`polyester.chain`) use `POLYESTER_TESTNET_ENVIRONMENT` for contract addresses, RPC, and account-abstraction endpoints. See [Chain helpers](https://testnet.polyester.com/docs/sdk/python/reference/chain) and [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).
+Do not hard-code production URLs until your account team confirms the production API host.

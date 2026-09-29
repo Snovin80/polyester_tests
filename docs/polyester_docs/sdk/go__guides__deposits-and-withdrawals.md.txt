@@ -1,0 +1,54 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/deposits-and-withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+## How funds move
+| Flow               | How                                                     |
+| ------------------ | ------------------------------------------------------- |
+| External → funding | Deposit address route configured to stop in Funding     |
+| External → trading | Deposit address route configured to continue to Trading |
+| Funding → funding  | On-chain Funding Account transfer                       |
+| Funding → trading  | On-chain (not a ConnectRPC trading deposit)             |
+| Funding → external | On-chain Zipper path                                    |
+| Trading → funding  | `PrepareAPIKeyToFunding` → persist → `SubmitPrepared`   |
+| Trading → external | `PrepareAPIKeyToExternalChain` → persist → submit       |
+| Trading → trading  | `client.InternalTransfers.Create`                       |
+Product overview: [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).
+## Deposit addresses
+```go
+addr, err := client.Deposit.CreateAddress(ctx, 1, nil, nil)
+listed, err := client.Deposit.ListAddresses(ctx, 1, nil, nil)
+```
+See [Deposit](https://testnet.polyester.com/docs/sdk/go/reference/deposit).
+## Trading withdraws
+API-key bots prepare and persist the complete signed request before sending:
+```go
+import (
+"github.com/Fabric-Labs/polyester-sdk-go/models"
+"github.com/Fabric-Labs/polyester-sdk-go/services"
+)
+prepared, err := client.Withdraw.PrepareAPIKeyToFunding(services.PrepareAPIKeyWithdrawParams{
+AssetID: 2, Amount: models.AssetAmountFromDecimal("100.00"),
+AmountScale: 2, IdempotencyKey: "withdraw-stable-1",
+})
+if err := os.WriteFile("prepared-withdraw.bin", prepared.RequestBytes(), 0600); err != nil {
+log.Fatal(err)
+}
+result, err := client.Withdraw.SubmitPrepared(ctx, prepared)
+```
+Wire `amount_e18` always uses fixed scale 18. Input scale conversion is exact, overflow checked, and never rounded. Restore persisted bytes with `services.PreparedTradingWithdrawFromBytes` and submit them unchanged after an outcome-unknown error.
+Details: [Withdrawals](https://testnet.polyester.com/docs/sdk/go/reference/withdrawals).
+## Internal transfers
+```go
+dest := "123"
+_, err := client.InternalTransfers.Create(
+ctx, 2, models.AssetAmountFromDecimal("10"),
+"xfer-1", nil, nil, nil, &dest, nil, nil,
+)
+```
+See [Internal transfers](https://testnet.polyester.com/docs/sdk/go/reference/internal-transfers).
+> **Security**
+>
+> High-risk money movement may require additional account controls. See [Withdrawals & transfers security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security).

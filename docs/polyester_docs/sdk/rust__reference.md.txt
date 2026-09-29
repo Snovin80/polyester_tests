@@ -1,0 +1,30 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Address book
+Saved destinations and whitelist views.
+The Rust SDK exposes address-book **reads and invalidation streaming**. Entry/tag mutations require a JWT/session and are not included.
+## Methods
+| Method                                                        | Summary                         |
+| ------------------------------------------------------------- | ------------------------------- |
+| `list_books`                                                  | List address books.             |
+| `list_entries`                                                | List saved entries.             |
+| `list_transfer_counterparties` / `list_transfer_destinations` | Read transfer allowlist views.  |
+| `list_internal_transfer_whitelist_entries`                    | Read internal-transfer entries. |
+| `get_withdraw_whitelist_view` / `get_view`                    | Read withdrawal allowlist view. |
+| `subscribe` / `subscribe_view_invalidations`                  | Stream view invalidations.      |
+```rust
+use polyester::proto::auth::v1::ListAddressBookEntriesRequest;
+let page = client
+limit: 50,
+})
+for entry in page.entries {
+println!("{} {} {}", entry.address_book_entry_id, entry.label, entry.kind);
+}
+```
+**Whitelists are enforced allowlists**: a saved destination does not itself authorize a withdrawal. Re-fetch the relevant view after an invalidation; the event is not a full snapshot.
+All calls are authenticated. The invalidation stream additionally requires Account ID and the address-book read permission. The method returns only after the private token and Centrifugo handshake succeed. An HTTP 403 from a test fixture that lacks that permission is an expected policy/configuration denial, not an SDK streaming defect; grant address-book read access before reconnecting.
+## Related
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals)
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)

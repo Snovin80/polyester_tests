@@ -1,0 +1,84 @@
+Источник: https://testnet.polyester.com/docs/user-docs/start.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# What is Polyester?
+How Polyester unifies Assets from supported chains for trading, lending, bridging, and swaps.
+Polyester is a decentralized exchange built on Polyester Chain. You get one place to use Assets from supported chains. Deposit through one chain, then trade, lend, borrow, or withdraw through another supported route.
+Decentralized finance (DeFi) has had this problem for years. The same Asset is split across blockchains, exchanges, and lending markets that can't share liquidity. Polyester combines those markets, so the chain you start on doesn't limit what you can do next.
+![Polyester logo beside a glowing pink ball on a black surface](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/6225004d56cfd45846d1fd405f37ebff48e14612383a3d5c5dfa4f909da731cd/source.jpg)
+## Core features
+1. Permissionless and non-custodial
+Polyester does not require KYC checks. Your owner wallet stays in control of your account and private keys.
+2. Advanced spot trading
+Dedicated order books and a spot interface give you execution tools, market data, and order controls.
+3. High-performance matching
+PolyEngine matches up to 1 million transactions per second, with 1 ms 99th percentile (P99) latency.
+4. Broad chain support
+Polyester currently supports 16 networks and 28 Unified Assets, including:
+See [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) for every listed chain and Asset.
+5. Unified Assets
+Compatible versions of the same Asset from multiple chains become one Unified Asset. You can trade, lend, or borrow that Asset in one interface.
+6. Capital-efficient lending and borrowing
+Use supported Assets from any connected chain as collateral. Those Assets can keep working while you borrow.
+7. Cross-account collateral and permissions
+Assign members, roles, and application programming interface (API) keys across a Main Account and its Subaccounts. Eligible accounts can share collateral to set access, liquidity, and risk.
+8. Customizable workspace
+You can arrange charts, order books, order entry, and account data around the markets you use.
+9. Institutional APIs
+Institutions can integrate through Financial Information eXchange (FIX), WebSocket, and Simple Binary Encoding (SBE). Other APIs are also available.
+10. Developer and AI integrations
+Model Context Protocol (MCP) servers and software development kits (SDKs) connect developers and AI agents to Polyester markets. Developers and agents can then build on that liquidity.
+Together, these features make Polyester the ultimate liquidity hub across supported chains and Assets. Polyester brings together unified liquidity with a high-performance chain, advanced exchange infrastructure, and open integrations built for the next generation of DeFi.
+## Deposit and withdraw
+Each Main Account and Subaccount has chain-specific deposit addresses. Zipper verifies the source-chain transaction and creates a 1:1-backed Zipped Asset on Polyester Chain. The Funding Account credits the matching Unified Asset.
+A withdrawal uses an available Zipped Asset route. Zipper then returns the native Asset to the external address. What you can move depends on current listings, routes, fees, and confirmation requirements.
+## Spot trading
+Polyester spot trading lets you trade supported Asset Pairs through dedicated order books with institutional-grade latency.
+Most decentralized exchanges begin with the Assets already available on one chain. Polyester is built to bring Assets from both EVM and non-EVM chains into the same exchange, including Assets that rarely meet in one native decentralized venue.
+The Unified Trading Account brings deposited balances into dedicated spot order books. Equivalent versions of the same Asset share one trading balance, removing the need for a different exchange or balance for every source chain. This creates a path for markets that are difficult to serve in a chain-specific DEX.
+Every **Pair** remains its own market with its own order book. Polyester unifies access to liquidity, not unrelated Assets or prices.
+**Example: Non-EVM and EVM Assets in one venue**
+When supported, Assets arriving from Bitcoin , XRP , Dogecoin , and Litecoin can trade in the same ecosystem as Assets arriving from Ethereum , Solana , Base , Avalanche , and other chains.
+### Spot VIP tiers
+Your VIP tier sets the maker and taker rates you pay on spot trades:
+- Higher tiers receive lower rates
+- See the current rates on the [VIP fee schedule](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees#spot-trading-fee-schedule)
+## Bridge and swap across chains
+Unified Asset balances connect supported chain routes. You can move the same Asset between chains, or trade it for a different Asset before you withdraw.
+- **Bridge.** Deposit through one supported chain and withdraw the same Asset natively through another. No trade is required.
+**Example: Bridge USDC from Ethereum to Solana**
+You deposit USDC on Ethereum . Polyester credits one USDC Unified Asset. You can then withdraw native USDC on Solana . No trade is required.
+- **Swap.** Deposit through one supported chain, trade on a spot book, then withdraw a different Asset.
+**Example: Swap BTC for USDT**
+Native BTC can enter through the Bitcoin route, trade for USDT, and leave through a supported USDT route on another chain.
+For a same-Asset transfer, Polyester keeps the source route and its 1:1 backing, then uses available inventory on the destination route to fill the withdrawal. Shared Unified Asset balances let liquidity across routes serve that transfer. You do not need a separate pool for every pair of chains.
+Availability depends on current listings, supported deposit and withdrawal routes, destination inventory, fees, minimums, confirmation requirements, and route health. A cross-Asset swap also needs an available Pair and enough order-book liquidity.
+## Lend and borrow
+Polyester gives lenders and borrowers access to liquidity gathered from every supported route for an Asset, rather than a single chain-specific pool.
+Chain-specific lending platforms often divide one asset into separate markets. USDT on Ethereum may sit in a different pool from USDT on Solana, even though both represent the same economic asset. Each pool has its own supply, demand, utilization, and rates.
+Polyester brings supported versions of the same asset into one Unified Asset balance before that balance reaches the lending market. A USDT deposit from Ethereum and a USDT deposit from Solana can therefore participate in the same USDT lending market rather than competing in isolated chain-specific pools.
+Polyester's portfolio-aware risk engine takes this capital efficiency further. Eligible Assets in your Unified Trading Account continue to contribute collateral value while they are committed to open orders, so placing an Asset on the book does not make that capital unproductive.
+### Example: Use BTC as productive collateral for market making
+A market maker quoting the ![BTC](https://testnet.polyester.com/icons/tokens/btc.svg) ![USDT](https://testnet.polyester.com/icons/tokens/usdt.svg) BTC/USDT market can use one original collateral position to support liquidity on both sides of the order book:
+- **Sell side.** Place deposited BTC in resting sell orders.
+- **Collateral.** Eligible BTC committed to those open orders continues to contribute collateral value, allowing the market maker to borrow USDT.
+- **Buy side.** Place the borrowed USDT in resting buy orders.
+The original BTC collateral can therefore support sell-side inventory and buy-side liquidity at the same time. By evaluating eligible balances and open orders together, Polyester keeps market-making capital productive across trading and borrowing instead of requiring it to sit idle in separate accounts.
+If you lend, you gain access to demand gathered around the Asset instead of one route. If you borrow, you gain access to supply gathered from every supported route. For the market as a whole, liquidity can become deeper and more useful because it is no longer divided by chain.
+## Unified liquidity
+Polyester brings liquidity from supported chains into one place, giving every market access to deeper, more useful liquidity.
+Polyester turns chains into connected routes around a shared exchange rather than separate destinations with separate liquidity.
+- **A better trading experience.** You can access more supported Assets in one set of spot markets.
+- **A better bridging experience.** You can deposit the same Asset through one supported chain and withdraw it through another.
+- **A better cross-chain swap experience.** You can deposit, trade, and withdraw through one path across otherwise disconnected ecosystems.
+- **A better lending experience.** You can lend or borrow equivalent Assets through one market instead of multiple chain-specific pools.
+Underneath that experience, Polyester keeps the system verifiable. Zipper preserves route-specific, 1:1 backing for Assets brought onto Polyester Chain. The Funding Account records unified on-chain balances. PolyEngine provides low-latency order matching while account balances, active orders, and trading strategies remain private.
+Your non-custodial owner wallet controls the Polyester smart wallet associated with your Main Account and Subaccounts. Polyester does not hold your private keys or become the owner of your account.
+## FAQ
+### What is Polyester?
+Polyester is a decentralized spot and lending exchange built on Polyester Chain. It supports deposits from Bitcoin, XRP Ledger, Bitcoin Cash, and most other major blockchains. The platform combines sub-millisecond order-book trading, lending pools, cross-chain withdrawals, advanced APIs, and customizable workspaces in one unified exchange.
+### Where should I start if this is my first time using Polyester?
+The Start Here section in the user docs is a great way to begin. It guides you through signing in with a wallet, Google, or email, protecting your access, and making your first deposit and trade. Follow them in order for a step-by-step introduction to Polyester.
+### How does privacy work on Polyester?
+Your trading activity on Polyester’s matching engine, including your Unified Trading Account balances, orders, and trading history, is private. Funding Account balances, deposits, withdrawals, and on-chain transfers are publicly viewable on PolyesterScan. Public market data shows completed trades without exposing which Polyester account placed each order.

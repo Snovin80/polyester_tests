@@ -1,0 +1,39 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Connectivity matrix
+Compare Polyester interfaces by workload, traffic pattern, encoding, and client path.
+Polyester provides different interfaces for request-response APIs, realtime subscriptions, and institutional trading connectivity. Select the interface that matches the traffic pattern and operational model of your integration.
+> **Recommended starting point**
+>
+> Use ConnectRPC with WebSocket Protobuf for typed SDK integrations. Use REST with WebSocket JSON when readable payloads and broad HTTP tooling matter more.
+## Compare interfaces
+| Interface                                                                                             | Best for                                                         | Encoding                     | Client path                             |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------- | --------------------------------------- |
+| [REST](https://testnet.polyester.com/docs/developer-docs/rest/getting-started)                        | Direct HTTP integrations, scripts, and operational tooling       | JSON                         | Any HTTP client                         |
+| [WebSocket JSON](https://testnet.polyester.com/docs/developer-docs/rest/websocket-json)               | Live updates for JSON-oriented integrations                      | JSON                         | Custom WebSocket client                 |
+| [ConnectRPC](https://testnet.polyester.com/docs/developer-docs/connectrpc/getting-started)            | Latency-sensitive typed API calls and application backends       | Binary Protobuf or ProtoJSON | Official SDKs                           |
+| [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf) | Typed market, order, balance, transfer, and account events       | Binary Protobuf              | Official SDKs or custom Protobuf client |
+| [SBE WebSocket](https://testnet.polyester.com/docs/developer-docs/sbe-websocket/getting-started)      | Ultra-low-latency binary order entry                             | SBE                          | Direct SBE client                       |
+| [FIX Classic](https://testnet.polyester.com/docs/developer-docs/fix-classic/getting-started)          | Institutional session connectivity using established FIX tooling | FIX tag-value                | FIX engine                              |
+| [FIX-SBE](https://testnet.polyester.com/docs/developer-docs/fix-sbe/getting-started)                  | Institutional connectivity with binary application messages      | SBE                          | FIX-SBE engine                          |
+## Common combinations
+## Application or bot
+Use an official SDK with binary ConnectRPC for typed calls and WebSocket Protobuf for live state.
+## HTTP-native
+Use REST for request-response calls and WebSocket JSON for continuous updates.
+## Ultra-low latency
+Use SBE WebSocket for compact order commands and acknowledgements. Pair it with WebSocket Protobuf and read APIs for execution and state updates.
+## Institutional FIX
+Use FIX Classic with tag-value FIX infrastructure or FIX-SBE for binary application messages.
+## Shared data conventions
+Transport choice does not change the business meaning of an order, transfer, or market-data event. Representation can still differ by interface:
+- Review [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids) before converting protobuf numeric IDs or REST Base58 values.
+- Review [Scaled integers](https://testnet.polyester.com/docs/developer-docs/connectrpc/scaled-integers) before converting prices, quantities, or fees.
+- Review [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys) for private programmatic requests.
+- Treat realtime encoding support as channel-specific rather than assuming every stream offers both JSON and Protobuf.
+## SDKs and schemas
+> **Official resources**
+>
+> [SDK capability matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix) · [Public Protobuf contracts](https://github.com/Fabric-Labs/polyester-proto) · [TypeScript SDK](https://github.com/Fabric-Labs/polyester-sdk-typescript) · [Python SDK](https://github.com/Fabric-Labs/polyester-sdk-python) · [Go SDK](https://github.com/Fabric-Labs/polyester-sdk-go) · [Rust SDK](https://github.com/Fabric-Labs/polyester-sdk-rust)

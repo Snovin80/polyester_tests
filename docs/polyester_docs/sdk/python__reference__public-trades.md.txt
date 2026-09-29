@@ -1,0 +1,47 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/public-trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Public trades
+Public trade tape reads and subscribe via market data.
+Public prints for a spot market live on `client.market_data` (not `client.trades`, which is your private fills). No authentication is required. Call `await client.wait_for_catalogs()` first; quantity decoding fails closed when the market scale is unavailable.
+## Methods
+| Method             | Summary                                       |
+| ------------------ | --------------------------------------------- |
+| `get_trades`       | Recent public trades (paginated by match id). |
+| `subscribe_trades` | Live public tape for one symbol.              |
+### Get trades
+```python
+result = await client.market_data.get_trades(symbol="BTC-USDT", limit=20)
+for t in result.trades:
+print(t.match_id, t.is_buy, t.price, t.qty, t.ts_ns)
+# Continue from a match id cursor when present
+if result.next_match_id:
+more = await client.market_data.get_trades(
+symbol="BTC-USDT",
+limit=20,
+from_match_id=int(result.next_match_id),
+)
+```
+| Field                  | Notes           |
+| ---------------------- | --------------- |
+| `symbol` / `symbol_id` | One required    |
+| `limit`                | Default `100`   |
+| `from_match_id`        | Optional cursor |
+### Subscribe trades
+Handshake completes before return. Consume with `async for`.
+```python
+subscription = await client.market_data.subscribe_trades(symbol="BTC-USDT")
+async with subscription:
+async for trade in subscription:
+print(trade.price, trade.qty, trade.is_buy)
+break
+```
+## MarketTrade shape
+`symbol_id`, `match_id`, `is_buy`, `price`, `qty`, `ts_ns`. Result wrapper: `MarketTradesResult(trades, next_match_id)`.
+`is_buy` is a `bool` from the wire `is_buy` / `isBuy` field: `True` when the aggressor (taker) side is buy, `False` when the aggressor is sell. Python does not decode a separate `side` string on `MarketTrade` (unlike Rust/Go).
+REST and realtime attach the same hydrated catalog scale to `qty`. The SDK does not decode public trade quantities using a guessed scale.
+## Related
+- [User trades](https://testnet.polyester.com/docs/sdk/python/reference/trades) for your private fills
+- [Market data guide](https://testnet.polyester.com/docs/sdk/python/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)

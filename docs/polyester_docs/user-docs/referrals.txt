@@ -1,0 +1,206 @@
+Источник: https://testnet.polyester.com/docs/user-docs/referrals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Referrals
+Overview
+Copy page
+View as Markdown
+Open in
+Polyester Referrals rewards you for bringing friends to trade on Polyester. Your friend receives
+4% off eligible trading fees
+, while you earn
+15% of the trading fees they pay
+The
+Referrals page
+gives you everything you need to create custom links, understand where new traders come from, follow every reward, and automatically convert earnings into the asset you want to hold.
+How referrals work
+Create a link from the Referrals page and share it wherever you connect with traders. Polyester handles the attribution, applies your friend's discount, and records your share whenever they pay an eligible trading fee.
+1
+Create a referral link
+Use
+Create new referral link
+, give it a recognizable name based on where you plan to share it, and copy the URL.
+2
+Invite a friend
+Share the link directly or publish it for your audience. When someone creates a Polyester account through your referral link, Polyester automatically attributes that account to you. Someone with an existing Polyester account can enter your referral code to be attributed to you. If their account already has a different referral code, they can replace it with yours.
+3
+Your friend saves on fees
+Your friend receives 4% off every eligible positive spot trading fee.
+4
+You earn a fee share
+You receive 15% of the discounted fee your friend pays. Each reward appears in your Reward Ledger, ready to track, convert, or claim.
+Create multiple referral links
+Create and name separate links for social posts, communities, campaigns, or individual invitations. Every link uses your referral ID, while its name makes the source easy to recognize. Switch between links from the
+Referral Link
+selector.
+At
+VIP 1
+, you can set a custom code for a link. You can only set that code once, and it cannot be changed afterward.
+When a custom code is unlocked, the selected link shows that you can set one.
+Referral Analytics attributes users, trading volume, and rewards to the link each trader used. This lets you compare audiences without creating separate referral accounts.
+Granular reward tracking
+The Reward Ledger records the link, eligible fee event, reward asset, amount, and status behind each earning. Rewards first appear in the asset used to pay the trading fee, giving you a complete history from the original trade to the amount you receive.
+See
+Referral Rewards
+for the complete discount and reward calculation.
+Dynamic reward payouts
+Choose the asset you want to receive and how often rewards should be converted. Polyester can keep rewards in their original assets or convert available rewards into one selected payout asset at the interval you set.
+For example, you can automatically convert USDT rewards into SOL instead of managing each reward asset separately. Each payout conversion remains visible in the Reward Ledger.
+Related Topics
+Rewards
+See how referral rewards are calculated, collected, converted, and paid to your Trading Account.
+Analytics
+Track referred users, trading volume, and rewards across every referral link and date range.
+Previous
+Deposit & Withdrawal Fees
+Next
+Rewards
+On this page
+How referrals work
+Create multiple referral links
+Granular reward tracking
+Dynamic reward payouts
+Related Topics
+Share this page
+Overview
+Invite friends to Polyester, earn a share of their trading fees, and track every referral from one dashboard.
+Share
+Copy Link

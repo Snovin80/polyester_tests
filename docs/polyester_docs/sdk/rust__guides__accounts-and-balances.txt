@@ -1,0 +1,278 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/accounts-and-balances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Accounts & balances · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Accounts & balances
+Accounts & balances
+Copy page
+View as Markdown
+Open in
+Use
+client.balances
+and account-scoped services to reconcile funding, trading, holds, and
+subaccount
+state.
+Funding vs trading
+Ledger balances have separate
+funding
+and
+trading
+buckets per asset.
+An external deposit can stop in
+funding
+or continue to
+trading
+, depending on its
+route
+Spot orders spend
+trading
+Move funding → trading on-chain (or via the Polyester UI), not through a ConnectRPC balance call
+Rust balances takes an explicit
+GetBalancesRequest
+(not keyword-only args).
+use
+polyester
+proto
+ledger
+read
+v1
+GetBalancesRequest
+;
+let
+balances
+=
+client
+balances
+list
+(
+GetBalancesRequest
+default
+())
+;
+for
+b
+in
+&
+balances
+balances {
+println!
+(
+"{} funding={} trading={}"
+,
+b
+asset_id,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+b
+funding,
+18
+)
+?
+,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+b
+trading,
+18
+)
+?
+,
+);
+}
+These fields are raw ledger
+u128
+strings at ledger scale 18. Format once for display and retain
+the raw strings for exact accounting.
+Also: history/holds helpers and
+balances.subscribe
+(
+recv_result()
+). See
+Balances
+Account scope
+Set
+default_sub_account_id
+/
+default_account_id
+on
+Config
+, or pass per-call ids where the
+service accepts them. Private streams need Account ID.
+Subaccounts & policies
+The SDK exposes subaccount
+reads
+plus private subaccount streams.
+client.policies
+is
+subscribe-only. Create/update/delete and membership or policy administration require the
+Polyester app/TypeScript session client.
+A subaccount-scoped
+API key
+also needs its own attached API-key policy. Permit ledger reads for
+balance reads/streams and add the required trading actions for mutations. The API-key policy and
+subaccount policy are distinct and both constrain the request.
+Profile & API keys
+client.auth
+and
+client.api_keys
+cover identity and key metadata. Unary reads work with an API
+key; the private administration stream requires its API-key administration permission.
+Creating
+keys is
+JWT/session-only.
+Transfer history
+client.transfers
+(and balances list helpers where exposed) for history. Mutations:
+Deposits & withdrawals
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Private realtime
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Consume with
+recv().await
+Streaming
+Related
+Balances
+Subaccounts
+Deposits & withdrawals
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Streaming
+Next
+Deposits & withdrawals
+On this page
+Funding vs trading
+Account scope
+Subaccounts & policies
+Profile & API keys
+Transfer history
+Related
+Related Topics
+Share this page
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::proto::ledger::read::v1::GetBalancesRequest;
+
+let balances = client.balances.list(GetBalancesRequest::default()).await?;
+for b in &balances.balances {
+    println!(
+        "{} funding={} trading={}",
+        b.asset_id,
+        polyester::codecs::scalars::format_ledger_u128(&b.funding, 18)?,
+        polyester::codecs::scalars::format_ledger_u128(&b.trading, 18)?,
+    );
+}

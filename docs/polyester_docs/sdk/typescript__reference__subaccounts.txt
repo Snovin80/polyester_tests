@@ -1,0 +1,1430 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/subaccounts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Subaccounts · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Subaccounts
+Subaccounts
+Copy page
+View as Markdown
+Open in
+client.subaccounts
+creates, manages, shares, and audits the
+subaccounts
+visible to the
+authenticated caller, and streams their updates. The nested
+client.subaccounts.policies
+sub-service manages the reusable permission templates you attach to subaccounts. Every method is
+authenticated except the public
+listRoles
+catalog read.
+Subaccounts isolate balances and permissions under your root account. Delegated members get a role,
+and a policy caps what any member can do. For the task-oriented walkthrough see the
+accounts and balances guide
+Methods
+Method
+Summary
+list
+List subaccounts owned by or shared with the caller.
+get
+Fetch one subaccount with its keys, policy, members, and invites.
+createChallenge
+Request the next
+smart account
+and its authorization message.
+create
+Create a subaccount from a signature proof.
+update
+Update a subaccount's label or status.
+inviteMember
+Invite another account to a role on a subaccount.
+respondInvite
+Accept, decline, or cancel an invitation.
+listInvites
+List invitations by direction.
+listRoles
+Read the public built-in role and permission catalog.
+getEffectivePermissions
+Read the caller's role and permissions for a subaccount.
+listMembers
+List a subaccount's owner and delegated members.
+updateMemberRole
+Change a member's role in place.
+removeMember
+Revoke a member's delegated access.
+setMemberMfaRequirement
+Toggle the owner-controlled
+MFA
+gate.
+listEvents
+Page the subaccount audit trail.
+subscribe
+Stream subaccount updates.
+subscribeApiKeys
+Stream
+API key
+updates.
+list(options?)
+Returns
+for the accounts owned by or shared with the caller.
+totalCreated
+counts every subaccount ever created, including soft-deleted ones. Use
+createChallenge
+for the canonical next smart-account address and
+salt nonce.
+const
+totalCreated
+,
+subaccounts
+}
+=
+await
+client
+subaccounts
+list
+();
+console
+log
+(
+`${
+subaccounts
+length
+} active of ${
+totalCreated
+} created`
+);
+get(input, options?)
+Fetches one subaccount as an aggregated dashboard view: the subaccount plus its
+apiKeys
+,
+policy
+,
+members
+, and outgoing
+invites
+const
+detail
+=
+await
+client
+subaccounts
+get
+({
+subaccountId
+});
+console
+log
+(
+detail
+label
+,
+detail
+policy
+name
+,
+detail
+members
+length
+);
+SubaccountIdInput
+is
+createChallenge(input, options?)
+Requests the canonical next subaccount smart account and a short-lived EIP-191 authorization message
+bound to the authenticated root account and the selected owner
+EOA
+message
+through
+the returned smart account, then pass it to
+create
+const
+challenge
+=
+await
+client
+subaccounts
+createChallenge
+({
+ownerAddress:
+rootOwnerAddress
+,
+uri:
+window
+location
+origin
+,
+});
+const
+signer
+=
+deriveSubaccountSigner
+(
+challenge
+smartAccountSaltNonce
+);
+const
+signature
+=
+await
+signer
+signMessage
+(
+challenge
+message
+);
+interface
+SubaccountChallenge
+message
+string
+;
+smartAccountAddress
+string
+;
+smartAccountSaltNonce
+number
+;
+expiresAt
+?:
+number
+;
+// epoch ms
+polyesterChainId
+number
+;
+}
+An expired, replaced, or replayed authorization fails
+create
+with
+SubaccountChallengeInvalidError
+; request a fresh challenge and sign again.
+create(input, options?)
+The root account must have accepted the current terms. Use
+client.auth.acceptTerms()
+from an
+interactive JWT session after the user agrees. Missing acceptance produces the typed auth detail
+AUTH_TERMS_NOT_ACCEPTED
+Creates a subaccount under the caller's root account using the smart-account address, exact
+message, and smart-account signature from
+createChallenge
+, returning a
+CreateSubaccountResult
+const
+result
+=
+await
+client
+subaccounts
+create
+({
+label:
+"Trading bot"
+,
+smartAccountAddress:
+challenge
+smartAccountAddress
+,
+message:
+challenge
+message
+,
+signature
+,
+});
+console
+log
+(
+result
+subaccountId
+,
+result
+smartAccountSaltNonce
+);
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Browser apps have a shortcut
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+In the browser, prefer
+client.auth.createSubaccount
+account signer for you, so you never assemble the proof by hand.
+interface
+CreateSubaccountInput
+smartAccountAddress
+string
+;
+message
+string
+;
+signature
+string
+;
+label
+?:
+string
+;
+icon
+?:
+string
+;
+color
+?:
+string
+;
+}
+interface
+CreateSubaccountResult
+subaccountId
+string
+;
+totalCreated
+number
+;
+smartAccountSaltNonce
+number
+;
+revision
+string
+;
+}
+Sign the challenge message exactly as issued. This proof may use a Safe or ERC-6492-wrapped
+signature.
+update(input, options?)
+Updates mutable display and status fields such as
+label
+and
+status
+await
+client
+subaccounts
+update
+({
+subaccountId
+,
+expectedRevision:
+detail
+revision
+,
+label:
+"Renamed"
+,
+});
+interface
+UpdateSubaccountInput
+subaccountId
+string
+;
+expectedRevision
+string
+;
+label
+?:
+string
+;
+icon
+?:
+string
+;
+color
+?:
+string
+;
+status
+?:
+"active"
+|
+"disabled"
+;
+}
+The SDK does not delete subaccounts. Disable one to prevent further use:
+await
+client
+subaccounts
+update
+({
+subaccountId
+,
+expectedRevision:
+detail
+revision
+,
+status:
+"disabled"
+,
+});
+Updates use optimistic concurrency. Refetch after a
+RevisionConflictError
+and use the latest
+revision
+; never retry the stale mutation unchanged.
+inviteMember(input, options?)
+Creates or refreshes a pending invitation granting a role on a subaccount to another root account,
+returning the
+SubaccountInvite
+const
+invite
+=
+await
+client
+subaccounts
+inviteMember
+({
+subaccountId
+,
+granteeAccountId
+,
+role:
+"trader"
+,
+});
+interface
+InviteSubaccountMemberInput
+subaccountId
+string
+;
+granteeAccountId
+string
+;
+role
+"owner"
+|
+"admin"
+|
+"treasury"
+|
+"leveraged_trader"
+|
+"trader"
+|
+"viewer"
+;
+}
+respondInvite(input, options?)
+Accepts or declines an incoming invite, or cancels an outgoing one, returning the updated invite.
+await
+client
+subaccounts
+respondInvite
+({
+inviteId
+, action:
+"accept"
+});
+interface
+RespondSubaccountInviteInput
+inviteId
+string
+;
+action
+"accept"
+|
+"decline"
+|
+"cancel"
+;
+}
+listInvites(input, options?)
+Returns invitations for the caller, newest first, filtered by direction.
+const
+incoming
+=
+await
+client
+subaccounts
+listInvites
+({ direction:
+"incoming"
+});
+interface
+ListSubaccountInvitesInput
+direction
+?:
+"incoming"
+|
+"outgoing"
+|
+""
+;
+// "" lists all
+}
+listRoles(options?)
+Returns the public built-in role and permission catalog. Each role has a
+role
+,
+displayName
+,
+description
+,
+assignable
+flag, and its permission labels. Each permission has a
+permission
+,
+displayName
+,
+description
+, and matching
+policyAction
+const
+roles
+,
+permissions
+}
+=
+await
+client
+subaccounts
+listRoles
+();
+const
+trader
+=
+roles
+find
+((
+role
+)
+=>
+role
+role
+===
+"trader"
+);
+console
+log
+(
+trader
+?.
+permissions
+,
+permissions
+length
+);
+getEffectivePermissions(input, options?)
+Returns the authenticated caller's
+role
+, effective
+permissions
+, and attached
+subaccountPolicyId
+for one subaccount.
+subaccountPolicyId
+is
+""
+when the subaccount uses the
+placeholder policy, on both this result and
+Subaccount
+reads.
+const
+effective
+=
+await
+client
+subaccounts
+getEffectivePermissions
+({
+subaccountId
+});
+console
+log
+(
+effective
+role
+,
+effective
+permissions
+,
+effective
+subaccountPolicyId
+);
+listMembers(input, options?)
+Returns the owner and delegated members of a subaccount, each with role and MFA enrollment status.
+const
+members
+=
+await
+client
+subaccounts
+listMembers
+({
+subaccountId
+});
+for
+(
+const
+member
+of
+members
+) {
+console
+log
+(
+member
+username
+,
+member
+role
+,
+member
+mfaEnrolled
+);
+}
+updateMemberRole(input, options?)
+Changes an existing member's role without sending a new invitation.
+await
+client
+subaccounts
+updateMemberRole
+({
+subaccountId
+,
+granteeAccountId
+,
+role:
+"viewer"
+,
+});
+removeMember(input, options?)
+Revokes a member's delegated access by grantee account ID.
+await
+client
+subaccounts
+removeMember
+({
+subaccountId
+,
+granteeAccountId
+});
+setMemberMfaRequirement(input, options?)
+Enables or disables the owner-controlled MFA gate for delegated interactive member actions on a
+subaccount.
+await
+client
+subaccounts
+setMemberMfaRequirement
+({
+subaccountId
+,
+requireMemberMfa:
+true
+,
+});
+listEvents(input, options?)
+Returns the subaccount audit trail, newest first, with
+limit
+is
+capped at 200; page through with the returned token.
+let
+pageToken
+=
+""
+;
+do
+const
+page
+=
+await
+client
+subaccounts
+listEvents
+({
+subaccountId
+, limit:
+200
+,
+pageToken
+});
+console
+log
+(
+page
+events
+length
+);
+pageToken
+=
+page
+nextPageToken
+;
+}
+while
+(
+pageToken
+!==
+""
+);
+Each
+SubaccountEvent
+carries
+entityKind
+,
+eventAction
+,
+source
+,
+actorAccountId
+, a parsed
+payloadJson
+, and a
+createdAt
+timestamp.
+subscribe(input)
+Streams live subaccount updates over a private channel and returns an idempotent unsubscribe
+function. Takes an
+accountId
+plus
+onEvent
+(required) and optional
+onOpen
+,
+onClose
+, and
+onError
+realtime client reference
+for the
+handler contract.
+const
+unsubscribe
+=
+client
+subaccounts
+subscribe
+({
+accountId
+,
+onEvent
+subaccount
+)
+=>
+console
+log
+(
+subaccount
+id
+,
+subaccount
+status
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+subscribeApiKeys(input)
+Streams live API key updates for an account over a private channel, with the same handler contract
+and unsubscribe behavior as
+subscribe
+const
+unsubscribe
+=
+client
+subaccounts
+subscribeApiKeys
+({
+accountId
+,
+onEvent
+apiKey
+)
+=>
+console
+log
+(
+apiKey
+keyId
+,
+apiKey
+status
+),
+});
+Policies
+client.subaccounts.policies
+manages reusable permission templates: spot-market scopes, allowed
+actions, order limits, trading halts, review times, expiry, and policy locks. Attach a policy to a
+subaccount to cap what its members can do. Every method is authenticated.
+Method
+Summary
+list
+List policy templates visible to the caller.
+get
+Fetch one policy by ID, or
+null
+create
+Create a policy, optionally attaching it to a subaccount.
+update
+Patch selected fields on a policy.
+delete
+Delete a policy that is not in use.
+apply
+Attach a policy to a subaccount, or clear it.
+subscribePolicies
+Stream policy updates.
+policies.list(options?)
+Returns the policy templates visible to the caller, sorted by ascending policy ID.
+const
+policies
+=
+await
+client
+subaccounts
+policies
+list
+();
+policies.get(input, options?)
+Fetches one policy template by base58 policy ID, returning
+null
+when none is found.
+const
+policy
+=
+await
+client
+subaccounts
+policies
+get
+({
+policyId
+});
+policies.create(input, options?)
+Creates a policy template from its scopes, actions, and limits, optionally attaching it to a target
+subaccount in the same request via
+subaccountId
+SubaccountPolicy
+const
+policy
+=
+await
+client
+subaccounts
+policies
+create
+({
+name:
+"Read-only"
+,
+spotMarketScope:
+"all"
+,
+actions: [
+"read-spot"
+,
+"read-balances"
+,
+"read-internal-transfers"
+,
+"read-address-book"
+],
+maxOrderSize:
+"0"
+,
+subaccountId
+,
+// optional: attach on create
+});
+policies.update(input, options?)
+Patches an existing policy template. Pass
+policyId
+,
+expectedRevision
+from the policy you last
+read, and only the fields you want to change. If another writer updated the policy first, you get
+RevisionConflictError
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+await
+client
+subaccounts
+policies
+update
+({
+policyId
+,
+expectedRevision:
+policy
+revision
+,
+name:
+"Limited trader"
+,
+spotMarketScope:
+"allowlist"
+,
+spotMarkets: [{
+symbolId
+}],
+actions: [
+"read-balances"
+,
+"read-spot"
+,
+"trade-spot"
+],
+maxOrderSize:
+"5000"
+,
+});
+maxOrderSize
+is a decimal USDT string, with at most six decimal places. It is returned in the
+same form.
+"0"
+means no order-notional cap.
+policies.delete(policyId, options?)
+Deletes a policy template. Only works when the policy is not attached to any subaccount.
+await
+client
+subaccounts
+policies
+delete
+(
+policyId
+);
+policies.apply(input, options?)
+Attaches a policy to a subaccount. Passing
+policyId: null
+clears the explicit binding and restores
+the system read-only policy:
+read-balances
+,
+read-internal-transfers
+,
+read-address-book
+, and
+read-spot
+// Attach
+await
+client
+subaccounts
+policies
+apply
+({
+subaccountId
+,
+policyId
+});
+// Clear
+await
+client
+subaccounts
+policies
+apply
+({
+subaccountId
+, policyId:
+null
+});
+interface
+SubaccountPolicyApplyInput
+subaccountId
+string
+;
+policyId
+string
+|
+null
+;
+// null detaches the policy
+}
+policies.subscribePolicies(input)
+Streams live policy updates over a private channel and returns an idempotent unsubscribe function.
+Takes an
+accountId
+plus the standard handler fields.
+const
+unsubscribe
+=
+client
+subaccounts
+policies
+subscribePolicies
+({
+accountId
+,
+onEvent
+policy
+)
+=>
+console
+log
+(
+policy
+id
+,
+policy
+name
+),
+});
+Related
+Accounts and balances guide
+for the task-oriented walkthrough.
+Auth
+for
+client.auth.createSubaccount
+and account switching.
+API keys
+for the keys returned by
+get
+MFA
+for the member MFA requirement gate.
+Errors
+for validation and lookup error types.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Social verification
+Next
+Trades
+On this page
+Methods
+list(options?)
+get(input, options?)
+createChallenge(input, options?)
+create(input, options?)
+update(input, options?)
+inviteMember(input, options?)
+respondInvite(input, options?)
+listInvites(input, options?)
+listRoles(options?)
+getEffectivePermissions(input, options?)
+listMembers(input, options?)
+updateMemberRole(input, options?)
+removeMember(input, options?)
+setMemberMfaRequirement(input, options?)
+listEvents(input, options?)
+subscribe(input)
+subscribeApiKeys(input)
+Policies
+policies.list(options?)
+policies.get(input, options?)
+policies.create(input, options?)
+policies.update(input, options?)
+policies.delete(policyId, options?)
+policies.apply(input, options?)
+policies.subscribePolicies(input)
+Related
+Related Topics
+Share this page
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { totalCreated, subaccounts } = await client.subaccounts.list();
+console.log(`${subaccounts.length} active of ${totalCreated} created`);
+
+---
+
+const detail = await client.subaccounts.get({ subaccountId });
+console.log(detail.label, detail.policy.name, detail.members.length);
+
+---
+
+const challenge = await client.subaccounts.createChallenge({
+	ownerAddress: rootOwnerAddress,
+	uri: window.location.origin,
+});
+const signer = deriveSubaccountSigner(challenge.smartAccountSaltNonce);
+const signature = await signer.signMessage(challenge.message);
+
+---
+
+interface SubaccountChallenge {
+	message: string;
+	smartAccountAddress: string;
+	smartAccountSaltNonce: number;
+	expiresAt?: number; // epoch ms
+	polyesterChainId: number;
+}
+
+---
+
+const result = await client.subaccounts.create({
+	label: "Trading bot",
+	smartAccountAddress: challenge.smartAccountAddress,
+	message: challenge.message,
+	signature,
+});
+console.log(result.subaccountId, result.smartAccountSaltNonce);
+
+---
+
+interface CreateSubaccountInput {
+	smartAccountAddress: string;
+	message: string;
+	signature: string;
+	label?: string;
+	icon?: string;
+	color?: string;
+}
+
+interface CreateSubaccountResult {
+	subaccountId: string;
+	totalCreated: number;
+	smartAccountSaltNonce: number;
+	revision: string;
+}
+
+---
+
+await client.subaccounts.update({
+	subaccountId,
+	expectedRevision: detail.revision,
+	label: "Renamed",
+});
+
+---
+
+interface UpdateSubaccountInput {
+	subaccountId: string;
+	expectedRevision: string;
+	label?: string;
+	icon?: string;
+	color?: string;
+	status?: "active" | "disabled";
+}
+
+---
+
+await client.subaccounts.update({
+	subaccountId,
+	expectedRevision: detail.revision,
+	status: "disabled",
+});
+
+---
+
+const invite = await client.subaccounts.inviteMember({
+	subaccountId,
+	granteeAccountId,
+	role: "trader",
+});
+
+---
+
+interface InviteSubaccountMemberInput {
+	subaccountId: string;
+	granteeAccountId: string;
+	role: "owner" | "admin" | "treasury" | "leveraged_trader" | "trader" | "viewer";
+}
+
+---
+
+await client.subaccounts.respondInvite({ inviteId, action: "accept" });
+
+---
+
+interface RespondSubaccountInviteInput {
+	inviteId: string;
+	action: "accept" | "decline" | "cancel";
+}
+
+---
+
+const incoming = await client.subaccounts.listInvites({ direction: "incoming" });
+
+---
+
+interface ListSubaccountInvitesInput {
+	direction?: "incoming" | "outgoing" | ""; // "" lists all
+}
+
+---
+
+const { roles, permissions } = await client.subaccounts.listRoles();
+const trader = roles.find((role) => role.role === "trader");
+console.log(trader?.permissions, permissions.length);
+
+---
+
+const effective = await client.subaccounts.getEffectivePermissions({ subaccountId });
+console.log(effective.role, effective.permissions, effective.subaccountPolicyId);
+
+---
+
+const members = await client.subaccounts.listMembers({ subaccountId });
+for (const member of members) {
+	console.log(member.username, member.role, member.mfaEnrolled);
+}
+
+---
+
+await client.subaccounts.updateMemberRole({
+	subaccountId,
+	granteeAccountId,
+	role: "viewer",
+});
+
+---
+
+await client.subaccounts.removeMember({ subaccountId, granteeAccountId });
+
+---
+
+await client.subaccounts.setMemberMfaRequirement({
+	subaccountId,
+	requireMemberMfa: true,
+});
+
+---
+
+let pageToken = "";
+do {
+	const page = await client.subaccounts.listEvents({ subaccountId, limit: 200, pageToken });
+	console.log(page.events.length);
+	pageToken = page.nextPageToken;
+} while (pageToken !== "");
+
+---
+
+const unsubscribe = client.subaccounts.subscribe({
+	accountId,
+	onEvent: (subaccount) => console.log(subaccount.id, subaccount.status),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+const unsubscribe = client.subaccounts.subscribeApiKeys({
+	accountId,
+	onEvent: (apiKey) => console.log(apiKey.keyId, apiKey.status),
+});
+
+---
+
+const policies = await client.subaccounts.policies.list();
+
+---
+
+const policy = await client.subaccounts.policies.get({ policyId });
+
+---
+
+const policy = await client.subaccounts.policies.create({
+	name: "Read-only",
+	spotMarketScope: "all",
+	actions: ["read-spot", "read-balances", "read-internal-transfers", "read-address-book"],
+	maxOrderSize: "0",
+	subaccountId, // optional: attach on create
+});
+
+---
+
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+
+await client.subaccounts.policies.update({
+	policyId,
+	expectedRevision: policy.revision,
+	name: "Limited trader",
+	spotMarketScope: "allowlist",
+	spotMarkets: [{ symbolId }],
+	actions: ["read-balances", "read-spot", "trade-spot"],
+	maxOrderSize: "5000",
+});
+
+---
+
+await client.subaccounts.policies.delete(policyId);
+
+---
+
+// Attach
+await client.subaccounts.policies.apply({ subaccountId, policyId });
+
+// Clear
+await client.subaccounts.policies.apply({ subaccountId, policyId: null });
+
+---
+
+interface SubaccountPolicyApplyInput {
+	subaccountId: string;
+	policyId: string | null; // null detaches the policy
+}
+
+---
+
+const unsubscribe = client.subaccounts.policies.subscribePolicies({
+	accountId,
+	onEvent: (policy) => console.log(policy.id, policy.name),
+});

@@ -1,0 +1,299 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Requests & idempotency · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Requests & idempotency
+Requests & idempotency
+Copy page
+View as Markdown
+Open in
+Service methods are ordinary Go functions on
+*Client
+services. Learn the conventions once; they
+apply across orders, triggers, balances, and market data.
+Call shape
+result
+,
+err
+client
+Orders
+Create
+(
+ctx
+,
+req
+,
+accountScope
+)
+First argument is almost always
+context.Context
+(cancel / deadline).
+Account-scoped methods take an
+AccountScope
+(often
+nil
+for defaults).
+Results are typed
+models
+structs; wire protos do not leak through.
+There is no TypeScript
+stepUpToken
+options bag on these mutations. Creating
+API keys
+is a
+JWT/session product flow, not available on this API-key SDK.
+Stable mutation identifiers
+Mutation
+Key
+Orders.Create
+/ batch items
+ClientOrderID
+(duplicate guard, no replay)
+Orders.Modify
+,
+CancelAll
+, batch helpers
+requestID
+Triggers.Create
+clientTriggerID
+(optional; no auto-generation)
+InternalTransfers.Create
+idempotency key (required)
+Withdraw.CreateTo*
+idempotency key and nonce (required)
+Withdrawal and internal-transfer identities are required for every call, including one-shot
+attempts. Do not treat them as "only for retries."
+For API-key withdrawals, persist
+PreparedTradingWithdraw.RequestBytes()
+before first submission.
+After an unknown outcome, restore those bytes and call
+SubmitPrepared
+; do not rebuild a new
+deadline, nonce, or signature.
+If you omit
+ClientOrderID
+on create, the call is accepted but you cannot safely reconcile by
+client ID. The SDK does not generate one. A retained
+ClientOrderID
+cannot be reused: even an
+identical create returns
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+instead of replaying the earlier
+result. Keep the original value after an ambiguous response, look up the order by that ID, and
+handle a duplicate conflict as a signal to continue reconciliation.
+If you omit
+requestID
+on
+Modify
+,
+CancelAll
+,
+CancelAllAfter
+, or batch
+create/cancel/modify, the SDK generates one for that single call (same idea as
+TypeScript/Python/Rust). Fine for one-shot mutations. To retry safely after an ambiguous failure,
+supply and reuse your own value - a blind retry that omits
+requestID
+mints a
+new
+id and is
+not an idempotent replay.
+clientOrderID
+"strategy-run-20260725-0001"
+// create and persist once
+req
+models
+CreateOrderRequest
+// ...
+ClientOrderID
+&
+clientOrderID
+,
+}
+// After an ambiguous error, reconcile by ClientOrderID before deciding to resubmit.
+// Reuse of a retained ClientOrderID returns CONFLICT_DUPLICATE_CLIENT_ORDER_ID.
+requestID
+"mod-strategy-run-20260725-0001"
+// choose once per logical modify
+// Pass &requestID into Modify / CancelAll / batch helpers and reuse on retry.
+Client order IDs accept 1 to 36 ASCII letters, digits,
+,
+_
+,
+,
+/
+, and
+-
+use the same character set and accept 1 to 64 characters. The SDK validates both locally and
+returns
+*errors.ValidationError
+before the request is sent.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A new key every attempt is a bug
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Generating a fresh
+ClientOrderID
+while the first create is unresolved can place a
+second order. Persist the original value for reconciliation. For replayable request IDs, create the
+key once outside the loop and reuse it for the same logical action.
+Retrying safely
+Retry
+*TransportError
+/
+*RateLimitError
+with capped exponential backoff and jitter; honor
+RateLimitError.RetryAfter
+when present. A timeout is ambiguous: the server may have applied the
+mutation. For a single-order create, reconcile by
+ClientOrderID
+before resubmitting and expect a
+duplicate conflict if the ID was retained. For mutations with replayable request IDs, keep the key
+stable. Do not blindly retry
+*ValidationError
+or most
+*APIError
+responses; fix input, auth, or
+state.
+See
+Error handling
+and
+Errors
+Pagination cursors
+Most list APIs return opaque tokens (
+NextPageToken
+) or similar cursors. Replay them exactly as
+returned, including trigger list/event pages.
+Related
+Client order IDs
+Trading guide
+Catalog & precision
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Environments
+Testnet endpoints and how to point the client at another deployment.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Catalog & precision
+Next
+Limitations & non-features
+On this page
+Call shape
+Stable mutation identifiers
+Retrying safely
+Pagination cursors
+Related
+Related Topics
+Share this page
+Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+result, err := client.Orders.Create(ctx, req, accountScope)
+
+---
+
+clientOrderID := "strategy-run-20260725-0001" // create and persist once
+req := models.CreateOrderRequest{
+    // ...
+    ClientOrderID: &clientOrderID,
+}
+// After an ambiguous error, reconcile by ClientOrderID before deciding to resubmit.
+// Reuse of a retained ClientOrderID returns CONFLICT_DUPLICATE_CLIENT_ORDER_ID.
+
+requestID := "mod-strategy-run-20260725-0001" // choose once per logical modify
+// Pass &requestID into Modify / CancelAll / batch helpers and reuse on retry.

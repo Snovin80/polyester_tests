@@ -1,0 +1,87 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/get-started/quickstart.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Quickstart
+From zero to a filled testnet order: create a client, read market data, stream candles, and place your first trade.
+About ten minutes. You will hit Polyester testnet, read public market data, open a live stream, then place and cancel a spot order with an API key.
+> **Prerequisites**
+>
+> Install the SDK first (see [Installation](https://testnet.polyester.com/docs/sdk/typescript/get-started/installation)). You also need a Polyester testnet account with an API key. Create one in the app under Settings → API keys, or with the SDK. The key needs a policy with `trade-spot`, `read-spot`, and `read-balances`. A key with no policy authenticates (`auth.me`) and then throws `PermissionError` on trading and ledger calls. See the [Authentication guide](https://testnet.polyester.com/docs/sdk/typescript/guides/authentication).
+1. Create a client
+An environment is a frozen object that points at API, WebSocket, and chain endpoints. Testnet ships with the package:
+```ts
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+const client = new PolyesterClient({
+environment: POLYESTER_TESTNET_ENVIRONMENT,
+});
+```
+With no `auth` option, every public service works (market data, candles, books, chain analytics, the VIP catalog, and the trading quota catalog). Credentials come in step 4.
+2. Read public market data
+Fetch the market overview. One row per pair, with last price and 24h stats:
+```ts
+const { markets } = await client.marketOverview.list({ limit: 10 });
+for (const market of markets) {
+console.log(`#${market.symbolId}: ${market.lastPrice}`);
+}
+```
+Prices and quantities are always decimal strings (`"64250.5"`), never floats. Why: see [Catalog & precision](https://testnet.polyester.com/docs/sdk/typescript/concepts/catalog-and-precision).
+3. Resolve a symbol with the catalog
+Trading endpoints use a stable numeric `symbolId`. The catalog maps IDs to pair symbols for display and loads reference data on first use:
+```ts
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const symbol = client.catalog.market.requirePairSymbolBySymbolId(symbolId);
+console.log(symbol, symbolId);
+```
+4. Stream live candles
+Same contract for every stream: call `subscribe(...)`, get back an unsubscribe function.
+```ts
+const unsubscribe = client.candles.subscribe({
+symbolId,
+timeframe: "1m",
+onEvent: (candle) => console.log("candle", candle.close),
+onError: (ctx) => console.error("stream error", ctx),
+});
+// later
+unsubscribe();
+```
+5. Authenticate with an API key
+Trading needs credentials. Recreate the client with an Ed25519 API key provider. The SDK signs each request for you:
+```ts
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT, evmHexToBytes } from "@polyester/sdk";
+const client = new PolyesterClient({
+environment: POLYESTER_TESTNET_ENVIRONMENT,
+auth: {
+kind: "api-key-ed25519",
+getKeyId: () => process.env.POLYESTER_API_KEY_ID ?? null,
+getSecretKey: () => evmHexToBytes(process.env.POLYESTER_API_SECRET_HEX ?? "0x"),
+},
+});
+```
+`getKeyId` returns your `ak_...` key ID. `getSecretKey` returns the 32-byte Ed25519 secret. `evmHexToBytes` requires a `0x` prefix (`generateKeypair`'s `secretKey.hex` does not include one). Both getters may be async, so vault lookups work.
+6. Place and cancel an order
+Small post-only limit, then cancel it:
+```ts
+const created = await client.orders.create({
+symbolId,
+side: "buy",
+qty: "0.001",
+execution: { type: "limit_gtc", price: "10000", postOnly: true },
+clientOrderId: crypto.randomUUID(), // persist this ID to reconcile an uncertain response
+});
+console.log("order accepted:", created);
+const { orders } = await client.orders.listOpen({ symbolId: [symbolId] });
+console.log(`${orders.length} open order(s)`);
+await client.orders.cancel({
+orderId: created.orderId,
+symbolId,
+});
+```
+`create` acknowledges admission, not that the order is already in `listOpen`. Cancel by `created.orderId`. `listOpen` is paginated; drain `nextPageToken` when you need every open order.
+The SDK rejects malformed inputs and decimal values with excess fractional precision before a request. To preflight tick size, step size, minimum quantity, or notional, call `client.catalog.orders.validateSpotOrderDecimalInput(...)` yourself. Catalog data can be stale, so the backend remains authoritative. `CatalogConversionError` comes from `@polyester/sdk/catalogs`.
+## Where to go next
+- [Authentication](https://testnet.polyester.com/docs/sdk/typescript/guides/authentication): wallet login, API keys, sessions
+- [Trading](https://testnet.polyester.com/docs/sdk/typescript/guides/trading): risk legs, triggers, modify, pagination
+- [Streaming](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming): the realtime model
+- [Architecture](https://testnet.polyester.com/docs/sdk/typescript/concepts/architecture): how the pieces fit

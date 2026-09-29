@@ -1,0 +1,22 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/profile.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Profile
+Profile identity reads and subscribe helpers.
+Profile is nested at `client.auth.profile`. The API-key-safe surface is subscribe-only:
+```python
+identity_updates = await client.auth.profile.subscribe_identity()
+async with identity_updates:
+async for identity in identity_updates:
+print(
+identity.account_id,
+identity.username,
+identity.avatar_url,
+identity.root_smart_account_address,
+)
+break
+```
+The stream carries `AccountIdentity`. It does not provide the initial profile snapshot; use `await client.auth.me()` for the current API-key identity and the Polyester app to manage profile fields.
+`get`, `update`, and username-history operations are not included because they require a JWT/session. Do not infer the client `default_account_id` from the first stream event during startup; configure the Account ID explicitly.
+Related: [Auth](https://testnet.polyester.com/docs/sdk/python/reference/auth), [Realtime](https://testnet.polyester.com/docs/sdk/python/reference/realtime).

@@ -1,0 +1,174 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/spot/markets/volume-history
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketOverviewService
+Get Spot Volume History
+Get aligned columnar pair-level and total trailing-24h USD volume at 15-minute intervals over the latest day. Exactly 97 values per array and at most 2000 pairs. Unavailable valuations fail the request.
+Copy URL
+Method
+GET
+Path
+/v1/spot/markets/volume-history
+Visibility
+Public endpoint
+GET
+/v1/spot/markets/volume-history
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/volume-history' \
+--header 'Accept: */*'
+Responses
+"bucket": "1m",
+"endTsSec": 1735689600,
+"pairs": [
+"symbolId": 1,
+"volumeUsd": [
+"0.123456"
+]
+}
+],
+"points": 1,
+"startTsSec": 1735689600,
+"totalVolumeUsd": [
+"0.123456"
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+symbolId
+array
+max 2000 items, unique
+Stable pair IDs; repeat this parameter for multiple pairs. Empty selects all currently listed pairs. At most 2000 distinct positive IDs; unknown IDs are rejected.
+Response
+Form
+JSON
+bucket
+string
+Sampling interval between points; currently always "15m".
+Example
+1m
+endTsSec
+integer (int32)
+Last sample timestamp in seconds since Unix epoch (UTC), inclusive.
+Example
+1735689600
+pairs
+object[]
+Pairs ordered by ascending symbol_id; at most 2000, each included once.
+2 fields
+symbolId
+integer (int32)
+Stable pair ID. Pairs are ordered by ascending ID, each included exactly once.
+Example
+1
+volumeUsd
+string[]
+Trailing-24h USD volume as decimal strings. Exactly points values aligned with the shared grid, oldest first. Zero means no executed trades.
+Example
+points
+integer (int32)
+Number of aligned values in every pair array and the total array; always 97.
+Example
+1
+startTsSec
+integer (int32)
+First sample timestamp in seconds since Unix epoch (UTC), inclusive.
+Example
+1735689600
+totalVolumeUsd
+string[]
+Total trailing-24h USD volume as decimal strings. Exactly points values, oldest first, aligned with every pair. Index i maps to startTsSec + i * 900 seconds. Zero means no trades; unavailable valuations fail the request.
+Example
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/spot/markets/volume-history
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s355" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/markets/volume-history' \
+--header 'Accept: */*'
+Responses
+"bucket": "1m",
+"endTsSec": 1735689600,
+"pairs": [
+"symbolId": 1,
+"volumeUsd": [
+"0.123456"
+]
+}
+],
+"points": 1,
+"startTsSec": 1735689600,
+"totalVolumeUsd": [
+"0.123456"
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/spot/markets/volume-history' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "bucket": "1m",
+  "endTsSec": 1735689600,
+  "pairs": [
+    {
+      "symbolId": 1,
+      "volumeUsd": [
+        "0.123456"
+      ]
+    }
+  ],
+  "points": 1,
+  "startTsSec": 1735689600,
+  "totalVolumeUsd": [
+    "0.123456"
+  ]
+}

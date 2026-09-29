@@ -1,0 +1,218 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/funds
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Funds · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Funds
+Funds
+Copy page
+View as Markdown
+Open in
+The Funds widget keeps the balances relevant to the active Pair beside the market.
+It shows the base and
+quote Assets
+in both Unified Trading and Funding for the selected
+Main Account
+or
+Subaccount
+What the widget shows
+Balance area
+What it means
+Unified Trading
+Balance held for trading. Open orders and other active work can reserve part of it.
+Funding
+On-chain balance available to withdraw, transfer to another account, or move into Trading.
+The widget follows the active Pair, so it is a focused balance view rather than a complete portfolio. Changing the Pair changes which two Assets appear.
+Read a Trading balance
+Open a Unified Trading amount's balance detail to compare its three values.
+Value
+What it means
+Total Balance
+Posted Trading balance before active reservations are subtracted
+Reserved Balance
+Amount set aside for orders, triggers, or other pending spends
+Available Balance
+Amount that can support a new eligible order or transfer
+An accepted order can reduce Available Balance before any fill occurs. A reservation is a hold, not proof that the Asset has been spent.
+Trigger families do not all reserve at the same moment:
+Trigger or strategy
+Reservation timing
+Standalone stop-loss or take-profit
+Reserves capital when the trigger is created
+Standalone trailing stop
+Reserves capital when the trigger is created
+Standalone TWAP
+No upfront trigger hold; each slice reserves when admitted
+Standalone LINEAR Ladder
+No parent hold; all children are admitted immediately and reserve individually
+Attached take-profit, stop-loss, or trailing risk
+Starts with zero reserve and arms after the parent fills
+Reserved Balance follows the lifecycle of each order or trigger rather than applying one timing rule to every strategy.
+Add or move funds
+Use 'Deposit' to open the deposit page with the relevant Asset selected. Use 'Transfer' to move an available balance between eligible Polyester balance areas or accounts.
+The widget does not combine balances between accounts. Confirm the active Main Account or Subaccount before moving funds or placing an order. The
+Trading Account
+page explains the complete balance and reservation model.
+Related Topics
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Trading Account
+Learn how the Trading Account manages available and reserved balances for trading, borrowing, transfers, and withdrawals.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Previous
+Order History
+Next
+Market Order
+On this page
+What the widget shows
+Read a Trading balance
+Add or move funds
+Related Topics
+Share this page
+Funds
+Compare Unified Trading and Funding balances for the two Assets in the active Pair.
+Share
+Copy Link

@@ -1,0 +1,165 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/triggers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+`client.triggers` manages standalone automations. Types: `CreateTriggerType::{StopLoss, TakeProfit, TrailingStop, Twap, Ladder}`.
+> **post\_only**
+>
+> `post_only` on conditional children is only valid for limit GTC.
+## Methods
+| Method                                          | Summary                                            |
+| ----------------------------------------------- | -------------------------------------------------- |
+| `create`                                        | `CreateTriggerParams` → `TriggerMutationResult`    |
+| `get` / `get_by_id`                             | Proto request or the string ID returned by the SDK |
+| `list` / `list_with`                            | Proto request or `ListTriggersOpts`                |
+| `modify`                                        | `ModifyTriggerParams`                              |
+| `cancel` / `pause` / `resume`                   | Proto request wrappers                             |
+| `cancel_by_id` / `pause_by_id` / `resume_by_id` | String-ID convenience helpers                      |
+| `list_events`                                   | Paginated events via `ListTriggerEventsRequest`    |
+| `subscribe` / `subscribe_events`                | Private streams (`recv`)                           |
+### Create
+```rust
+use polyester::models::{
+CreateOrderType, CreateSide, CreateTimeInForce, CreateTriggerParams, CreateTriggerType,
+};
+use polyester::{Price, Quantity};
+let quantity_scale = client
+let result = client.triggers.create(CreateTriggerParams {
+symbol: "BTC-USDT".into(),
+trigger_type: CreateTriggerType::StopLoss,
+side: CreateSide::Sell,
+order_type: CreateOrderType::Market,
+qty: Quantity::from_decimal_str("0.25", quantity_scale, Some("BTC-USDT".into()), None)?,
+trigger_price: Some(Price::from_decimal_str("60000", Some("BTC-USDT".into()))?),
+limit_price: None,
+trigger_price_source: None, // unsupported values fail instead of being discarded
+time_in_force: Some(CreateTimeInForce::Ioc), // market → market-IOC; tif unused for market
+subaccount_id: None,
+client_trigger_id: "sl-001".into(),
+post_only: false, // limit GTC children only
+activation_price: None,
+trailing_distance_ticks: None,
+trailing_distance_bps: None,
+max_slippage_ticks: None,
+max_slippage_bps: None,
+twap_duration_ms: None,
+twap_slice_interval_ms: None,
+ladder_price_min: None,
+ladder_price_max: None,
+ladder_levels: None,
+ladder_distribution: None,
+fee_asset: None,
+self_trade_prevention_mode: None,
+}).await?;
+```
+Trailing stop requires `trailing_distance_ticks` or `trailing_distance_bps`. The wire strategy is always **SELL market-IOC**, so the SDK requires `side: CreateSide::Sell` and rejects BUY rather than silently changing intent. `order_type`, `time_in_force`, and `post_only` do not alter this strategy. `client_trigger_id` is required, and the SDK never generates it. Create and persist one stable ID per logical trigger, then reuse it when reconciling or retrying an ambiguous result.
+Create returns `TriggerMutationResult` with `status: "accepted"` (admission only, the wire create response no longer carries a lifecycle enum). Pause / resume / cancel / modify return lifecycle labels such as `armed`, `paused`, `cancelled`.
+### Strategy capability matrix
+| Strategy                  | Side                         | Child execution                | Required fields                              | Pause / resume / cancel / modify                                     |
+| ------------------------- | ---------------------------- | ------------------------------ | -------------------------------------------- | -------------------------------------------------------------------- |
+| `StopLoss` / `TakeProfit` | buy or sell                  | market-IOC or limit (+ TIF)    | `trigger_price`                              | Supported (`*_by_id` helpers)                                        |
+| `TrailingStop`            | **sell only** (BUY rejected) | always SELL market-IOC         | trailing distance ticks or bps               | Supported; modify patches distance / activation / slippage           |
+| `Twap`                    | buy or sell                  | market-IOC or limit-GTC slices | `twap_duration_ms`, `twap_slice_interval_ms` | Supported; server may reject lifecycle ops that do not apply mid-run |
+| `Ladder`                  | buy or sell                  | multi-level limit              | ladder min/max/levels; distribution `linear` | Supported; server may reject lifecycle ops that do not apply mid-run |
+Ladder entry quantity is not guaranteed to equal the sum of child limit sizes after step / fee rounding, so child aggregate qty may be lower than the requested entry. TWAP / ladder creates are **not** guaranteed bulk atomic placement of every child; if a mid-run lifecycle op is rejected or children land partially, fall back to single-order placement and explicit cleanup of residual children / open orders. Pause may be rejected for TWAP even when pause appears in generic lifecycle helpers.
+### Get by ID
+```rust
+// Canonical base58 string returned by create / list / subscribe.
+let trigger_id = "3nK8xQmP2aBcDeFgHiJkLmNoPqRsTuVwXy";
+let trigger = client.triggers.get_by_id(trigger_id, None).await?;
+```
+The convenience helper accepts the base58 string returned by `create`, `list`, and subscriptions. Canonical base58 can consist only of digits, so never decide that an ID is decimal from its characters. Reuse IDs returned by the SDK. Use the lower-level `get` method only when you already have a typed proto `u64` ID.
+### List triggers
+```rust
+use polyester::models::ListTriggersOpts;
+let mut page_token = None;
+loop {
+let listed = client.triggers.list_with(ListTriggersOpts {
+symbol: Some("BTC-USDT".into()),
+status: vec!["created".into(), "armed".into()],
+limit: 50,
+page_token,
+}).await?;
+// Unknown status labels → Error::Validation
+for t in &listed.triggers {
+println!("{} {}", t.status, t.trigger_id);
+}
+if listed.next_page_token.is_empty() {
+break;
+}
+page_token = Some(listed.next_page_token);
+}
+```
+### Modify
+```rust
+use polyester::models::ModifyTriggerParams;
+use polyester::Price;
+let trigger_id = "3nK8xQmP2aBcDeFgHiJkLmNoPqRsTuVwXy".to_owned();
+client.triggers.modify(ModifyTriggerParams {
+trigger_id,
+subaccount_id: None,
+trigger_price: Some(Price::from_decimal_str("59500", Some("BTC-USDT".into()))?),
+limit_price: None,
+activation_price: None,
+trailing_distance_ticks: None,
+trailing_distance_bps: None,
+max_slippage_ticks: None,
+max_slippage_bps: None,
+}).await?;
+```
+### Pause, resume, and cancel
+```rust
+let trigger_id = "3nK8xQmP2aBcDeFgHiJkLmNoPqRsTuVwXy";
+client.triggers.pause_by_id(trigger_id, None).await?;
+client.triggers.resume_by_id(trigger_id, None).await?;
+client.triggers.cancel_by_id(trigger_id, None).await?;
+```
+### List events
+```rust
+use polyester::proto::triggers::v1::{ListTriggerEventsRequest, TriggerEventType};
+use polyester::codecs::scalars::id_to_u64;
+let trigger_id = id_to_u64("3nK8xQmP2aBcDeFgHiJkLmNoPqRsTuVwXy", "trigger_id")?;
+let mut page_token = String::new();
+loop {
+let events = client.triggers.list_events(ListTriggerEventsRequest {
+trigger_id,
+limit: 20,
+// optional: EVENT_FIRED | EVENT_CANCELED | EVENT_UPDATED
+event_type: TriggerEventType::EventFired.into(),
+page_token: page_token.clone(),
+}).await?;
+for ev in &events.events {
+println!(
+"{} {} {:?} {}",
+ev.event_type, ev.child_order_id, ev.fire_price, ev.ts_ns
+);
+}
+if events.next_page_token.is_empty() {
+break;
+}
+page_token = events.next_page_token;
+}
+```
+Child orders are not on the trigger snapshot. Set `event_type` to `EVENT_FIRED` and read `child_order_id` / `child_seq` from each decoded event.
+`list_events` is currently a proto-level method, so decode the SDK-returned canonical base58 ID with `id_to_u64` (returns `polyester::Result`, so `?` maps decode failures into `Error`). Do not parse an all-digit canonical base58 ID as decimal.
+### Subscribe
+```rust
+let account_id = client.default_account_id.as_deref();
+let mut sub = client.triggers.subscribe(account_id).await?;
+while let Some(t) = sub.recv_result().await? {
+println!("{} {}", t.status, t.trigger_id);
+break;
+}
+let mut ev = client.triggers.subscribe_events(account_id).await?;
+while let Some(e) = ev.recv_result().await? {
+println!("{} {}", e.event_type, e.ts_ns);
+break;
+}
+```
+Decoded `TriggerEvent` exposes `trigger_id`, `subaccount_id`, `symbol_id`, `trigger_type`, `event_type` (`fired` / `canceled` / `updated`), `ts_ns`, `child_seq`, `child_order_id`, `fire_price`, and `reason`.
+Decoded `Trigger` includes, for TWAP, `details` → `Twap` → `executed_qty`. That field populates as slices fire; right after create it is typically unset until the first child order is placed. Child-order history comes from `list_events`.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/rust/guides/trading)
+- [Orders](https://testnet.polyester.com/docs/sdk/rust/reference/orders)

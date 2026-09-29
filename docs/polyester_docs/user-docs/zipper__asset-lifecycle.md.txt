@@ -1,0 +1,32 @@
+Источник: https://testnet.polyester.com/docs/user-docs/zipper/asset-lifecycle.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Asset Lifecycle
+Follow your asset from an external deposit to a Polyester balance and back to an external chain.
+Zipper gives every deposit and withdrawal one connected lifecycle. It links the external transaction, the request on Polyester Chain, and the final change to your account balance.
+## Deposit lifecycle
+Open the **[Deposit page](https://testnet.polyester.com/account/deposit)** and choose the account, asset, and source chain. Polyester shows the deposit address, supported asset contract, minimum amount, route fee, and estimated time for that route.
+1. **Send the asset.** Transfer the displayed asset on the selected chain to the deposit address assigned to your account.
+2. **Reach confirmation.** The source chain confirms the transaction according to the route's finality requirement.
+3. **Validate the deposit.** A security scanner screens the transaction, and Zipper validators confirm the transaction, route, amount, and account attribution through a two-thirds (2/3) quorum.
+4. **Create the Zipped Asset.** Polyester mints the Zipped Asset connected to that exact external route.
+5. **Credit your account.** Funding maps the Zipped Asset to its Unified Asset and credits Funding or Trading based on your default deposit destination.
+The amount credited is the deposit amount after the route fee.
+> **Use the route shown on the Deposit page**
+>
+> Send the displayed asset on the selected chain and meet its minimum. The deposit address belongs to the active Main Account or Subaccount and the selected route.
+## Inside Polyester
+Once credited, your Unified Asset can move between Funding and Trading or between eligible Polyester accounts. These internal movements do not create another Zipper request or charge another Zipper route fee.
+The Zipped Asset continues to identify the external route that backs the Unified Asset, but you do not need to convert or manage the Zipped Asset yourself.
+## Withdrawal lifecycle
+Open the **[Withdraw page](https://testnet.polyester.com/account/withdraw)** from the account that owns the balance. Choose the Unified Asset, destination chain, amount, address, and destination tag when one is required.
+1. **Resolve the route.** Polyester connects your Unified Asset and destination chain to one enabled Zipped Asset route.
+2. **Reserve the balance.** Your account reserves the withdrawal amount and applicable route fee.
+3. **Validate the request.** A security scanner screens the destination and transaction risk. Zipper checks the route, amount, destination, account permissions, whitelist, fee protection, and vault liquidity before validators reach a two-thirds (2/3) quorum.
+4. **Approve and lock.** Cubist's C2F policy and the required MFA approvals authorize vault signing. The route-specific Zipped Asset is locked before its native backing leaves the vault.
+5. **Deliver, finalize, and burn.** The executor verifies the recipient and amount, broadcasts the signed external transaction, and follows it through destination finality. After finality, Zipper burns the locked Zipped Asset.
+The withdrawal moves through Pending, Processing, Fulfilling, and Distributed as it advances. If a request ends before external delivery, any eligible principal is returned to your account.
+## Follow the transfer
+Your transaction history shows the account-facing progress of the deposit or withdrawal. Each request also receives a request or Flow ID that connects it to the relevant external transaction and Zipped Asset mint or burn.
+**[Asset Flows](https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows)** shows the public Polyester Chain side of that lifecycle.

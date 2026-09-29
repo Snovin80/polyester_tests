@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/zassets-and-uassets.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Polyester Scan shows two connected asset types. A **Zipped Asset**, or **zAsset**, represents one asset from one source chain. A **Unified Asset**, or **uAsset**, brings compatible Zipped Assets together as one account-facing balance.
+For example, USDT deposited from Ethereum and USDT deposited from Solana create separate Zipped Assets. When both routes map to Unified USDT, you see one USDT balance in your Polyester account.
+## Browse Unified Assets
+The **[Unified Assets directory](https://polyesterscan.com/unified-assets)** lists each Unified Asset with its supported chains, Unified Asset ID, Ledger ID, decimals, and combined Zipped Asset supply.
+![Unified Assets directory with popular assets, networks, and zSupply](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/01b094e3e19c2c65635a7765b03a1df1745411566fb377c705b492befdca37b2/source.webp)
+Expand a row to see every route behind that asset. Each route includes its source chain, Polyester contract, and source-chain contract. Native assets show **Native** instead of a source contract address.
+On a Unified Asset page, you can use:
+- **Flows** to see related deposits, withdrawals, and transfers
+- **Zipped Assets** to compare the routes that contribute to the balance
+- **Info** to see IDs, decimals, and route metadata
+- **Holders** when holder information is available.
+![Unified USDT page with supply, supported chains, and related Flows](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/1bb8567ef09f7c1d7d141febf88fb02d23e33a85988e17c2efffc745466ca3f7/source.webp)
+## Browse a Zipped Asset
+Open a Zipped Asset from the Tokens directory, a transfer, a Flow, or a Unified Asset page. Its detail page connects the route's source chain and source asset to the corresponding contract on Polyester Chain.
+![Zipped USDT on Ethereum Sepolia with contract details, vault deposits, and Flows](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/1b701cbd1fe6a6f3ffee1d9d101304f3c91e325df61b5879a57ca2f2beb4d8f0/source.webp)
+It can also show transfers, holders, flows, supply, and contract information. The supply shown here belongs to this individual source-chain route. A **Verified** badge means Scan recognizes the asset from Polyester's configured catalog.
+> **One symbol can represent several routes**
+>
+> USDT from Ethereum and USDT from Solana can use the same symbol while remaining separate Zipped Assets. Their source chains and contract addresses show which route each one represents.
+Use **[Asset Flows](https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows)** to follow a specific movement, or **[Tokens & Chains](https://testnet.polyester.com/docs/user-docs/polyester-scan/tokens-and-chains)** to explore the routes available in Scan.

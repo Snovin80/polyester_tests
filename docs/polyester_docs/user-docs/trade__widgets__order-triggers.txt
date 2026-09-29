@@ -1,0 +1,236 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/order-triggers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order Triggers · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Order Triggers
+Order Triggers
+Copy page
+View as Markdown
+Open in
+Order Triggers tracks instructions that wait for a condition or manage execution over time.
+A trigger has its own state before it creates or manages an executable child order.
+The widget organizes Stop, Trailing, TWAP, and Ladder records. Availability depends on the Pair and account.
+The
+Stop-Loss Market
+,
+Stop-Loss Limit
+,
+Trailing Stop
+,
+TWAP
+, and
+Ladder
+guides explain how each instruction works.
+What the widget shows
+View or field
+What it means
+All
+Every trigger returned by the selected filters
+Stop and Trailing
+Conditional instructions tied to a price condition or trailing distance
+TWAP
+A staged instruction divided across a schedule
+Ladder
+A staged instruction distributed across price levels
+Status and progress
+Current parent state before, during, or after child execution
+The table can also show Pair, side, trigger type, amount, condition, progress, parent order, and type-specific details. Available capabilities determine which tabs and fields contain live records.
+Trigger definitions and compacted state are stored and restored by server-side services. Conditions and strategies continue to be evaluated after the browser closes. Reconnect and refresh the record because persistence does not guarantee that a later child will pass admission or fill.
+Trigger family
+When balance is reserved
+Standalone stop, take-profit, trailing
+At trigger creation
+Standalone TWAP
+When each slice is admitted
+Standalone LINEAR Ladder
+Each immediately admitted child reserves independently
+Attached stop, take-profit, trailing
+Zero at setup; the risk instruction arms after its parent fills
+Trigger, child order, and fill records
+Record
+What it tracks
+Trigger
+Condition, configuration, progress, and parent status
+Child order
+Market or limit instruction created or managed by the trigger
+Fill
+Completed match produced by an executable child order
+An active trigger may be absent from Open Orders because it has not created a working child order yet. Follow its condition and parent status in Order Triggers.
+Canceling a trigger and canceling a child order are different actions. Use only the action available for the record and state you intend to stop.
+A child rejection is a terminal trigger failure, not a pause-until-balance-recovers state. The trigger releases its eligible hold and does not rearm automatically. If delivery was uncertain rather than explicitly rejected, Polyester can reconcile a retry under the same child identity instead of creating duplicate economic intent.
+Trigger family
+Modification while eligible and waiting
+Stop-loss or take-profit
+Trigger price
+Trailing stop
+Distance, activation price, and maximum slippage
+TWAP or Ladder
+Not modifiable; cancel and recreate
+Quantity, side, strategy family, and child template cannot be changed. The trigger modification path also does not support changing a limit child's price, even when an API request schema contains that field.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Activation does not guarantee a fill
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A price condition can activate a trigger, but its child order still needs to pass admission and find eligible liquidity under its own instructions.
+Related Topics
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Open Orders
+Monitor working and partially filled orders, then act on their remaining quantity.
+Order History
+Review filled, canceled, expired, and rejected order outcomes for the selected account.
+Previous
+Open Orders
+Next
+Order History
+On this page
+What the widget shows
+Trigger, child order, and fill records
+Related Topics
+Share this page
+Order Triggers
+Monitor conditional and staged instructions before and after they create executable orders.
+Share
+Copy Link

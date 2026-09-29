@@ -1,0 +1,71 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Address Book & Whitelists
+Save trusted destinations and control where withdrawals and internal transfers can be sent.
+Your **[Address Book](https://testnet.polyester.com/account/address-book)** saves external wallet addresses and Polyester accounts you use regularly. Whitelists add another layer of protection by limiting where your account can send funds.
+Each Main Account and Subaccount has its own Address Book and whitelist settings.
+## Save external and internal destinations
+## External
+Save a wallet or contract address on a supported external chain. Each entry includes its chain, complete address, label, and any optional notes or tags you add.
+An Ethereum address and a Solana address are different destinations, even when they belong to the same person.
+![Address Book External tab with destination details and withdrawal allowlist](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/edcbe880de33b73397d73043b80c13ab82611cd237b3085c06a2841c7fe13884/source.webp)
+## Internal
+Save another Polyester account for transfers inside Polyester. The entry connects a friendly label to the account identity used by the transfer page.
+![Address Book Internal tab with destination details and transfer allowlist](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/63113b33cb50f8e0b5e764ea7477a938254683a6e4b20bee507a0c9ae1d52129/source.webp)
+Favorites, recent destinations, tags, and chain filters help you find an entry. They do not change its security permissions.
+## Add a destination
+1. Choose the account
+Select the Main Account or Subaccount that should save the entry.
+2. Choose External or Internal
+External is for an address on another chain. Internal is for another Polyester account.
+3. Enter and verify the destination
+For an external entry, choose the chain and paste the complete address. For an internal entry, select the intended Polyester account. Compare it with a trusted source before continuing.
+![Add an external Address Book entry with network, address, label, and tags](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/901980d23229ed1e7ff81c9d58efce3d2a4cf446109cc86ecdb6b46c035d8b1d/source.webp)
+![Add an internal Address Book entry with Polyester account, label, and transfer allowlist](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/dc5af0461f24116f32aec3a4f1cdbfc714e7644ab6757a20b2219d57844f8b2f/source.webp)
+4. Name and save it
+Add a clear label and optional tags or notes, then save the entry.
+> **Check the complete destination**
+>
+> Lookalike addresses can share the same beginning and ending characters. Compare the full address and chain before saving, whitelisting, or sending funds.
+## How whitelists protect your account
+Open Withdraw. Polyester checks the External Withdrawal Whitelist first. If the destination is allowed, or the whitelist is off, MFA is next when it is enrolled. Then you approve in the wallet.
+Whitelist
+On Off
+Whitelist is on. Entering an address or picking one from the address book that is not whitelisted blocks the withdrawal. A whitelisted address book entry continues to MFA, then wallet, then proceeds.
+Withdraw
+Enter address
+0x8A7F…a3C2B
+Address book
+0x3E9B…F4Daa Whitelisted destination
+Address book
+0x1A2C…f5a2c Not whitelisted
+MFA
+Wallet
+Whitelist on. Only an approved address book entry can continue.
+Polyester provides two separate controls:
+- **External Withdrawal Whitelist** limits withdrawals to approved external addresses.
+- **Internal Transfer Whitelist** limits internal transfers to approved Polyester accounts.
+Saving an Address Book entry does not automatically whitelist it. Add it to the appropriate whitelist when you want it approved for a protected movement.
+Whitelist settings apply only to the selected Main Account or Subaccount. Turn them on separately for every account you want protected.
+## Change a whitelist
+1. Open Security or the relevant Address Book destination.
+2. Choose the account and the External or Internal whitelist.
+3. Add or remove the intended destination, or turn the requirement on or off.
+4. Complete the requested MFA, [GuardSigner](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer), and wallet approval.
+5. Wait for the destination's whitelist status to update before moving funds.
+Adding or removing an approved destination and turning a whitelist off are sensitive actions. Polyester uses fresh verification and [GuardSigner](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer) to protect them.
+![Confirm the allowlist change in your wallet](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/f007fdcab54b95f93948a3e17606efc1390cba71f86b6d794e2175bbd1e930a0/source.webp)
+## GuardSigner
+Protected whitelist changes need [GuardSigner](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer). It is not a login method or an MFA replacement.
+Open **[Security](https://testnet.polyester.com/account/settings/security)** to check whether GuardSigner is ready. Complete setup before you change a protected whitelist. See [GuardSigner](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer) for setup, rotation, and private-key export.
+![Set up GuardSigner for protected withdrawal changes](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/75e5bd86ec8ce86d29f38c698f61985ac79bdb3dba69819711ef78e3fc3a5e6f/source.webp)
+![Confirm GuardSigner setup in your wallet](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/64ab10947fedd0f1487748732026c591f12d9bc4139174fc15a03ae867c91c76/source.webp)
+## Use a saved destination
+When you withdraw or transfer, select a saved entry and check the asset, chain, complete destination, and whitelist status shown in the review. A saved label makes the destination easier to recognize, but the complete address or account remains the destination that receives the funds.
+## FAQ
+### Does adding an Address Book entry automatically allow transfers or withdrawals to that entry?
+No. The Address Book lets you save destinations without whitelisting them. The whitelist toggle is off by default when adding an entry. Turn it on to approve the destination for internal transfers or withdrawals, depending on the entry type. You can also do this later by editing the entry. When the relevant whitelist is enabled, you can only transfer or withdraw to whitelisted destinations. [Learn about securing your account.](https://testnet.polyester.com/docs/user-docs/start/secure-account)
+### What is the difference between MFA and an on-chain whitelist?
+MFA adds a verification step before sensitive actions are performed, including but not limited to changes to whitelist settings. An on-chain whitelist limits withdrawals or internal transfers to destinations you have approved, but you must have MFA enabled to use the whitelist. [Learn about securing your account.](https://testnet.polyester.com/docs/user-docs/start/secure-account)

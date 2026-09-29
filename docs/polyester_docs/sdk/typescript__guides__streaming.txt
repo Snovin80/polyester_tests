@@ -1,0 +1,439 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/streaming
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Streaming · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Streaming
+Streaming
+Copy page
+View as Markdown
+Open in
+Every realtime feature uses the same pattern: a
+subscribe*
+method takes handlers and returns an
+unsubscribe function. One shared WebSocket multiplexes all channels, so twenty streams still cost
+one connection (two when public and private are both active).
+The subscription contract
+const
+unsubscribe
+=
+client
+orders
+subscribe
+({
+accountId
+,
+onEvent
+order
+)
+=>
+console
+log
+(
+order
+),
+// required: each published event
+onOpen
+=>
+console
+log
+(
+"subscribed"
+),
+// optional: (re)connected
+onClose
+=>
+console
+log
+(
+"disconnected"
+),
+// optional: connection dropped
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+type
+,
+ctx
+error
+),
+// optional
+});
+unsubscribe
+();
+// idempotent; releases the channel when the last consumer leaves
+Handlers get fully parsed, typed objects. Same shapes as the request methods, decimal strings
+included.
+The returned unsubscribe function does not mean the channel is ready. The first
+onOpen
+confirms
+the subscription. Wait for it before a write that depends on observing the stream; it can run again
+after reconnect, so keep one-time writes outside that callback.
+onError
+receives
+SdkSubscriptionErrorContext
+channel
+, error
+type
+(subscription,
+connection token, publication handler, and so on), and the underlying
+error
+disconnect or unsubscribe reports
+type
+as
+"disconnected"
+or
+"unsubscribed"
+, with
+error: { code, message }
+, then calls
+onClose
+here too. A throwing
+onEvent
+never kills the transport.
+Subscriptions are shared. Two
+subscribe
+calls on the same channel attach to one underlying
+subscription. Each gets every event.
+What you can stream
+Stream
+Method
+Auth
+Candles
+client.candles.subscribe
+/
+subscribeInts
+public
+Public trades
+client.marketData.subscribeTrades
+public
+Market overview
+client.marketOverview.subscribe
+public
+Order book
+client.orderbook.createSubscription
+/
+subscribe
+public
+Heatmap buckets
+client.heatmap.subscribeLive
+public
+Lifecycle flows
+client.lifecycle.subscribeOpenFlows
+/
+subscribeFlowDetail
+public or private
+Zipped asset
+supply
+client.zipper.subscribeZippedAssetSupply
+public
+Your orders
+client.orders.subscribe
+private
+Your triggers
+client.triggers.subscribe
+/
+subscribeEvents
+private
+Your trades
+client.trades.subscribe
+private
+Balances
+client.balances.subscribe
+private
+Ledger transfers
+client.transfers.subscribe
+private
+Subaccounts
+/
+API keys
+/ policies
+client.subaccounts.subscribe
+,
+client.apiKeys.subscribe
+,
+client.subaccounts.policies.subscribePolicies
+private
+Address book invalidations
+client.addressBook.subscribeViewInvalidations
+private
+Profile identity
+client.auth.profile.subscribeIdentity
+public
+Private channels authenticate with the client's auth provider (JWT or API key). Without usable
+auth, a private subscription calls
+onError
+when supplied; otherwise
+subscribe
+throws.
+The SDK reads the current JWT provider value for every realtime token request. Let the provider read
+its current session state rather than capturing a JWT when the client is created, so refresh and
+logout take effect for later subscriptions.
+Snapshot-then-stream
+State streams (order book, market overview) first fetch a snapshot over HTTP, buffer
+publications that arrive meanwhile, then apply deltas in order. After a reconnect or an observed
+sequence gap, they refetch. Your
+onEvent
+sees a consistent view relative to the last applied
+snapshot or delta.
+That is the whole recovery contract. A feed that stays subscribed but goes silent does not fire
+onError
+, does not reconnect, and does not refetch. The SDK cannot tell a dead feed from a quiet
+market. Applications that need continuity must reconcile after connection gaps and after a
+connected feed stops publishing.
+const
+subscription
+=
+client
+orderbook
+createSubscription
+({
+symbolId
+,
+depth:
+10
+,
+onEvent
+book
+)
+=>
+render
+(
+book
+),
+});
+subscription
+unsubscribe
+();
+For the order book,
+depth
+is any integer in
+(values above
+500
+clamp to
+500
+). The
+SDK maps it onto a published channel and slices levels back to the depth you asked for. Emitted
+events carry that requested depth. Continuity across a silent-but-connected book is still your
+job: track the last
+onEvent
+and resync with
+orderbook.get()
+when it goes idle. See
+Order book
+Connection management
+Shared realtime client:
+client.realtime
+client
+realtime
+isConnected
+;
+// any active websocket?
+client
+realtime
+activeChannels
+;
+// number of attached channels
+client
+realtime
+disconnect
+();
+// tear down everything
+client
+realtime
+disconnectPrivate
+();
+// drop only the private connection (e.g. on logout)
+You rarely call these. Connections open lazily with the first subscription and close when the
+last consumer unsubscribes.
+auth.logout()
+already disconnects private channels.
+Terminal server closures remove their channels before
+onError
+and
+onClose
+run. Reconcile from
+an authoritative read, then subscribe again from either callback if the user has refreshed the
+required credentials or permissions. Calling an unsubscribe handle yourself stays silent.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Servers can subscribe; SSR render passes cannot
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Subscriptions run in any long-lived runtime: Node, Bun, a trading bot, a backend service. The
+one exception is a framework SSR render pass. Opening a persistent socket while rendering one
+request is a mistake, so the SDK rejects it on purpose. In a web app, fetch a snapshot during
+render and subscribe after hydration. In a standalone server process, just subscribe. The
+WebSocket engine (~300 KB) loads lazily on the first subscription.
+Ordering and reference data
+Events with prices or quantities need catalog scale data to decode. Subscriptions gate on
+readiness: events that arrive early are queued and flushed in order once the catalog is ready.
+You never see a partially decoded event. That queue is bounded. If the catalog never becomes ready,
+or the backlog outgrows the bound, the subscription reports it through
+onError
+and stops instead
+of staying connected with a hole in the stream.
+For entity streams (orders, balances, trades), pair the stream with a snapshot read
+(
+listOpen
+,
+list
+, and so on) when you need a complete starting state. These streams do not
+promise replay after a disconnect or an ambiguous mutation, so reconcile from an authoritative read
+before relying on local state again. The same rule applies to a connected stream that goes silent:
+onOpen
+staying up is not proof the feed is live.
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Trading
+Place, modify, and cancel spot orders, attach risk controls, and automate with standalone triggers.
+Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+Deposits & withdrawals
+Move assets in and out: deposit addresses, internal transfers, withdrawals, and lifecycle tracking.
+Server-side usage
+Build per-request clients from cookies, verify sessions, and hydrate browser clients from the server.
+Error handling
+Triage errors with one instanceof check, retry safely, and handle MFA step-up flows.
+Previous
+Trading
+Next
+Accounts & balances
+On this page
+The subscription contract
+What you can stream
+Snapshot-then-stream
+Connection management
+Ordering and reference data
+Related Topics
+Share this page
+Streaming
+Subscribe to realtime market data and private account updates with typed events and a uniform unsubscribe contract.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const unsubscribe = client.orders.subscribe({
+	accountId,
+	onEvent: (order) => console.log(order), // required: each published event
+	onOpen: () => console.log("subscribed"), // optional: (re)connected
+	onClose: () => console.log("disconnected"), // optional: connection dropped
+	onError: (ctx) => console.error(ctx.channel, ctx.type, ctx.error), // optional
+});
+
+unsubscribe(); // idempotent; releases the channel when the last consumer leaves
+
+---
+
+const subscription = client.orderbook.createSubscription({
+	symbolId,
+	depth: 10,
+	onEvent: (book) => render(book),
+});
+
+subscription.unsubscribe();
+
+---
+
+client.realtime.isConnected; // any active websocket?
+client.realtime.activeChannels; // number of attached channels
+client.realtime.disconnect(); // tear down everything
+client.realtime.disconnectPrivate(); // drop only the private connection (e.g. on logout)

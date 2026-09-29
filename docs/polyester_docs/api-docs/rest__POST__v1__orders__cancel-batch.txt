@@ -1,0 +1,478 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/orders/cancel-batch
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrdersService
+Batch Cancel Orders
+Cancel up to 50 orders by order ID or client order ID in one request. Returns per-item accept or reject results with aggregate counts.
+Copy URL
+Method
+POST
+Path
+/v1/orders/cancel-batch
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+/v1/orders/cancel-batch
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/cancel-batch' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"items": [
+"clientOrderId": "cli-ord-20250101-001",
+"orderId": "5USXJZmk"
+}
+],
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "45LUmqjT"
+}'
+Responses
+"acceptedCount": 1,
+"rejectedCount": 1,
+"results": [
+"clientOrderId": "cli-ord-20250101-001",
+"code": "ORDER_NOT_FOUND",
+"error": {
+"code": "BAD_REQUEST",
+"rateLimit": {
+"limit": 100,
+"operationId": "value",
+"policyClass": "AUTH_PUBLIC",
+"policyVersion": 1,
+"reason": "QUOTA_EXCEEDED",
+"refillModel": "CONTINUOUS",
+"remaining": 1,
+"retryAfterMs": 1,
+"scope": "CLIENT_IP"
+},
+"violations": [
+"fieldPath": "value",
+"message": "value",
+"ruleId": "value"
+}
+]
+},
+"orderId": "5USXJZmk",
+"status": "ACCEPTED"
+}
+],
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+items
+object[]
+required
+Orders to cancel (max 50).
+Edit in JSON
+requestId
+string
+Idempotency key (required).
+subaccountId
+string
+/^[1-9A…m-z]+$/
+Target sub-account numeric ID. When omitted, uses caller's root account.
+Response
+Form
+JSON
+acceptedCount
+integer (int32)
+Number of requested cancellations that were accepted.
+Example
+1
+rejectedCount
+integer (int32)
+Number of requested cancellations that were rejected.
+Example
+1
+results
+object[]
+Per-item results in same order as request.
+5 fields
+clientOrderId
+string
+Echoed client order ID (when provided).
+Example
+cli-ord-20250101-001
+code
+string
+Error code if rejected.
+Example
+ORDER_NOT_FOUND
+error
+object
+Structured rejection details. Present for rate-limit guidance and other typed failures.
+3 fields
+code
+enum
+Stable error code matching the REST problem+json "code" field.
+BAD_REQUEST
+INVALID_ARGUMENT
+INSUFFICIENT_FUNDS
+UNKNOWN_SYMBOL
+BAD_PRICE
+BAD_QTY
+MIN_NOTIONAL
+QTY_STEP_SIZE
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+UNAVAILABLE
+UNAUTHENTICATED
+PERMISSION_DENIED
+NOT_FOUND
+UPSTREAM_ERROR
+FEE_ASSET_NOT_ALLOWED
+PAIR_DISABLED
+ORDER_UNKNOWN
+INTERNAL_ERROR
+SUBACCOUNT_INACTIVE
+POLICY_MARKET_DENY
+POLICY_MAX_NOTIONAL
+POLICY_TRADING_HALTED
+POLICY_SPOT_TRADE_DENY
+API_KEY_ROOT_SCOPE_ONLY
+API_KEY_SUB_SCOPE_ONLY
+API_KEY_SUBACCOUNT_MISMATCH
+API_KEY_POLICY_REQUIRED
+API_KEY_UNKNOWN
+API_KEY_MARKET_DENY
+PRICE_TICK_SIZE
+MIN_QTY
+POST_ONLY_LIMIT_ONLY
+BATCH_TOO_LARGE
+POLICY_MAX_OPEN_ORDERS
+MODIFICATION_REQUIRES_REPLACE
+CONFLICT_IDEMPOTENCY_KEY_REUSE
+MARKET_PRICE_UNAVAILABLE
+PAIR_NOT_LISTED_YET
+PAIR_DELISTED
+PAIR_CANCEL_ONLY
+PAIR_POST_ONLY
+PAIR_REDUCE_ONLY
+RISK_LIMIT
+MARKET_HALTED
+ACCOUNT_UNKNOWN
+POST_ONLY_CROSS
+REDUCE_ONLY_BLOCKED
+PRICE_BAND_VIOLATION
+MARKET_CAP_VIOLATION
+EMPTY_BOOK
+FOK_INSUFFICIENT_LIQUIDITY
+ORDER_ALREADY_TERMINAL
+TRIGGER_PRICE_INVALID
+TRIGGER_PRICE_SOURCE_UNSUPPORTED
+TRAILING_DISTANCE_INVALID
+TRIGGER_NOT_FOUND
+TRIGGER_CANCEL_REJECTED
+TRIGGER_STATUS_INVALID
+TRIGGER_NOT_MODIFIABLE
+CONFLICT_DUPLICATE_CLIENT_TRIGGER_ID
+MAX_SLIPPAGE_INVALID
+STALE_QUOTE
+VALIDATION_ERROR
+OVERLOADED
+MAX_QUOTE_DEBIT_TOO_SMALL
+RATE_LIMIT_EXCEEDED
+SUBACCOUNT_READ_FORBIDDEN
+POLICY_SPOT_READ_DENY
+API_KEY_SPOT_READ_DENY
+CANCEL_REQUEST_EXPIRED
+Example
+BAD_REQUEST
+rateLimit
+object
+Structured quota state. Present only for rate-limit rejections.
+9 fields
+limit
+integer (int64)
+Active weighted quota. Present for quota-exhaustion responses.
+Example
+100
+operationId
+string
+Stable operation identifier shared by all aliases of the same action.
+Example
+value
+policyClass
+enum
+Mutable quota family used for the decision.
+AUTH_PUBLIC
+TRADING_PLACE
+TRADING_CANCEL
+TRADING_READ
+ACCOUNT_ADMIN
+PUBLIC_READ
+ACCOUNT_SECURITY
+DEPOSIT_CREATE
+INTERNAL_TRANSFER
+WITHDRAW_SUBMIT
+WITHDRAW_VALIDATE
+GUARD_SIGN
+SOCIAL_PROVIDER
+Example
+AUTH_PUBLIC
+policyVersion
+integer (int64)
+Policy version used for the decision, when available.
+Example
+1
+reason
+enum
+Machine-readable failure reason.
+QUOTA_EXCEEDED
+AUTHORITY_UNAVAILABLE
+Example
+QUOTA_EXCEEDED
+refillModel
+enum
+Refill behavior used by the active limiter.
+CONTINUOUS
+FIXED_WINDOW
+ROLLING_WINDOW
+Example
+CONTINUOUS
+remaining
+integer (int64)
+Weighted capacity remaining when the request was rejected.
+Example
+1
+retryAfterMs
+integer (int64)
+Minimum relative delay before retrying, in milliseconds.
+Example
+1
+scope
+enum
+Caller dimension that owns the exhausted capacity.
+CLIENT_IP
+API_KEY
+ACCOUNT
+SUBACCOUNT
+CONNECTION
+SERVICE
+REGION
+SYMBOL
+AUTH_SUBJECT
+Example
+CLIENT_IP
+violations
+object[]
+Field-level validation failures. Empty for non-validation domain errors.
+3 fields
+fieldPath
+string
+Protobuf field path relative to the request, using canonical field names.
+Example
+value
+message
+string
+Human-readable explanation of the violation.
+Example
+value
+ruleId
+string
+Stable validation rule identifier suitable for programmatic matching.
+Example
+value
+orderId
+string
+/^[1-9A…m-z]+$/
+Resolved order ID (populated on accept).
+Example
+5USXJZmk
+status
+enum
+Per-item cancellation outcome.
+ACCEPTED
+REJECTED
+Example
+ACCEPTED
+ts
+string
+Server timestamp.
+Example
+2025-01-01T00:00:00Z
+tsNs
+string
+/^[0-9]+$/
+Server timestamp as epoch nanoseconds (for bots).
+Example
+1735689600000000000
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/orders/cancel-batch
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s478" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/orders/cancel-batch' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"items": [
+"clientOrderId": "cli-ord-20250101-001",
+"orderId": "5USXJZmk"
+}
+],
+"requestId": "request_01J0EXAMPLE",
+"subaccountId": "45LUmqjT"
+}'
+Responses
+"acceptedCount": 1,
+"rejectedCount": 1,
+"results": [
+"clientOrderId": "cli-ord-20250101-001",
+"code": "ORDER_NOT_FOUND",
+"error": {
+"code": "BAD_REQUEST",
+"rateLimit": {
+"limit": 100,
+"operationId": "value",
+"policyClass": "AUTH_PUBLIC",
+"policyVersion": 1,
+"reason": "QUOTA_EXCEEDED",
+"refillModel": "CONTINUOUS",
+"remaining": 1,
+"retryAfterMs": 1,
+"scope": "CLIENT_IP"
+},
+"violations": [
+"fieldPath": "value",
+"message": "value",
+"ruleId": "value"
+}
+]
+},
+"orderId": "5USXJZmk",
+"status": "ACCEPTED"
+}
+],
+"ts": "2025-01-01T00:00:00Z",
+"tsNs": "1735689600000000000"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/orders/cancel-batch' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "items": [
+    {
+      "clientOrderId": "cli-ord-20250101-001",
+      "orderId": "5USXJZmk"
+    }
+  ],
+  "requestId": "request_01J0EXAMPLE",
+  "subaccountId": "45LUmqjT"
+}'
+
+---
+
+{
+  "acceptedCount": 1,
+  "rejectedCount": 1,
+  "results": [
+    {
+      "clientOrderId": "cli-ord-20250101-001",
+      "code": "ORDER_NOT_FOUND",
+      "error": {
+        "code": "BAD_REQUEST",
+        "rateLimit": {
+          "limit": 100,
+          "operationId": "value",
+          "policyClass": "AUTH_PUBLIC",
+          "policyVersion": 1,
+          "reason": "QUOTA_EXCEEDED",
+          "refillModel": "CONTINUOUS",
+          "remaining": 1,
+          "retryAfterMs": 1,
+          "scope": "CLIENT_IP"
+        },
+        "violations": [
+          {
+            "fieldPath": "value",
+            "message": "value",
+            "ruleId": "value"
+          }
+        ]
+      },
+      "orderId": "5USXJZmk",
+      "status": "ACCEPTED"
+    }
+  ],
+  "ts": "2025-01-01T00:00:00Z",
+  "tsNs": "1735689600000000000"
+}

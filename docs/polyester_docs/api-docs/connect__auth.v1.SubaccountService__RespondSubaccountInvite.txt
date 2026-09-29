@@ -1,0 +1,254 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.SubaccountService/RespondSubaccountInvite
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.SubaccountService
+RespondSubaccountInvite
+Accept or decline an invite as the grantee, or cancel it as a current owner or admin.
+Acceptance requires an enrolled factor and a recently MFA-elevated session when the subaccount requires member MFA.
+Copy URL
+Method
+POST
+Path
+auth.v1.SubaccountService/RespondSubaccountInvite
+Service
+auth.v1.SubaccountService
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Conditionally required
+POST
+auth.v1.SubaccountService/RespondSubaccountInvite
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.SubaccountService/RespondSubaccountInvite' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"action": "SUBACCOUNT_INVITE_ACTION_ACCEPT",
+"inviteId": "1"
+}'
+Responses
+"invite": {
+"createdAt": "2025-01-01T00:00:00Z",
+"granteeAccountId": "7563897446546",
+"granteeRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"granteeUsername": "trader_alpha",
+"id": "1",
+"inviterAccountId": "7563897446546",
+"inviterRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"inviterUsername": "trader_alpha",
+"requireMemberMfa": false,
+"respondedAt": "2025-01-01T00:00:00Z",
+"role": "VIEWER",
+"status": "SUBACCOUNT_INVITE_STATUS_PENDING",
+"subaccountId": "6789012345678",
+"subaccountLabel": "Market Making"
+}
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.RespondSubaccountInviteRequest
+Response
+auth.v1.RespondSubaccountInviteResponse
+Request body
+Form
+JSON
+Example
+inviteId
+string (fixed64)
+Invite identifier (opaque ID).
+action
+enum
+must be defined value
+Action to apply to the invitation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s358" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+SUBACCOUNT_INVITE_ACTION_ACCEPT
+Response
+Form
+JSON
+invite
+object
+Invitation after applying the response action.
+14 fields
+id
+string (fixed64)
+Invite identifier (opaque ID).
+subaccountId
+string (fixed64)
+Target sub-account (opaque ID).
+granteeAccountId
+string (fixed64)
+Grantee root account ID the invite is for (opaque ID).
+inviterAccountId
+string (fixed64)
+Inviter root account ID (opaque ID).
+role
+enum
+must be defined value
+Requested role for the grantee.
+VIEWER
+TRADER
+LEVERAGED_TRADER
+TREASURY
+ADMIN
+OWNER
+status
+enum
+Current invitation status.
+SUBACCOUNT_INVITE_STATUS_PENDING
+SUBACCOUNT_INVITE_STATUS_ACCEPTED
+SUBACCOUNT_INVITE_STATUS_DECLINED
+SUBACCOUNT_INVITE_STATUS_CANCELLED
+createdAt
+string (date-time)
+Time when the invitation was created.
+respondedAt
+string (date-time)
+Time when the invitation was accepted, declined, or cancelled. Empty while pending.
+granteeUsername
+string
+Optional usernames for better UX in invite lists.
+inviterUsername
+string
+Username of the account that sent the invitation, when available.
+subaccountLabel
+string
+Optional label for the target sub-account, for display in invite lists.
+inviterRootSmartAccountAddress
+string
+Inviter (root account) primary Smart Account address, when available.
+Useful for displaying a stable identity when no username is set.
+granteeRootSmartAccountAddress
+string
+Grantee (root account) primary Smart Account address, when available.
+Useful for displaying a stable identity when no username is set.
+requireMemberMfa
+boolean
+Current delegated-member MFA requirement on the target sub-account. If true, accepting the invite requires MFA enrollment and fresh step-up.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.SubaccountService/RespondSubaccountInvite
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s389" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.SubaccountService/RespondSubaccountInvite' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"action": "SUBACCOUNT_INVITE_ACTION_ACCEPT",
+"inviteId": "1"
+}'
+Responses
+"invite": {
+"createdAt": "2025-01-01T00:00:00Z",
+"granteeAccountId": "7563897446546",
+"granteeRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"granteeUsername": "trader_alpha",
+"id": "1",
+"inviterAccountId": "7563897446546",
+"inviterRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"inviterUsername": "trader_alpha",
+"requireMemberMfa": false,
+"respondedAt": "2025-01-01T00:00:00Z",
+"role": "VIEWER",
+"status": "SUBACCOUNT_INVITE_STATUS_PENDING",
+"subaccountId": "6789012345678",
+"subaccountLabel": "Market Making"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.SubaccountService/RespondSubaccountInvite' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "action": "SUBACCOUNT_INVITE_ACTION_ACCEPT",
+  "inviteId": "1"
+}'
+
+---
+
+{
+  "invite": {
+    "createdAt": "2025-01-01T00:00:00Z",
+    "granteeAccountId": "7563897446546",
+    "granteeRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+    "granteeUsername": "trader_alpha",
+    "id": "1",
+    "inviterAccountId": "7563897446546",
+    "inviterRootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+    "inviterUsername": "trader_alpha",
+    "requireMemberMfa": false,
+    "respondedAt": "2025-01-01T00:00:00Z",
+    "role": "VIEWER",
+    "status": "SUBACCOUNT_INVITE_STATUS_PENDING",
+    "subaccountId": "6789012345678",
+    "subaccountLabel": "Market Making"
+  }
+}

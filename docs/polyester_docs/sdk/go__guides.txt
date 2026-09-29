@@ -1,0 +1,324 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Authentication · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+Authentication
+Copy page
+View as Markdown
+Open in
+Programmatic access uses
+Ed25519
+API keys
+fetches private realtime tokens for you.
+Recommended: explicit credentials
+accountID
+"..."
+// Profile → Account ID
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+APIKeyID
+"ak_..."
+,
+APIPrivateKey
+"..."
+,
+// 64-char hex from key creation
+DefaultAccountID
+&
+accountID
+,
+HydrateCatalogs
+true
+,
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+client
+Close
+()
+ctx
+context
+Background
+()
+if
+err
+client
+WaitForCatalogs
+(
+ctx
+);
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+Environment variables
+Read secrets in your process and pass them in:
+accountID
+os
+Getenv
+(
+"POLYESTER_ACCOUNT_ID"
+)
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+APIKeyID
+os
+Getenv
+(
+"POLYESTER_API_KEY_ID"
+),
+APIPrivateKey
+os
+Getenv
+(
+"POLYESTER_API_PRIVATE_KEY"
+),
+DefaultAccountID
+&
+accountID
+,
+HydrateCatalogs
+true
+,
+})
+For scripts only,
+polyester.FromEnv()
+loads credentials, Account ID, the environment preset, and
+optional API/WebSocket URL overrides. Prefer explicit
+Config
+in production.
+Variable
+Purpose
+POLYESTER_API_KEY_ID
+API key id
+POLYESTER_API_PRIVATE_KEY
+64-char hex private key
+POLYESTER_ACCOUNT_ID
+Profile Account ID
+POLYESTER_ENV
+Environment preset for
+FromEnv
+; set to
+testnet
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+Optional
+FromEnv
+transport overrides
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Never commit secrets
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use placeholders in docs and samples. Store production keys in your secret manager.
+Generate a keypair
+pair
+client
+APIKeys
+GenerateKeypair
+()
+Local key material only. Listing and subscribing to keys uses
+client.APIKeys
+with an API key.
+Creating
+API keys is JWT/session-only (TypeScript / browser), not exposed on this SDK.
+See
+API keys
+Public vs private
+Public market data works with no key.
+Private RPCs and private WebSocket channels need a key
+and
+Account ID.
+Streams: use
+Messages()
+, Go has no
+Recv()
+Subaccount scope
+Set
+DefaultSubAccountID
+for default scoping, or pass per-call account scope where the
+service supports it.
+Concept:
+Authentication model
+Config:
+Client configuration
+Related Topics
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Previous
+Limitations & non-features
+Next
+Market data
+On this page
+Recommended: explicit credentials
+Environment variables
+Generate a keypair
+Public vs private
+Subaccount scope
+Related Topics
+Share this page
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+accountID := "..." // Profile → Account ID
+client, err := polyester.New(polyester.Config{
+    Environment:      &polyester.TestnetEnvironment,
+    APIKeyID:         "ak_...",
+    APIPrivateKey:    "...", // 64-char hex from key creation
+    DefaultAccountID: &accountID,
+    HydrateCatalogs:  true,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+ctx := context.Background()
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+
+---
+
+accountID := os.Getenv("POLYESTER_ACCOUNT_ID")
+client, err := polyester.New(polyester.Config{
+    Environment:      &polyester.TestnetEnvironment,
+    APIKeyID:         os.Getenv("POLYESTER_API_KEY_ID"),
+    APIPrivateKey:    os.Getenv("POLYESTER_API_PRIVATE_KEY"),
+    DefaultAccountID: &accountID,
+    HydrateCatalogs:  true,
+})
+
+---
+
+pair := client.APIKeys.GenerateKeypair()

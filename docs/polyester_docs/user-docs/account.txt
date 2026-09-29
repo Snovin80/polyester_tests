@@ -1,0 +1,222 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Dashboard · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+Dashboard
+Copy page
+View as Markdown
+Open in
+Your
+Dashboard
+gives you a high-level view of everything happening in your account. It shows your current account equity, Funding and Trading balances, asset allocation, open orders, and recent transactions.
+Dashboard at a glance
+Total equity
+Total Equity estimates the current value of the assets in your Funding and Trading Accounts. It can change when asset prices move, even when you have not deposited, withdrawn, or traded.
+Funding and Trading
+The Dashboard shows how much value is held in each part of your account:
+Funding Account
+holds assets available for deposits, withdrawals, and internal transfers.
+Unified Trading Account
+holds assets available for trading, borrowing, and margin.
+Open
+Funding Account
+or
+Trading Account
+when you need the complete balance details.
+Assets
+The Assets view combines your Funding and Trading balances by asset. It shows the quantity you hold, its estimated value, and its share of your account equity.
+The combined balance is not always the amount available for a new action. Open orders, withdrawals, and transfers can reserve part of a Trading balance.
+Open orders
+Open Orders shows orders that are still working or partially filled. Open
+Orders
+or
+Manage Orders
+to change or cancel an order and see its complete fill history.
+Recent transactions
+Recent Transactions shows your latest deposits, withdrawals, and transfers with their current status. Select a transaction when you want to see its complete progress and identifying details. Open
+Ledger
+for the complete balance history.
+Quick actions
+Use
+Deposit
+,
+Withdraw
+, or
+Transfer
+to start moving an asset. These actions open the relevant page with your account context ready, but nothing moves until you review and submit the request.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Hide balances before sharing your screen
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use the amount-visibility control to hide account values in shared spaces. This changes only what is displayed; it does not change your balances.
+FAQ
+Why is Available Balance lower than Total Balance?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Part of your balance is reserved for activity already in progress. Unfilled portions of orders, pending withdrawals, and pending transfers can reduce Available Balance while leaving Total Balance unchanged. Trading uses only the Available Balance in your Unified Trading Account.
+Learn about Trading.
+Why did the displayed value of my account change when my token balances did not?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Your account’s displayed value uses each asset’s
+Index Price
+, a reference price based on prices and trading volumes across multiple exchanges. When those prices change, your account value can rise or fall even if your token quantities stay the same.
+Related Topics
+Sign-In & Ownership
+Understand how your wallet, Google account, or email connects you to your Polyester account.
+Overview
+See every balance change in your account and connect it to the trade, transfer, or fee that created it.
+Previous
+Analytics
+Next
+Sign-In & Ownership
+On this page
+Dashboard at a glance
+Total equity
+Funding and Trading
+Assets
+Open orders
+Recent transactions
+Quick actions
+FAQ
+Related Topics
+Share this page
+Dashboard
+See your account equity, asset balances, open orders, and recent transactions in one place.
+Share
+Copy Link

@@ -1,0 +1,86 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/trading-services.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Services on this page use the authenticated transport except `client.tradingRateLimits.getConfig()`, which reads the public policy. Every account-scoped input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Accounts & balances](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances). Methods marked **stream** return `() => void` and take `onEvent` (plus optional `onOpen` / `onClose` / `onError`).
+## `client.orders`
+| Method                                   | Input → Result                                                                                                 | Notes                                                                                       |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `create(input, options?)`                | `NewOrderInput` → `CreateOrderResult`                                                                          | Validates shape and decimal scale locally; catalog constraint checks are opt-in.            |
+| `batchCreate(input, options?)`           | `{ requestId?, items }` → ordered per-item results                                                             | Max 20 items; the SDK generates `requestId` when omitted. Per-item client ids are optional. |
+| `modify(input, options?)`                | `ModifyOrderInput` → `ModifyOrderResult`                                                                       | Price/qty/client-id/risk patch; `AMENDED` keeps the id, `REPLACED` issues `finalOrderId`.   |
+| `preview(input, options?)`               | `NewOrderInput` → `PreviewOrderResult`                                                                         | Evaluates an intent; places nothing.                                                        |
+| `batchReplace(input, options?)`          | `{ symbolId, requestId?, items }` → admission receipt                                                          | Max 50 unique targets; one symbol per batch.                                                |
+| `getBatchReplaceStatus(input, options?)` | `{ batchRequestId }` → durable per-item status                                                                 | Reads the receipt returned by `batchReplace`.                                               |
+| `cancel(input, options?)`                | `{ orderId }` or `{ clientOrderId }`, `symbolId?` → `CancelOrderResult`                                        | Status is `accepted` or `unspecified`; reconcile final state.                               |
+| `batchCancel(input, options?)`           | `{ requestId?, items }` → per-item results                                                                     | Max 50 explicit order keys; item status is `accepted`, `rejected`, or `unspecified`.        |
+| `cancelAll(input, options?)`             | `symbolIds?` (max 100), `side?`, `dryRun?`, `requestId?` → `CancelAllOrdersResponse`                           | Empty `symbolIds` matches all; status is `submitted`, `dry_run`, or `unspecified`.          |
+| `cancelAllAfter(input, options?)`        | `timeoutSec`, `symbolId?`, `side?`, `requestId?` → heartbeat result                                            | Status is `armed`, `disabled`, or `unspecified`.                                            |
+| `listOpen(input?, options?)`             | `symbolId?: number[]`, `triggerId?`, `side?`, pagination, risk-inclusion filters → `{ orders, nextPageToken }` | Drain every page via `nextPageToken`.                                                       |
+| `listHistory(input?, options?)`          | + `status?`, `triggerId?`, nanosecond time range → `{ orders, nextPageToken }`                                 |                                                                                             |
+| `getDetails(input, options?)`            | order key, execution-history pagination → `OrderDetails \| null`                                               | One lineage-execution page; deduplicate transfers by `txId`.                                |
+| `subscribe(input)`                       | `accountId` → **stream** of `Order`                                                                            |                                                                                             |
+### `NewOrderInput`
+| Field                     | Type                                                | Required | Notes                                  |
+| ------------------------- | --------------------------------------------------- | -------- | -------------------------------------- |
+| `symbolId`                | `number`                                            | ✓        | Stable positive market ID.             |
+| `side`                    | `"buy" \| "sell"`                                   | ✓        |                                        |
+| `qty`                     | decimal string                                      | ✓        | Base-asset quantity; strict precision. |
+| `execution`               | `OrderExecutionInput`                               | ✓        | Exact order execution.                 |
+| `clientOrderId`           | `string`                                            |          | Account-scoped duplicate guard.        |
+| `feeAsset`                | `"quote" \| "base"`                                 |          | Defaults to `"quote"`.                 |
+| `selfTradePreventionMode` | `"expire_taker" \| "expire_maker" \| "expire_both"` |          |                                        |
+| `risk`                    | `RiskPolicyInput`                                   |          | Attached TP/SL/trailing legs (below).  |
+| `account`                 | `AccountScope`                                      |          | Scope override.                        |
+`OrderExecutionInput` is one of `market_ioc` (optional `maxSlippage` and `clientRefPrice`), `limit_gtc` (`price`, optional `postOnly`), `limit_gtd` (`price`, integer epoch-millisecond `expireAt`, optional `postOnly`), `limit_ioc` (`price`), or `limit_fok` (`price`). GTD reads expose `timeInForce: "GTD"` and `expireAt` when supplied by the venue. `CreateOrderResult` acknowledges admission with the order/client ids, `acceptedAt`, `acceptedAtNs`, and any attached-risk trigger ids. It does not report order lifecycle status.
+### `RiskPolicyInput`
+Valid combinations: `takeProfit` + `stopLoss`, `takeProfit` + `trailingStop`, or any single leg. `oco: true` requires `takeProfit` plus exactly one stop leg; on a single leg it is rejected.
+- `takeProfit` / `stopLoss`: `{ triggerPrice, execution }`, with `market_ioc` or `limit_gtc` execution.
+- `trailingStop`: `{ trailingDistance, maxSlippage?, activationPrice? }` (market IOC).
+- Distances/slippage take `{ kind: "distance", distance: "500" }`, `{ kind: "slippage", slippage: "0.25" }`, or `{ kind: "bps", bps: 50 }` (at most 10,000). `{ kind: "none" }` is valid for `maxSlippage` only.
+### `ModifyOrderInput`
+Key: `{ orderId }` or `{ clientOrderId }`. Base: `symbolId` (required), `requestId?`, `newClientOrderId?`, `behavior?`. Patch: `newPrice?` and/or `newQty?`; risk: `risk` (replace) or `clearRisk: true`. Those two risk options are mutually exclusive.
+## `client.triggers`
+Standalone automations that place a child order when a condition fires. Types: `stop_loss`, `take_profit`, `trailing_stop`, `twap`, `ladder`.
+| Method                        | Input → Result                                                                   | Notes                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `create(input, options?)`     | `CreateTriggerInput` (variant on `triggerType`) → `CreateTriggerResult`          | `clientTriggerId` auto-generated when omitted.                             |
+| `get(input, options?)`        | `triggerId` → `Trigger \| null`                                                  |                                                                            |
+| `list(input?, options?)`      | `symbolId?`, status/type/parent-order filters, pagination → `ListTriggersResult` | Newest first.                                                              |
+| `modify(input, options?)`     | `triggerId`, `symbolId` + ≥ 1 patch field → `ModifyTriggerResult`                | Omit activation/slippage to preserve it; `{ kind: "none" }` clears either. |
+| `cancel(input, options?)`     | `triggerId` → `CancelTriggerResult`                                              |                                                                            |
+| `pause(input, options?)`      | `triggerId` → `PauseTriggerResult`                                               |                                                                            |
+| `resume(input, options?)`     | `triggerId`, `symbolId` → `ResumeTriggerResult`                                  |                                                                            |
+| `listEvents(input, options?)` | `triggerId`, `limit?` (default 50) → `ListTriggerEventsResult`                   | Fire/cancel/update/failure events, newest first.                           |
+| `subscribe(input)`            | `accountId` → **stream** of `Trigger` state                                      |                                                                            |
+| `subscribeEvents(input)`      | `accountId` → **stream** of lifecycle events                                     |                                                                            |
+### `CreateTriggerInput`
+All variants share `symbolId`, `qty`, `feeAsset?`, `selfTradePreventionMode?`, `clientTriggerId?`, and `account?`. Strategy-specific fields describe the exact child execution.
+Per-type fields:
+| `triggerType`                   | Fields                                                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `"stop_loss"` / `"take_profit"` | `side`, `triggerPrice`, `execution` (sell: `market_ioc` or limit; buy: limit only)                      |
+| `"trailing_stop"`               | `trailingDistance`, `activationPrice?`, `maxSlippage?`; always sells using market IOC                   |
+| `"twap"`                        | `side`, `durationMs`, `sliceIntervalMs`, `execution` (`market_ioc` with `maxSlippage?`, or `limit_gtc`) |
+| `"ladder"`                      | `side`, `priceMin`, `priceMax`, `levels` (2-100), `postOnly?`; children are linear limit GTC            |
+`CreateTriggerResult` acknowledges admission with `triggerId`, `clientTriggerId`, `acceptedAt`, and `acceptedAtNs`; it does not report runtime status. Read models expose immutable `configuration` plus separate `runtimeDetails`. Terminal triggers and events expose typed, mutually exclusive `cancelReason` or `failureReason` fields.
+## `client.trades`
+Your fills.
+| Method                   | Input → Result                                                                                              | Notes                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `list(input?, options?)` | symbol/side/time/pagination, `orderId?` or `lineageId?`, transfers → `{ trades, transfers, nextPageToken }` | `afterMatchId` requires a positive `symbolId` string. |
+| `subscribe(input)`       | `accountId` → **stream** of trades                                                                          |                                                       |
+All prices/quantities in results are decimal strings; orders on symbols missing from the catalog are filtered out of list responses rather than failing the whole page. Scope executions to one physical `orderId` or logical `lineageId`, optionally through a generation. `includeTransfers` returns settlement transfers for page matches; deduplicate them across pages by `txId`.
+## `client.fees`
+Authenticated spot-fee service. `getSpotRates` returns the effective maker and taker percents for the resolved account. Full shapes: [Fees](https://testnet.polyester.com/docs/sdk/typescript/reference/fees).
+| Method                           | Input → Result                                       | Notes                                   |
+| -------------------------------- | ---------------------------------------------------- | --------------------------------------- |
+| `getSpotRates(input?, options?)` | `symbolIds?` (max 100), `account?` → `SpotFeeRate[]` | Empty `symbolIds` returns every market. |
+## `client.tradingRateLimits`
+Trading-quota service. `getConfig` is the public VIP0+ catalog. `getTradingLimits` is the effective placement and cancellation rules for the resolved account, plus any API-key overlay. Full shapes: [Trading rate limits](https://testnet.polyester.com/docs/sdk/typescript/reference/rate-limits).
+| Method                               | Input → Result                   | Notes          |
+| ------------------------------------ | -------------------------------- | -------------- |
+| `getConfig(options?)`                | → `RateLimitConfig`              | Public.        |
+| `getTradingLimits(input?, options?)` | `account?` → `TradingRateLimits` | Authenticated. |

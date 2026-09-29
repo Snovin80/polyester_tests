@@ -1,0 +1,85 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/tutorials.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Live market ticker
+Build a snapshot-then-stream Python market monitor with trades, candles, staleness detection, and clean shutdown.
+Build a public market monitor that starts from REST state, follows realtime trades, confirms candle availability, and fails visibly when its stream becomes stale. This pattern is useful both for a terminal ticker and as the market-data health input to a trading system.
+> **Public and non-mutating**
+>
+> No API key is required. Empty trade or candle arrays are valid on a quiet testnet market; distinguish an empty successful response from a transport failure.
+1. Create the client and load catalogs
+```python
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+client = AsyncPolyester(environment=POLYESTER_TESTNET_ENVIRONMENT, hydrate_catalogs=True)
+await client.wait_for_catalogs()
+```
+Catalog hydration resolves symbols to engine IDs and attaches the correct quantity scale to public trades.
+2. Bootstrap from recent trades and candles
+```python
+recent = await client.market_data.get_trades(symbol="BTC-USDT", limit=20)
+for trade in recent.trades:
+side = "buy" if trade.is_buy else "sell"
+print(trade.match_id, side, trade.price, trade.qty, trade.ts_ns)
+candles = await client.candles.get_candles(
+symbol="BTC-USDT",
+timeframe="1m",
+limit=50,
+include_incomplete=True,
+)
+if candles.candles:
+latest = candles.candles[0]
+print(latest.ts_sec, latest.close, latest.volume, latest.is_closed)
+```
+REST bootstrap prevents a blank screen while waiting for the next trade. Keep the match ID and timestamp of the newest row so consumers can deduplicate a reconnect overlap. Candle rows are newest-first, and an included open candle is prepended. For indicators, request closed candles and reverse or sort the rows by `ts_sec` into chronological order first.
+3. Follow the public trade tape
+```python
+import asyncio
+subscription = await client.market_data.subscribe_trades(symbol="BTC-USDT")
+async with subscription:
+try:
+trade = await asyncio.wait_for(anext(subscription), timeout=30.0)
+side = "buy" if trade.is_buy else "sell"
+print(trade.match_id, side, trade.price, trade.qty, trade.ts_ns)
+except TimeoutError:
+print("no trade in 30s; market may be quiet or stream may be stale")
+if subscription.error:
+raise subscription.error
+```
+The subscription completes its handshake before returning. Queue overflow is terminal; inspect `last_error`, discard the subscription, and create a new one.
+4. Add candle updates
+```python
+candle_sub = await client.candles.subscribe_candles(
+symbol="BTC-USDT",
+timeframe="1m",
+)
+async with candle_sub:
+candle = await anext(candle_sub)
+print(
+candle.ts_sec,
+candle.open,
+candle.high,
+candle.low,
+candle.close,
+candle.is_closed,
+)
+```
+Use closed candles for indicators that must not repaint. Use the incomplete candle only for a live display, and label it as forming.
+5. Operate and shut down
+Track a last-event timestamp separately for trades and candles. A quiet market can legitimately produce no events, so verify staleness with a bounded REST read before declaring the websocket unhealthy. On `SIGINT` / `SIGTERM`, close each subscription with `aclose()` and then close the client with `await client.aclose()`.
+## API map
+| Method                          | Important inputs                              | Use                                          |
+| ------------------------------- | --------------------------------------------- | -------------------------------------------- |
+| `market_data.get_trades`        | symbol/ID, limit, match cursor                | Initial tape and reconnect overlap           |
+| `market_data.subscribe_trades`  | symbol/ID                                     | Live public executions                       |
+| `candles.get_candles`           | symbol/ID, timeframe, bounds, incomplete flag | Historical/bootstrap OHLCV                   |
+| `candles.get_current_candle`    | symbol/ID, timeframe                          | Lightweight health check (`None` when empty) |
+| `candles.subscribe_candles`     | symbol/ID, timeframe                          | Forming and closed candle updates            |
+| `orderbook.create_subscription` | symbol, depth, bucket, callbacks              | Sequence-checked bid/ask state               |
+## Tested source
+Example `01` performs live REST market reads and example `04` runs the public trade stream in [`polyester-examples-python`](https://github.com/Fabric-Labs/polyester-examples-python). The suite is tested against `polyester-sdk==0.1.0a25`; the REST path and candle-backed RSI dry-run were executed live with Python 3.12.
+## Related
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [Market data](https://testnet.polyester.com/docs/sdk/python/guides/market-data)
+- [Candles](https://testnet.polyester.com/docs/sdk/python/reference/candles)
+- [Public trades](https://testnet.polyester.com/docs/sdk/python/reference/public-trades)

@@ -1,0 +1,67 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/order-sizing.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Order Sizing
+Choose exact base-quantity or maximum quote-debit sizing and read the authoritative quantity accepted for execution.
+Order sizing defines which quantity a client controls when placing an order. Every `OrderIntent.sizing` selects exactly one of two alternatives.
+## Sizing alternatives
+| Intent                   | Meaning                                                              | Scale source                | Eligible orders                     |
+| ------------------------ | -------------------------------------------------------------------- | --------------------------- | ----------------------------------- |
+| `base_qty_scaled`        | Exact gross base quantity submitted for execution                    | Pair `base_quantity_scale`  | BUY or SELL with any execution type |
+| `max_quote_debit_scaled` | Hard all-in quote debit ceiling, including any quote-denominated fee | Pair `quote_quantity_scale` | BUY Market IOC or BUY Limit IOC     |
+REST uses the equivalent decimal-string fields `baseQty` and `maxQuoteDebit`.
+> **Set exactly one sizing field**
+>
+> `OrderIntent.sizing` is a required Protobuf `oneof`. Treat it as a discriminated union in application code, not as two unrelated optional values.
+## Exact base quantity
+`base_qty_scaled` controls the gross base quantity sent for execution. It does not describe the net amount received after fees.
+For a BUY with a quote-denominated fee, the account must fund trade notional plus the fee. For a BUY with a base-denominated fee, the fee reduces the base amount received. See [Fee Assets](https://testnet.polyester.com/docs/developer-docs/shared-concepts/fee-assets).
+## Maximum quote debit
+`max_quote_debit_scaled` controls the maximum quote amount that can be debited. Polyester resolves the largest legal, step-aligned gross base quantity that fits inside the ceiling at the protected price boundary.
+The final debit can be lower after a better-priced or partial fill, but it cannot exceed the submitted ceiling. This sizing mode is invalid for SELL, Limit GTC, and Limit FOK orders.
+## Request examples
+## REST JSON
+```json
+"order": {
+"symbol": "BTC-USDT",
+"side": "BUY",
+"maxQuoteDebit": "100.00",
+"feeAsset": "QUOTE",
+"marketIoc": {
+"maxSlippageBps": 50
+}
+}
+}
+```
+## ConnectRPC ProtoJSON
+This example assumes the Pair's quote quantity scale has already been applied:
+```json
+"order": {
+"symbol": "BTC-USDT",
+"side": "BUY",
+"maxQuoteDebitScaled": "100000000",
+"feeAsset": "QUOTE",
+"marketIoc": {
+"maxSlippageBps": 50
+}
+}
+}
+```
+Use [Scaled Integers](https://testnet.polyester.com/docs/developer-docs/connectrpc/scaled-integers) to resolve Pair scales and [Market Order Price Protection](https://testnet.polyester.com/docs/developer-docs/shared-concepts/market-order-price-protection) for price-boundary behavior.
+## Create acknowledgement
+`CreateOrderResponse` acknowledges admission, not execution:
+- `resolved_base_qty_scaled` is the authoritative gross base quantity accepted for execution.
+- `submitted_max_quote_debit_scaled` is present only when quote-budget sizing was submitted.
+Do not infer fills from this response. Use order reads and realtime streams for working, filled, canceled, and terminal state.
+## SBE WebSocket schema version 2
+The client-facing SBE `CreateOrder` command requires `sizingKind`:
+| `sizingKind`      | Selected field        | Unselected field requirement  |
+| ----------------- | --------------------- | ----------------------------- |
+| `BASE_QUANTITY`   | `baseQtyScaled`       | `maxQuoteDebitScaled` is null |
+| `MAX_QUOTE_DEBIT` | `maxQuoteDebitScaled` | `baseQtyScaled` is null       |
+Successful create acknowledgements expose `resolvedBaseQtyScaled` and, for quote-budget orders, `submittedMaxQuoteDebitScaled`.
+> **The sizing enum is required**
+>
+> Populating `baseQtyScaled` is not sufficient. A zero-initialized or omitted `sizingKind` is rejected.
+Use [Preview Order](https://testnet.polyester.com/docs/developer-docs/shared-concepts/preview-order) when an integration needs to check an order before submission.

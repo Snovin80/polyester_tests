@@ -1,0 +1,130 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Public IDs · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Platform Concepts
+Public IDs
+Copy page
+View as Markdown
+Open in
+Public IDs are the identifiers you see in Polyester APIs for accounts,
+subaccounts
+, orders,
+API keys
+, policies, invites, and similar resources.
+They are designed to be safe to expose publicly, stable enough for clients to store, and efficient for high-throughput exchange systems.
+Why public IDs exist
+Backend systems need identifiers that can be resolved quickly. Public API users need identifiers that do not reveal internal sequencing, record counts, or database-style IDs.
+Polyester public IDs solve both problems:
+Opaque to clients
+Fast for Polyester
+Stable in APIs
+Interface-aware
+Do not treat a public ID as proof of access. Authorization is always checked separately for private resources.
+Representation differs per interface
+Every public ID is an unsigned 64-bit value underneath, but the representation you work with
+depends on the interface you use. Each interface documents its own identifier handling:
+REST identifiers
+ConnectRPC identifiers
+fixed64
+fields in typed Protobuf payloads.
+Different representations of the same ID refer to the same resource. Most integrations never need
+to convert between them; stay inside your interface's representation and follow its identifier
+guide.
+Privacy model
+Public IDs are intentionally opaque. They are deterministic for Polyester, but they should look random to API users.
+This means:
+a client cannot look at an ID and learn the internal record number
+adjacent internal records do not produce obvious adjacent public IDs
+converting between representations does not reveal the backend's internal record semantics
+different resource types are kept separate, so an account ID should not be accepted where an order ID is expected
+This is a privacy and API-safety feature, not an authorization model. A leaked private-resource ID should still be useless without valid authentication and permission for that resource.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public IDs are not credentials
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Public IDs are safe to expose as identifiers, but access to private resources still requires valid
+authentication and authorization.
+Related Topics
+Client order IDs and idempotency
+Use client order IDs to prevent duplicate placement, correlate client intents, and reconcile uncertain outcomes.
+Order Sizing
+Choose exact base-quantity or maximum quote-debit sizing and read the authoritative quantity accepted for execution.
+Fee Assets
+Choose whether a BUY fee is charged in quote or deducted from received base, and decode fee amounts with the correct scale.
+Preview Order
+Check whether an order is currently admissible without creating an order, reserving funds, or presenting an execution quote.
+Market Order Price Protection
+Understand market-order slippage overrides, pair defaults, client reference drift, execution boundaries, and stale-quote errors.
+Self-Trade Prevention
+Prevent an incoming order from trading against a resting order from the same trading account.
+Rate limits
+Weighted quotas, default limits, rejection metadata, and retry behavior.
+WebSocket session model
+Understand shared connection, authentication, subscription, and recovery behavior for Polyester realtime channels.
+Previous
+SDK capability matrix
+Next
+Client order IDs and idempotency
+On this page
+Why public IDs exist
+Representation differs per interface
+Privacy model
+Related Topics
+Share this page
+Public IDs
+Understand what Polyester public IDs identify, why they are opaque, and how their representation differs per interface.
+Share
+Copy Link

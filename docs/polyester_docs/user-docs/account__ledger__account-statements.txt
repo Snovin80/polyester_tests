@@ -1,0 +1,217 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/ledger/account-statements
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Account Statements · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Ledger
+svg]:size-3.5">
+/
+Account Statements
+Account Statements
+Copy page
+View as Markdown
+Open in
+Account Statements
+turn your account activity into a downloadable report for a selected period. Use them for recordkeeping, accounting, or reviewing how your balances changed.
+Statements are created separately for each
+Main Account
+or
+Subaccount
+, so the report matches the account you selected.
+Create a statement
+1
+Choose the account
+Select the Main Account or Subaccount you want included.
+2
+Choose the reporting period
+Set the start date, end date, and timezone for the report.
+3
+Choose the format
+Select the available PDF or data export based on how you plan to use the statement.
+4
+Generate and download
+Generate the statement, then save the finished file to a protected location.
+What a statement includes
+Your statement identifies the account, reporting period, timezone, and generation time. It can include:
+opening and closing balances
+deposits, withdrawals, and internal transfers
+orders, fills, fees, and rebates
+the asset and quantity for each entry
+ledger, flow, order, fill, or transaction references.
+The exact sections depend on the activity in the selected account and period.
+Match a statement to your account
+Use the opening and closing balances to understand the period as a whole. For more detail, match statement rows to your
+Ledger
+, orders, trades, or transaction history using their IDs and timestamps.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+A statement covers a fixed period
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A downloaded statement does not update after it is generated. Use your current Dashboard and account pages for live balances and active orders.
+Protect downloaded statements
+Statements can contain account IDs,
+smart account
+addresses, balances, trading history, and transfer details.
+Store them in an encrypted or access-controlled location.
+Share only the account, period, and fields the recipient needs.
+Check the recipient and delivery method before sending a file.
+Remove unrelated personal information before sharing when appropriate.
+Never add private keys,
+MFA
+codes, recovery codes, or API private keys to an exported report.
+Related Topics
+Overview
+See every balance change in your account and connect it to the trade, transfer, or fee that created it.
+Previous
+Overview
+Next
+Overview
+On this page
+Create a statement
+What a statement includes
+Match a statement to your account
+Protect downloaded statements
+Related Topics
+Share this page
+Account Statements
+Create a report of your balances, trades, fees, and account activity for a selected period.
+Share
+Copy Link

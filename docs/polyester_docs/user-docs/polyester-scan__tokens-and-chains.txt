@@ -1,0 +1,230 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/tokens-and-chains
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Tokens & Chains · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Scan
+svg]:size-3.5">
+/
+Tokens & Chains
+Tokens & Chains
+Copy page
+View as Markdown
+Open in
+Polyester Scan
+connects each asset on
+Polyester Chain
+to its contract and, for
+Zipped Assets
+, its source chain. This makes it easy to see which
+route
+an asset represents and where its public activity appears.
+Choose what to browse
+Page
+What it shows
+Tokens
+ERC-20 tokens and configured Zipped Asset routes
+Token Transfers
+Recent transfers, mints, and burns
+Unified Assets
+The account-facing assets shared across compatible routes
+Chains
+Source chains, asset coverage, confirmation rules, and chain details
+Read a token page
+The Tokens directory shows the token name and symbol, source chain, Polyester contract, source-chain contract, type, price, supply, and TVL when that data is available.
+A configured Zipped Asset includes a
+Verified
+badge and route information. Open it to see:
+its source chain and source asset
+its contract on Polyester Chain
+the Unified Asset it maps to
+transfers, holders, and related Flows
+public contract information.
+A generic ERC-20 token can still appear in Scan, but it does not include the configured route or Unified Asset relationship.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+A Verified badge identifies a configured asset
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The badge means Scan recognizes the token from Polyester's asset catalog. It does not apply to every token with the same symbol and is separate from a contract audit.
+Read token transfers
+The Token Transfers page shows the transaction, method, block, sender, recipient, amount, and token for each indexed ERC-20 action.
+Open a transaction to see whether the action was a transfer, mint, or burn and how it fits into the rest of the transaction. If it belongs to a supported cross-chain movement, the related Asset Flow provides the complete journey.
+Read a chain page
+The Chains directory lists the external chains configured for
+Zipper
+routes. It includes each chain's ID, native asset, number of configured routes, required confirmations, and estimated confirmation time.
+Open a chain to see its:
+related deposit and
+withdrawal Flows
+configured Zipped Assets
+chain and native-asset identifiers
+address format
+external explorer link.
+Confirmation time is an estimate based on the configured number of blocks and typical block time. It can change with the source chain.
+Connect a chain to an asset
+The source chain and source contract identify what arrives from the external chain. The Polyester contract identifies the matching Zipped Asset on Polyester Chain. The Unified Asset link shows the balance identity that you use inside your Polyester account.
+Use
+zAssets & uAssets
+for a closer look at that relationship.
+Related Topics
+Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+Chain Activity
+Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Previous
+Chain Activity
+Next
+Contracts & Tools
+On this page
+Choose what to browse
+Read a token page
+Read token transfers
+Read a chain page
+Connect a chain to an asset
+Related Topics
+Share this page
+Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Share
+Copy Link

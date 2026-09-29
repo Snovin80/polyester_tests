@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/polyester-contracts.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Polyester Contracts
+Open official Polyester Chain contract deployments in Polyester Scan.
+These are the current Polyester Chain contracts from the product catalog.
+| Contract                 | Address                                      | Polyester Scan                                                                                |
+| ------------------------ | -------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Funding Account          | `0xBfF4F6224BC10f233dDB1E61E770d9832aabC7c4` | [Open contract](https://polyesterscan.com/address/0xBfF4F6224BC10f233dDB1E61E770d9832aabC7c4) |
+| Trading Gateway          | `0xD3fecf5D39131e23b6B0f872cA0a21c8A5a30932` | [Open contract](https://polyesterscan.com/address/0xD3fecf5D39131e23b6B0f872cA0a21c8A5a30932) |
+| Guard Registry           | `0xd71F60FD6f784Cc0aD8c25441568C48705D95f64` | [Open contract](https://polyesterscan.com/address/0xd71F60FD6f784Cc0aD8c25441568C48705D95f64) |
+| Account Delegate Router  | `0x476cD16fbc5A03992698422bcfC6b695eA0f6e10` | [Open contract](https://polyesterscan.com/address/0x476cD16fbc5A03992698422bcfC6b695eA0f6e10) |
+| Internal Transfer Flare  | `0x2E186b0b5b3b0aA496E573c28aCc83a8a8A7b75A` | [Open contract](https://polyesterscan.com/address/0x2E186b0b5b3b0aA496E573c28aCc83a8a8A7b75A) |
+| Zipper Endpoint          | `0xae6B981BE9B73421eB1ba5372d1A4A937d63ffFB` | [Open contract](https://polyesterscan.com/address/0xae6B981BE9B73421eB1ba5372d1A4A937d63ffFB) |
+| Zipper Factory Token     | `0x0CB99019aD0a9b51483BB4319DC017e9c1bC41D9` | [Open contract](https://polyesterscan.com/address/0x0CB99019aD0a9b51483BB4319DC017e9c1bC41D9) |
+| Zipper Factory Fee       | `0x8236C9bA6f36E7Ace4890Ad722b07564d63cB68C` | [Open contract](https://polyesterscan.com/address/0x8236C9bA6f36E7Ace4890Ad722b07564d63cB68C) |
+| Zipper Factory Chain     | `0x5E3ee633bb495442912940d88418950E406CfAf3` | [Open contract](https://polyesterscan.com/address/0x5E3ee633bb495442912940d88418950E406CfAf3) |
+| Zipper Factory Vault     | `0x417A033bC4f54b55a4D9bcF16e00fC6cdC53EAD7` | [Open contract](https://polyesterscan.com/address/0x417A033bC4f54b55a4D9bcF16e00fC6cdC53EAD7) |
+| Zipper Factory Sub Vault | `0x512ec11246ABd36a2D9369850202E6e29113Fa10` | [Open contract](https://polyesterscan.com/address/0x512ec11246ABd36a2D9369850202E6e29113Fa10) |
+| Zipper Key               | `0x7Fa63d58F8C3221E7489168D2E9C7aC70718ed9c` | [Open contract](https://polyesterscan.com/address/0x7Fa63d58F8C3221E7489168D2E9C7aC70718ed9c) |
+| Deposit Batch Router     | `0x1Bb3892BD91e2b84Ab9ffd196061Fc0a170BB688` | [Open contract](https://polyesterscan.com/address/0x1Bb3892BD91e2b84Ab9ffd196061Fc0a170BB688) |
+| Validation Batch Router  | `0xb4c6e583fbbc511bEC625804FBdC72577348107D` | [Open contract](https://polyesterscan.com/address/0xb4c6e583fbbc511bEC625804FBdC72577348107D) |
+| Multicall3               | `0xF35A6AE5408fa1356064849D0BC3855f801aa6aC` | [Open contract](https://polyesterscan.com/address/0xF35A6AE5408fa1356064849D0BC3855f801aa6aC) |
+| Disperse                 | `0x5d9d358fFbacB5B29a3f427D28037D5E8D2B9D30` | [Open contract](https://polyesterscan.com/address/0x5d9d358fFbacB5B29a3f427D28037D5E8D2B9D30) |

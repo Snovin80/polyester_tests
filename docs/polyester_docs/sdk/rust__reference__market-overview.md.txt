@@ -1,0 +1,53 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/market-overview.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+`client.market_overview` returns one row per spot market (last price, 24h stats, and related fields). Unary `list` is public; realtime support is always included.
+## Methods
+| Method                | Summary                                                             |
+| --------------------- | ------------------------------------------------------------------- |
+| `list`                | Overview rows (`ListMarketOverviewOptions` or `Option
+` limit). |
+| `create_subscription` | Snapshot-then-stream merged rows (preferred).                       |
+| `subscribe`           | Raw Centrifugo batches (`recv_result()`).                           |
+### List
+```rust
+use polyester::services::ListMarketOverviewOptions;
+let overview = client
+symbols: Some(vec!["BTC-USDT".into()]),
+limit: Some(50),
+include_sparklines: false,
+})
+for m in &overview.markets {
+println!("{} {} {:?}", m.symbol_id, m.symbol, m.last_price);
+}
+```
+### Create subscription
+Returns `marketoverview::Subscription`. Consume with `updates().recv().await`.
+```rust
+use polyester::services::MarketOverviewCreateSubscriptionOptions;
+let mut sub = client
+symbols: Some(vec!["BTC-USDT".into()]),
+limit: Some(50),
+})
+while let Some(rows) = sub.updates().recv().await {
+for m in &rows {
+println!("{} {:?}", m.symbol, m.last_price);
+}
+break;
+}
+sub.close();
+```
+### Subscribe
+Raw batches as `TypedSubscription
+`, `recv().await`. Prefer `create_subscription` for dashboards.
+> **Prefer create\_subscription**
+>
+> Raw `subscribe` does not merge a REST snapshot for you.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/rust/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)
+- [Candles](https://testnet.polyester.com/docs/sdk/rust/reference/candles)
+- [Order book](https://testnet.polyester.com/docs/sdk/rust/reference/order-book)

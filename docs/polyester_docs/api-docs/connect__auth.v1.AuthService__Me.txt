@@ -1,0 +1,198 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.AuthService/Me
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.AuthService
+Me
+Return the caller's current auth context.
+Copy URL
+Method
+POST
+Path
+auth.v1.AuthService/Me
+Service
+auth.v1.AuthService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+auth.v1.AuthService/Me
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AuthService/Me' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"accountId": "7563897446546",
+"apiKeyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+"rootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"session": {
+"authTime": "2025-01-01T00:00:00Z",
+"authenticationMethods": [
+"totp"
+],
+"sessionId": "session_01J0EXAMPLE",
+"sessionLevel": "PRIMARY_AUTHENTICATED"
+},
+"username": "trader_alpha"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.MeRequest
+Response
+auth.v1.MeResponse
+Response
+Form
+JSON
+accountId
+string (fixed64)
+Root account identifier (opaque ID).
+apiKeyId
+string
+/^ak_[a…]{32}$/
+Stable public identifier of the API key that authenticated this request,
+formatted as "ak_" followed by 32 lowercase hexadecimal characters.
+Absent when the request was not authenticated with an API key.
+username
+string
+Optional current username for the root account (empty if not set).
+rootSmartAccountAddress
+string
+Root smart-account EVM address, formatted as 0x plus 40 hex characters.
+Empty if not set.
+session
+object
+Session assurance details for the presented access token, if any.
+4 fields
+sessionId
+string
+max 64 chars
+Stable session identifier shared by the primary and MFA-elevated tokens.
+sessionLevel
+enum
+must be defined value
+Assurance level represented by this session response.
+PRIMARY_AUTHENTICATED
+MFA_ELEVATED
+FRESH_STEP_UP
+authenticationMethods
+string[]
+max 8 items, unique
+Authentication methods used for this session state, such as wallet, TOTP, passkey, or recovery code. Maximum 8 unique values.
+authTime
+string (date-time)
+Time when the session was authenticated or elevated.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.AuthService/Me
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s377" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AuthService/Me' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"accountId": "7563897446546",
+"apiKeyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+"rootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+"session": {
+"authTime": "2025-01-01T00:00:00Z",
+"authenticationMethods": [
+"totp"
+],
+"sessionId": "session_01J0EXAMPLE",
+"sessionLevel": "PRIMARY_AUTHENTICATED"
+},
+"username": "trader_alpha"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.AuthService/Me' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "accountId": "7563897446546",
+  "apiKeyId": "ak_1a3c6de8153d5a5b04cd2a6529779542",
+  "rootSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+  "session": {
+    "authTime": "2025-01-01T00:00:00Z",
+    "authenticationMethods": [
+      "totp"
+    ],
+    "sessionId": "session_01J0EXAMPLE",
+    "sessionLevel": "PRIMARY_AUTHENTICATED"
+  },
+  "username": "trader_alpha"
+}

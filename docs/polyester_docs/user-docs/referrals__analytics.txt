@@ -1,0 +1,194 @@
+Источник: https://testnet.polyester.com/docs/user-docs/referrals/analytics
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Analytics · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Referrals
+svg]:size-3.5">
+/
+Analytics
+Analytics
+Copy page
+View as Markdown
+Open in
+Referral Analytics shows what your invitations produce. See how your audience grows, compare the performance of every link, and understand which traders, assets, and periods contribute to your rewards.
+Open
+Referrals
+and select
+Analytics
+to explore the complete picture or narrow it to the link and date range you care about.
+Track performance over time
+The summary and chart track referred users, eligible trading volume, and rewards across the same selected period. This makes it easy to see how changes in trading activity affect what you earn.
+View all links for your complete referral performance, or select one link to focus the chart on a specific audience or campaign.
+Compare referral links
+Every link uses your referral ID, but its name keeps the source recognizable. You might create one link for a community, another for a social profile, and another for a specific campaign. Open
+All Referral Links
+to compare referred users, volume, and lifetime fees by link.
+This lets you compare distribution channels without creating separate referral accounts. Rename or stop sharing a link when a campaign ends; its historical performance remains available for comparison.
+Review referred users
+The
+Referred Users
+view connects each referred account to the link they used. It shows when the relationship began, the trader's attributed activity, and the rewards their eligible fees produced.
+Use it to understand whether a link attracted one highly active trader or a larger group of occasional traders without losing the link-level view.
+Trace rewards and conversions
+Open the Reward Ledger when you want the records behind an analytics total. Each entry identifies the referral link, eligible fee event, original reward asset, amount, and status.
+Conversion history connects the asset originally earned to the payout asset you selected. Together, these records let you move from a performance trend to the exact rewards behind it without maintaining a separate spreadsheet.
+See
+Referral Rewards
+to understand how each reward is calculated, collected, and converted.
+Related Topics
+Overview
+Invite friends to Polyester, earn a share of their trading fees, and track every referral from one dashboard.
+Rewards
+See how referral rewards are calculated, collected, converted, and paid to your Trading Account.
+Previous
+Rewards
+Next
+Dashboard
+On this page
+Track performance over time
+Compare referral links
+Review referred users
+Trace rewards and conversions
+Related Topics
+Share this page
+Analytics
+Track referred users, trading volume, and rewards across every referral link and date range.
+Share
+Copy Link

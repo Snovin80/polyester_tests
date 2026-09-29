@@ -1,0 +1,230 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/concepts/architecture
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Architecture · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Concepts
+Architecture
+Copy page
+View as Markdown
+Open in
+The SDK is a thin typed layer over two wire protocols:
+ConnectRPC over HTTP for requests
+Centrifugo over WebSocket for realtime
+Everything else exists to make those two safe to use.
+The layers
+PolyesterEnvironment          frozen endpoint + chain configuration
+|
+PolyesterClient               wires everything, exposes services as lazy getters
+├── Transports              two ConnectRPC transports: publicApi and authApi
+├── RealtimeClient          one shared WebSocket multiplexer
+├── ClientCatalog           reference data: assets, pairs, scales, routes
+└── Services                orders, marketData, balances, ... (every API domain)
+Environment: validated, frozen description of where to connect. See
+Environments
+Transports:
+publicApi
+is unauthenticated.
+authApi
+attaches auth (JWT header or Ed25519
+request signature) through an interceptor. An error-mapping interceptor wraps both, so RPC
+failures surface as typed
+PolyesterError
+s.
+Services: one class per API domain, exposed as getters. Built on first access and memoized, so
+creating a client is cheap. That matters when a server builds one per request.
+RealtimeClient: one shared subscription multiplexer. Channels are refcounted. The WebSocket
+engine (~300 KB) loads on the first subscription via dynamic import.
+Catalog: reference data every service uses for symbol lookups and decimal scale conversions. See
+Catalog & precision
+Validation at both edges
+Every service method validates both ways with strict schemas.
+Inputs are checked before the request is built. Unknown keys, bad enums, and excess decimal
+precision throw
+ValidationError
+or
+CatalogConversionError
+locally. No network round-trip.
+Outputs are parsed into plain TypeScript shapes. Scaled bigints, proto enums, and oneofs do not
+leak through. You get decimal strings and string literal unions. Unknown numeric proto enum
+values on read paths become
+"unspecified"
+, leaving the rest of the response readable. Input
+enums remain strictly validated.
+If it typechecks and does not throw, what you sent is what the API received.
+The decimal-string surface
+On the wire: scaled integers (price ticks, per-asset quantities).
+In the SDK: plain decimal strings in both directions.
+Outputs convert exactly. No rounding. Trailing zeros trimmed.
+Inputs convert strictly. Excess precision errors. Never silent rounding.
+number
+is never used for money.
+Why three clients
+PolyesterClient
+is the whole machine. The two subclasses add an auth strategy and a
+subaccount
+resolver (the hook that defaults service calls to the user's active subaccount):
+Client
+Auth strategy
+Resolver default
+PolyesterClient
+Whatever
+auth
+you pass (
+API key
+/ JWT)
+none (
+main account
+)
+PolyesterBrowserClient
+Managed wallet-signer login + tokens
+active account from auth state
+PolyesterServerClient
+Bearer token from cookies
+main, or display-session active account (opt-in)
+Bundle discipline
+The root export stays lean. Heavy graphs sit behind subpaths so a market-data-only shell never
+bundles them:
+Subpath
+Isolated weight
+viem ABI / typed-data for Safe signature derivation
+permissionless + bundler/paymaster clients
+snapshot builders (types are free from the root)
+cookie/session parsing for servers
+error classes without the rest of the client graph
+Realtime follows the same idea at runtime with dynamic import.
+Extension points
+interceptors
+wireFormat
+"binary"
+(default) or
+"json"
+for readable debugging
+realtime
+catalog
+/
+catalogSnapshot
+/
+catalogCell
+reactivity
+Related Topics
+Environments
+The frozen configuration object that tells the SDK where to connect, and why it is fingerprinted.
+Authentication model
+Smart accounts, wallet login, JWT sessions, Ed25519 API keys, and the MFA assurance layers.
+Catalog & precision
+The reference-data store behind every conversion, and why the SDK speaks exact decimal strings.
+Requests & idempotency
+How every service call is shaped, cancelled, retried, and deduplicated, and where idempotency keys fit.
+Previous
+Error handling
+Next
+Environments
+On this page
+The layers
+Validation at both edges
+The decimal-string surface
+Why three clients
+Bundle discipline
+Extension points
+Related Topics
+Share this page
+Architecture
+How the SDK is put together: clients, transports, services, realtime, and the catalog.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+PolyesterEnvironment          frozen endpoint + chain configuration
+        |
+PolyesterClient               wires everything, exposes services as lazy getters
+  ├── Transports              two ConnectRPC transports: publicApi and authApi
+  ├── RealtimeClient          one shared WebSocket multiplexer
+  ├── ClientCatalog           reference data: assets, pairs, scales, routes
+  └── Services                orders, marketData, balances, ... (every API domain)

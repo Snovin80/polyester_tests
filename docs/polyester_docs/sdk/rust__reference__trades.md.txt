@@ -1,0 +1,41 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# User trades
+List and stream your private spot fills (not the public tape).
+`client.trades` is your authenticated trade history and private fill stream. For the public tape, see [Public trades](https://testnet.polyester.com/docs/sdk/rust/reference/public-trades) (`client.market_data`).
+## Methods
+| Method      | Summary                                         |
+| ----------- | ----------------------------------------------- |
+| `list`      | Private user trades (`subaccount_id`, `limit`). |
+| `subscribe` | Stream private fills (`recv_result()`).         |
+### List
+Rust’s typed helper currently takes optional subaccount and limit only, there is no symbol filter on this convenience method (unlike Python/Go).
+```rust
+let page = client.trades.list(None, Some(50)).await?;
+for t in &page.trades {
+println!(
+"{} {} {:?} {:?} {} {} {}",
+t.match_id, t.order_id, t.price, t.qty, t.fee_amount_e18, t.fee_asset, t.fee_is_rebate
+);
+}
+```
+Each `UserTrade` includes `fee_amount_e18`, `fee_asset`, `referral_share_amount_e18`, and `fee_is_rebate`. Fee magnitudes are fixed 18-decimal (`U128`) strings in units of `fee_asset`. `fee_asset` is `"quote"` or `"base"` (with unknown future enum values preserved as `"UNKNOWN(
+)"`). `fee_is_rebate` is sparse: `true` means `fee_amount_e18` is a rebate credit rather than a fee debit (proto3 omits `false`).
+When `fee_asset` is `"base"` on a BUY, convert `fee_amount_e18` to the symbol's base quantity scale before adjusting fill quantity: subtract for a fee, add for a rebate. Do not assume a BUY's gross fill quantity is fully available to sell.
+### Subscribe
+Private channel `private:spot:trades:{account_id}:proto`. Needs API key + Account ID. Realtime is always compiled; the `realtime` Cargo feature is an empty compatibility flag.
+```rust
+let account = client.default_account_id.as_deref();
+let mut sub = client.trades.subscribe(account).await?;
+while let Some(trade) = sub.recv_result().await? {
+println!("{} {} {:?}", trade.match_id, trade.order_id, trade.price);
+break;
+}
+```
+## Related
+- [Orders](https://testnet.polyester.com/docs/sdk/rust/reference/orders)
+- [Public trades](https://testnet.polyester.com/docs/sdk/rust/reference/public-trades)
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/rust/guides/accounts-and-balances)

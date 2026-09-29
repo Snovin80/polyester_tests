@@ -1,0 +1,129 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/trading.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Trading
+Place, modify, cancel, and batch spot orders; use triggers and risk attachments.
+Everything here needs an API-key authenticated `AsyncPolyester` client and a policy that allows trading. Orders spend **trading** balance (not funding). See [Authentication](https://testnet.polyester.com/docs/sdk/python/guides/authentication).
+```python
+await client.wait_for_catalogs()
+```
+## Place an order
+```python
+result = await client.orders.create(
+symbol="BTC-USDT",
+side="buy",
+order_type="limit",
+tif="gtc",
+price="64250.5",
+qty="0.25",
+post_only=True,  # limit GTC only
+client_order_id="mm-bot-001",
+)
+# Create synthesizes status="accepted" (admission ack). Lifecycle states
+# (working / partial / …) come from list_open / get / subscribe, not create.
+print(result.status, result.order_id)
+```
+| Field                        | Purpose                                                    |
+| ---------------------------- | ---------------------------------------------------------- |
+| `client_order_id`            | Duplicate guard / correlation (1 to 36 allowed characters) |
+| `post_only`                  | Reject if the order would take liquidity (limit GTC only)  |
+| `tif`                        | `gtc`, `ioc`, `fok`                                        |
+| `attached_risk`              | TP / SL / trailing dict on create                          |
+| `account` / `sub_account_id` | Scope override                                             |
+Prefer decimal strings or `Price` / `Quantity`. Do not pass floats.
+### Size and preview deliberately
+Create with exactly one sizing mode: base `qty`, or `max_quote_debit`, a hard all-in quote budget for BUY market and limit IOC orders. Set `fee_asset` to `"quote"` (default) or `"base"` (BUY-only); this replaces `fee_source` / `"received"`. Create responses can include resolved base quantity and submitted maximum quote debit. Use `await client.orders.preview_order(...)` with the same create arguments for an admissibility check: whether the intent is currently admissible, any typed rejection, resolved base size, and a protected price bound when price protection applied. Preview does not return fee or quote-debit estimates. Create always re-evaluates the intent.
+## Modify / cancel
+```python
+await client.orders.modify(
+symbol="BTC-USDT",
+order_id=result.order_id,
+new_price="64100",
+new_qty="0.2",
+request_id="mod-1",
+)
+await client.orders.cancel(client_order_id="mm-bot-001")
+preview = await client.orders.cancel_all(symbol="BTC-USDT", dry_run=True)
+await client.orders.cancel_all(symbol="BTC-USDT", side="buy", request_id="ca-1")
+```
+Cancellation is an admission acknowledgement. Confirm the order has disappeared from `list_open` before releasing local state and retry the same cancel if reconciliation still shows it.
+Client order IDs accept 1 to 36 ASCII letters, digits, `.`, `_`, `:`, `/`, and `-`. Request IDs use the same character set and accept 1 to 64 characters.
+Modify and replace operations require enough available balance for the replacement order. Leave headroom when most of the trading balance is reserved, and reconcile the original order after an ambiguous response before deciding whether to retry or cancel and recreate it.
+## Batch & dead-man
+```python
+# allow_partial is retained for compatibility but ignored on the wire.
+# Always inspect each accepted/rejected item.
+batch = await client.orders.batch_create(
+items=[
+"symbol": "BTC-USDT",
+"side": "buy",
+"order_type": "limit",
+"tif": "gtc",
+"qty": "0.01",
+"price": "60000",
+"post_only": True,
+"client_order_id": "mm-batch-001",
+}
+],
+request_id="batch-create-001",
+)
+print(batch.accepted_count, batch.rejected_count)
+await client.orders.cancel_all_after(timeout_sec=15, symbol="BTC-USDT")
+```
+**Batch size contracts:** `batch_create` max **20**; `batch_replace` / `batch_cancel` max **50**. Use `batch_replace` for same-symbol quote refresh and poll `get_batch_replace_status` with the admission `batch_request_id` (retry briefly on 404 / not-found). Admission makes predecessor order and client IDs stale: immediately use each `replacement_order_id` and new client order ID from the receipt. A predecessor `get` returning `not_found` / `ORDER_UNKNOWN` is expected. Poll phases `admitted`, `working`, `rejected`, and `terminal`. For quote-refresh bots, `is_batch_replace_settled(status)` treats `working`, `rejected`, and `terminal` as reconciled, not execution-final; `working` means the successor is live. Reuse the same `request_id` for an ambiguous retry and never replace against a stale predecessor. The API validates these limits; the SDK does not preflight the counts. A batch timeout is not proof of no commit; reconcile before retry. After fills, prefer `wait_for_order_trades_complete` because `cum_qty` can lead trade projection.
+For long-running automated trading, treat `cancel_all_after` as a continuously renewed dead-man switch:
+- Arm it only after startup reconciliation has confirmed open orders.
+- Refresh well before `effective_timeout_sec` (for example every 5 seconds on a 15-second timer).
+- Give each deliberate refresh a new `request_id`, but reuse that ID when retrying the same ambiguous refresh.
+- Verify `status`, `effective_timeout_sec`, and `expires_at_ts_ns` on every response.
+- Stop quoting and reconcile if a refresh fails or its deadline becomes uncertain.
+The timer is a last-resort venue control, not a replacement for explicit shutdown cancellation.
+## Read + stream
+```python
+open_orders = await client.orders.list_open()
+details = await client.orders.get(order_id=result.order_id)
+sub = await client.orders.subscribe(account_id=account_id)
+async with sub:
+async for order in sub:
+print(order.status)
+break
+```
+## User fills
+```python
+fills = await client.trades.list(symbol="BTC-USDT")
+trade_sub = await client.trades.subscribe(account_id=account_id)
+```
+## Standalone triggers
+```python
+created = await client.triggers.create(
+symbol="BTC-USDT",
+trigger_type="stop_loss",
+side="sell",
+order_type="market",
+tif="ioc",
+qty="0.1",
+trigger_price="60000",
+# trigger_price_source is accepted for compat but ignored (not on wire).
+client_trigger_id="sl-1",
+)
+# Create returns status="accepted" (admission). List/filter still use lifecycle
+# labels such as created / armed / running.
+await client.triggers.modify(trigger_id=created.trigger_id, trigger_price="59500")
+await client.triggers.pause(trigger_id=created.trigger_id)
+await client.triggers.resume(trigger_id=created.trigger_id)
+events = await client.triggers.list_events(trigger_id=created.trigger_id)
+await client.triggers.cancel(trigger_id=created.trigger_id)
+```
+Status filters: `created`, `armed`, `running`, `completed`, `cancelled`, `failed`, `paused`. Unknown values raise.
+## Retry safely
+- `orders.create`: reuse the same `client_order_id`
+- `orders.modify` / `cancel_all` / batch: pass a stable `request_id`
+- `triggers.create`: reuse `client_trigger_id`
+- Retry only transport / rate-limit failures, see [Error handling](https://testnet.polyester.com/docs/sdk/python/guides/error-handling)
+> **Examples**
+>
+> Runnable samples: [polyester-examples-python](https://github.com/Fabric-Labs/polyester-examples-python).
+## Related
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders)
+- [Triggers](https://testnet.polyester.com/docs/sdk/python/reference/triggers)

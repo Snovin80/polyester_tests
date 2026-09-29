@@ -1,0 +1,162 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Architecture · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Concepts
+Architecture
+Copy page
+View as Markdown
+Open in
+The SDK is a thin typed layer over two wire protocols:
+ConnectRPC over HTTP
+for unary requests (binary Protobuf by default)
+Centrifugo over WebSocket
+for realtime (binary Protobuf client protocol and payloads)
+Config / credentials          API URL, WS URL, Ed25519 key material, Account ID
+|
+`polyester.Client`           wires transports, catalogs, and service accessors
+├── Connect transport       public + authenticated unary calls
+├── Realtime client         shared WebSocket multiplexer
+├── Catalogs                spot + Zipper reference data / scales
+├── Services                orders, market_data, balances, ...
+└── chain                   on-chain Funding helpers (not ConnectRPC)
+Go is
+synchronous
+context.Context
+on every call. Cancel the context to stop waits and stream receives.
+Aliases:
+client.Candles
+→
+MarketData
+,
+client.TradingWithdraws
+→
+Withdraw
+Services are accessed as attributes/fields on the client (
+client.Orders
+,
+client.MarketData
+, …). Catalog hydration usually starts on client create;
+wait before decimal writes that depend on scales.
+Related:
+Environments
+,
+Client configuration
+,
+Realtime
+Related Topics
+Environments
+Testnet endpoints and how to point the client at another deployment.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Quickstart
+Next
+Environments
+On this page
+Related Topics
+Share this page
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+Config / credentials          API URL, WS URL, Ed25519 key material, Account ID
+        |
+`polyester.Client`           wires transports, catalogs, and service accessors
+  ├── Connect transport       public + authenticated unary calls
+  ├── Realtime client         shared WebSocket multiplexer
+  ├── Catalogs                spot + Zipper reference data / scales
+  ├── Services                orders, market_data, balances, ...
+  └── chain                   on-chain Funding helpers (not ConnectRPC)

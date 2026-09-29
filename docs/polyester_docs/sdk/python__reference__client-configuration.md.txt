@@ -1,0 +1,60 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/client-configuration.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Configure `AsyncPolyester` / `Polyester` with an environment, API/WS URL overrides, credentials, default account/subaccount, catalog hydration, timeouts, and wire format (binary Protobuf default).
+## Recommended constructor
+```python
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+async with AsyncPolyester(
+environment=POLYESTER_TESTNET_ENVIRONMENT,
+api_key_id="ak_...",
+api_private_key="...",  # 64-char hex from key creation
+default_account_id="...",  # Profile → Account ID
+# api_url=None,  # overrides environment.api_url
+# ws_url=None,  # overrides environment.websocket_url
+# default_sub_account_id=None,
+# timeout=10.0,
+# wire_format="binary",  # or "json"
+# hydrate_catalogs=True,
+) as client:
+await client.wait_for_catalogs()
+```
+Python ships **async** (`AsyncPolyester`) and **sync** (`Polyester`) clients with the same service tree. Prefer async for bots with streams. Unary ConnectRPC responses are limited to 4 MiB after decompression.
+## Options
+| Option                           | Default                              | Notes                                      |
+| -------------------------------- | ------------------------------------ | ------------------------------------------ |
+| `environment`                    | pass `POLYESTER_TESTNET_ENVIRONMENT` | Network preset: API, WS, RPC, chain ID     |
+| `api_key_id` / `api_private_key` | unset                                | Required for private RPCs / private WS     |
+| `api_url`                        | `environment.api_url`                | ConnectRPC base                            |
+| `ws_url`                         | `environment.websocket_url`          | Centrifugo WebSocket                       |
+| `default_account_id`             | unset                                | Private channel scoping                    |
+| `default_sub_account_id`         | unset                                | Default trading scope                      |
+| `timeout`                        | `10.0`                               | HTTP timeout seconds                       |
+| `wire_format`                    | `"binary"`                           | `"binary"` or `"json"`                     |
+| `hydrate_catalogs`               | `True`                               | Background spot + Zipper hydration attempt |
+## Aliases
+| Alias                      | Points to            |
+| -------------------------- | -------------------- |
+| `client.candles`           | `client.market_data` |
+| `client.trading_withdraws` | `client.withdraw`    |
+## From environment
+`AsyncPolyester.from_env()` / `Polyester.from_env()` load:
+- `POLYESTER_ENV` (set to `testnet`)
+- `POLYESTER_API_KEY_ID`
+- `POLYESTER_API_PRIVATE_KEY`
+- `POLYESTER_ACCOUNT_ID`
+- `POLYESTER_API_URL` / `POLYESTER_WS_URL` (optional `api_url` / `ws_url` overrides)
+Keyword arguments passed to `from_env(**overrides)` take precedence over the process environment. Prefer explicit credentials in production.
+> **Catalog readiness**
+>
+> With `hydrate_catalogs=True`, call `await client.wait_for_catalogs()` before decimal order writes that need symbol scales. The wait fails if either required catalog cannot be hydrated or validated.
+> **Retries are application-controlled**
+>
+> The SDK does not automatically retry unary calls. Retry only transport and rate-limit failures with backoff and stable idempotency keys. Reconcile mutation outcomes before retrying.
+## Related
+- [Authentication](https://testnet.polyester.com/docs/sdk/python/guides/authentication)
+- [Catalog](https://testnet.polyester.com/docs/sdk/python/reference/catalog)
+- [Realtime](https://testnet.polyester.com/docs/sdk/python/reference/realtime)

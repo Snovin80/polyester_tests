@@ -1,0 +1,200 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+SDK capability matrix · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Start Here
+svg]:size-3.5">
+/
+SDK capability matrix
+SDK capability matrix
+Copy page
+View as Markdown
+Open in
+Official Polyester SDKs share the same ConnectRPC + WebSocket Protobuf product surface for
+API-key trading bots and backend integrations. Use this matrix to compare languages before you
+pick an SDK.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+How to read this table
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground mt-0.5">
+means the
+capability is available on the public client for that language.
+means it is
+intentionally out of scope for that SDK (not an unfinished stub).
+Capability coverage
+Capability
+TypeScript
+Python
+Go
+Rust
+Public market data (spot config, trades, candles)
+Order book snapshot + realtime
+Market overview (list + subscribe)
+Order book heatmap
+API-key (Ed25519 HMAC) auth
+Wallet / browser login
+Session
+MFA
+enrollment and challenges
+Profile
+API keys
+Subaccounts
+(members, invites, activity)
+Address book
+Policies
+Guard signer
+Balances, holds, equity history
+Orders (create, cancel, modify, batch, cancel-all)
+User trades
+Triggers
+Internal transfers
+Transfer history
+Deposit addresses
+Trading / funding withdraws
+Zipper
+deposit-withdraw config
+Chain analytics
+Lifecycle flows
+Polychart / layout / whiteboard
+Realtime account and market streams
+Reference catalogs + wait-for-ready
+Qty / price decimal + scaled-int inputs
+Social verification
+Account resolve / lookup
+Language notes
+TypeScript
+also supports browser wallet login and MFA. Use it for full-stack and browser
+apps; Python, Go, and Rust are API-key SDKs.
+Python
+offers async and sync clients. Install the
+extra for WebSocket streams.
+Go
+is synchronous. Client aliases such as
+Candles
+,
+Accounts
+, and
+TradingWithdraws
+match the Python naming style.
+Rust
+is async (Tokio). Realtime is behind the default-on
+realtime
+feature. Prefer
+market_data
+,
+resolve
+, and
+withdraw
+(no
+Candles
+/
+Accounts
+/
+TradingWithdraws
+aliases).
+Intentionally out of scope (API-key SDKs)
+Python, Go, and Rust do
+not
+wrap:
+MFA enrollment and challenge APIs
+Wallet login (
+GetNonce
+,
+LoginWithWallet
+)
+Those flows belong in browser / session clients. Subaccount MFA
+requirements
+(policy flags) are
+still available on the API-key SDKs.
+Repositories and docs
+SDK
+Docs
+Repository
+TypeScript
+Overview
+polyester-sdk-typescript
+Python
+Overview
+polyester-sdk-python
+Go
+Overview
+polyester-sdk-go
+Rust
+Overview
+polyester-sdk-rust
+Also see the
+connectivity matrix
+for
+transport choice (REST, ConnectRPC, WebSocket, SBE, FIX).
+Related Topics
+Developer documentation
+Start integrating with Polyester APIs, SDKs, realtime streams, and trading interfaces.
+Connectivity matrix
+Compare Polyester interfaces by workload, traffic pattern, encoding, and client path.
+Previous
+Connectivity matrix
+Next
+Public IDs
+On this page
+Capability coverage
+Language notes
+Intentionally out of scope (API-key SDKs)
+Repositories and docs
+Related Topics
+Share this page
+SDK capability matrix
+Compare official Polyester SDK capability coverage across TypeScript, Python, Go, and Rust.
+Share
+Copy Link

@@ -1,0 +1,159 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/tutorials/trading-bot.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Build a production trading bot
+Build a resilient Go quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+This tutorial builds the operational skeleton of an automated trading system: hydrate exact market constraints, consume a sequence-checked book, place uniquely identified post-only quotes, reconcile ambiguous outcomes, arm a dead-man switch, and remove only this process's orders during shutdown.
+> **Dedicated testnet account only**
+>
+> Use a dedicated testnet API key and trading account. Start in observation-only mode. Do not enable order writes until the symbol, balance, policy limits, and cleanup behavior are verified. The strategy below is intentionally naive and is not financial advice.
+## Production invariants
+| Invariant                            | SDK mechanism                                | Failure action                      |
+| ------------------------------------ | -------------------------------------------- | ----------------------------------- |
+| Never invent precision               | `WaitForCatalogs`, decimal price/qty helpers | Stop quoting until catalogs recover |
+| Never quote from a gapped book       | `Orderbook.CreateSubscription`               | Wait for its snapshot refresh       |
+| Never duplicate a logical quote      | Stable `ClientOrderID` per quote attempt     | Reconcile before retrying           |
+| Never treat admission as final state | `ListOpen`, `Get`, private order stream      | Keep local state pending            |
+| Never leave unknown live risk        | `CancelAllAfter` plus targeted cancel        | Reconcile all bot-prefixed orders   |
+| Never retry validation unchanged     | `*errors.ValidationError`                    | Correct configuration or input      |
+1. Create a client and hydrate catalogs
+```go
+accountID := os.Getenv("POLYESTER_ACCOUNT_ID")
+client, err := polyester.New(polyester.Config{
+Environment:      &polyester.TestnetEnvironment,
+APIKeyID:         os.Getenv("POLYESTER_API_KEY_ID"),
+APIPrivateKey:    os.Getenv("POLYESTER_API_PRIVATE_KEY"),
+DefaultAccountID: &accountID,
+HydrateCatalogs:  true,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+ctx := context.Background()
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+```
+Catalog readiness is a hard startup gate. Decimal order helpers must use the backend's actual price and quantity scales; a trading system should never fall back to an assumed scale. For a subaccount-scoped key, attach an API-key policy that permits ledger reads and the trading mutations this bot uses. The key policy is separate from, and intersects with, subaccount policy.
+2. Start a managed order book
+```go
+sub, err := client.Orderbook.CreateSubscription(ctx, services.CreateSubscriptionOptions{
+Symbol: "BTC-USDT",
+Depth:  20,
+OnSequenceGap: func() {
+log.Print("book gap; waiting for snapshot refresh")
+},
+OnSnapshotRefresh: func() {
+log.Print("book snapshot refreshed")
+},
+})
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+book := <-sub.Updates()
+if len(book.Bids) == 0 || len(book.Asks) == 0 {
+log.Print("book is not quoteable")
+} else {
+fmt.Println(book.Bids[0].Price, book.Asks[0].Price, book.BookSeq)
+}
+```
+Use the managed subscription instead of applying raw deltas yourself. It fetches an initial snapshot, detects sequence gaps, and refetches after reconnects. Pause quoting whenever the book is empty, crossed, stale, or awaiting refresh.
+3. Size from trading balance and policy limits
+```go
+balances, err := client.Balances.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, balance := range balances.Balances {
+available, err := codecs.FormatLedgerU128(balance.Available, codecs.LedgerScale)
+if err != nil { return err }
+fmt.Println(balance.AssetID, "available", available)
+}
+```
+Balance components are raw ledger `u128` strings at ledger scale 18. Format them once for display; keep the raw values for sizing and accounting.
+Orders reserve **trading** balance, not funding balance. Cap each quote by all of:
+- available trading balance after existing holds,
+- API-key policy maximum order size,
+- strategy inventory and notional limits,
+- pair minimum quantity/notional and step size.
+Use the tested sizing helpers in [`polyester-examples-go`](https://github.com/Fabric-Labs/polyester-examples-go) rather than binary floating-point arithmetic.
+4. Place one uniquely identified post-only quote
+```go
+symbol := "BTC-USDT"
+side := "buy"
+tif := "gtc"
+clientOrderID := fmt.Sprintf("trader-%s-%d", side, time.Now().UnixNano())
+price := models.PriceFromDecimal("50000")
+created, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+Symbol:        &symbol,
+Side:          side,
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.001"),
+Price:         &price,
+PostOnly:      true,
+ClientOrderID: &clientOrderID,
+}, nil)
+if err != nil { log.Fatal(err) }
+fmt.Println(created.Status, created.OrderID)
+```
+Keep the same ID if you retry the **same logical quote** after an ambiguous transport failure. Generate a new ID only for a new quote decision. A post-only rejection means the price would cross; recompute from a fresh book instead of retrying unchanged.
+5. Arm and refresh the dead-man switch
+```go
+symbol := "BTC-USDT"
+requestID := fmt.Sprintf("dms-%d", time.Now().UnixNano())
+armed, err := client.Orders.CancelAllAfter(ctx, nil, 30, nil, &symbol, nil, &requestID)
+if err != nil { log.Fatal(err) }
+if armed.Status != "armed" { log.Fatalf("unexpected dead-man status %q", armed.Status) }
+```
+Refresh the switch on a cadence comfortably below its timeout. If refresh fails, stop creating orders and assume the backend will cancel them at expiry. Disable it only after targeted shutdown cleanup is confirmed.
+6. Refresh quotes through successor identities
+`BatchReplace` records admission, not a final execution outcome. On a successful receipt, predecessor order and client IDs are stale. Persist the new client order ID and switch immediately to each `ReplacementOrderID`; a predecessor lookup may return `not_found` / `ORDER_UNKNOWN`, which is expected. Poll `GetBatchReplaceStatus` through `admitted`, `working`, `rejected`, and `terminal`. A 404 immediately after admission is transient, so retry the poll.
+For a quote-refresh loop, use `models.IsBatchReplaceSettled(status)` or `models.BatchReplaceStatusSettled(status)` only to decide that every item is `working`, `rejected`, or `terminal`. `working` means the successor is live, not that execution is final. Persist and reuse the same `requestID` after an ambiguous retry. Do not send another replacement against a stale predecessor.
+7. Reconcile instead of guessing
+```go
+open, err := client.Orders.ListOpen(ctx, nil, nil, nil, nil, true, false)
+if err != nil { log.Fatal(err) }
+for _, order := range open.Orders {
+if !strings.HasPrefix(order.ClientOrderID, "trader-") {
+continue
+}
+id := order.ClientOrderID
+symbol := "BTC-USDT"
+if _, err := client.Orders.Cancel(ctx, nil, nil, &id, &symbol, nil, nil); err != nil {
+var apiErr *sdkerrors.APIError
+if !errors.As(err, &apiErr) ||
+!strings.EqualFold(strings.TrimSpace(apiErr.Code), "not_found") {
+return err
+}
+}
+}
+```
+After a timeout, reconnect, or process restart, compare bot-prefixed open orders with persisted quote intent, cancel stale quotes, and place only missing quotes. Do not use account-wide `CancelAll` as bot-ownership cleanup. A targeted cleanup cancel returning `not_found` is idempotent success: the owned order may have filled or left the book after the snapshot. Every other cancel error remains an error. Do not assume a timeout means the create was unapplied.
+8. Shut down with targeted cleanup
+Install `signal.NotifyContext` for `SIGINT` and `SIGTERM`. Stop the quote producer first, close subscriptions, run the same bot-prefix reconciliation shown above with a bounded cleanup context, then close the client. If cleanup cannot be confirmed, leave the dead-man switch armed and alert an operator.
+## Trading API map
+| Method                                                          | Important inputs                               | Result / stream                      | Operational use                                   |
+| --------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------ | ------------------------------------------------- |
+| `WaitForCatalogs`                                               | context                                        | readiness or error                   | Startup gate for scales and symbol IDs            |
+| `Balances.List`                                                 | context, account scope, subaccount             | `models.BalancesList`                | Available trading collateral and revisions        |
+| `Orderbook.Get`                                                 | context, symbol, depth                         | `models.OrderbookData`               | One-shot health check or reconciliation snapshot  |
+| `Orderbook.CreateSubscription`                                  | context, symbol, depth, bucket, callbacks      | managed `orderbook.Subscription`     | Sequence-checked best bid/ask and depth           |
+| `Orders.Create`                                                 | context, `CreateOrderRequest`, account scope   | admission `OrderMutationResult`      | Place one uniquely identified quote               |
+| `Orders.Modify`                                                 | existing ID, new price/qty, stable request ID  | `ModifyOrderResult`                  | Amend or replace with reserve headroom            |
+| `Orders.Cancel`                                                 | exactly one order ID, optional routing symbol  | admission `OrderMutationResult`      | Targeted cleanup                                  |
+| `Orders.ListOpen`                                               | account scope, pagination, include flags       | `OrdersList`                         | Restart and timeout reconciliation                |
+| `Orders.Get`                                                    | order ID or client order ID                    | order plus related trades            | Resolve one ambiguous lifecycle                   |
+| `Orders.Subscribe`                                              | context, account ID                            | private order subscription           | Working, partial, terminal transitions            |
+| `Orders.CancelAllAfter`                                         | timeout, optional symbol/side, request ID      | armed/disabled result                | Dead-man switch                                   |
+| `Orders.BatchCreate`                                            | up to 20 uniquely identified items, request ID | per-item outcomes and counts         | Submit a quote ladder; reconcile partial outcomes |
+| `Orders.BatchReplace` / `GetBatchReplaceStatus` / `BatchCancel` | up to 50 items, request ID                     | admission receipt + status phases    | Efficient ladder maintenance                      |
+| `Orders.WaitForOrderTradesComplete`                             | order identity, overall timeout                | order plus complete trade projection | Fee-correct post-fill accounting                  |
+Use the linked reference pages for exact positional arguments and return shapes. Treat every mutation timeout as an unknown outcome until reads or the private stream resolve it.
+## Tested runnable sources
+- Example `03`: targeted place and cancel.
+- Example `07`: batch create and reconciliation.
+- Example `10`: dry-run-first RSI bot with capped sizing.
+- The Go canary: long-running managed book, private order stream, create/cancel cycles, and bot-prefix cleanup.
+These live in [`polyester-examples-go`](https://github.com/Fabric-Labs/polyester-examples-go) and [`polyester-sdk-canaries`](https://github.com/Fabric-Labs/polyester-sdk-canaries). The documentation snippets compile against `polyester-sdk-go` `v0.1.0a25`; the literal quickstart and safe live market paths were also executed for this release.
+## Related
+- [Trading](https://testnet.polyester.com/docs/sdk/go/guides/trading)
+- [Orders](https://testnet.polyester.com/docs/sdk/go/reference/orders)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency)
+- [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming)
+- [Error handling](https://testnet.polyester.com/docs/sdk/go/guides/error-handling)

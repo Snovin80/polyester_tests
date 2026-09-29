@@ -1,0 +1,196 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/vip.v1.VIPService/ListVIPTiers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+vip.v1.VIPService
+ListVIPTiers
+List the complete active VIP0 through VIP10 tier catalog in ascending tier
+order.
+Copy URL
+Method
+POST
+Path
+vip.v1.VIPService/ListVIPTiers
+Service
+vip.v1.VIPService
+Visibility
+Public endpoint
+POST
+vip.v1.VIPService/ListVIPTiers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/vip.v1.VIPService/ListVIPTiers' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"retentionThresholdBp": 1,
+"tiers": [
+"aopThresholdUsd": "50000",
+"makerFeeRatePercent": "0.09",
+"takerFeeRatePercent": "0.03",
+"tier": 10,
+"volumeThresholdUsd": "12.3456"
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+vip.v1.ListVIPTiersRequest
+Response
+vip.v1.ListVIPTiersResponse
+Response
+Form
+JSON
+policyVersion
+string (uint64)
+> 0
+Positive identifier of the returned VIP policy version.
+effectiveFrom
+string (date-time)
+UTC time at which this policy version became effective.
+retentionThresholdBp
+integer (int32)
+> 0, ≤ 10000
+Average portfolio value retention threshold in basis points. One basis
+point is 0.01%; valid values are 1 through 10000.
+tiers
+object[]
+11-11 items
+Complete VIP0 through VIP10 catalog ordered by tier ascending. This is a
+naturally bounded 11-row snapshot and is not paginated.
+5 fields
+tier
+integer (int32)
+≤ 10
+Numeric VIP tier in the inclusive range 0 through 10.
+volumeThresholdUsd
+string
+1-40 chars
+/^(0|[1…18})?$/
+Rolling 30-day settled spot volume entry threshold in USD, encoded as a
+non-negative base-10 decimal string without separators or a currency
+symbol.
+aopThresholdUsd
+string
+1-40 chars
+/^(0[.]…8})?)$/
+Rolling 30-day average portfolio value entry threshold in USD, encoded as
+a positive base-10 decimal string without separators or a currency symbol.
+Omitted for VIP0, which has no average portfolio value entry threshold.
+makerFeeRatePercent
+string
+1-14 chars
+/^-?(10…]+)?)$/
+Absolute maker fee rate before symbol-specific adjustments, encoded as a
+base-10 percentage string without a percent sign. Values are between
+-100 and 100 inclusive.
+takerFeeRatePercent
+string
+1-13 chars
+/^(100(…]+)?)$/
+Absolute taker fee rate before symbol-specific adjustments, encoded as a
+non-negative base-10 percentage string without a percent sign. Values are
+between 0 and 100 inclusive.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+vip.v1.VIPService/ListVIPTiers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s375" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/vip.v1.VIPService/ListVIPTiers' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{}'
+Responses
+"effectiveFrom": "2025-01-01T00:00:00Z",
+"policyVersion": "1",
+"retentionThresholdBp": 1,
+"tiers": [
+"aopThresholdUsd": "50000",
+"makerFeeRatePercent": "0.09",
+"takerFeeRatePercent": "0.03",
+"tier": 10,
+"volumeThresholdUsd": "12.3456"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/vip.v1.VIPService/ListVIPTiers' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{}'
+
+---
+
+{
+  "effectiveFrom": "2025-01-01T00:00:00Z",
+  "policyVersion": "1",
+  "retentionThresholdBp": 1,
+  "tiers": [
+    {
+      "aopThresholdUsd": "50000",
+      "makerFeeRatePercent": "0.09",
+      "takerFeeRatePercent": "0.03",
+      "tier": 10,
+      "volumeThresholdUsd": "12.3456"
+    }
+  ]
+}

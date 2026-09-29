@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/ledger/account-statements.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Account Statements
+Create a report of your balances, trades, fees, and account activity for a selected period.
+**[Account Statements](https://testnet.polyester.com/account/statements)** turn your account activity into a downloadable report for a selected period. Use them for recordkeeping, accounting, or reviewing how your balances changed.
+Statements are created separately for each Main Account or Subaccount, so the report matches the account you selected.
+## Create a statement
+1. Choose the account
+Select the Main Account or Subaccount you want included.
+2. Choose the reporting period
+Set the start date, end date, and timezone for the report.
+3. Choose the format
+Select the available PDF or data export based on how you plan to use the statement.
+4. Generate and download
+Generate the statement, then save the finished file to a protected location.
+## What a statement includes
+Your statement identifies the account, reporting period, timezone, and generation time. It can include:
+- opening and closing balances
+- deposits, withdrawals, and internal transfers
+- orders, fills, fees, and rebates
+- the asset and quantity for each entry
+- ledger, flow, order, fill, or transaction references.
+The exact sections depend on the activity in the selected account and period.
+## Match a statement to your account
+Use the opening and closing balances to understand the period as a whole. For more detail, match statement rows to your [Ledger](https://testnet.polyester.com/account/ledger), orders, trades, or transaction history using their IDs and timestamps.
+> **A statement covers a fixed period**
+>
+> A downloaded statement does not update after it is generated. Use your current Dashboard and account pages for live balances and active orders.
+## Protect downloaded statements
+Statements can contain account IDs, smart account addresses, balances, trading history, and transfer details.
+- Store them in an encrypted or access-controlled location.
+- Share only the account, period, and fields the recipient needs.
+- Check the recipient and delivery method before sending a file.
+- Remove unrelated personal information before sharing when appropriate.
+Never add private keys, MFA codes, recovery codes, or API private keys to an exported report.

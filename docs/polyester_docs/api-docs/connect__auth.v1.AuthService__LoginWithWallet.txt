@@ -1,0 +1,237 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/auth.v1.AuthService/LoginWithWallet
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+auth.v1.AuthService
+LoginWithWallet
+Verify a signed EIP-4361 message and issue an access token. Login and account creation
+do not accept terms; explicit consent is recorded only by AcceptTerms.
+Copy URL
+Method
+POST
+Path
+auth.v1.AuthService/LoginWithWallet
+Service
+auth.v1.AuthService
+Visibility
+Public endpoint
+POST
+auth.v1.AuthService/LoginWithWallet
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s324" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AuthService/LoginWithWallet' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"ip": "203.0.113.42",
+"message": "devnet.polyester.com wants you to sign in with your Ethereum account:\n0x5555555555555555555555555555555555555555\n\nSign in to Polyester. This does not authorize a transaction.\n\nURI: https://devnet.polyester.com\nVersion: 1\nChain ID: 1\nNonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nIssued At: 2026-01-01T00:00:00Z\nExpiration Time: 2026-01-01T00:05:00Z\nRequest ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nResources:\n- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222",
+"signature": "0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36",
+"walletProvider": "metamask"
+}'
+Responses
+"accessToken": "eyJhbGciOiJFZERTQSJ9.example.signature",
+"accountId": "7563897446546",
+"expiresAt": "2025-01-01T00:00:00Z",
+"session": {
+"authTime": "2025-01-01T00:00:00Z",
+"authenticationMethods": [
+"totp"
+],
+"sessionId": "session_01J0EXAMPLE",
+"sessionLevel": "PRIMARY_AUTHENTICATED"
+},
+"username": "trader_alpha"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+auth.v1.LoginWithWalletRequest
+Response
+auth.v1.LoginWithWalletResponse
+Request body
+Form
+JSON
+Example
+smartAccountAddress
+string
+/^0x[0-…]{40}$/
+Smart-account EVM address bound into the challenge resource, formatted as
+0x plus 40 hex characters.
+signature
+string
+1-8192 chars
+EOA signature over message using EIP-191 personal_sign semantics. A valid
+value is 65 bytes of hexadecimal with an optional 0x prefix. Requests are
+limited to 8192 characters.
+userAgent
+string
+max 512 chars
+Optional user-agent string for account security and audit displays. Maximum
+length is 512 characters.
+ip
+string
+max 64 chars
+Optional caller IP address for account security and audit displays. Maximum
+length is 64 characters.
+walletProvider
+string
+max 32 chars
+Optional provider hint for the signing wallet. Maximum length is 32 characters.
+message
+string
+min 1 chars
+Exact EIP-4361 message returned by CreateWalletChallenge. Maximum length is
+4096 UTF-8 bytes.
+Response
+Form
+JSON
+accessToken
+string
+Bearer access token for authenticated API calls.
+expiresAt
+string (date-time)
+Time in UTC when access_token expires.
+accountId
+string (fixed64)
+Root account the token is bound to (opaque ID).
+username
+string
+Optional current username for the root account (empty if not set).
+session
+object
+Session assurance details for the issued access token.
+4 fields
+sessionId
+string
+max 64 chars
+Stable session identifier shared by the primary and MFA-elevated tokens.
+sessionLevel
+enum
+must be defined value
+Assurance level represented by this session response.
+PRIMARY_AUTHENTICATED
+MFA_ELEVATED
+FRESH_STEP_UP
+authenticationMethods
+string[]
+max 8 items, unique
+Authentication methods used for this session state, such as wallet, TOTP, passkey, or recovery code. Maximum 8 unique values.
+authTime
+string (date-time)
+Time when the session was authenticated or elevated.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+auth.v1.AuthService/LoginWithWallet
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s386" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/auth.v1.AuthService/LoginWithWallet' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"ip": "203.0.113.42",
+"message": "devnet.polyester.com wants you to sign in with your Ethereum account:\n0x5555555555555555555555555555555555555555\n\nSign in to Polyester. This does not authorize a transaction.\n\nURI: https://devnet.polyester.com\nVersion: 1\nChain ID: 1\nNonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nIssued At: 2026-01-01T00:00:00Z\nExpiration Time: 2026-01-01T00:05:00Z\nRequest ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nResources:\n- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222",
+"signature": "0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36",
+"walletProvider": "metamask"
+}'
+Responses
+"accessToken": "eyJhbGciOiJFZERTQSJ9.example.signature",
+"accountId": "7563897446546",
+"expiresAt": "2025-01-01T00:00:00Z",
+"session": {
+"authTime": "2025-01-01T00:00:00Z",
+"authenticationMethods": [
+"totp"
+],
+"sessionId": "session_01J0EXAMPLE",
+"sessionLevel": "PRIMARY_AUTHENTICATED"
+},
+"username": "trader_alpha"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/auth.v1.AuthService/LoginWithWallet' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "ip": "203.0.113.42",
+  "message": "devnet.polyester.com wants you to sign in with your Ethereum account:\n0x5555555555555555555555555555555555555555\n\nSign in to Polyester. This does not authorize a transaction.\n\nURI: https://devnet.polyester.com\nVersion: 1\nChain ID: 1\nNonce: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nIssued At: 2026-01-01T00:00:00Z\nExpiration Time: 2026-01-01T00:05:00Z\nRequest ID: 8f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de6058f3a72c91b4de605\nResources:\n- urn:polyester:wallet-challenge:login:eip155:888168:0x2222222222222222222222222222222222222222",
+  "signature": "0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126.0 Safari/537.36",
+  "walletProvider": "metamask"
+}'
+
+---
+
+{
+  "accessToken": "eyJhbGciOiJFZERTQSJ9.example.signature",
+  "accountId": "7563897446546",
+  "expiresAt": "2025-01-01T00:00:00Z",
+  "session": {
+    "authTime": "2025-01-01T00:00:00Z",
+    "authenticationMethods": [
+      "totp"
+    ],
+    "sessionId": "session_01J0EXAMPLE",
+    "sessionLevel": "PRIMARY_AUTHENTICATED"
+  },
+  "username": "trader_alpha"
+}

@@ -1,0 +1,208 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/triggers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+`client.triggers` is the standalone automation surface: create a trigger, and when its condition fires it places a child order for you. Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Triggers come in five types, selected by `triggerType`: `stop_loss`, `take_profit`, `trailing_stop`, `twap`, and `ladder`. Each strategy has an explicit configuration and child execution. Prices and distances are decimal strings, validated against the pair's scale before the request leaves your process. A decimal above the pair's protobuf wire-format ceiling throws `CatalogConversionError` before network I/O. The ceiling is not an exchange limit.
+Unlike the take-profit, stop-loss, and trailing legs you can attach to an order through [`client.orders`](https://testnet.polyester.com/docs/sdk/typescript/reference/orders), a trigger created here has no parent order: it stands on its own and fires against live market data.
+## Methods
+| Method            | Summary                                                               |
+| ----------------- | --------------------------------------------------------------------- |
+| `create`          | Create a trigger of any of the five types.                            |
+| `get`             | Fetch one trigger by id, or `null`.                                   |
+| `list`            | List triggers with symbol ID, status, type, and parent-order filters. |
+| `modify`          | Patch a live trigger's price, distance, or slippage fields.           |
+| `cancel`          | Cancel a trigger by id.                                               |
+| `pause`           | Pause a trigger without discarding its configuration.                 |
+| `resume`          | Resume a paused trigger.                                              |
+| `listEvents`      | Read a trigger's lifecycle events, newest first.                      |
+| `subscribe`       | Stream live trigger state over a private channel.                     |
+| `subscribeEvents` | Stream trigger lifecycle events over a private channel.               |
+### `create(input, options?)`
+Creates a standalone trigger and returns a `CreateTriggerResult`. The input is a `triggerType` variant, so the fields you supply depend on the type. When you omit `clientTriggerId`, the SDK generates one for you and returns it in the result.
+```ts
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+// Stop-loss: submit a market IOC sell when the condition fires
+const result = await client.triggers.create({
+triggerType: "stop_loss",
+symbolId,
+side: "sell",
+qty: "0.25",
+triggerPrice: "60000",
+execution: { type: "market_ioc" },
+});
+console.log(result.triggerId, result.clientTriggerId, result.acceptedAt);
+```
+```ts
+// Trailing stop: follow the price up, sell if it drops 500 back
+await client.triggers.create({
+triggerType: "trailing_stop",
+symbolId,
+qty: "0.25",
+trailingDistance: { kind: "distance", distance: "500" },
+activationPrice: "70000",
+maxSlippage: { kind: "bps", bps: 50 },
+});
+```
+```ts
+interface CreateTriggerResult {
+triggerId: string;
+clientTriggerId: string;
+acceptedAt: number; // epoch ms
+acceptedAtNs: string;
+}
+```
+This result acknowledges admission only. Read or subscribe to the trigger for its runtime status.
+#### Common fields
+| Field                     | Type                                                | Required | Notes                                              |
+| ------------------------- | --------------------------------------------------- | -------- | -------------------------------------------------- |
+| `symbolId`                | `number`                                            | yes      | Stable market ID, integer 1 through 4,294,967,295. |
+| `qty`                     | decimal string                                      | yes      | Total base-asset quantity. Strict precision.       |
+| `feeAsset`                | `"quote" \| "base"`                                 | no       | Defaults to `"quote"`.                             |
+| `selfTradePreventionMode` | `"expire_taker" \| "expire_maker" \| "expire_both"` | no       | Defaults to `"expire_maker"`.                      |
+| `clientTriggerId`         | `string`                                            | no       | Idempotency key. Auto-generated when omitted.      |
+| `account`                 | `AccountScope`                                      | no       | Scope override.                                    |
+#### Per-type fields
+- **`stop_loss` / `take_profit`**: `side`, `triggerPrice`, and `execution`. Sell side accepts `{ type: "market_ioc" }` or any limit execution (`limit_gtc` / `limit_ioc` / `limit_fok`). Buy side is limit-only.
+- **`trailing_stop`**: `trailingDistance` (required, a tagged shape: `{ kind: "distance", distance: "500" }` or `{ kind: "bps", bps: 50 }`), plus optional `activationPrice` (decimal string), `maxSlippage` (`{ kind: "slippage", slippage: "0.25" }`, `{ kind: "bps", bps: 50 }`, or `{ kind: "none" }`). BPS values are integers from 1 through 10,000. It always sells using market IOC.
+- **`twap`**: `side`, `durationMs` (at least 1000ms), `sliceIntervalMs` (at least 100ms and no longer than the duration), and `execution`: `{ type: "market_ioc", maxSlippage? }` or `{ type: "limit_gtc", price }`. For market IOC, `maxSlippage` protects each slice. Omit it to use the pair default, or set an absolute decimal price delta with `{ kind: "slippage", slippage: "0.25" }` or an integer BPS limit from 1 through 10,000 with `{ kind: "bps", bps: 50 }`.
+- **`ladder`**: `side`, `priceMin` (below `priceMax`), `priceMax`, `levels` (2 to 100), and optional `postOnly`. Children are distributed linearly as limit GTC orders.
+> **Pre-validate trigger forms**
+>
+> Trigger values use strict decimal-scale conversion, so a value with too much precision throws a `CatalogConversionError` from `@polyester/sdk/catalogs` before network I/O. The same applies when a value exceeds the corresponding `SpotOrderConstraints` wire ceiling. The catalog validator checks parse, tick, step, and minimum rules, but not the wire ceilings. See the [catalog reference](https://testnet.polyester.com/docs/sdk/typescript/reference/catalog).
+### `get(input, options?)`
+Fetches one trigger by `triggerId`, or `null` when it is not found.
+```ts
+const trigger = await client.triggers.get({ triggerId: result.triggerId });
+if (trigger) {
+console.log(trigger.status, trigger.configuration, trigger.runtimeDetails);
+}
+```
+### `list(input?, options?)`
+Returns `{ triggers, nextPageToken }`, newest first. Filter by `symbolId`, `status` (an array of status labels), `triggerType`, and `parentOrderId`, and page with `limit` (default 50) and `pageToken`.
+```ts
+const { triggers } = await client.triggers.list({
+symbolId,
+status: ["created", "armed", "running"],
+triggerType: "trailing_stop",
+});
+```
+`status` accepts `"created"`, `"armed"`, `"running"`, `"completed"`, `"cancelled"`, `"failed"`, or `"paused"`. A trigger on a symbol the catalog does not know fails the page instead of being dropped from it: refresh the catalog with `client.catalog.refresh()` and read again.
+### `modify(input, options?)`
+Patches a live trigger by `triggerId` and required `symbolId`. Supply at least one of `triggerPrice`, `limitPrice`, `trailingDistance`, `activationPrice`, or `maxSlippage`; supplying none throws. Omit `activationPrice` or `maxSlippage` to preserve it, or pass `{ kind: "none" }` to clear either. Price patches must be positive. `trailingDistance` accepts a decimal distance or BPS from 1 through 10,000; `maxSlippage` accepts a decimal slippage or BPS in that range.
+```ts
+await client.triggers.modify({
+triggerId: trigger.triggerId,
+symbolId,
+triggerPrice: "59500",
+});
+// Widen a trailing stop and cap its slippage
+await client.triggers.modify({
+triggerId: trailing.triggerId,
+symbolId,
+trailingDistance: { kind: "distance", distance: "750" },
+maxSlippage: { kind: "bps", bps: 40 },
+});
+```
+Returns `{ triggerId, status, ts, tsNs }`, where `ts` is epoch milliseconds and `tsNs` is the exact epoch-nanosecond decimal string.
+### `cancel(input, options?)`
+Cancels a trigger by `triggerId` and returns a `CancelTriggerResult` (`{ triggerId, status, ts, tsNs }`).
+```ts
+await client.triggers.cancel({ triggerId: trigger.triggerId });
+```
+### `pause(input, options?)` / `resume(input, options?)`
+Pause preserves the trigger's immutable configuration. `resume` also requires `symbolId`. Both methods return `{ triggerId, status, ts, tsNs }`.
+```ts
+await client.triggers.pause({ triggerId: trigger.triggerId });
+await client.triggers.resume({ triggerId: trigger.triggerId, symbolId });
+```
+### `listEvents(input, options?)`
+Returns `{ events, nextPageToken }` for one trigger's lifecycle, newest first. `limit` defaults to 50. Events cover fires, cancels, updates, failures, activations, and the child orders a trigger places.
+```ts
+const { events } = await client.triggers.listEvents({
+triggerId: trigger.triggerId,
+limit: 20,
+});
+for (const event of events) {
+console.log(
+event.eventType,
+event.firePrice,
+event.childOrderId,
+event.cancelReason,
+event.failureReason
+);
+}
+```
+```ts
+import type { TriggerEvent } from "@polyester/sdk";
+```
+`firePrice` is optional. Time-scheduled events such as TWAP slices can legitimately have no fire price; treat `undefined` as unavailable, not as zero. `eventType` is `"fired" | "canceled" | "updated" | "failed" | "activated" | "unspecified"`. Pass any of those labels except `"unspecified"` as the optional `eventType` input to filter the list.
+`cancelReason` and `failureReason` are mutually exclusive typed terminal codes. Canceled records set `cancelReason`; failed records set `failureReason`; other records leave both undefined. The codes use stable snake-case labels. The free-form `reason` field is no longer returned.
+### `subscribe(input)`
+Streams live trigger state over a private channel. Takes an `accountId` plus the standard handler fields, and returns an idempotent unsubscribe function. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.triggers.subscribe({
+accountId,
+onEvent: (trigger) => console.log(trigger.status, trigger.triggerId),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+### `subscribeEvents(input)`
+Streams trigger lifecycle events (fires, cancels, updates, failures, activations, child orders) over a private channel. Same handler contract as `subscribe`, emitting `TriggerEvent` records.
+```ts
+const unsubscribe = client.triggers.subscribeEvents({
+accountId,
+onEvent: (event) => console.log(event.eventType, event.firePrice),
+});
+```
+## Managing a trigger's lifecycle
+The management methods compose into a full lifecycle: create, inspect, adjust, and cancel.
+```ts
+// Create
+const { triggerId } = await client.triggers.create({
+triggerType: "stop_loss",
+symbolId,
+side: "sell",
+qty: "0.25",
+triggerPrice: "60000",
+execution: { type: "market_ioc" },
+});
+// Inspect what is live
+const { triggers } = await client.triggers.list({ status: ["created", "armed"] });
+// Move the stop up as the position runs
+await client.triggers.modify({ triggerId, symbolId, triggerPrice: "62000" });
+// Read what happened
+const { events } = await client.triggers.listEvents({ triggerId });
+// Tear it down
+await client.triggers.cancel({ triggerId });
+```
+## The `Trigger` shape
+`get`, `list`, and `subscribe` share one parsed shape. Each trigger carries `symbolId`, not a pair symbol; use the catalog for its display label. Prices and quantities are decimal strings, and timestamps are epoch milliseconds.
+```ts
+import type { Trigger } from "@polyester/sdk";
+```
+`configuration` is the immutable strategy union:
+- `{ type: "stop_loss" | "take_profit", side, triggerPrice, execution }`
+- `{ type: "trailing_stop", trailingDistance, activationPrice?, maxSlippage }`
+- `{ type: "twap", side, durationMs, sliceIntervalMs, execution }`, where market IOC execution can set per-slice `maxSlippage` or omit it for the pair default
+- `{ type: "ladder", side, priceMin, priceMax, levels, postOnly }`
+- `{ type: "unspecified" }`
+Executions use the same lowercase tags as create inputs. Parsed read models may use `{ type: "unspecified" }` when the server omits a configuration branch. There is no `childOrderIds` field on `Trigger`. Terminal triggers also expose the same mutually exclusive `cancelReason` and `failureReason` fields as events.
+`runtimeDetails` is separate from configuration and carries mutable strategy state:
+- `{ case: "stop", triggerPrice, triggerPriceSource, triggerDirection }`
+- `{ case: "trailing", trailingDistance?, trailingDistanceBps, activationPrice?, peakPrice?, troughPrice?, triggerPrice?, maxSlippage?, maxSlippageBps, triggerPriceSource, triggerDirection }`
+- `{ case: "twap", twapDurationMs, twapSliceIntervalMs, sliceIdx, sliceCount, executedQty }`
+- `{ case: "ladder", ladderPriceMin, ladderPriceMax, ladderLevels, ladderDistribution, executedQty, executedLevels }`
+- `{ case: undefined }`
+For a trailing stop, `triggerPrice` is the current threshold. It is `undefined` until the trigger is armed, then moves with the peak or trough.
+`executedQty` is the cumulative filled child-order base quantity as a decimal string. For a ladder, `executedLevels` counts levels with at least one fill, including partially filled levels.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/typescript/guides/trading) for the task-oriented walkthrough.
+- [Orders](https://testnet.polyester.com/docs/sdk/typescript/reference/orders) for spot orders and attached (parent-bound) risk.
+- [Trades](https://testnet.polyester.com/docs/sdk/typescript/reference/trades) for the fills a trigger's child orders produce.
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for validation and precision error types.

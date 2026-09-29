@@ -1,0 +1,257 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/shared-concepts/preview-order
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Preview Order · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Platform Concepts
+svg]:size-3.5">
+/
+Preview Order
+Preview Order
+Copy page
+View as Markdown
+Open in
+OrdersService.PreviewOrder
+is an authenticated, account-aware admission preflight. It evaluates a
+complete order intent without submitting it.
+What Preview checks
+Preview evaluates the current inputs used for create admission:
+request validation and execution compatibility
+Pair policy and trading constraints
+fee and risk rules
+available account balance
+It creates no order, hold, reservation, or client-order-ID claim.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Preview is advisory
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Preview does not walk order-book depth, simulate fills, reserve funds, or guarantee execution.
+Account state, prices, fees, and Pair policy can change before submission.
+CreateOrder
+always
+evaluates the intent again.
+Request shape
+PreviewOrderRequest
+and
+CreateOrderRequest
+both contain:
+optional
+subaccount_id
+required
+order: OrderIntent
+Reuse the same
+OrderIntent
+builder for both operations. Do not maintain a separate flat Preview
+model. The intent includes symbol, side, sizing, execution, fee asset, client order ID,
+self-trade prevention, and optional attached risk.
+See
+Order Sizing
+and
+Fee Assets
+for those independent choices.
+Request examples
+REST JSON
+ConnectRPC ProtoJSON
+Send the nested order object to
+POST /v1/orders/preview
+"order"
+"symbol"
+"BTC-USDT"
+,
+"side"
+"BUY"
+,
+"baseQty"
+"0.001"
+,
+"feeAsset"
+"QUOTE"
+,
+"limitGtc"
+"price"
+"50000.00"
+,
+"postOnly"
+true
+}
+}
+}
+Call
+/orders.v1.OrdersService/PreviewOrder
+"order"
+"symbol"
+"BTC-USDT"
+,
+"side"
+"BUY"
+,
+"baseQtyScaled"
+"100000"
+,
+"feeAsset"
+"QUOTE"
+,
+"limitGtc"
+"priceTicks"
+"50000000000"
+,
+"postOnly"
+true
+}
+}
+}
+The examples assume the Pair scales have already been applied. See
+Scaled Integers
+Response fields
+Protobuf field
+Meaning
+admissible
+Whether current admission and available-balance checks passed
+rejection
+Typed
+ErrorDetail
+when the order is not currently admissible
+resolved_base_qty_scaled
+Gross base quantity resolved during admission, when sizing reached resolution
+protected_price_bound_ticks
+Protective execution boundary, when price protection reached resolution
+evaluated_at
+Time at which the admission evaluation completed
+REST exposes the optional resolved values as
+resolvedBaseQty
+and
+protectedPriceBound
+protected_price_bound_ticks
+is a safety boundary, not an expected fill price. Preview does not
+return expected fills, order-book depth, quote debit, fees, net proceeds, or required balance.
+Reservation and fee-ceiling calculations remain internal to the admission check.
+Rejections and transport errors
+Insufficient funds is a completed preview result.
+admissible
+is false and
+rejection.code
+is
+ERROR_CODE_INSUFFICIENT_FUNDS
+Authentication failures, malformed requests, and failures that prevent evaluation still use normal
+RPC or HTTP errors. Preserve
+ErrorDetail.code
+and every field violation rather than parsing
+human-readable messages.
+Interface availability
+Preview is available through REST and ConnectRPC. The SBE WebSocket command path does not expose a
+Preview command.
+Related Topics
+Public IDs
+Understand what Polyester public IDs identify, why they are opaque, and how their representation differs per interface.
+Client order IDs and idempotency
+Use client order IDs to prevent duplicate placement, correlate client intents, and reconcile uncertain outcomes.
+Order Sizing
+Choose exact base-quantity or maximum quote-debit sizing and read the authoritative quantity accepted for execution.
+Fee Assets
+Choose whether a BUY fee is charged in quote or deducted from received base, and decode fee amounts with the correct scale.
+Market Order Price Protection
+Understand market-order slippage overrides, pair defaults, client reference drift, execution boundaries, and stale-quote errors.
+Self-Trade Prevention
+Prevent an incoming order from trading against a resting order from the same trading account.
+Rate limits
+Weighted quotas, default limits, rejection metadata, and retry behavior.
+WebSocket session model
+Understand shared connection, authentication, subscription, and recovery behavior for Polyester realtime channels.
+Previous
+Fee Assets
+Next
+Market Order Price Protection
+On this page
+What Preview checks
+Request shape
+Request examples
+Response fields
+Rejections and transport errors
+Interface availability
+Related Topics
+Share this page
+Preview Order
+Check whether an order is currently admissible without creating an order, reserving funds, or presenting an execution quote.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"order": {
+		"symbol": "BTC-USDT",
+		"side": "BUY",
+		"baseQty": "0.001",
+		"feeAsset": "QUOTE",
+		"limitGtc": {
+			"price": "50000.00",
+			"postOnly": true
+		}
+	}
+}
+
+---
+
+{
+	"order": {
+		"symbol": "BTC-USDT",
+		"side": "BUY",
+		"baseQtyScaled": "100000",
+		"feeAsset": "QUOTE",
+		"limitGtc": {
+			"priceTicks": "50000000000",
+			"postOnly": true
+		}
+	}
+}

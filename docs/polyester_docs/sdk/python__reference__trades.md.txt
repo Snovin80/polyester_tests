@@ -1,0 +1,47 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# User trades
+List and stream your private spot fills (not the public tape).
+`client.trades` is your authenticated trade history and private fill stream. For the public tape, see [Public trades](https://testnet.polyester.com/docs/sdk/python/reference/public-trades) (`client.market_data`).
+Methods are account-scoped. Pass optional `account` (`"main"`, `"active"`, or `{"subaccount_id": "..."}`) or `sub_account_id` when you need a scope other than the client default.
+## Methods
+| Method      | Summary                              |
+| ----------- | ------------------------------------ |
+| `list`      | Paginated private user trades.       |
+| `subscribe` | Stream private fills for an account. |
+### List
+```python
+page = await client.trades.list(symbol="BTC-USDT", limit=50)
+for t in page.trades:
+print(t.match_id, t.order_id, t.side, t.price, t.qty, t.fee_amount_e18, t.fee_asset, t.fee_is_rebate)
+while page.next_page_token:
+page = await client.trades.list(
+symbol="BTC-USDT",
+limit=50,
+page_token=page.next_page_token,
+)
+```
+Each `UserTrade` includes `fee_amount_e18`, `fee_asset`, `referral_share_amount_e18`, and `fee_is_rebate`. Fee magnitudes are fixed 18-decimal (`U128`) strings in units of `fee_asset`. `fee_asset` is `"quote"` or `"base"` (unknown future enum values remain numeric strings). `fee_is_rebate` is sparse: `True` means `fee_amount_e18` is a rebate credit rather than a fee debit (proto3 omits `false`).
+When `fee_asset` is `"base"` on a BUY, convert `fee_amount_e18` to the symbol's base quantity scale before adjusting fill quantity: subtract for a fee, add for a rebate. Do not assume a BUY's gross fill quantity is fully available to sell.
+| Field                        | Notes                             |
+| ---------------------------- | --------------------------------- |
+| `symbol` / `symbol_id`       | Optional filter                   |
+| `limit`                      | Default `100`                     |
+| `page_token`                 | Opaque cursor from prior response |
+| `account` / `sub_account_id` | Scope override                    |
+### Subscribe
+Private channel `private:spot:trades:{account_id}:proto`. Needs API key + Account ID.
+```python
+sub = await client.trades.subscribe(account_id=client.default_account_id)
+async with sub:
+async for trade in sub:
+print(trade.match_id, trade.order_id, trade.price, trade.qty)
+break
+```
+## Related
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders), `get` also returns related user trades
+- [Public trades](https://testnet.polyester.com/docs/sdk/python/reference/public-trades)
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/python/guides/accounts-and-balances)

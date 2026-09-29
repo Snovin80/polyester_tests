@@ -1,0 +1,30 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/faucet-backups.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Faucet Backups
+Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+Use these faucets when a [testnet faucet](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets) is unavailable or rate-limited. Some require a mainnet balance before they will send testnet funds.
+After you receive funds, [deposit](https://testnet.polyester.com/docs/user-docs/funds/deposit-assets) them into Polyester.
+| Asset | Network                  | Faucet                                                         | Notes                                                                  |
+| ----- | ------------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| AVAX  | Avalanche C Fuji         | [Chainlink](https://faucets.chain.link/fuji)                   | 0.5 AVAX per claim. Hold at least 1 LINK on Ethereum mainnet.          |
+| AVAX  | Avalanche C Fuji         | [QuickNode](https://faucet.quicknode.com/avalanche/fuji)       | Hold 0.0025 ETH or more on Ethereum mainnet.                           |
+| BNB   | BNB Smart Chain Testnet  | [BNB Chain](https://www.bnbchain.org/en/testnet-faucet)        | 0.3 BNB per claim. Hold at least 0.002 BNB on BNB Smart Chain mainnet. |
+| BNB   | BNB Smart Chain Testnet  | [ZalalenA](https://faucet.zalalena.com/bsc)                    | 0.0005 BNB per claim.                                                  |
+| BTC   | Bitcoin Testnet          | [DevWork](https://testnet-faucet.devwork.tech/)                | 0.000055 BTC per claim.                                                |
+| ETC   | Ethereum Classic Testnet | [GHOST](https://ghostchain.io/faucet/ethereum-classic-mordor/) | 5 ETC per claim.                                                       |
+| ETH   | Ethereum Sepolia         | [PK910](https://sepolia-faucet.pk910.de/)                      | Proof-of-work browser mining. Amount depends on mining completed.      |
+| ETH   | Ethereum Sepolia         | [Alchemy](https://www.alchemy.com/faucets/ethereum-sepolia)    | 0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.        |
+| ETH   | Base Sepolia             | [Alchemy](https://www.alchemy.com/faucets/base-sepolia)        | 0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.        |
+| ETH   | Base Sepolia             | [QuickNode](https://faucet.quicknode.com/base/sepolia)         | Hold 0.0025 ETH or more on Ethereum mainnet.                           |
+| ETH   | Arbitrum Sepolia         | [Alchemy](https://www.alchemy.com/faucets/arbitrum-sepolia)    | 0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.        |
+| ETH   | Arbitrum Sepolia         | [QuickNode](https://faucet.quicknode.com/arbitrum/sepolia)     | Hold 0.0025 ETH or more on Ethereum mainnet.                           |
+| ETH   | Robinhood Testnet        | [Alchemy](https://www.alchemy.com/faucets/robinhood-testnet)   | 0.1 ETH per claim. Hold at least 0.001 ETH on Ethereum mainnet.        |
+| ETH   | Robinhood Testnet        | [QuickNode](https://faucet.quicknode.com/robinhood/testnet)    | 0.5 ETH per claim. Hold 0.0025 ETH or more on Ethereum mainnet.        |
+| HYPE  | HyperEVM Testnet         | [QuickNode](https://faucet.quicknode.com/hyperliquid/testnet)  | Requires HYPE on Hyperliquid mainnet.                                  |
+| POL   | Polygon Amoy             | [Alchemy](https://www.alchemy.com/faucets/polygon-amoy)        | 0.1 POL per claim. Hold at least 0.001 ETH on Ethereum mainnet.        |
+| POL   | Polygon Amoy             | [Chainlink](https://faucets.chain.link/polygon-amoy)           | 0.5 POL per claim. Hold at least 1 LINK on Ethereum mainnet.           |
+| POL   | Polygon Amoy             | [QuickNode](https://faucet.quicknode.com/polygon/amoy)         | 0.025 POL per claim. Hold 0.0025 ETH or more on Ethereum mainnet.      |
+| XRP   | Ripple Testnet           | [XRPL.to](https://xrpl.to/faucet)                              | 200 XRP per claim.                                                     |
+Faucet amounts, availability, and eligibility can change. Use the faucet's own page for current terms.

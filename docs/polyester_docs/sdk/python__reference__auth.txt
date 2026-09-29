@@ -1,0 +1,256 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/auth
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Auth · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Auth
+Auth
+Copy page
+View as Markdown
+Open in
+client.auth
+is the API-key identity surface. It exposes
+me()
+and the nested
+client.auth.profile
+realtime service.
+me
+=
+await
+client.auth.me()
+print
+(me.account_id, me.api_key_id, me.username)
+print
+(me.root_smart_account_address)
+MeResult
+fields are
+account_id
+,
+api_key_id
+,
+username
+,
+root_smart_account_address
+, and optional raw
+session
+data. An API-key caller should not
+depend on a browser session being present.
+The Account ID is sufficient identity for API-key auth.
+username
+may be
+None
+/empty; do not
+reject the identity or substitute
+"-"
+as though it were required.
+me.api_key_id
+is the
+API key
+'s base58 public ID. It is not the
+ak_...
+credential handle passed
+as
+api_key_id=
+or sent in
+X-API-KEY-ID
+; do not compare or substitute the two representations.
+Profile identity stream
+The Python SDK deliberately omits profile get/update/history methods because they require an
+interactive session. The API-key-safe profile operation is:
+sub
+=
+await
+client.auth.profile.subscribe_identity()
+async
+with
+sub:
+async
+for
+identity
+in
+sub:
+print
+(identity.account_id, identity.username, identity.avatar_url)
+break
+Wallet login, JWT refresh,
+MFA
+enrollment, and account resolve are
+not
+wrapped. See
+Authentication
+and
+Limitations
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+API keys
+Next
+Balances
+On this page
+Profile identity stream
+Related Topics
+Share this page
+Auth
+Auth service helpers including nested profile access.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+me = await client.auth.me()
+print(me.account_id, me.api_key_id, me.username)
+print(me.root_smart_account_address)
+
+---
+
+sub = await client.auth.profile.subscribe_identity()
+async with sub:
+    async for identity in sub:
+        print(identity.account_id, identity.username, identity.avatar_url)
+        break

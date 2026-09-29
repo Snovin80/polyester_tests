@@ -1,0 +1,82 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/tutorials.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Live market ticker
+Build a snapshot-then-stream Rust market monitor with trades, candles, staleness detection, and clean shutdown.
+Build a public market monitor that starts from REST state, follows realtime trades, confirms candle availability, and fails visibly when its stream becomes stale. This pattern is useful both for a terminal ticker and as the market-data health input to a trading system.
+> **Public and non-mutating**
+>
+> No API key is required. Empty trade or candle arrays are valid on a quiet testnet market; distinguish an empty successful response from a transport failure.
+1. Create the client and load catalogs
+```rust
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+hydrate_catalogs: true,
+})?;
+client.wait_for_catalogs().await?;
+```
+Catalog hydration resolves symbols to engine IDs and attaches the correct quantity scale to public trades.
+2. Bootstrap from recent trades and candles
+```rust
+let recent = client.market_data.get_trades("BTC-USDT", Some(20)).await?;
+for trade in &recent.trades {
+println!(
+"{} {} {:?} {:?} {}",
+trade.match_id, trade.side, trade.price, trade.qty, trade.ts_ns
+);
+}
+let candles = client
+if let Some(latest) = candles.candles.first() {
+println!("{} {} {}", latest.ts_sec, latest.close, latest.volume);
+}
+```
+REST bootstrap prevents a blank screen while waiting for the next trade. Keep the match ID and timestamp of the newest row so consumers can deduplicate a reconnect overlap. Candle rows are newest-first, and an included open candle is prepended. For indicators, request closed candles and reverse or sort the rows by `ts_sec` into chronological order first.
+3. Follow the public trade tape
+```rust
+use std::time::Duration;
+let mut trade_sub = client.market_data.subscribe_trades("BTC-USDT").await?;
+match tokio::time::timeout(Duration::from_secs(30), trade_sub.recv_result()).await {
+Ok(Ok(Some(trade))) => {
+println!("{} {} {:?} {:?}", trade.match_id, trade.side, trade.price, trade.qty);
+}
+Ok(Ok(None)) => eprintln!("trade stream closed"),
+Ok(Err(err)) => return Err(err),
+Err(_) => eprintln!("no trade in 30s; market may be quiet or stream may be stale"),
+}
+```
+The subscription completes its handshake before returning. Queue overflow is terminal; discard the subscription and create a new one after recording the error.
+4. Add candle updates
+```rust
+let mut candle_sub = client
+if let Some(candle) = candle_sub.recv_result().await? {
+println!(
+"{} {} {} {} {}",
+candle.ts_sec,
+candle.open,
+candle.high,
+candle.low,
+candle.close
+);
+}
+```
+`Candle` does not expose `is_closed`. Request REST candles with `include_incomplete: false` for indicators that must not repaint. For the stream, treat a timestamp bucket as forming until the next bucket begins.
+5. Operate and shut down
+Track a last-event timestamp separately for trades and candles. A quiet market can legitimately produce no events, so verify staleness with a bounded REST read before declaring the websocket unhealthy. Use `tokio::signal::ctrl_c()` or Unix signal streams, then close/drop subscriptions before dropping the client.
+## API map
+| Method                                         | Important inputs                           | Use                                |
+| ---------------------------------------------- | ------------------------------------------ | ---------------------------------- |
+| `market_data.get_trades` / `get_trades_with`   | symbol/ID, limit, page token               | Initial tape and reconnect overlap |
+| `market_data.subscribe_trades`                 | symbol                                     | Live public executions             |
+| `market_data.get_candles` / `get_candles_with` | symbol, timeframe, bounds, incomplete flag | Historical/bootstrap OHLCV         |
+| `market_data.get_current_candle`               | symbol, timeframe                          | Lightweight health check           |
+| `market_data.subscribe_candles`                | symbol, timeframe                          | Forming and closed candle updates  |
+| `orderbook.create_subscription`                | `CreateSubscriptionOptions`                | Sequence-checked bid/ask state     |
+## Tested source
+Example `01` performs live REST market reads and example `04` runs the public trade stream in [`polyester-examples-rust`](https://github.com/Fabric-Labs/polyester-examples-rust). Every target compiles against the exact `v0.1.0a22` commit; the REST path and candle-backed RSI dry-run were executed live.
+## Related
+- [Streaming](https://testnet.polyester.com/docs/sdk/rust/guides/streaming)
+- [Market data](https://testnet.polyester.com/docs/sdk/rust/guides/market-data)
+- [Candles](https://testnet.polyester.com/docs/sdk/rust/reference/candles)
+- [Public trades](https://testnet.polyester.com/docs/sdk/rust/reference/public-trades)

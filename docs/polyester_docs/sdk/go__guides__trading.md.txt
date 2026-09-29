@@ -1,0 +1,87 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/trading.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Use an API-key client (`polyester.FromEnv` or `polyester.New`). Orders spend **trading** balance.
+```go
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+```
+## Place and cancel
+```go
+symbol := "BTC-USDT"
+tif := "gtc"
+clientOrderID := "mm-bot-001"
+price := models.PriceFromDecimal("64250.5")
+result, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+Symbol:        &symbol,
+Side:          "buy",
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.25"),
+Price:         &price,
+PostOnly:      true, // limit GTC only
+ClientOrderID: &clientOrderID,
+}, nil)
+// Create synthesizes Status: "accepted" (admission ack). Lifecycle states come
+// from ListOpen / Get / Subscribe, not Create.
+fmt.Println(result.Status, result.OrderID)
+_, err = client.Orders.Cancel(ctx, nil, nil, &clientOrderID, &symbol, nil, nil)
+```
+Client order IDs accept 1 to 36 ASCII letters, digits, `.`, `_`, `:`, `/`, and `-`. Request IDs use the same character set and accept 1 to 64 characters.
+### Size and preview deliberately
+Create with exactly one sizing mode: base `Qty`, or `MaxQuoteDebitScaled`, a hard all-in quote budget for BUY market and limit IOC orders. `FeeAsset` is `"quote"` (default) or `"base"` (BUY-only), replacing fee-source / `received`. Create responses can include `ResolvedBaseQtyScaled` and `SubmittedMaxQuoteDebitScaled`. Use `client.Orders.Preview(ctx, request, account)` for an admissibility check: whether the intent is currently admissible, any typed rejection, resolved base size, and a protected price bound when price protection applied. Preview does not return fee or quote-debit estimates. Create always re-evaluates the intent.
+## Modify, cancel-all, batch
+```go
+newPrice := models.PriceFromDecimal("64100")
+reqID := "mod-1"
+_, err = client.Orders.Modify(ctx, nil, symbol, &result.OrderID, nil, nil, &reqID, &newPrice, nil, nil, nil)
+preview, err := client.Orders.CancelAll(ctx, nil, nil, &symbol, nil, true, nil)
+// Final bool is allowPartial, retained for compatibility and ignored on the wire.
+// Inspect per-item Accepted/Rejected on the result.
+batch, err := client.Orders.BatchCreate(ctx, nil, items, nil, &symbol, nil, false)
+_, err = client.Orders.CancelAllAfter(ctx, nil, 15, nil, &symbol, nil, nil)
+_ = preview
+_ = batch
+```
+**Batch size contracts:** `BatchCreate` max **20**; `BatchReplace` / `BatchCancel` max **50**. Use `BatchReplace` for same-symbol quote refresh and poll `GetBatchReplaceStatus` with the admission `BatchRequestID` (retry briefly on 404 / not-found). Admission makes predecessor order and client IDs stale: immediately use each `ReplacementOrderID` and new client order ID from the receipt. A predecessor `Get` returning `not_found` / `ORDER_UNKNOWN` is expected. Poll phases `admitted`, `working`, `rejected`, and `terminal`. For quote-refresh bots, `models.IsBatchReplaceSettled(status)` or `models.BatchReplaceStatusSettled(status)` treats `working`, `rejected`, and `terminal` as reconciled, not execution-final; `working` means the successor is live. Reuse the same `requestID` for an ambiguous retry and never replace against a stale predecessor. These are API-side contracts; the SDK does not preflight every count. A batch timeout is not proof of no commit; reconcile before retry. After fills, prefer `WaitForOrderTradesComplete` because `CumQty` can lead trade projection.
+Cancellation is an admission acknowledgement. Confirm the order has disappeared from `ListOpen` before releasing local state and retry the same cancel if reconciliation still shows it.
+Modify and replace operations require enough available balance for the replacement order. Leave headroom when most of the trading balance is reserved, and reconcile the original order after an ambiguous response before deciding whether to retry or cancel and recreate it.
+For long-running automated trading, renew `CancelAllAfter` continuously:
+- Arm it only after startup reconciliation has confirmed open orders.
+- Refresh well before `EffectiveTimeoutSec` (for example every 5 seconds on a 15-second timer).
+- Give each deliberate refresh a new `requestID`, but reuse that ID when retrying the same ambiguous refresh.
+- Verify `Status`, `EffectiveTimeoutSec`, and `ExpiresAtTsNs` on every response.
+- Stop quoting and reconcile if a refresh fails or its deadline is uncertain.
+The timer is a last-resort venue control, not a replacement for explicit shutdown cancellation.
+## Stream orders
+```go
+sub, err := client.Orders.Subscribe(ctx, accountID)
+defer sub.Close()
+for order := range sub.Messages() {
+fmt.Println(order.Status)
+break
+}
+```
+## Triggers
+```go
+// "last" is the triggerPriceSource arg, accepted for compat, ignored (not on wire).
+created, err := client.Triggers.Create(ctx, nil, symbol, "stop_loss", &triggerPrice,
+"sell", models.QtyFromDecimal("0.1"), "market", nil, "last", "ioc",
+nil, &clientTriggerID, false, codecs.CreateTriggerOptions{})
+// Create returns Status: "accepted" (admission). List filters still use lifecycle labels.
+_, err = client.Triggers.Modify(ctx, nil, created.TriggerID, nil, codecs.ModifyTriggerOptions{
+TriggerPrice: &newTrig,
+})
+_, err = client.Triggers.Cancel(ctx, nil, created.TriggerID, nil)
+```
+Status filters: `created`, `armed`, `running`, `completed`, `cancelled`, `failed`, `paused`.
+## Retry safely
+Reuse `ClientOrderID` / `requestID` / `clientTriggerID` on transport retries. See [Error handling](https://testnet.polyester.com/docs/sdk/go/guides/error-handling).
+> **Examples**
+>
+> [polyester-examples-go](https://github.com/Fabric-Labs/polyester-examples-go)
+## Related
+- [Orders](https://testnet.polyester.com/docs/sdk/go/reference/orders)
+- [Triggers](https://testnet.polyester.com/docs/sdk/go/reference/triggers)

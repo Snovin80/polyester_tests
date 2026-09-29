@@ -1,0 +1,49 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/api-keys.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+`client.api_keys` lists and streams API key metadata and generates local Ed25519 keypairs. Methods are authenticated. Optional `subaccount_id` scopes `list`.
+## Methods (API-key SDK)
+| Method             | Summary                                                 |
+| ------------------ | ------------------------------------------------------- |
+| `generate_keypair` | Local Ed25519 keypair. Never sends the secret.          |
+| `list`             | List non-revoked keys (`Option
+`).        |
+| `get`              | Fetch one key by `ak_...` id → `Option
+`. |
+| `subscribe`        | Stream private key updates (`recv_result()`).           |
+There is **no** `create` / `update` / `delete` on this SDK. Creating or revoking keys is a JWT/session product flow (TypeScript / browser).
+### Generate keypair
+```rust
+let pair = client.api_keys.generate_keypair();
+// pair.public_key_hex / pair.secret_key_hex, persist secret yourself
+```
+### List and get
+```rust
+let keys = client.api_keys.list(None).await?;
+for key in &keys.keys {
+println!("{} {} {}", key.key_id, key.label, key.status);
+}
+if let Some(one) = client.api_keys.get("ak_...").await? {
+println!("{} {}", one.key_id, one.status);
+}
+```
+The `key_id` values on this API-key surface are `ak_...` credential handles, matching the value used by signing `Config.api_key_id`. `auth.me().api_key_id` is instead a base58 public ID; do not compare it directly with these handles.
+### Subscribe
+Requires the API-key administration read permission and an Account ID. The method returns only after the subscription-token request and Centrifugo handshake succeed.
+```rust
+let account = client.default_account_id.as_deref();
+let mut sub = client.api_keys.subscribe(account).await?;
+while let Some(key) = sub.recv_result().await? {
+println!("{} {}", key.key_id, key.status);
+break;
+}
+```
+> **Create is JWT/session only**
+>
+> Generate a keypair here, then create the key in the Polyester app or TypeScript client.
+## Related
+- [Authentication guide](https://testnet.polyester.com/docs/sdk/rust/guides/authentication)
+- [Authentication model](https://testnet.polyester.com/docs/sdk/rust/concepts/authentication-model)

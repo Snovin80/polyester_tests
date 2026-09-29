@@ -1,0 +1,333 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/transfers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LedgerReadService
+List Transfers
+List transfer history for an account. Supports optional subaccount, asset, ordering, cursor, and hold-state filters.
+Copy URL
+Method
+GET
+Path
+/v1/transfers
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/transfers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/transfers?limit=100&reversed=false' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"transfers": [
+"account": "FUNDING",
+"amount": "18.446744073709551617",
+"asset": "USDT",
+"balanceAfter": "18.446744073709551617",
+"destination": {
+"accountId": "4Rh4iXdT",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"isDebit": false,
+"linkId": "1",
+"source": {
+"accountId": "4Rh4iXdT",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"timestamp": "1",
+"transferCode": "DEPOSIT"
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Query parameters
+Example
+ledger
+integer (int32)
+Optional public asset filter.
+limit
+integer
+≤ 1000
+Maximum rows to return (default 100, max 1000).
+page_token
+string
+max 512 chars
+Opaque keyset cursor returned by the previous response.
+reversed
+boolean
+true=newest first; false=oldest first.
+Unset
+False
+True
+subaccount_id
+string
+/^[1-9A…m-z]+$/
+Optional subaccount public id (base58).
+Response
+Form
+JSON
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+transfers
+object[]
+Transfer rows in requested order.
+11 fields
+account
+string
+Account bucket affected by this transfer.
+Example
+FUNDING
+amount
+string
+/^[0-9]…9]+)?$/
+Transfer amount at fixed 18-decimal ledger scale.
+Example
+18.446744073709551617
+asset
+string
+Public unified asset ID. Resolve its symbol through the spot configuration API. U128 amounts in this row always use a fixed 18-decimal ledger scale.
+Example
+USDT
+balanceAfter
+string
+/^[0-9]…9]+)?$/
+Post-transfer balance at fixed 18-decimal ledger scale.
+Example
+18.446744073709551617
+destination
+object
+Credit side of the transfer. This relationship is debit-to-credit rather than row-relative; use is_debit to determine whether this row is the credit leg.
+4 fields
+accountId
+string
+/^[1-9A…m-z]+$/
+Public root account or subaccount ID when this side is safe to identify. Never populated for private counterparties or non-user ledger accounts.
+Example
+4Rh4iXdT
+address
+string
+Address for this side when known. For EXTERNAL_ADDRESS this is an external-chain wallet address from lifecycle correlation; for identifiable Polyester accounts this is a Polyester smart-account address. May be empty until the corresponding lifecycle details are available.
+Example
+0x3333333333333333333333333333333333333333
+chainId
+integer (int32)
+PolyChain-registered external network identifier for EXTERNAL_ADDRESS. This matches chain.zipper.v1.ChainConfig.chain_id and is not the chain's native identifier (for example, an EIP-155 id) or the Polyester chain id.
+Example
+1
+kind
+enum
+Display classification for this transfer side.
+FUNDING_ACCOUNT
+TRADING_ACCOUNT
+EXTERNAL_ADDRESS
+PRIVATE_COUNTERPARTY
+FEE_ACCOUNT
+SYSTEM_ACCOUNT
+Example
+FUNDING_ACCOUNT
+flowId
+string
+Public lifecycle flow ID when this transfer belongs to a chain lifecycle flow.
+Example
+flow_7YWHMfk9JZeLMgZauHuiSxhI
+isDebit
+boolean
+True when this row is the debit leg; false when it is the credit leg.
+Example
+false
+linkId
+string
+/^[0-9]+$/
+Correlation ID used to group related transfer legs. Zero when unavailable.
+Example
+1
+source
+object
+Debit side of the transfer. This relationship is debit-to-credit rather than row-relative; use is_debit to determine whether this row is the debit leg.
+4 fields
+accountId
+string
+/^[1-9A…m-z]+$/
+Public root account or subaccount ID when this side is safe to identify. Never populated for private counterparties or non-user ledger accounts.
+Example
+4Rh4iXdT
+address
+string
+Address for this side when known. For EXTERNAL_ADDRESS this is an external-chain wallet address from lifecycle correlation; for identifiable Polyester accounts this is a Polyester smart-account address. May be empty until the corresponding lifecycle details are available.
+Example
+0x3333333333333333333333333333333333333333
+chainId
+integer (int32)
+PolyChain-registered external network identifier for EXTERNAL_ADDRESS. This matches chain.zipper.v1.ChainConfig.chain_id and is not the chain's native identifier (for example, an EIP-155 id) or the Polyester chain id.
+Example
+1
+kind
+enum
+Display classification for this transfer side.
+FUNDING_ACCOUNT
+TRADING_ACCOUNT
+EXTERNAL_ADDRESS
+PRIVATE_COUNTERPARTY
+FEE_ACCOUNT
+SYSTEM_ACCOUNT
+Example
+FUNDING_ACCOUNT
+timestamp
+string
+/^[0-9]+$/
+Transfer timestamp in microseconds since epoch (UTC).
+Example
+1
+transferCode
+string
+Product reason for this transfer.
+Example
+DEPOSIT
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/transfers
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s395" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/transfers?limit=100&reversed=false' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"transfers": [
+"account": "FUNDING",
+"amount": "18.446744073709551617",
+"asset": "USDT",
+"balanceAfter": "18.446744073709551617",
+"destination": {
+"accountId": "4Rh4iXdT",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+"isDebit": false,
+"linkId": "1",
+"source": {
+"accountId": "4Rh4iXdT",
+"address": "0x3333333333333333333333333333333333333333",
+"chainId": 1,
+"kind": "FUNDING_ACCOUNT"
+},
+"timestamp": "1",
+"transferCode": "DEPOSIT"
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/transfers?limit=100&reversed=false' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "transfers": [
+    {
+      "account": "FUNDING",
+      "amount": "18.446744073709551617",
+      "asset": "USDT",
+      "balanceAfter": "18.446744073709551617",
+      "destination": {
+        "accountId": "4Rh4iXdT",
+        "address": "0x3333333333333333333333333333333333333333",
+        "chainId": 1,
+        "kind": "FUNDING_ACCOUNT"
+      },
+      "flowId": "flow_7YWHMfk9JZeLMgZauHuiSxhI",
+      "isDebit": false,
+      "linkId": "1",
+      "source": {
+        "accountId": "4Rh4iXdT",
+        "address": "0x3333333333333333333333333333333333333333",
+        "chainId": 1,
+        "kind": "FUNDING_ACCOUNT"
+      },
+      "timestamp": "1",
+      "transferCode": "DEPOSIT"
+    }
+  ]
+}

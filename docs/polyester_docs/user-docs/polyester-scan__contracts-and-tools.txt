@@ -1,0 +1,230 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/contracts-and-tools
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Contracts & Tools · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Scan
+svg]:size-3.5">
+/
+Contracts & Tools
+Contracts & Tools
+Copy page
+View as Markdown
+Open in
+Polyester Scan
+provides public contract pages and a focused set of tools for exploring Chain activity. You can inspect verified source code, read public contract data, filter transactions, export tables, and view Chain statistics.
+Verified contracts
+The
+Verified Contracts directory
+lets you search by name or address and filter by compiler. Each row can show the contract address, name, compiler version, balance, activity, verification time, and license information.
+Verification means the submitted source code and compiler settings match the deployed bytecode. Polyester labels can also identify trusted protocol contracts,
+Zipper
+endpoints,
+smart accounts
+, and
+Zipped Assets
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Verification and auditing are different
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Verified source makes a contract's code easier to inspect. An audit is a separate security review with its own deployment, scope, and report.
+Use a contract page
+Depending on the contract, its page can include:
+Code
+for source files, compiler settings, ABI, bytecode, and constructor arguments
+Read Contract
+for viewing public contract data without signing a transaction
+Write Contract
+for calling a method through a connected account
+Read Proxy
+or
+Write Proxy
+when the address uses a recognized proxy.
+Proxy pages keep the proxy address and history visible while using the current implementation for available methods.
+A write creates a real Chain transaction and can move assets or change contract state. For normal Polyester activity, use the supported product page unless a protocol guide specifically directs you to call a contract.
+Filter and export activity
+The
+Advanced Filter
+narrows indexed transaction activity by type, method, date, sender, recipient, amount, and asset. You can also choose which columns appear.
+Download Page Data
+is available on many populated tables, including transactions, blocks, flows, accounts, contracts, tokens,
+Unified Assets
+, chains, and filtered activity. The download includes the current page and active filters.
+Chain and data tools
+Tool
+What it provides
+Statistics
+Charts for accounts, transactions, blocks, tokens, gas, contracts, and user operations
+Gas Tracker
+Current Chain utilization and fast, normal, and slow gas estimates
+API view
+The read endpoint and JSON response behind supported Scan detail pages
+Settings
+Timezone, number and date formats, address display, density, motion, and theme
+Gas Tracker estimates apply to
+Polyester Chain
+The API button on a supported page shows the exact read URL used by the current environment. Use the linked Developer Docs for larger integrations and paginated data access.
+Public contract data
+Contract source, methods, logs, state changes, and transaction history are public Chain information. Connecting an account lets you sign supported write actions, but it does not expose your private Polyester Trading balance, orders, permissions, or sessions.
+Related Topics
+Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+Chain Activity
+Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Previous
+Tokens & Chains
+Next
+Confirmation Requirements
+On this page
+Verified contracts
+Use a contract page
+Filter and export activity
+Chain and data tools
+Public contract data
+Related Topics
+Share this page
+Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Share
+Copy Link

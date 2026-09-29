@@ -1,0 +1,748 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Accounts & balances · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Accounts & balances
+Accounts & balances
+Copy page
+View as Markdown
+Open in
+Account scoping
+A Polyester user has one
+main account
+and any number of
+subaccounts
+read/write takes an optional
+account
+field for which one the call is about:
+await
+client
+balances
+list
+();
+// the "active" account (see below)
+await
+client
+balances
+list
+({ account:
+"main"
+});
+// force the main account
+await
+client
+balances
+list
+({ account: {
+subaccountId
+} });
+// a specific subaccount
+Default
+"active"
+resolves through the client:
+PolyesterBrowserClient
+auth.switchAccount(...)
+PolyesterServerClient
+with
+useDisplaySessionActiveAccountAsDefault
+PolyesterClient
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Authorization stays server-side
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The
+account
+field expresses intent. The backend still verifies the caller may access
+that account.
+Subaccounts
+Full lifecycle via
+client.subaccounts
+const
+subaccounts
+,
+totalCreated
+}
+=
+await
+client
+subaccounts
+list
+();
+const
+detail
+=
+await
+client
+subaccounts
+get
+({
+subaccountId
+});
+// + apiKeys, policy, members, invites
+const
+updated
+=
+await
+client
+subaccounts
+update
+({
+subaccountId
+,
+expectedRevision:
+detail
+revision
+,
+label:
+"market-making"
+,
+});
+await
+client
+subaccounts
+update
+({
+subaccountId
+,
+expectedRevision:
+updated
+revision
+,
+status:
+"disabled"
+,
+});
+Creating a subaccount needs a signed smart-account proof. The server derives the next smart
+account and salt nonce in a subaccount challenge. On
+PolyesterBrowserClient
+, auth requests the
+challenge and signs for you:
+import
+PolyesterBrowserClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+}
+from
+"@polyester/sdk"
+;
+const
+browserClient
+=
+new
+PolyesterBrowserClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+accountSigner
+,
+// root signer used to log in
+});
+const
+subaccountId
+}
+=
+await
+browserClient
+auth
+createSubaccount
+({
+// derive the signer for the server-chosen smart account
+accountSigner
+challenge
+)
+=>
+deriveSubaccountSigner
+(
+challenge
+smartAccountSaltNonce
+),
+label:
+"experiments"
+,
+});
+Sharing and roles
+Invite other users, assign roles, optionally require
+MFA
+await
+client
+subaccounts
+inviteMember
+({
+subaccountId
+,
+granteeAccountId
+, role:
+"trader"
+});
+await
+client
+subaccounts
+listInvites
+({ direction:
+"outgoing"
+});
+await
+client
+subaccounts
+respondInvite
+({
+inviteId
+, action:
+"accept"
+});
+await
+client
+subaccounts
+updateMemberRole
+({
+subaccountId
+,
+granteeAccountId
+,
+role:
+"viewer"
+,
+});
+await
+client
+subaccounts
+setMemberMfaRequirement
+({
+subaccountId
+, requireMemberMfa:
+true
+});
+await
+client
+subaccounts
+removeMember
+({
+subaccountId
+,
+granteeAccountId
+});
+// audit trail
+const
+events
+}
+=
+await
+client
+subaccounts
+listEvents
+({
+subaccountId
+});
+Policies
+Reusable permission templates with spot-market scopes and allowed actions. Subaccount policies also
+carry order limits, trading halts, review times, expiry, and policy locks. Updates take
+expectedRevision
+and patch only the fields you send.
+// Subaccount policies
+const
+policies
+=
+await
+client
+subaccounts
+policies
+list
+();
+const
+policy
+=
+await
+client
+subaccounts
+policies
+create
+({
+name:
+"restricted trading"
+,
+spotMarketScope:
+"all"
+,
+actions: [
+"read-balances"
+,
+"read-spot"
+,
+"trade-spot"
+],
+});
+await
+client
+subaccounts
+policies
+apply
+({
+subaccountId
+, policyId:
+policy
+id
+});
+await
+client
+subaccounts
+policies
+update
+({
+policyId:
+policy
+id
+,
+expectedRevision:
+policy
+revision
+,
+name:
+"restricted trading"
+,
+});
+// API key policies
+const
+keyPolicy
+=
+await
+client
+apiKeys
+policies
+create
+({
+name:
+"bot"
+,
+spotMarketScope:
+"all"
+,
+actions: [
+"read-balances"
+,
+"read-spot"
+,
+"trade-spot"
+],
+});
+await
+client
+apiKeys
+policies
+apply
+({
+keyId
+, policyId:
+keyPolicy
+id
+});
+Balances
+const
+balances
+=
+await
+client
+balances
+list
+();
+for
+(
+const
+b
+of
+balances
+) {
+console
+log
+(
+b
+);
+// per-asset balances as decimal strings
+}
+History comes in two columnar, chart-ready shapes: per-asset balance history and account equity
+history. Both use a fixed
+range
+, not custom start/end timestamps.
+const
+history
+=
+await
+client
+balances
+getBalanceHistory
+({
+range:
+"7d"
+,
+accountCodes: [
+"trading"
+],
+});
+const
+equity
+=
+await
+client
+balances
+getEquityHistory
+({
+range:
+"7d"
+,
+groupBy:
+"account"
+,
+});
+range
+is one of
+"1d"
+,
+"7d"
+,
+"30d"
+,
+"90d"
+,
+"180d"
+, or
+"365d"
+accountCodes
+is optional on both methods; balance history also accepts an optional numeric
+ledger
+"account"
+(default) or
+"asset"
+the actual
+startTsSec
+and
+endTsSec
+Live updates:
+const
+unsubscribe
+=
+client
+balances
+subscribe
+({
+accountId
+,
+onEvent
+balance
+)
+=>
+updateUI
+(
+balance
+),
+});
+Resolving other accounts
+Internal transfers need a destination.
+client.accounts.resolve
+turns a username, account id, or
+smart-account address into concrete destinations:
+const
+matches
+=
+await
+client
+accounts
+resolve
+({
+query:
+"hunter"
+,
+includeSubaccounts:
+true
+,
+});
+Profile
+const
+profile
+=
+await
+client
+auth
+profile
+get
+();
+await
+client
+auth
+profile
+update
+({
+bio:
+"Trading spot on Polyester."
+,
+website:
+"https://example.com"
+,
+});
+const
+history
+=
+await
+client
+auth
+profile
+getUsernameHistory
+();
+Address book
+Saved destinations, tags, whitelists, and recent counterparties live under
+client.addressBook
+Address book reference
+getView()
+powers a dashboard in one call.
+subscribeViewInvalidations
+tells you when to refetch.
+MFA
+client.mfa
+manages TOTP and passkey enrollment, challenges, recovery codes, and step-up proofs.
+Common flow: a mutation throws
+StepUpRequiredError
+, you complete a challenge, retry with
+stepUpToken
+Error handling
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Market data
+Read tickers, candles, order books, public trades, heatmaps, and chain analytics, no credentials required.
+Trading
+Place, modify, and cancel spot orders, attach risk controls, and automate with standalone triggers.
+Streaming
+Subscribe to realtime market data and private account updates with typed events and a uniform unsubscribe contract.
+Deposits & withdrawals
+Move assets in and out: deposit addresses, internal transfers, withdrawals, and lifecycle tracking.
+Server-side usage
+Build per-request clients from cookies, verify sessions, and hydrate browser clients from the server.
+Error handling
+Triage errors with one instanceof check, retry safely, and handle MFA step-up flows.
+Previous
+Streaming
+Next
+Deposits & withdrawals
+On this page
+Account scoping
+Subaccounts
+Sharing and roles
+Policies
+Balances
+Resolving other accounts
+Profile
+Address book
+MFA
+Related Topics
+Share this page
+Accounts & balances
+Scope requests to subaccounts, manage members and policies, and read balances and equity history.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.balances.list(); // the "active" account (see below)
+await client.balances.list({ account: "main" }); // force the main account
+await client.balances.list({ account: { subaccountId } }); // a specific subaccount
+
+---
+
+const { subaccounts, totalCreated } = await client.subaccounts.list();
+const detail = await client.subaccounts.get({ subaccountId }); // + apiKeys, policy, members, invites
+
+const updated = await client.subaccounts.update({
+	subaccountId,
+	expectedRevision: detail.revision,
+	label: "market-making",
+});
+await client.subaccounts.update({
+	subaccountId,
+	expectedRevision: updated.revision,
+	status: "disabled",
+});
+
+---
+
+import { PolyesterBrowserClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+
+const browserClient = new PolyesterBrowserClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	accountSigner, // root signer used to log in
+});
+
+const { subaccountId } = await browserClient.auth.createSubaccount({
+	// derive the signer for the server-chosen smart account
+	accountSigner: (challenge) => deriveSubaccountSigner(challenge.smartAccountSaltNonce),
+	label: "experiments",
+});
+
+---
+
+await client.subaccounts.inviteMember({ subaccountId, granteeAccountId, role: "trader" });
+await client.subaccounts.listInvites({ direction: "outgoing" });
+await client.subaccounts.respondInvite({ inviteId, action: "accept" });
+await client.subaccounts.updateMemberRole({
+	subaccountId,
+	granteeAccountId,
+	role: "viewer",
+});
+await client.subaccounts.setMemberMfaRequirement({ subaccountId, requireMemberMfa: true });
+await client.subaccounts.removeMember({ subaccountId, granteeAccountId });
+
+// audit trail
+const { events } = await client.subaccounts.listEvents({ subaccountId });
+
+---
+
+// Subaccount policies
+const policies = await client.subaccounts.policies.list();
+const policy = await client.subaccounts.policies.create({
+	name: "restricted trading",
+	spotMarketScope: "all",
+	actions: ["read-balances", "read-spot", "trade-spot"],
+});
+await client.subaccounts.policies.apply({ subaccountId, policyId: policy.id });
+
+await client.subaccounts.policies.update({
+	policyId: policy.id,
+	expectedRevision: policy.revision,
+	name: "restricted trading",
+});
+
+// API key policies
+const keyPolicy = await client.apiKeys.policies.create({
+	name: "bot",
+	spotMarketScope: "all",
+	actions: ["read-balances", "read-spot", "trade-spot"],
+});
+await client.apiKeys.policies.apply({ keyId, policyId: keyPolicy.id });
+
+---
+
+const balances = await client.balances.list();
+for (const b of balances) {
+	console.log(b); // per-asset balances as decimal strings
+}
+
+---
+
+const history = await client.balances.getBalanceHistory({
+	range: "7d",
+	accountCodes: ["trading"],
+});
+
+const equity = await client.balances.getEquityHistory({
+	range: "7d",
+	groupBy: "account",
+});
+
+---
+
+const unsubscribe = client.balances.subscribe({
+	accountId,
+	onEvent: (balance) => updateUI(balance),
+});
+
+---
+
+const matches = await client.accounts.resolve({
+	query: "hunter",
+	includeSubaccounts: true,
+});
+
+---
+
+const profile = await client.auth.profile.get();
+await client.auth.profile.update({
+	bio: "Trading spot on Polyester.",
+	website: "https://example.com",
+});
+const history = await client.auth.profile.getUsernameHistory();

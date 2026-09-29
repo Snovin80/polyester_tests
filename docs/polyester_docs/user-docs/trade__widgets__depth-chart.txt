@@ -1,0 +1,197 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/depth-chart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Depth Chart · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Depth Chart
+Depth Chart
+Copy page
+View as Markdown
+Open in
+The Depth Chart turns the Order Book into two cumulative curves.
+Use it to see how visible liquidity is distributed around the spread before choosing an order size or price.
+What the widget shows
+Element
+What it means
+Buy depth
+Cumulative displayed buy quantity up to each price
+Sell depth
+Cumulative displayed sell quantity up to each price
+Horizontal position
+How far a price is from the center of the market
+Vertical height
+How much visible quantity has accumulated by that price
+Center gap
+The area between the best visible buy and sell prices
+Hover over a curve to inspect its price and cumulative amount. A steep section means more displayed quantity is concentrated in a smaller price range.
+Use it with the Order Book
+The Depth Chart and
+Order Book
+describe the same visible liquidity in different ways. Use the chart to understand shape and concentration. Use the Order Book when you need exact prices, amounts, and cumulative totals.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Displayed depth can change
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The chart is not a guaranteed quote. Orders can fill, move, or cancel before another order reaches the market, and a larger order can execute across several price levels.
+Confirm the chart is current
+Confirm the active Pair and connection state before relying on the curves. After a disconnect, wait for the widget to rebuild from a fresh Order Book snapshot rather than treating the first new update as a complete view.
+Related Topics
+Order Book
+Read current buy and sell prices, the spread, and visible liquidity for one spot market.
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Previous
+TradingView Chart
+Next
+Order Book
+On this page
+What the widget shows
+Use it with the Order Book
+Confirm the chart is current
+Related Topics
+Share this page
+Depth Chart
+See where visible buy and sell liquidity is concentrated around the current market.
+Share
+Copy Link

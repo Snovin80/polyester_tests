@@ -1,0 +1,335 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/deposit
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Deposit · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Deposit
+Deposit
+Copy page
+View as Markdown
+Open in
+client.deposit
+manages the chain addresses you deposit into. Every method is authenticated and
+account-scoped, so each input accepts an optional
+account
+field (
+"main"
+,
+"active"
+, or
+). See
+Account scoping
+for
+how the default resolves.
+Deposit addresses are per-account and per-chain: each root account or
+subaccount
+gets its own
+address on a given chain. Creating an address is idempotent, so it returns the existing address if
+one is already assigned.
+Methods
+Method
+Summary
+createAddress
+Create or return the deposit address for a chain.
+listAddresses
+List deposit addresses, optionally filtered by chain.
+createAddress(input, options?)
+The root account must have accepted the current terms. Use
+client.auth.acceptTerms()
+from an
+interactive JWT session after the user agrees. Missing acceptance produces the typed auth detail
+AUTH_TERMS_NOT_ACCEPTED
+Creates the deposit address for the account scope on a given chain, or returns the existing one.
+Resolves to a
+DepositAddress
+, or
+null
+if the backend does not return an address.
+const
+address
+=
+await
+client
+deposit
+createAddress
+({ chainId:
+1
+});
+if
+(
+address
+) {
+console
+log
+(
+address
+chainId
+,
+address
+depositAddress
+);
+}
+CreateDepositAddressInput
+Field
+Type
+Required
+Notes
+chainId
+number
+yes
+Integer from 1 through 4,294,967,295.
+account
+AccountScope
+no
+Scope override.
+listAddresses(input?, options?)
+Returns a
+DepositAddress[]
+for the account scope. Input is optional; pass
+chainId
+to filter to
+a single chain, or
+account
+to override the default.
+// All chains
+const
+all
+=
+await
+client
+deposit
+listAddresses
+();
+// One chain
+const
+eth
+]
+=
+await
+client
+deposit
+listAddresses
+({ chainId:
+1
+});
+DepositAddress
+interface
+DepositAddress
+chainId
+number
+;
+depositAddress
+string
+;
+}
+Results are ordered by ascending chain id.
+Related
+Deposits and withdrawals guide
+for the
+end-to-end funding walkthrough.
+Lifecycle
+for tracking a deposit as it confirms
+on chain and lands in your ledger.
+Balances
+to see the credited funds.
+Withdrawals
+for moving funds back out.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Client configuration
+Next
+Errors
+On this page
+Methods
+createAddress(input, options?)
+CreateDepositAddressInput
+listAddresses(input?, options?)
+DepositAddress
+Related
+Related Topics
+Share this page
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const address = await client.deposit.createAddress({ chainId: 1 });
+
+if (address) {
+	console.log(address.chainId, address.depositAddress);
+}
+
+---
+
+// All chains
+const all = await client.deposit.listAddresses();
+
+// One chain
+const [eth] = await client.deposit.listAddresses({ chainId: 1 });
+
+---
+
+interface DepositAddress {
+	chainId: number;
+	depositAddress: string;
+}

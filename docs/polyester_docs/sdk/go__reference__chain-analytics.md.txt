@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/chain-analytics.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Chain analytics
+Chain analytics read APIs.
+`client.ChainAnalytics` provides public time-series reads for Zipper and unified assets.
+| Method                      | Primary identifier |
+| --------------------------- | ------------------ |
+| `GetZippedAssetSupply`      | zipped asset ID    |
+| `GetZippedAssetSupplyGroup` | group ID           |
+| `GetUnifiedAssetBalances`   | unified asset ID   |
+```go
+series, err := client.ChainAnalytics.GetZippedAssetSupply(
+ctx, 1, "24h", "", 0, 0,
+)
+if err != nil { log.Fatal(err) }
+fmt.Println(series.Raw)
+balances, err := client.ChainAnalytics.GetUnifiedAssetBalances(
+ctx, 2, "7d", "1h", 0, 0,
+)
+```
+`rangeKey` chooses the server window. `bucket`, `startTsSec`, and `endTsSec` refine it. Unsupported range labels fail client-side. Responses are `models.ApiData` forward-compatible trees.
+Do not use analytics aggregation as an order-book or ledger source of truth. Use [Market data](https://testnet.polyester.com/docs/sdk/go/guides/market-data) and [Balances](https://testnet.polyester.com/docs/sdk/go/reference/balances) for trading decisions.

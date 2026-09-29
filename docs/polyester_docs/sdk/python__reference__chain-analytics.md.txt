@@ -1,0 +1,28 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/chain-analytics.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Chain analytics
+Chain analytics read APIs.
+`client.chain_analytics` provides public time-series reads for Zipper and unified assets.
+| Method                                                 | Required identity |
+| ------------------------------------------------------ | ----------------- |
+| `get_zipped_asset_supply(zipped_asset_id, range, ...)` | Zipped asset ID   |
+| `get_zipped_asset_supply_group(group_id, range, ...)`  | Group ID          |
+| `get_unified_asset_balances(asset_id, range, ...)`     | Unified asset ID  |
+```python
+series = await client.chain_analytics.get_zipped_asset_supply(
+zipped_asset_id=1,
+range="24h",
+)
+balances = await client.chain_analytics.get_unified_asset_balances(
+asset_id=2,
+range="7d",
+bucket="1h",
+)
+```
+Optional `bucket`, `start_ts_sec`, and `end_ts_sec` refine the server-selected window. Use a supported range label; invalid labels fail client-side. Responses are `ApiData` because these analytical Protobuf shapes intentionally remain forward-compatible:
+```python
+print(series.raw)  # recursively converted dict/list/scalars
+```
+Do not use chart aggregation output as an order-book or balance source of truth. For trading, use [Market data](https://testnet.polyester.com/docs/sdk/python/guides/market-data) and [Balances](https://testnet.polyester.com/docs/sdk/python/reference/balances).

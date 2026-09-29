@@ -1,0 +1,69 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+`client.transfers` is your ledger transfer history: every balance movement, regardless of cause. Deposits, withdrawals, trade legs, fees, rebates, and internal transfers all show up here as transfer rows. Every method is authenticated and account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Amounts are decimal strings and timestamps are epoch milliseconds. Where the backend reports it, each row also carries the running `balanceAfter`.
+## Methods
+| Method      | Summary                                          |
+| ----------- | ------------------------------------------------ |
+| `list`      | Page through ledger transfers with rich filters. |
+| `subscribe` | Stream live transfers over a private channel.    |
+### `list(input?, options?)`
+Returns `{ transfers, nextPageToken }` for the account scope. The input is optional; use it to filter by direction, time range, transfer code, and ledger, and page through with the returned token.
+```ts
+const { transfers, nextPageToken } = await client.transfers.list({
+limit: 100,
+transferCode: "deposit",
+timestampMin: Date.now() - 7 * 24 * 60 * 60 * 1000,
+});
+for (const tr of transfers) {
+console.log(tr.type, tr.assetId, tr.amount, tr.isDebit ? "out" : "in");
+}
+```
+Page through the full history with the returned token:
+```ts
+let pageToken = "";
+do {
+const page = await client.transfers.list({ pageToken, limit: 200 });
+console.log(page.transfers.length);
+pageToken = page.nextPageToken;
+} while (pageToken !== "");
+```
+#### `ListTransfersInput`
+| Field          | Type           | Required | Notes                                      |
+| -------------- | -------------- | -------- | ------------------------------------------ |
+| `limit`        | `number`       | no       | Page size.                                 |
+| `reversed`     | `boolean`      | no       | Reverse the ordering. Defaults to `false`. |
+| `timestampMin` | epoch ms       | no       | Lower time bound (inclusive).              |
+| `timestampMax` | epoch ms       | no       | Upper time bound (inclusive).              |
+| `transferCode` | transfer code  | no       | Filter to one cause (see below).           |
+| `ledger`       | `number`       | no       | Ledger filter. Defaults to `0`.            |
+| `pageToken`    | `string`       | no       | Continuation token from a prior page.      |
+| `account`      | `AccountScope` | no       | Scope override.                            |
+`transferCode` is one of `"deposit"`, `"withdraw"`, `"maker_fee"`, `"taker_fee"`, `"internal_transfer"`, `"trade_base"`, `"trade_quote"`, `"rebate"`, `"funding_to_trading"`, `"trading_to_funding"`, `"trading_withdraw_reserve"`, `"funding_user_transfer"`, or `"trading_withdraw_request_fee"`.
+A trading withdrawal writes two rows: `"trading_withdraw_reserve"` for the amount held, and `"trading_withdraw_request_fee"` for the fee charged to request it. Filter on the reserve code alone and the fee row is missing from your reconciliation.
+### `subscribe(input)`
+Streams live transfers over a private channel. Takes an `accountId` plus the standard handler fields, and returns an idempotent unsubscribe function. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.transfers.subscribe({
+accountId,
+onEvent: (tr) => console.log(tr.type, tr.assetId, tr.amount),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+## The `LedgerTransfer` shape
+List and stream results share one parsed shape. Amounts are decimal strings and timestamps are epoch milliseconds.
+```ts
+import type { LedgerTransfer, LedgerTransferSide, TransferCodeValue } from "@polyester/sdk";
+```
+`type` is a `TransferCodeValue` (for example `"deposit"`) plus `"unspecified"`. `accountCode` is `"funding" | "trading" | "unspecified"`. Side `kind` includes `"unspecified"` when the server omits a label. An external `source` or `destination` can include `chainId`, the PolyChain network ID from `ZipperChainConfig`. It is not an EIP-155 chain ID or a Polyester chain ID.
+## Related
+- [Balances](https://testnet.polyester.com/docs/sdk/typescript/reference/balances) for the current totals these movements sum to.
+- [Internal transfers](https://testnet.polyester.com/docs/sdk/typescript/reference/internal-transfers) to move funds between Polyester accounts.
+- [Deposit](https://testnet.polyester.com/docs/sdk/typescript/reference/deposit) and [Withdrawals](https://testnet.polyester.com/docs/sdk/typescript/reference/withdrawals) for on-chain movement.
+- [Realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the streaming handler contract.

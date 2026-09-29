@@ -1,0 +1,51 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Service methods are ordinary Go functions on `*Client` services. Learn the conventions once; they apply across orders, triggers, balances, and market data.
+## Call shape
+```go
+result, err := client.Orders.Create(ctx, req, accountScope)
+```
+- First argument is almost always `context.Context` (cancel / deadline).
+- Account-scoped methods take an `AccountScope` (often `nil` for defaults).
+- Results are typed `models` structs; wire protos do not leak through.
+There is no TypeScript `stepUpToken` options bag on these mutations. Creating API keys is a JWT/session product flow, not available on this API-key SDK.
+## Stable mutation identifiers
+| Mutation                                    | Key                                              |
+| ------------------------------------------- | ------------------------------------------------ |
+| `Orders.Create` / batch items               | `ClientOrderID` (duplicate guard, no replay)     |
+| `Orders.Modify`, `CancelAll`, batch helpers | `requestID`                                      |
+| `Triggers.Create`                           | `clientTriggerID` (optional; no auto-generation) |
+| `InternalTransfers.Create`                  | idempotency key (required)                       |
+| `Withdraw.CreateTo*`                        | idempotency key and nonce (required)             |
+Withdrawal and internal-transfer identities are required for every call, including one-shot attempts. Do not treat them as "only for retries."
+For API-key withdrawals, persist `PreparedTradingWithdraw.RequestBytes()` before first submission. After an unknown outcome, restore those bytes and call `SubmitPrepared`; do not rebuild a new deadline, nonce, or signature.
+If you omit `ClientOrderID` on create, the call is accepted but you cannot safely reconcile by client ID. The SDK does not generate one. A retained `ClientOrderID` cannot be reused: even an identical create returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID` instead of replaying the earlier result. Keep the original value after an ambiguous response, look up the order by that ID, and handle a duplicate conflict as a signal to continue reconciliation.
+If you omit `requestID` on `Modify`, `CancelAll`, `CancelAllAfter`, or batch create/cancel/modify, the SDK generates one for that single call (same idea as TypeScript/Python/Rust). Fine for one-shot mutations. To retry safely after an ambiguous failure, supply and reuse your own value - a blind retry that omits `requestID` mints a *new* id and is not an idempotent replay.
+```go
+clientOrderID := "strategy-run-20260725-0001" // create and persist once
+req := models.CreateOrderRequest{
+// ...
+ClientOrderID: &clientOrderID,
+}
+// After an ambiguous error, reconcile by ClientOrderID before deciding to resubmit.
+// Reuse of a retained ClientOrderID returns CONFLICT_DUPLICATE_CLIENT_ORDER_ID.
+requestID := "mod-strategy-run-20260725-0001" // choose once per logical modify
+// Pass &requestID into Modify / CancelAll / batch helpers and reuse on retry.
+```
+Client order IDs accept 1 to 36 ASCII letters, digits, `.`, `_`, `:`, `/`, and `-`. Request IDs use the same character set and accept 1 to 64 characters. The SDK validates both locally and returns `*errors.ValidationError` before the request is sent.
+> **A new key every attempt is a bug**
+>
+> Generating a fresh `ClientOrderID` while the first create is unresolved can place a second order. Persist the original value for reconciliation. For replayable request IDs, create the key once outside the loop and reuse it for the same logical action.
+## Retrying safely
+Retry `*TransportError` / `*RateLimitError` with capped exponential backoff and jitter; honor `RateLimitError.RetryAfter` when present. A timeout is ambiguous: the server may have applied the mutation. For a single-order create, reconcile by `ClientOrderID` before resubmitting and expect a duplicate conflict if the ID was retained. For mutations with replayable request IDs, keep the key stable. Do not blindly retry `*ValidationError` or most `*APIError` responses; fix input, auth, or state.
+See [Error handling](https://testnet.polyester.com/docs/sdk/go/guides/error-handling) and [Errors](https://testnet.polyester.com/docs/sdk/go/reference/errors).
+## Pagination cursors
+Most list APIs return opaque tokens (`NextPageToken`) or similar cursors. Replay them exactly as returned, including trigger list/event pages.
+## Related
+- [Client order IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/client-order-ids)
+- [Trading guide](https://testnet.polyester.com/docs/sdk/go/guides/trading)
+- [Catalog & precision](https://testnet.polyester.com/docs/sdk/go/concepts/catalog-and-precision)

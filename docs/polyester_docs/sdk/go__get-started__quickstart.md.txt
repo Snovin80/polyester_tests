@@ -1,0 +1,78 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/get-started/quickstart.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+About ten minutes on Polyester testnet: public reads, a live stream, then a place-and-cancel with an API key.
+> **Prerequisites**
+>
+> [Install the SDK](https://testnet.polyester.com/docs/sdk/go/get-started/installation). Create an API key in the Polyester app (**API** in the sidebar). Copy the key id and private key when shown, the private key is only displayed once. Open the key's **Permissions**, enable **Spot trading**, choose the allowed markets, and set a maximum order size that covers this test. Copy your **Account ID** from Profile. The API-key SDK can use an assigned policy but cannot create or assign one.
+1. Create a client
+```go
+accountID := "..." // Profile → Account ID
+client, err := polyester.New(polyester.Config{
+Environment:      &polyester.TestnetEnvironment,
+APIKeyID:         "ak_...",
+APIPrivateKey:    "...", // 64-char hex from key creation
+DefaultAccountID: &accountID,
+HydrateCatalogs:  true, // required before WaitForCatalogs / decimal order helpers
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+ctx := context.Background()
+```
+Go is **synchronous**. Pass `context.Context` on every call. Cancel the context to stop waits and stream receives.
+2. Wait for catalogs
+Decimal order inputs need spot config scales. Wait before first write:
+```go
+if err := client.WaitForCatalogs(ctx); err != nil {
+log.Fatal(err)
+}
+```
+See [Catalog & precision](https://testnet.polyester.com/docs/sdk/go/concepts/catalog-and-precision).
+3. Read public market data
+```go
+overview, err := client.MarketOverview.List(ctx, nil, 5, "", false)
+if err != nil { log.Fatal(err) }
+for _, market := range overview.Markets {
+fmt.Println(market.Symbol, market.LastPrice.Ticks())
+}
+```
+4. Stream public trades
+```go
+symbol := "BTC-USDT"
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+select {
+case trade, ok := <-sub.Messages():
+if !ok { log.Fatal(sub.Err()) }
+fmt.Println(trade)
+case <-ctx.Done():
+log.Fatal(ctx.Err())
+}
+```
+Subscription queues are bounded. If your consumer falls behind, the SDK raises a realtime overflow error and faults the subscription, it does **not** silently drop updates. See [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming).
+5. Place and cancel a limit order
+Your API key policy must allow Spot trading for `BTC-USDT`, and its maximum order size must cover the order below. Spot orders spend **trading** balance. Manage the policy from the key's **Permissions** page in the Polyester app.
+```go
+symbol := "BTC-USDT"
+tif := "gtc"
+clientOrderID := fmt.Sprintf("quickstart-%d", time.Now().UnixNano())
+price := models.PriceFromDecimal("50000")
+result, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+Symbol:        &symbol,
+Side:          "buy",
+OrderType:     "limit",
+TIF:           &tif,
+Qty:           models.QtyFromDecimal("0.001"),
+Price:         &price,
+PostOnly:      true,
+ClientOrderID: &clientOrderID,
+}, nil)
+if err != nil { log.Fatal(err) }
+fmt.Println(result.Status, result.OrderID) // Status == "accepted" (admission ack)
+_, err = client.Orders.Cancel(ctx, nil, nil, &clientOrderID, &symbol, nil, nil)
+```
+Next: [Authentication](https://testnet.polyester.com/docs/sdk/go/guides/authentication) and [Trading](https://testnet.polyester.com/docs/sdk/go/guides/trading).

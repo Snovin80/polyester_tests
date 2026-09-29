@@ -1,0 +1,1094 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/triggers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Triggers · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Triggers
+Triggers
+Copy page
+View as Markdown
+Open in
+client.triggers
+is the standalone automation surface: create a trigger, and when its condition
+fires it places a child order for you. Every method is authenticated and account-scoped, so each
+input accepts an optional
+account
+field (
+"main"
+,
+"active"
+, or
+). See
+Account scoping
+for how the default resolves.
+Triggers come in five types, selected by
+triggerType
+stop_loss
+,
+take_profit
+,
+trailing_stop
+,
+twap
+, and
+ladder
+execution. Prices and distances are decimal strings, validated against the pair's scale before
+the request leaves your process. A decimal above the pair's protobuf wire-format ceiling throws
+CatalogConversionError
+before network I/O. The ceiling is not an exchange limit.
+Unlike the take-profit, stop-loss, and trailing legs you can attach to an order through
+client.orders
+, a trigger created here has no parent order:
+it stands on its own and fires against live market data.
+Methods
+Method
+Summary
+create
+Create a trigger of any of the five types.
+get
+Fetch one trigger by id, or
+null
+list
+List triggers with symbol ID, status, type, and parent-order filters.
+modify
+Patch a live trigger's price, distance, or slippage fields.
+cancel
+Cancel a trigger by id.
+pause
+Pause a trigger without discarding its configuration.
+resume
+Resume a paused trigger.
+listEvents
+Read a trigger's lifecycle events, newest first.
+subscribe
+Stream live trigger state over a private channel.
+subscribeEvents
+Stream trigger lifecycle events over a private channel.
+create(input, options?)
+Creates a standalone trigger and returns a
+CreateTriggerResult
+triggerType
+variant, so the fields you supply depend on the type. When you omit
+clientTriggerId
+, the SDK
+generates one for you and returns it in the result.
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+// Stop-loss: submit a market IOC sell when the condition fires
+const
+result
+=
+await
+client
+triggers
+create
+({
+triggerType:
+"stop_loss"
+,
+symbolId
+,
+side:
+"sell"
+,
+qty:
+"0.25"
+,
+triggerPrice:
+"60000"
+,
+execution: { type:
+"market_ioc"
+},
+});
+console
+log
+(
+result
+triggerId
+,
+result
+clientTriggerId
+,
+result
+acceptedAt
+);
+// Trailing stop: follow the price up, sell if it drops 500 back
+await
+client
+triggers
+create
+({
+triggerType:
+"trailing_stop"
+,
+symbolId
+,
+qty:
+"0.25"
+,
+trailingDistance: { kind:
+"distance"
+, distance:
+"500"
+},
+activationPrice:
+"70000"
+,
+maxSlippage: { kind:
+"bps"
+, bps:
+50
+},
+});
+interface
+CreateTriggerResult
+triggerId
+string
+;
+clientTriggerId
+string
+;
+acceptedAt
+number
+;
+// epoch ms
+acceptedAtNs
+string
+;
+}
+This result acknowledges admission only. Read or subscribe to the trigger for its runtime status.
+Common fields
+Field
+Type
+Required
+Notes
+symbolId
+number
+yes
+Stable market ID, integer 1 through 4,294,967,295.
+qty
+decimal string
+yes
+Total base-asset quantity. Strict precision.
+feeAsset
+"quote" | "base"
+no
+Defaults to
+"quote"
+selfTradePreventionMode
+"expire_taker" | "expire_maker" | "expire_both"
+no
+Defaults to
+"expire_maker"
+clientTriggerId
+string
+no
+Idempotency key. Auto-generated when omitted.
+account
+AccountScope
+no
+Scope override.
+Per-type fields
+stop_loss
+/
+take_profit
+side
+,
+triggerPrice
+, and
+execution
+or any limit execution (
+limit_gtc
+/
+limit_ioc
+/
+limit_fok
+). Buy
+side is limit-only.
+trailing_stop
+trailingDistance
+(required, a tagged shape:
+or
+), plus optional
+activationPrice
+(decimal string),
+maxSlippage
+(
+,
+, or
+).
+BPS values are integers from 1 through 10,000. It always sells using market IOC.
+twap
+side
+,
+durationMs
+(at least 1000ms),
+sliceIntervalMs
+(at least 100ms and no
+longer than the duration), and
+execution
+or
+maxSlippage
+protects each slice. Omit it to
+use the pair default, or set an absolute decimal price delta with
+or an integer BPS limit from 1 through 10,000 with
+ladder
+side
+,
+priceMin
+(below
+priceMax
+),
+priceMax
+,
+levels
+(2 to 100), and
+optional
+postOnly
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Pre-validate trigger forms
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Trigger values use strict decimal-scale conversion, so a value with too much precision throws a
+CatalogConversionError
+from
+before network I/O.
+The same applies when a value exceeds the corresponding
+SpotOrderConstraints
+wire
+ceiling. The catalog validator checks parse, tick, step, and minimum rules, but not the wire
+ceilings. See the
+catalog reference
+get(input, options?)
+Fetches one trigger by
+triggerId
+, or
+null
+when it is not found.
+const
+trigger
+=
+await
+client
+triggers
+get
+({ triggerId:
+result
+triggerId
+});
+if
+(
+trigger
+) {
+console
+log
+(
+trigger
+status
+,
+trigger
+configuration
+,
+trigger
+runtimeDetails
+);
+}
+list(input?, options?)
+Returns
+, newest first. Filter by
+symbolId
+,
+status
+(an array of
+status labels),
+triggerType
+, and
+parentOrderId
+, and page with
+limit
+(default 50) and
+pageToken
+const
+triggers
+}
+=
+await
+client
+triggers
+list
+({
+symbolId
+,
+status: [
+"created"
+,
+"armed"
+,
+"running"
+],
+triggerType:
+"trailing_stop"
+,
+});
+status
+accepts
+"created"
+,
+"armed"
+,
+"running"
+,
+"completed"
+,
+"cancelled"
+,
+"failed"
+, or
+"paused"
+dropped from it: refresh the catalog with
+client.catalog.refresh()
+and read again.
+modify(input, options?)
+Patches a live trigger by
+triggerId
+and required
+symbolId
+triggerPrice
+,
+limitPrice
+,
+trailingDistance
+,
+activationPrice
+, or
+maxSlippage
+; supplying
+none throws. Omit
+activationPrice
+or
+maxSlippage
+to preserve it, or pass
+to
+clear either. Price patches must be positive.
+trailingDistance
+accepts a decimal distance or BPS
+from 1 through 10,000;
+maxSlippage
+accepts a decimal slippage or BPS in that range.
+await
+client
+triggers
+modify
+({
+triggerId:
+trigger
+triggerId
+,
+symbolId
+,
+triggerPrice:
+"59500"
+,
+});
+// Widen a trailing stop and cap its slippage
+await
+client
+triggers
+modify
+({
+triggerId:
+trailing
+triggerId
+,
+symbolId
+,
+trailingDistance: { kind:
+"distance"
+, distance:
+"750"
+},
+maxSlippage: { kind:
+"bps"
+, bps:
+40
+},
+});
+Returns
+, where
+ts
+is epoch milliseconds and
+tsNs
+is the
+exact epoch-nanosecond decimal string.
+cancel(input, options?)
+Cancels a trigger by
+triggerId
+and returns a
+CancelTriggerResult
+(
+).
+await
+client
+triggers
+cancel
+({ triggerId:
+trigger
+triggerId
+});
+pause(input, options?)
+/
+resume(input, options?)
+Pause preserves the trigger's immutable configuration.
+resume
+also requires
+symbolId
+methods return
+await
+client
+triggers
+pause
+({ triggerId:
+trigger
+triggerId
+});
+await
+client
+triggers
+resume
+({ triggerId:
+trigger
+triggerId
+,
+symbolId
+});
+listEvents(input, options?)
+Returns
+for one trigger's lifecycle, newest first.
+limit
+defaults to 50. Events cover fires, cancels, updates, failures, activations, and the child orders a trigger places.
+const
+events
+}
+=
+await
+client
+triggers
+listEvents
+({
+triggerId:
+trigger
+triggerId
+,
+limit:
+20
+,
+});
+for
+(
+const
+event
+of
+events
+) {
+console
+log
+(
+event
+eventType
+,
+event
+firePrice
+,
+event
+childOrderId
+,
+event
+cancelReason
+,
+event
+failureReason
+);
+}
+import
+type
+TriggerEvent
+}
+from
+"@polyester/sdk"
+;
+firePrice
+is optional. Time-scheduled events such as TWAP slices can legitimately have no fire
+price; treat
+undefined
+as unavailable, not as zero.
+eventType
+is
+"fired" | "canceled" | "updated" | "failed" | "activated" | "unspecified"
+labels except
+"unspecified"
+as the optional
+eventType
+input to filter the list.
+cancelReason
+and
+failureReason
+are mutually exclusive typed terminal codes. Canceled records
+set
+cancelReason
+; failed records set
+failureReason
+; other records leave both undefined. The
+codes use stable snake-case labels. The free-form
+reason
+field is no longer returned.
+subscribe(input)
+Streams live trigger state over a private channel. Takes an
+accountId
+plus the standard handler
+fields, and returns an idempotent unsubscribe function. See the
+realtime client reference
+for the handler contract.
+const
+unsubscribe
+=
+client
+triggers
+subscribe
+({
+accountId
+,
+onEvent
+trigger
+)
+=>
+console
+log
+(
+trigger
+status
+,
+trigger
+triggerId
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+subscribeEvents(input)
+Streams trigger lifecycle events (fires, cancels, updates, failures, activations, child orders) over a private channel.
+Same handler contract as
+subscribe
+, emitting
+TriggerEvent
+records.
+const
+unsubscribe
+=
+client
+triggers
+subscribeEvents
+({
+accountId
+,
+onEvent
+event
+)
+=>
+console
+log
+(
+event
+eventType
+,
+event
+firePrice
+),
+});
+Managing a trigger's lifecycle
+The management methods compose into a full lifecycle: create, inspect, adjust, and cancel.
+// Create
+const
+triggerId
+}
+=
+await
+client
+triggers
+create
+({
+triggerType:
+"stop_loss"
+,
+symbolId
+,
+side:
+"sell"
+,
+qty:
+"0.25"
+,
+triggerPrice:
+"60000"
+,
+execution: { type:
+"market_ioc"
+},
+});
+// Inspect what is live
+const
+triggers
+}
+=
+await
+client
+triggers
+list
+({ status: [
+"created"
+,
+"armed"
+] });
+// Move the stop up as the position runs
+await
+client
+triggers
+modify
+({
+triggerId
+,
+symbolId
+, triggerPrice:
+"62000"
+});
+// Read what happened
+const
+events
+}
+=
+await
+client
+triggers
+listEvents
+({
+triggerId
+});
+// Tear it down
+await
+client
+triggers
+cancel
+({
+triggerId
+});
+The
+Trigger
+shape
+get
+,
+list
+, and
+subscribe
+share one parsed shape. Each trigger carries
+symbolId
+, not a pair
+symbol; use the catalog for its display label. Prices and quantities are decimal strings, and
+timestamps are epoch milliseconds.
+import
+type
+Trigger
+}
+from
+"@polyester/sdk"
+;
+configuration
+is the immutable strategy union:
+, where market IOC execution
+can set per-slice
+maxSlippage
+or omit it for the pair default
+Executions use the same lowercase tags as create inputs. Parsed read models may use
+when the server omits a configuration branch. There is no
+childOrderIds
+field on
+Trigger
+cancelReason
+and
+failureReason
+fields as events.
+runtimeDetails
+is separate from configuration and carries mutable strategy state:
+For a trailing stop,
+triggerPrice
+is the current threshold. It is
+undefined
+until the trigger
+is armed, then moves with the peak or trough.
+executedQty
+is the cumulative filled child-order base quantity as a decimal string. For a ladder,
+executedLevels
+counts levels with at least one fill, including partially filled levels.
+Related
+Trading guide
+for the task-oriented walkthrough.
+Orders
+for spot orders and attached (parent-bound) risk.
+Trades
+for the fills a trigger's child orders produce.
+Errors
+for validation and precision error types.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Transfers
+Next
+VIP
+On this page
+Methods
+create(input, options?)
+Common fields
+Per-type fields
+get(input, options?)
+list(input?, options?)
+modify(input, options?)
+cancel(input, options?)
+pause(input, options?) / resume(input, options?)
+listEvents(input, options?)
+subscribe(input)
+subscribeEvents(input)
+Managing a trigger's lifecycle
+The Trigger shape
+Related
+Related Topics
+Share this page
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+
+// Stop-loss: submit a market IOC sell when the condition fires
+const result = await client.triggers.create({
+	triggerType: "stop_loss",
+	symbolId,
+	side: "sell",
+	qty: "0.25",
+	triggerPrice: "60000",
+	execution: { type: "market_ioc" },
+});
+
+console.log(result.triggerId, result.clientTriggerId, result.acceptedAt);
+
+---
+
+// Trailing stop: follow the price up, sell if it drops 500 back
+await client.triggers.create({
+	triggerType: "trailing_stop",
+	symbolId,
+	qty: "0.25",
+	trailingDistance: { kind: "distance", distance: "500" },
+	activationPrice: "70000",
+	maxSlippage: { kind: "bps", bps: 50 },
+});
+
+---
+
+interface CreateTriggerResult {
+	triggerId: string;
+	clientTriggerId: string;
+	acceptedAt: number; // epoch ms
+	acceptedAtNs: string;
+}
+
+---
+
+const trigger = await client.triggers.get({ triggerId: result.triggerId });
+if (trigger) {
+	console.log(trigger.status, trigger.configuration, trigger.runtimeDetails);
+}
+
+---
+
+const { triggers } = await client.triggers.list({
+	symbolId,
+	status: ["created", "armed", "running"],
+	triggerType: "trailing_stop",
+});
+
+---
+
+await client.triggers.modify({
+	triggerId: trigger.triggerId,
+	symbolId,
+	triggerPrice: "59500",
+});
+
+// Widen a trailing stop and cap its slippage
+await client.triggers.modify({
+	triggerId: trailing.triggerId,
+	symbolId,
+	trailingDistance: { kind: "distance", distance: "750" },
+	maxSlippage: { kind: "bps", bps: 40 },
+});
+
+---
+
+await client.triggers.cancel({ triggerId: trigger.triggerId });
+
+---
+
+await client.triggers.pause({ triggerId: trigger.triggerId });
+await client.triggers.resume({ triggerId: trigger.triggerId, symbolId });
+
+---
+
+const { events } = await client.triggers.listEvents({
+	triggerId: trigger.triggerId,
+	limit: 20,
+});
+
+for (const event of events) {
+	console.log(
+		event.eventType,
+		event.firePrice,
+		event.childOrderId,
+		event.cancelReason,
+		event.failureReason
+	);
+}
+
+---
+
+import type { TriggerEvent } from "@polyester/sdk";
+
+---
+
+const unsubscribe = client.triggers.subscribe({
+	accountId,
+	onEvent: (trigger) => console.log(trigger.status, trigger.triggerId),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+const unsubscribe = client.triggers.subscribeEvents({
+	accountId,
+	onEvent: (event) => console.log(event.eventType, event.firePrice),
+});
+
+---
+
+// Create
+const { triggerId } = await client.triggers.create({
+	triggerType: "stop_loss",
+	symbolId,
+	side: "sell",
+	qty: "0.25",
+	triggerPrice: "60000",
+	execution: { type: "market_ioc" },
+});
+
+// Inspect what is live
+const { triggers } = await client.triggers.list({ status: ["created", "armed"] });
+
+// Move the stop up as the position runs
+await client.triggers.modify({ triggerId, symbolId, triggerPrice: "62000" });
+
+// Read what happened
+const { events } = await client.triggers.listEvents({ triggerId });
+
+// Tear it down
+await client.triggers.cancel({ triggerId });
+
+---
+
+import type { Trigger } from "@polyester/sdk";

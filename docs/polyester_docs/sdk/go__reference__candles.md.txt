@@ -1,0 +1,54 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/candles.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Candles
+Read and stream public spot OHLCV candles via MarketData (Candles alias).
+`client.MarketData` (alias `client.Candles`) reads and streams public spot OHLCV data. No authentication is required. Resolve `symbol` → `symbolID` via catalogs (or pass `symbolID`).
+Supported timeframe aliases: `1s`, `1m`, `5m`, `15m`, `30m`, `1h`, `4h`, `12h`, `1d`, `1w`, `1mo`.
+OHLCV fields are decimal strings. Candle times are epoch **seconds** (`TsSec`). Row results are ordered **newest-first**. When requested, the open/incomplete candle is prepended at index `0`; never use `len(result.Candles)-1` as the latest candle. Reverse or sort row results by `TsSec` before feeding them to chronological indicators. The columns API is **oldest-first**.
+## Methods
+| Method              | Summary                                                                      |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `GetCandles`        | Fetch candles as row objects.                                                |
+| `GetCandlesColumns` | Fetch columnar series, decoded to the same row result.                       |
+| `GetCurrentCandle`  | Latest candle (`limit=1`, incomplete included), or `nil` when no rows exist. |
+| `SubscribeCandles`  | Stream live row candles (`Messages()`).                                      |
+### GetCandles(ctx, symbol, symbolID, timeframe, limit, start, end, includeIncomplete)
+```go
+symbol := "BTC-USDT"
+result, err := client.Candles.GetCandles(ctx, &symbol, nil, "1h", 200, nil, nil, false)
+if err != nil { log.Fatal(err) }
+if len(result.Candles) > 0 {
+latest := result.Candles[0]
+fmt.Println(latest.TsSec, latest.Open, latest.Close, latest.Volume)
+}
+for left, right := 0, len(result.Candles)-1; left
+` semantics).
+```go
+candle, err := client.Candles.GetCurrentCandle(ctx, &symbol, nil, "1m")
+if err != nil {
+log.Fatal(err)
+}
+if candle == nil {
+fmt.Println("no candle rows yet")
+} else {
+fmt.Println(candle.TsSec, candle.Close)
+}
+```
+### SubscribeCandles(ctx, symbol, symbolID, timeframe)
+```go
+sub, err := client.Candles.SubscribeCandles(ctx, &symbol, nil, "1m")
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for candle := range sub.Messages() {
+fmt.Println(candle.TsSec, candle.Close)
+break
+}
+```
+`Candle` does not expose `IsClosed`. Treat streamed candles as updates for their `TsSec` / timeframe bucket; a later update for the same bucket supersedes the earlier value. Use `includeIncomplete` on reads when you want the still-forming bucket included.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/go/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming)
+- [Order book](https://testnet.polyester.com/docs/sdk/go/reference/order-book)
+- [Public trades](https://testnet.polyester.com/docs/sdk/go/reference/public-trades)

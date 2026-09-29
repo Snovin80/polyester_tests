@@ -1,0 +1,294 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Funds & Transfers
+Overview
+Copy page
+View as Markdown
+Open in
+Polyester separates
+Funding
+balances from
+Trading
+balances. The correct integration path
+depends on where the assets are now, where they need to go, and who is authorized to submit the
+operation.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Interface and authority are separate choices
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+REST and ConnectRPC are transports for backend APIs. A direct chain transaction or delegated
+Funding action uses on-chain authority instead. WebSocket channels report updates; they do not
+initiate transfers.
+Choose by source
+External chain
+Funding
+Trading
+Create or retrieve the account's deposit address through
+DepositAddressService
+Send the asset to that address on the source chain.
+Follow the resulting deposit lifecycle until the balance is settled.
+Deposit-address creation is available through REST at
+POST /v1/chain/deposit-addresses
+and through
+ConnectRPC. The external-chain transaction remains a user or wallet action. Depending on the
+account's configured
+route
+, the credited assets can remain in Funding or continue to Trading.
+Funding → Trading:
+submit the TradingGateway deposit on-chain.
+Funding → Funding:
+submit a FundingAccount transfer on-chain, or use an enabled delegated
+route.
+Funding → external chain:
+call
+FundingAccount.withdrawToChain
+on-chain. FundingAccount invokes
+Zipper
+within that transaction. An enabled delegated route can submit the same supported action.
+Funding is chain-visible. Polyester's general REST and ConnectRPC APIs do not replace the account's
+on-chain authorization for these mutations.
+Trading → Funding:
+use the Trading withdraw API with action
+TO_FUNDING
+Trading → external chain:
+use the Trading withdraw API with action
+TO_EXTERNAL_CHAIN
+Trading → Trading:
+use
+InternalTransferService
+for an off-chain internal transfer.
+Trading withdrawals support API-key authorization for server-side integrations and wallet
+authorization for interactive sessions. Internal transfers and withdrawals require stable
+idempotency keys.
+Validate a Funding withdrawal destination
+Use
+POST /v1/chain/withdraws:validate-destination
+or the ConnectRPC
+ValidateWithdrawDestination
+method to validate an external destination before constructing a
+Funding withdrawal transaction. This authenticated request checks the selected network, canonical
+address format, Polyester account and contract addresses, and destination safety restrictions. It
+does not create or submit a withdrawal.
+REST request
+"destinationChainId"
+"1"
+,
+"destinationAddress"
+"0x1111111111111111111111111111111111111111"
+}
+The response returns
+VALID
+,
+INVALID_ADDRESS
+,
+UNSUPPORTED_CHAIN
+,
+POLYESTER_SMART_ACCOUNT
+,
+TOKEN_CONTRACT
+, or
+DENYLISTED_ADDRESS
+explains how to correct the destination without exposing internal denylist notes. A denylisted
+address applies across every network that shares the same address family, such as all EVM networks.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Validation does not authorize the withdrawal
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The
+Funding account
+'s on-chain checks remain authoritative. Run validation immediately before
+submission because destination safety status can change after the response.
+Choose an interface and authority path
+REST
+ConnectRPC
+Realtime
+Direct on-chain
+Delegated Funding
+Use REST when you want HTTP and JSON tooling. Public REST paths cover:
+creating and listing deposit addresses
+validating external destinations for Funding withdrawals
+API-key withdrawals from Trading to Funding or an external chain
+Trading-to-Trading internal transfers
+reading balances, transfer history, configuration, and lifecycle state
+Wallet-authorized Trading withdrawals are available at
+POST /v1/chain/trading-withdraws:wallet
+; they require the same session, fresh step-up proof, and
+wallet signature as the ConnectRPC method.
+REST money-movement amounts are exact decimal strings. For example, a Trading-to-Trading request
+uses:
+"destinationSmartAccountAddress"
+"0x2222222222222222222222222222222222222222"
+,
+"assetId"
+1
+,
+"amount"
+"0.5"
+,
+"idempotencyKey"
+"transfer-2026-07-16-0001"
+}
+The response also exposes
+amount
+as a decimal string.
+See
+REST getting started
+Use ConnectRPC for typed unary methods and official SDK integrations. It covers deposit addresses,
+Funding withdraw destination validation, Trading-to-Trading internal transfers, Trading withdrawals,
+and funds-related reads. Canonical money amounts remain U128
+amount_e18
+fields on this transport.
+See
+ConnectRPC & Protobuf
+Use realtime channels to monitor lifecycle, balance, and transfer updates after submission. Realtime
+does not initiate deposits, withdrawals, or transfers.
+Use
+WebSocket JSON
+where the required channel has a JSON
+variant, or
+WebSocket Protobuf
+for typed
+channels and official SDK clients.
+Use a wallet or smart-account transaction for:
+moving assets from Funding to Trading
+transferring assets between Funding accounts
+withdrawing from Funding
+managing external and internal whitelist state
+enabling or revoking delegated Funding access
+The live on-chain fee and contract validation are authoritative. An API estimate or saved
+destination does not override them.
+For TypeScript integrations, see
+Deposits & withdrawals
+for the smart-account
+transaction helpers.
+A Funding account can grant delegated access on-chain when Polyester has enabled it for the account
+and integration. The delegated integration can then submit supported Funding withdrawals and
+Funding-to-Funding transfers.
+Delegated Funding does not authorize Trading operations, whitelist changes, or unrestricted account
+actions.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Delegation does not create a universal API
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The public REST and ConnectRPC interfaces currently provide Trading withdrawals and
+Trading-to-Trading transfers. Delegated Funding is not a general REST or ConnectRPC mutation
+surface.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Trading interfaces do not move funds
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+SBE WebSocket, FIX Classic, and FIX-SBE are trading connectivity paths. They do not replace the
+funds-and-transfers APIs or on-chain actions described here.
+After submission
+1
+Retry backend APIs safely
+For a backend API retry, keep the signed business payload, account scope, destination, amount, nonce,
+deadline, and idempotency value stable for one logical operation. For an API-key retry, create a
+fresh timestamp and HTTP request signature.
+2
+Track the lifecycle
+Store the identifiers returned by the intake or chain transaction. Use lifecycle read methods and
+realtime channels to correlate later updates.
+3
+Wait for settlement
+An accepted API request or successful on-chain submission does not necessarily mean the destination
+balance is settled. For a successful balance move, wait for ledger settlement. Failed, dropped, and
+refunded lifecycle states are terminal without settlement.
+Security boundaries
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A saved destination is not authorization
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Security requirements vary by path. External and internal whitelists remain chain-authoritative, and
+delegated Funding access does not replace their checks. See
+Withdrawals and transfer security
+for authentication, signatures, policies, whitelists, and step-up requirements.
+See
+Withdraw from Trading
+for the
+Trading withdrawal payloads.
+Related Topics
+Withdraw from Trading
+How to withdraw from Trading to Funding or to an external chain
+Previous
+API key IP allowlists
+Next
+Withdraw from Trading
+On this page
+Choose by source
+Validate a Funding withdrawal destination
+Choose an interface and authority path
+After submission
+Security boundaries
+Related Topics
+Share this page
+Overview
+Choose the correct API, on-chain, or delegated path for deposits, withdrawals, and transfers.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"destinationChainId": "1",
+	"destinationAddress": "0x1111111111111111111111111111111111111111"
+}
+
+---
+
+{
+	"destinationSmartAccountAddress": "0x2222222222222222222222222222222222222222",
+	"assetId": 1,
+	"amount": "0.5",
+	"idempotencyKey": "transfer-2026-07-16-0001"
+}

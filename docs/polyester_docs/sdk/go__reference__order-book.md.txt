@@ -1,0 +1,63 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/order-book.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+`client.Orderbook` reads spot depth snapshots and maintains a stateful live book. It uses the public transport, so no authentication is required.
+Levels are `{ Price, Qty }` pairs, best-first (bids descending, asks ascending). Each snapshot carries `BookSeq`, the backend sequence number used to detect gaps.
+## Methods
+| Method               | Summary                                                 |
+| -------------------- | ------------------------------------------------------- |
+| `Get`                | Fetch a one-shot depth snapshot.                        |
+| `CreateSubscription` | Managed live book (snapshot + sequence-checked deltas). |
+| `Subscribe`          | Convenience wrapper around `CreateSubscription`.        |
+| `SubscribeDeltas`    | Raw delta stream (no local merge).                      |
+### Get(ctx, symbol, depth)
+Fetches a depth snapshot and returns `models.OrderbookData`. Exact supported depths are `1, 5, 10, 20, 50, 100, 200, 500, 1000`; intermediate requests round up to the next supported depth. Catalog hydration is required because decoded quantities need the pair's base scale.
+```go
+book, err := client.Orderbook.Get(ctx, "BTC-USDT", 20)
+if err != nil { log.Fatal(err) }
+fmt.Println(book.Bids[0], book.Asks[0], book.BookSeq)
+```
+### CreateSubscription(ctx, opts) / Subscribe(...)
+Builds a managed live order book: REST snapshot, then Centrifugo deltas with sequence checking. Gaps trigger a REST refresh. Returns `*orderbook.Subscription`.
+Managed books expose **`Updates()`**, not `Messages()` (that name is for typed `*realtime.Subscription[T]` helpers).
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/services"
+sub, err := client.Orderbook.CreateSubscription(ctx, services.CreateSubscriptionOptions{
+Symbol: "BTC-USDT",
+Depth:  50,
+Bucket: "1.0",
+OnEvent: func(book models.OrderbookData) {
+fmt.Println(book.Bids[0], book.Asks[0], book.BookSeq)
+},
+})
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for book := range sub.Updates() {
+fmt.Println(book.BookSeq)
+break
+}
+sub.SetBucket("5.0") // re-aggregate without reconnecting
+```
+`SymbolID` is resolved from catalogs when omitted; call `WaitForCatalogs` first if you rely on symbol strings. Optional: `OnSequenceGap`, `OnReconnect`, `OnSnapshotRefresh`. One-shot snapshots support depth `1000`; managed realtime channels are capped at depth `500`. Buckets must be positive price increments. Bids round down and asks round up, preserving executable spread semantics. Malformed snapshots and integer overflow terminate the local render with a validation error. A malformed delta is rejected atomically and triggers a snapshot refresh without advancing the local sequence.
+> **Prefer the managed subscription**
+>
+> `CreateSubscription` handles snapshot fetch, sequence gaps, and reconnect refetch.
+### SubscribeDeltas(ctx, symbolID, depth)
+Returns `*realtime.Subscription[models.OrderBookDeltaUpdate]`, consume with `Messages()`.
+```go
+deltas, err := client.Orderbook.SubscribeDeltas(ctx, 1, 50)
+if err != nil { log.Fatal(err) }
+defer deltas.Close()
+for d := range deltas.Messages() {
+fmt.Println(d.BookSeqStart, d.BookSeqEnd)
+break
+}
+```
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/go/guides/market-data)
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/go/guides/streaming)
+- [Market overview](https://testnet.polyester.com/docs/sdk/go/reference/market-overview)
+- [Public trades](https://testnet.polyester.com/docs/sdk/go/reference/public-trades)

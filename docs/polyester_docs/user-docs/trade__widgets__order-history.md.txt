@@ -1,0 +1,23 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Order History
+Review filled, canceled, expired, and rejected order outcomes for the selected account.
+**Order History explains what happened after an order left the active view.** Use it to review ended outcomes and connect an order with its fills, instructions, and final state.
+![Order History](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/5f3e6ce21a6eab90952d83d108147ca5fc585074f1df681f2a5f78a7aa092639/source.webp)
+## What the widget shows
+The table can be filtered by Pair, side, and status. Its available columns include order time, Pair, side, type, status, quantity, filled amount, average price, limit price, time in force, and order identifiers.
+| Status   | What it means                                        |
+| -------- | ---------------------------------------------------- |
+| Filled   | No order quantity remains after completed matches    |
+| Canceled | The remaining eligible quantity was canceled         |
+| Expired  | The instruction ended under its time or product rule |
+| Rejected | The order did not become active as intended          |
+Status alone is not the whole result. An order can fill partially before its remainder is canceled, so compare the current accepted total quantity, filled amount, and final state together.
+## Trace an order
+Open the row details and keep the order ID or client order ID when one is available. Compare the submitted instructions, fills, final status, fees, and resulting balance changes.
+> **Acknowledgement is not the final outcome**
+>
+> A successful submission response means the request reached the trading system. Order History, fill details, and balances show what happened afterward.
+After a connection gap, the read view can take a moment to reconcile. Refresh the row and preserve its identifiers before escalating an apparent mismatch.

@@ -1,0 +1,114 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/rest/identifiers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Identifiers · REST
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+REST
+Getting started
+Identifiers
+WebSocket JSON
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+REST
+svg]:size-3.5">
+/
+Identifiers
+Identifiers
+Copy page
+View as Markdown
+Open in
+Polyester REST endpoints expose public IDs as short base58 strings. The same identifiers appear in
+URLs, JSON fields, logs, and support workflows.
+For what public IDs are and why they are opaque, see
+Public IDs
+and behave over REST.
+Using base58 IDs
+Use IDs exactly as returned:
+"orderId"
+"An6UebxCZd"
+}
+You can pass the same values back in REST path, query, or JSON fields:
+curl
+"https://api.polyester.io/v1/spot/orders/An6UebxCZd"
+REST clients should:
+store IDs as strings
+compare IDs as exact strings
+keep the original casing
+use the base58 value directly in REST requests, URLs, logs, and support workflows
+Base58 is used because the same 64-bit public ID can become a much shorter and cleaner URL segment
+than its decimal representation.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Do not parse REST IDs as decimal numbers
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+REST public IDs are base58 strings. Treat them as base58 even when a tool or debug view also shows a decimal value.
+Crossing to other interfaces
+A raw REST integration should keep the base58 string exactly as returned and never needs to convert
+it. Conversion only matters when an ID crosses into an interface that carries identifiers as raw
+64-bit values; see
+ConnectRPC identifiers
+for that representation.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Keep REST parsing base58-only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Debug tools may accept decimal strings, but public REST fields should stay base58-only so request handling remains predictable.
+Previous
+Getting started
+Next
+WebSocket JSON
+On this page
+Using base58 IDs
+Crossing to other interfaces
+Share this page
+Identifiers
+How Polyester REST endpoints represent public IDs as base58 strings in URLs and JSON.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"orderId": "An6UebxCZd"
+}
+
+---
+
+curl "https://api.polyester.io/v1/spot/orders/An6UebxCZd"

@@ -1,0 +1,25 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/policies.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Policies
+Realtime API-key and subaccount-policy updates.
+The Go SDK intentionally exposes policy **streams only**. Unary policy administration requires a JWT/session and is not part of this API-key SDK.
+| Method                                      | Event type                |
+| ------------------------------------------- | ------------------------- |
+| `Subscribe` / `SubscribeSubaccountPolicies` | `models.SubaccountPolicy` |
+| `SubscribeAPIPolicies`                      | `models.ApiPolicy`        |
+```go
+apiPolicies, err := client.Policies.SubscribeAPIPolicies(ctx, nil)
+if err != nil { log.Fatal(err) }
+defer apiPolicies.Close()
+for policy := range apiPolicies.Messages() {
+fmt.Println(policy.PolicyID, policy.Revision)
+break
+}
+if err := apiPolicies.Err(); err != nil {
+log.Printf("policy stream ended: %v", err)
+}
+```
+Passing `nil` uses `Config.DefaultAccountID`. Both channels require API-key credentials plus Account ID and the corresponding policy read permission. Subscription return means the private token and Centrifugo handshake succeeded.
+Policy events may describe MFA requirements, but Go cannot perform a browser MFA challenge. Manage policy mutations and assignments in the Polyester app/TypeScript session client.

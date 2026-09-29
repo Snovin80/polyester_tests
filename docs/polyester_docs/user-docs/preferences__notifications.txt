@@ -1,0 +1,205 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/notifications
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Notifications · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Preferences
+svg]:size-3.5">
+/
+Notifications
+Notifications
+Copy page
+View as Markdown
+Open in
+Notifications keep you updated on account activity, trading, funds, security, and Polyester announcements. Choose the updates you care about and where you want to receive them.
+Open
+Notifications
+to review alerts. Open
+Notification Settings
+to manage your choices.
+Choose where notifications appear
+In-app
+notifications appear while you are using Polyester.
+Browser
+notifications can appear outside the active Polyester tab.
+Push
+notifications appear on supported devices.
+Browser and push notifications also need permission from your browser or device.
+Choose which updates you receive
+Turn notification groups on or off for:
+orders and trades
+deposits and withdrawals
+transfers
+security activity
+platform updates.
+Your security settings and activity records remain available even when a notification group is turned off.
+Choose how alerts look and sound
+Set where alerts appear on screen, whether Polyester shows an unread badge, how long temporary alerts remain visible, and whether they play a sound.
+Sound volume is controlled separately under
+Sounds
+If an alert does not arrive
+Check that the notification group and delivery channel are on. For browser or push alerts, also check the browser permission, device notification settings, and focus or do-not-disturb mode.
+Related Topics
+Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Appearance
+Choose your theme, colors, and typeface.
+Language & Region
+Choose how Polyester displays language, dates, times, currencies, and numbers.
+Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Balances
+Hide account amounts on screen without changing the balances themselves.
+Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Previous
+Sounds
+Next
+Balances
+On this page
+Choose where notifications appear
+Choose which updates you receive
+Choose how alerts look and sound
+If an alert does not arrive
+Related Topics
+Share this page
+Notifications
+Choose which Polyester updates you receive and how they appear.
+Share
+Copy Link

@@ -1,0 +1,418 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+chain.withdraw.v1.WithdrawService
+CreateWalletTradingWithdraw
+Create or return one wallet/JWT withdraw from Trading.
+Root-owner Trading to Funding and root-owner withdrawals to explicitly
+whitelisted external destinations accept recent MFA. Other external,
+cross-owner, and delegated movements require a fresh single-use step-up.
+Copy URL
+Method
+POST
+Path
+chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw
+Service
+chain.withdraw.v1.WithdrawService
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Conditionally required
+POST
+chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"payload": {
+"action": "TO_FUNDING",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"deadlineTsSec": "1735689600",
+"destinationAddress": "0x3333333333333333333333333333333333333333",
+"destinationChainId": "1",
+"idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+"nonce": {
+"hi": "1",
+"lo": "1"
+}
+},
+"payloadSignature": "AA==",
+"signerWallet": "0x5555555555555555555555555555555555555555",
+"subaccountId": "6789012345678"
+}'
+Responses
+"intentId": "9155001234567"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+chain.withdraw.v1.CreateWalletTradingWithdrawRequest
+Response
+chain.withdraw.v1.CreateWalletTradingWithdrawResponse
+Request body
+Form
+JSON
+Example
+payload
+object
+required
+Client-signed withdraw details.
+8 fields
+action
+enum
+must be defined value
+Destination for funds leaving Trading.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s361" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+TO_FUNDING
+assetId
+integer (int32)
+> 0
+Unified asset identifier from Polyester asset metadata. amount_e18 is
+denominated in this asset at canonical 18-decimal scale.
+destinationChainId
+string (uint64)
+External network id for TO_EXTERNAL_CHAIN. Omit for TO_FUNDING.
+amountE18
+object
+required
+Withdraw amount in canonical 18-decimal unified asset units.
+For example, 0.5 is encoded as 500000000000000000.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+deadlineTsSec
+string (uint64)
+> 0
+Unix timestamp in seconds after which this signed user authorization is no
+longer accepted by the API. This is separate from the server-owned
+execution deadline used later for on-chain submission.
+nonce
+object
+required
+Client-generated unsigned 128-bit nonce bound to the signed request. This
+is an identifier, not a decimal amount.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+destinationAddress
+string
+Destination address. For TO_EXTERNAL_CHAIN this is an address on
+destination_chain_id and is validated according to that network. For
+TO_FUNDING, omit it to move funds to the selected account's Funding account
+or provide another Polyester funding address for a Trading-to-Funding
+transfer.
+idempotencyKey
+string
+min 1 chars
+Client-chosen idempotency key. Reusing the same key with the same payload
+returns the existing withdraw; reusing it with different payload fails.
+subaccountId
+string (uint64)
+Optional public subaccount id. Omit to withdraw from the JWT root account.
+signerWallet
+string
+/^0x[0-…]{40}$/
+Wallet address that produced payload_signature.
+payloadSignature
+string (byte)
+min 1 chars
+Wallet EIP-191 personal_sign signature over the canonical withdraw authorization message.
+Response
+Form
+JSON
+intentId
+string
+Stable server-owned intent identifier for the accepted withdraw lifecycle.
+Clients use this id to follow later progress for the same withdraw flow.
+Possible errors
+Possible errors: 42
+Key
+Status
+Error
+When
+account-shard-unavailable
+503
+Account Shard Unavailable
+The account shard cannot currently accept fund movement.
+amount-below-minimum
+400
+Amount Below Minimum
+The withdraw amount is below the configured minimum including fees.
+amount-exceeds-supply
+400
+Amount Exceeds Supply
+The withdraw amount exceeds the available zipped-asset supply.
+api-key-binding-invalid
+403
+API Key Binding Invalid
+API-key authorization binding verification failed.
+api-key-binding-public-key-mismatch
+403
+API Key Binding Public Key Mismatch
+The API-key authorization binding does not match the configured public key.
+api-key-binding-scope-mismatch
+403
+API Key Binding Scope Mismatch
+The API-key authorization binding does not cover the requested scope.
+api-key-not-found
+403
+API Key Not Found
+The API key could not be resolved.
+capital-view-unavailable
+503
+Capital View Unavailable
+The authoritative capital view is not ready.
+chain-metadata-unavailable
+503
+Chain Metadata Unavailable
+Required chain or contract metadata is unavailable.
+conflict
+409
+Conflict
+The request conflicts with existing state.
+destination-validation-unavailable
+503
+Destination Validation Unavailable
+Destination validation is temporarily unavailable.
+external-destination-not-whitelisted
+403
+External Destination Not Whitelisted
+The external destination is not whitelisted.
+failed-precondition
+400
+Failed Precondition
+A required withdraw precondition was not satisfied.
+fee-unavailable
+503
+Fee Unavailable
+Required network fee data is unavailable.
+funds-lock-conflict
+409
+Funds Lock Conflict
+The funds lock conflicts with an existing or finalized reservation.
+idempotency-conflict
+409
+Idempotency Conflict
+The idempotency key was reused with different request data.
+insufficient-funds
+400
+Insufficient Funds
+The source account does not have enough available Trading balance.
+internal-error
+500
+Internal Error
+The withdraw failed because of an unexpected server error.
+internal-recipient-not-whitelisted
+403
+Internal Recipient Not Whitelisted
+The internal funding recipient is not whitelisted.
+invalid-action
+400
+Invalid Withdraw Action
+The withdraw action is invalid for this endpoint.
+invalid-amount
+400
+Invalid Amount
+The withdraw amount is invalid.
+invalid-destination-address
+400
+Invalid Destination Address
+The destination address is invalid.
+invalid-destination-chain
+400
+Invalid Destination Chain
+The destination chain is invalid.
+invalid-request
+400
+Invalid Request
+The request payload or one of its fields is invalid.
+invalid-subaccount-id
+400
+Invalid Subaccount
+The selected subaccount identifier is invalid.
+not-found
+404
+Not Found
+The requested resource was not found.
+permission-denied
+403
+Permission Denied
+The caller is not permitted to perform this withdraw operation.
+rate-limit-exceeded
+429
+Rate Limit Exceeded
+The withdraw admission rate limit was exceeded.
+service-unavailable
+503
+Service Unavailable
+A required service is temporarily unavailable.
+signature-required
+400
+Signature Required
+A payload signature is required.
+signature-scheme-unsupported
+400
+Signature Scheme Unsupported
+The signature scheme is unsupported.
+signer-wallet-invalid
+400
+Invalid Signer Wallet
+The signer wallet is invalid.
+source-smart-account-unavailable
+400
+Source Smart Account Unavailable
+The source smart-account address is unavailable.
+step-up-unavailable
+503
+Step-Up Unavailable
+Fresh step-up verification is temporarily unavailable.
+subaccount-not-found
+404
+Subaccount Not Found
+The selected subaccount does not exist.
+supply-unavailable
+503
+Supply Unavailable
+Required zipped-asset supply data is unavailable.
+unauthenticated
+401
+Unauthenticated
+Authentication is required.
+unsupported-asset
+400
+Unsupported Asset
+The requested asset or withdraw route is not supported.
+unsupported-ledger
+400
+Unsupported Ledger
+The requested ledger is not supported for withdrawals.
+wallet-binding-invalid
+403
+Wallet Binding Invalid
+Wallet authorization binding verification failed.
+wallet-binding-scope-mismatch
+403
+Wallet Binding Scope Mismatch
+The wallet authorization binding does not cover the requested scope.
+wallet-binding-signer-mismatch
+403
+Wallet Binding Signer Mismatch
+The wallet authorization binding does not match the signer.
+POST
+chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s403" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"payload": {
+"action": "TO_FUNDING",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"deadlineTsSec": "1735689600",
+"destinationAddress": "0x3333333333333333333333333333333333333333",
+"destinationChainId": "1",
+"idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+"nonce": {
+"hi": "1",
+"lo": "1"
+}
+},
+"payloadSignature": "AA==",
+"signerWallet": "0x5555555555555555555555555555555555555555",
+"subaccountId": "6789012345678"
+}'
+Responses
+"intentId": "9155001234567"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/chain.withdraw.v1.WithdrawService/CreateWalletTradingWithdraw' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "payload": {
+    "action": "TO_FUNDING",
+    "amountE18": {
+      "hi": "1",
+      "lo": "1"
+    },
+    "assetId": 100,
+    "deadlineTsSec": "1735689600",
+    "destinationAddress": "0x3333333333333333333333333333333333333333",
+    "destinationChainId": "1",
+    "idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+    "nonce": {
+      "hi": "1",
+      "lo": "1"
+    }
+  },
+  "payloadSignature": "AA==",
+  "signerWallet": "0x5555555555555555555555555555555555555555",
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "intentId": "9155001234567"
+}

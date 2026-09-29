@@ -1,0 +1,19 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/guard-signer.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Guard signer
+Guard signer approval helpers.
+`client.guard_signer` manages approvals for protected funding account-control actions.
+| Method                            | Generated request               |
+| --------------------------------- | ------------------------------- |
+| `get_status` / `create_wallet`    | guard wallet state/provisioning |
+| `sign_protected_action`           | one approval                    |
+| `batch_sign_protected_actions`    | multiple approvals              |
+| `rotate_wallet` / `export_wallet` | guard key lifecycle             |
+```rust
+use polyester::proto::chain::guard::v1::GetGuardSignerStatusRequest;
+let status = client
+```
+The action-specific generated requests determine which addresses, chain ID, or whitelist flag is required. These are authenticated control-plane mutations: do not retry blindly and never log approval payloads or exported key material.
+An approval does not submit an on-chain transaction. Combine it with the matching [Chain helper](https://testnet.polyester.com/docs/sdk/rust/reference/chain) and verify the receipt/final state.

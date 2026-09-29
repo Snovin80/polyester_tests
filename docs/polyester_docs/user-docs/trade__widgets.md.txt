@@ -1,0 +1,48 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Learn the Trading Screen widgets you can add, group, and rearrange in Advanced layout.
+A widget is a Trading Screen panel for one job: a chart, the book, the form, or your account activity. In **Advanced**, you add widgets from **Add Widget**, then drag, resize, float, or group them as tabs.
+Use **Standard** when you want the same widgets in a fixed arrangement. Use the pages below when you want the controls inside a specific widget.
+## Widgets
+These are the Trading Screen panels you can add, group, and rearrange on **Advanced**. Open a widget page when you want the controls inside that panel.
+1. ### Polyester Chart
+Read candles, volume, indicators, and drawings in Polyester's native chart. Keep it beside the book, form, and account panels you use on the same market ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/polyester-chart)).
+![Polyester Chart](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/eb68a8c5ffbe15983d086e8efed6045384c8170551a52ed2fd77e34ba9926f10/source.webp)
+2. ### TradingView Chart
+Analyze markets with TradingView Advanced Charts and saved chart preferences. Both charts use Polyester market data, so you can pick the charting tools that fit how you read a market ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/tradingview-chart)).
+![TradingView Chart](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/d2fa3aed39dca9c21106d6c1bdf53127a461d053aa3e7c04c4f092788695600f/source.webp)
+3. ### Depth Chart
+See where visible buy and sell liquidity sits around the current market. Use the curves for shape and concentration, then the Order Book for exact prices and amounts ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/depth-chart)).
+![Depth Chart](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/c5f4afe50c180800e966b53faf7a8dd75476488326af909a774783f71c439ca3/source.webp)
+4. ### Order Book
+Read buy and sell prices, the spread, and visible liquidity for one spot market. Use it when you need exact levels next to the chart and form ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book)).
+![Order Book](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/5b027470c5385b0f76a929869ebbfba60a162b469e8deb618d8b6fe92ed3cac7/source.webp)
+5. ### Market Trades
+Follow recent public executions for the active Pair. This tape is market-level activity, not your personal fill history ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/market-trades)).
+![Market Trades](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/4291e94568c42a880c6105bdbfec364234f0a02890e379c0e09745b1a8d503b8/source.webp)
+6. ### Order Form
+Choose a side, order type, amount, price, and execution controls. The form uses the selected Pair's rules and the active account's available balance ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-form)).
+![Order Form](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/a2280c2b000f7655952b6a1fa0bd4af1e79eba1f3d26a9a19231974207011456/source.webp)
+7. ### Open Orders
+Monitor working and partial fills, then act on the remaining quantity. Cancel, replace, or wait as the rest of the order works ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/open-orders)).
+![Open Orders](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/5a4c4fc2bd5717e51ecb5000ad982e624a0b39b609956f0c10ec73c8e8d75df9/source.webp)
+8. ### Triggers
+Monitor conditional and staged instructions before they become orders. Use this list for instructions that are waiting on a condition, not for working orders ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-triggers)).
+![Triggers](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3c24e1f45a1ead00cb5a169ce821c31efab5aa106566baa545741b4dc90ef2d9/source.webp)
+9. ### Order History
+Review filled, canceled, expired, and rejected outcomes for this account. Use it for activity attributed to you, not for the public tape ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history)).
+![Order History](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/5f3e6ce21a6eab90952d83d108147ca5fc585074f1df681f2a5f78a7aa092639/source.webp)
+10. ### Funds
+Compare Unified Trading and Funding balances for the two Assets in the active Pair. Keep those balances beside the form while you size an order ([Learn more](https://testnet.polyester.com/docs/user-docs/trade/widgets/funds)).
+![Funds](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/50bd0857970a4cedc4c34e6cbf6936b9e7efda0dae3cb54e1e2eef19b35cd4a6/source.webp)
+## Widgets in Advanced layout
+On **Advanced** layout, add a widget to the workspace, drag it into place, or float it over the grid.
+### View
+Click **Add Widget** in a tab header, or open the widget catalog from the workspace toolbar. Search for the panel you want, then drop it onto the screen.
+### Drag
+Drag a panel or tab to a new place on the workspace. Drop it beside another group to split the layout, or drop it onto a group to stack it as a tab. You can also move one tab from its current group into another group when you want those widgets together. Layout changes affect presentation only. They do not place, modify, cancel, or settle an order.
+### Float
+Click **Float panel** to pull a group out of the grid. Move the floating group, then click **Dock panel** to put it back.

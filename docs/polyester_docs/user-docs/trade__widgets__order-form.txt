@@ -1,0 +1,222 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/order-form
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order Form · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Order Form
+Order Form
+Copy page
+View as Markdown
+Open in
+The Order Form turns a trading decision into a precise instruction.
+Its controls change with the active Pair, side, order type, account permissions, and current product availability.
+Changing the form prepares a future submission. It does not modify an open order unless the form was opened through an explicit modify action for that order.
+Review every submission
+Check
+Why it matters
+Pair
+Identifies the base and
+quote Assets
+and current market state
+Side
+Determines whether the order buys or sells the
+base Asset
+Order type
+Defines how price and execution should behave
+Amount
+Sets the requested quantity in the displayed unit
+Price or protection
+Sets a limit, trigger, or market-order protection when required
+Time in force and modifiers
+Controls how the order can work, rest, or avoid taking liquidity
+Available Balance
+Shows what the selected account can use for a new eligible order
+Estimate and fee
+Previews the expected balance effect without guaranteeing execution
+Pair metadata provides the price tick, quantity step or lot size, minimum quantity, minimum notional, amount scales, market state, and separate default market-order protection for Buy and Sell. It does not publish a maximum order size.
+The Order Form applies these Pair rules and surfaces validation when a value does not fit them. A submission can also be rejected by the available balance, account policy, market state, or an unsupported modifier. API users can read the Pair rules from the public spot configuration.
+A
+Subaccount
+policy can limit maximum order notional. This is an account restriction, not a global maximum order size for the Pair.
+For a market order, the Pair's per-side slippage value is the default. The public order contract can override it with maximum slippage in basis points or an absolute tick delta when the selected interface exposes that choice.
+Self-trade prevention defaults to
+Expire
+Maker
+when it is omitted. The current order contract also accepts Expire
+Taker
+or Expire Both per order. Read the selected value before submitting instead of assuming a preference carries across forms.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Review the instruction in front of you
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Confirm the Pair, account, side, amount, and effective price controls after changing any option. The public Pair catalog does not publish advanced-order capability flags, so a control shown in another Pair, saved layout, or example cannot prove that a strategy is enabled end to end.
+After you submit
+Submitting begins an order lifecycle. An acknowledgement does not mean the order is working, filled, or financially settled.
+Use
+Open Orders
+for working quantity,
+Order Triggers
+for conditional parents, and
+Order History
+for ended outcomes.
+Related Topics
+Open Orders
+Monitor working and partially filled orders, then act on their remaining quantity.
+Order Triggers
+Monitor conditional and staged instructions before and after they create executable orders.
+Order History
+Review filled, canceled, expired, and rejected order outcomes for the selected account.
+Previous
+Market Trades
+Next
+Open Orders
+On this page
+Review every submission
+After you submit
+Related Topics
+Share this page
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Share
+Copy Link

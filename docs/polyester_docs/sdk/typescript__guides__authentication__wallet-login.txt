@@ -1,0 +1,489 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/authentication/wallet-login
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Wallet Login · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Authentication
+svg]:size-3.5">
+/
+Wallet Login
+Wallet Login
+Copy page
+View as Markdown
+Open in
+PolyesterBrowserClient
+runs the full wallet login: request a server-generated Sign-In with
+Ethereum (SIWE) challenge, sign its exact UTF-8 bytes with an account signer, exchange it for a JWT,
+and persist the session.
+For bots, scripts, and backend services, see
+API Keys
+Authentication model
+Create an account signer
+An account signer identifies the user's Polyester
+smart account
+and the owner
+EOA
+that authorizes
+login. From a viem
+LocalAccount
+, such as a browser wallet, Turnkey wallet, or private key, derive
+the smart-account address with no RPC calls, then sign login messages directly with the owner:
+import
+createPolyesterAccountSigner
+}
+from
+"@polyester/sdk/account-signer"
+;
+import
+POLYESTER_TESTNET_ENVIRONMENT
+}
+from
+"@polyester/sdk"
+;
+const
+accountAddress
+}
+=
+createPolyesterAccountSigner
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+owner:
+ownerAccount
+,
+// a viem LocalAccount
+});
+const
+accountSigner
+=
+environmentFingerprint:
+POLYESTER_TESTNET_ENVIRONMENT
+fingerprint
+,
+accountAddress
+,
+ownerAddress:
+ownerAccount
+address
+,
+signMessage
+message
+string
+)
+=>
+ownerAccount
+signMessage
+({
+message
+}),
+};
+createPolyesterAccountSigner
+on its own produces Safe/ERC-6492-wrapped signatures. Those are
+accepted for
+subaccount
+creation, but login requires the owner's raw 65-byte EIP-191 signature, so
+use it only to derive
+accountAddress
+in this flow. No account deployment is required.
+Create the client and log in
+import
+PolyesterBrowserClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+createCookieAuthTokenStorage
+,
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterBrowserClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+accountSigner
+,
+// or a factory: () => Promise<AccountSigner | null>
+tokenStorage:
+createCookieAuthTokenStorage
+(),
+// persist across reloads; default is in-memory
+});
+const
+result
+=
+await
+client
+auth
+login
+({ provider:
+"metamask"
+});
+console
+log
+(
+"logged in as"
+,
+result
+username
+,
+"until"
+,
+result
+expiresAt
+);
+The challenge binds the requesting origin, owner EOA, Polyester smart account,
+Polyester Chain
+ID,
+purpose, nonce, issue time, and expiration time. Pass the returned message directly to
+personal_sign
+or append a newline. Login accepts only the owner's raw 65-byte EIP-191 signature. Challenges expire
+after five minutes and can be used only once.
+The SIWE Chain ID is Ethereum mainnet (
+1
+); the Polyester chain is bound in the message's
+Resources. Wallets that require the active network to match, such as Phantom, must switch to
+Ethereum mainnet before signing.
+provider
+accepts
+"metamask"
+,
+"phantom"
+,
+"turnkey"
+, or
+"other"
+accountSigner
+also accepts a lazy factory when the wallet connects after the client is built.
+Swap it later with
+client.setAccountSigner(signer)
+Restore and manage sessions
+// On app start: restore a persisted session. `null` means it is absent, invalid, expired,
+// rejected, or superseded by a newer auth operation. A transient request or signer error throws;
+// keep the existing session and retry that case.
+const
+restored
+=
+await
+client
+auth
+restoreSession
+();
+// Refresh with a fresh signature when expiry is close.
+if
+(
+client
+auth
+getSessionTimeToExpiry
+()
+<
+5
+*
+60_000
+) {
+await
+client
+auth
+refreshSession
+();
+}
+// End the session and disconnect private realtime channels.
+await
+client
+auth
+logout
+();
+client.auth.events
+emits
+authenticated
+,
+loggedOut
+,
+stateChange
+, and more.
+client.auth.getState()
+is synchronous for UI.
+Sessions are environment-bound. A token from one environment is ignored when the client is built
+for another because their fingerprints must match.
+Overlapping auth operations are ordered. A newer login, refresh, logout, signer change, or hydration
+supersedes an earlier login or refresh, which rejects with
+AbortError
+; a superseded restore returns
+null
+Switch accounts and subaccounts
+client
+auth
+switchAccount
+(
+subaccountId
+);
+After a switch, service calls that omit
+account
+scope to the active subaccount. See
+Accounts & balances
+Forward a browser session to a server
+On a server handling a signed-in user, build the client from request cookies. The browser
+session's bearer token rides along:
+import
+createPolyesterServerClientFromRequest
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+createPolyesterServerClientFromRequest
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+request
+,
+// the incoming Request
+});
+const
+me
+=
+await
+client
+verifySession
+();
+// null when not authenticated
+The server factory accepts a
+Request
+, a cookie record, or a synchronous
+store
+returning a string or
+Server-side usage
+for bearer and display-cookie rules.
+See
+Server-side usage
+for display sessions,
+verification, and SSR hydration.
+Supply your own JWT
+If you already manage tokens, such as through a custom auth proxy or test harness, pass a JWT
+provider to the core client:
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+auth: { kind:
+"jwt"
+,
+getToken
+=>
+myTokenStore
+current
+},
+});
+Private realtime channels reuse the client's auth provider. Override per-connection behavior with
+the
+realtime
+config option if WebSocket auth needs different headers.
+Related Topics
+API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+Previous
+API Keys
+Next
+Market data
+On this page
+Create an account signer
+Create the client and log in
+Restore and manage sessions
+Switch accounts and subaccounts
+Forward a browser session to a server
+Supply your own JWT
+Related Topics
+Share this page
+Wallet Login
+Authenticate browser apps with a wallet-backed session and forward that session to a server.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import { createPolyesterAccountSigner } from "@polyester/sdk/account-signer";
+import { POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+
+const { accountAddress } = createPolyesterAccountSigner({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	owner: ownerAccount, // a viem LocalAccount
+});
+
+const accountSigner = {
+	environmentFingerprint: POLYESTER_TESTNET_ENVIRONMENT.fingerprint,
+	accountAddress,
+	ownerAddress: ownerAccount.address,
+	signMessage: (message: string) => ownerAccount.signMessage({ message }),
+};
+
+---
+
+import {
+	PolyesterBrowserClient,
+	POLYESTER_TESTNET_ENVIRONMENT,
+	createCookieAuthTokenStorage,
+} from "@polyester/sdk";
+
+const client = new PolyesterBrowserClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	accountSigner, // or a factory: () => Promise<AccountSigner | null>
+	tokenStorage: createCookieAuthTokenStorage(), // persist across reloads; default is in-memory
+});
+
+const result = await client.auth.login({ provider: "metamask" });
+console.log("logged in as", result.username, "until", result.expiresAt);
+
+---
+
+// On app start: restore a persisted session. `null` means it is absent, invalid, expired,
+// rejected, or superseded by a newer auth operation. A transient request or signer error throws;
+// keep the existing session and retry that case.
+const restored = await client.auth.restoreSession();
+
+// Refresh with a fresh signature when expiry is close.
+if (client.auth.getSessionTimeToExpiry() < 5 * 60_000) {
+	await client.auth.refreshSession();
+}
+
+// End the session and disconnect private realtime channels.
+await client.auth.logout();
+
+---
+
+client.auth.switchAccount(subaccountId);
+
+---
+
+import {
+	createPolyesterServerClientFromRequest,
+	POLYESTER_TESTNET_ENVIRONMENT,
+} from "@polyester/sdk";
+
+const client = createPolyesterServerClientFromRequest({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	request, // the incoming Request
+});
+
+const me = await client.verifySession(); // null when not authenticated
+
+---
+
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+
+const client = new PolyesterClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	auth: { kind: "jwt", getToken: () => myTokenStore.current },
+});

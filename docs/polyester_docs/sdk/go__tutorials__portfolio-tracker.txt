@@ -1,0 +1,604 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/tutorials/portfolio-tracker
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Portfolio tracker · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Tutorials
+svg]:size-3.5">
+/
+Portfolio tracker
+Portfolio tracker
+Copy page
+View as Markdown
+Open in
+Build an authenticated account monitor that keeps exact funding and trading balances separate,
+tracks reservations and open orders, and uses revisions to reject stale balance updates.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A dashboard is not the source of truth
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Treat every screen as a projection of ledger and OMS state. Preserve raw scaled values, revisions,
+and timestamps. Never calculate spendable collateral from rounded display strings.
+1
+Read and format the balance snapshot
+balances
+,
+err
+client
+Balances
+List
+(
+ctx
+,
+nil
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+balance
+range
+balances
+Balances
+available
+,
+err
+codecs
+FormatLedgerU128
+(
+balance
+Available
+,
+codecs
+LedgerScale
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+reserved
+,
+err
+codecs
+FormatLedgerU128
+(
+balance
+Reserved
+,
+codecs
+LedgerScale
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+fmt
+Println
+(
+balance
+AssetID
+,
+"available"
+,
+available
+,
+"reserved"
+,
+reserved
+,
+"trading_revision"
+,
+balance
+TradingRevision
+,
+"funding_revision"
+,
+balance
+FundingRevision
+,
+)
+}
+funding
+is deposit/withdraw custody state.
+trading
+,
+reserved
+, and
+available
+are execution
+state. Their revisions are independent; compare
+TradingRevision
+only with trading-state updates
+and
+FundingRevision
+only with funding-state updates.
+2
+Reconcile open orders
+open
+,
+err
+client
+Orders
+ListOpen
+(
+ctx
+,
+nil
+,
+nil
+,
+nil
+,
+nil
+,
+true
+,
+true
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+order
+range
+open
+Orders
+fmt
+Println
+(
+order
+OrderID
+,
+order
+ClientOrderID
+,
+order
+SymbolID
+,
+order
+Status
+,
+order
+OrigQty
+,
+order
+CumQty
+,
+order
+LeavesQty
+,
+)
+}
+Reserved balance and open-order leaves should move together eventually, but they are served by
+different read models and can lag briefly. Do not flag a mismatch until a bounded reconciliation
+window and a fresh read have both completed.
+3
+Subscribe for low-latency order changes
+sub
+,
+err
+client
+Orders
+Subscribe
+(
+ctx
+,
+accountID
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+if
+order
+,
+ok
+<-
+sub
+Messages
+();
+ok
+scale
+,
+found
+client
+Catalogs
+BaseQuantityScaleForSymbolID
+(
+order
+SymbolID
+)
+if
+!
+found
+return
+fmt
+Errorf
+(
+"stream symbol
+%d
+quantity scale is unavailable"
+,
+order
+SymbolID
+)
+}
+cum
+,
+err
+order
+CumQty
+WithScale
+(
+scale
+).
+Format
+()
+if
+err
+!=
+nil
+return
+err
+}
+leaves
+,
+err
+order
+LeavesQty
+WithScale
+(
+scale
+).
+Format
+()
+if
+err
+!=
+nil
+return
+err
+}
+fmt
+Println
+(
+order
+OrderID
+,
+order
+Status
+,
+cum
+,
+leaves
+)
+}
+if
+err
+sub
+Err
+();
+err
+!=
+nil
+log
+Print
+(
+err
+) }
+The private stream accelerates the UI; it does not replace snapshots. On reconnect or queue
+overflow, discard local assumptions and reconcile balances plus open orders again. Stream
+quantities can omit scale, so resolve it from the hydrated catalog by
+SymbolID
+and fail closed
+if unavailable; never invent a stream scale.
+4
+Resolve fills before computing inventory
+orderID
+"order-id-from-create"
+details
+,
+err
+client
+Orders
+WaitForOrderTradesComplete
+(
+ctx
+,
+nil
+,
+&
+orderID
+,
+nil
+,
+nil
+,
+15
+*
+time
+Second
+,
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+if
+details
+Order
+!=
+nil
+fmt
+Println
+(
+details
+Order
+CumQty
+,
+len
+(
+details
+Trades
+))
+}
+The order projection can show cumulative quantity before every related trade row is queryable.
+Use the completed trade projection for fee-source-aware received inventory and realized execution
+reporting.
+5
+Poll as a safety net
+Poll slowly enough to respect rate limits, add jitter across replicas, and set one overall context
+deadline per cycle. A useful cycle is balances → open orders → recent history. Publish the new
+dashboard state atomically only after all required reads succeed; otherwise retain the previous
+state and mark it stale.
+Account-state API map
+Method
+Important inputs
+Use
+Balances.List
+account scope,
+subaccount
+Funding/trading snapshot and revisions
+Balances.GetBalanceHistory
+range, ledger, account codes
+Auditable balance movement
+Orders.ListOpen
+scope, pagination, attached-risk flags
+Current reservation intent
+Orders.ListHistory
+symbol/ID, pagination
+Terminal and recent order states
+Orders.Get
+order ID or client order ID
+One order plus related fills
+Orders.Subscribe
+account ID
+Low-latency private lifecycle updates
+Orders.WaitForOrderTradesComplete
+order identity, timeout
+Complete fill projection
+Trades.List
+account filters, pagination
+User execution ledger
+Tested source
+Example
+02
+in
+polyester-examples-go
+performs authenticated
+balance and order reads. It compiles and passes tests against the exact
+v0.1.0a25
+SDK commit.
+Related
+Accounts & balances
+Orders
+Trades
+Streaming
+Related Topics
+Live market ticker
+Build a snapshot-then-stream Go market monitor with trades, candles, staleness detection, and clean shutdown.
+Build a production trading bot
+Build a resilient Go quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+Previous
+Build a production trading bot
+Next
+Two-sided quoting
+On this page
+Account-state API map
+Tested source
+Related
+Related Topics
+Share this page
+Portfolio tracker
+Build a revision-aware Go account monitor for balances, reservations, open orders, fills, and reconciliation.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+balances, err := client.Balances.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, balance := range balances.Balances {
+    available, err := codecs.FormatLedgerU128(balance.Available, codecs.LedgerScale)
+    if err != nil { log.Fatal(err) }
+    reserved, err := codecs.FormatLedgerU128(balance.Reserved, codecs.LedgerScale)
+    if err != nil { log.Fatal(err) }
+    fmt.Println(
+        balance.AssetID,
+        "available", available,
+        "reserved", reserved,
+        "trading_revision", balance.TradingRevision,
+        "funding_revision", balance.FundingRevision,
+    )
+}
+
+---
+
+open, err := client.Orders.ListOpen(ctx, nil, nil, nil, nil, true, true)
+if err != nil { log.Fatal(err) }
+for _, order := range open.Orders {
+    fmt.Println(
+        order.OrderID,
+        order.ClientOrderID,
+        order.SymbolID,
+        order.Status,
+        order.OrigQty,
+        order.CumQty,
+        order.LeavesQty,
+    )
+}
+
+---
+
+sub, err := client.Orders.Subscribe(ctx, accountID)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+
+if order, ok := <-sub.Messages(); ok {
+    scale, found := client.Catalogs.BaseQuantityScaleForSymbolID(order.SymbolID)
+    if !found {
+        return fmt.Errorf("stream symbol %d quantity scale is unavailable", order.SymbolID)
+    }
+    cum, err := order.CumQty.WithScale(scale).Format()
+    if err != nil { return err }
+    leaves, err := order.LeavesQty.WithScale(scale).Format()
+    if err != nil { return err }
+    fmt.Println(order.OrderID, order.Status, cum, leaves)
+}
+if err := sub.Err(); err != nil { log.Print(err) }
+
+---
+
+orderID := "order-id-from-create"
+details, err := client.Orders.WaitForOrderTradesComplete(
+    ctx, nil, &orderID, nil, nil, 15*time.Second,
+)
+if err != nil { log.Fatal(err) }
+if details.Order != nil {
+    fmt.Println(details.Order.CumQty, len(details.Trades))
+}

@@ -1,0 +1,26 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/concepts.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+The SDK is a thin typed layer over two wire protocols:
+- **ConnectRPC over HTTP** for unary requests (binary Protobuf by default)
+- **Centrifugo over WebSocket** for realtime (binary Protobuf client protocol and payloads)
+```text
+Config / credentials          API URL, WS URL, Ed25519 key material, Account ID
+|
+`polyester::Client`           wires transports, catalogs, and service accessors
+├── Connect transport       public + authenticated unary calls
+├── Realtime client         shared WebSocket multiplexer
+├── Catalogs                spot + Zipper reference data / scales
+├── Services                orders, market_data, balances, ...
+└── chain                   on-chain Funding helpers (not ConnectRPC)
+```
+Rust has **no** `candles` / `trading_withdraws` aliases. Use `market_data` and `withdraw`. Account resolve is out of scope for API-key SDKs.
+Services are accessed as attributes/fields on the client (`client.orders`, `client.market_data`, …). Catalog hydration usually starts on client create; wait before decimal writes that depend on scales.
+High-level service methods own authentication and request signing. The generated bindings under `polyester::connect` are deliberately low level and unsigned; use them only when you are prepared to implement the full wire contract yourself.
+## Related
+- [Environments](https://testnet.polyester.com/docs/sdk/rust/concepts/environments)
+- [Client configuration](https://testnet.polyester.com/docs/sdk/rust/reference/client-configuration)
+- [Realtime](https://testnet.polyester.com/docs/sdk/rust/reference/realtime)

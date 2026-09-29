@@ -1,0 +1,234 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/stop-loss-limit
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Stop-Loss Limit · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+svg]:size-3.5">
+/
+Stop-Loss Limit
+Stop-Loss Limit
+Copy page
+View as Markdown
+Open in
+A stop-loss limit order triggers after a downside condition and then places a limit child at a separate price.
+What it does
+A
+stop-loss limit
+trigger activates after a downside condition and attempts to submit a limit child at a separate configured price.
+It adds price control after activation, but that control can prevent the child from completing.
+How it works
+Price
+Purpose
+Trigger price
+Determines when the condition activates
+Limit price
+Defines the worst price the child may accept
+After activation, the child follows normal limit-order behavior. It can execute immediately, fill in parts, rest in
+Open Orders
+, or remain completely unfilled.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Activation does not guarantee a fill
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+If the market moves beyond the limit before the child can match, the limit order can remain open while the market continues away from it.
+When to use it
+Use it when the child needs a firm price boundary.
+Stop-Loss Limit fits a downside condition where the trader will not accept execution beyond a chosen limit price.
+Avoid it when reducing exposure matters more than price.
+Choose Stop-Loss Market when a limit child remaining unfilled would create more risk than price movement during execution.
+Confirm both prices, the eligible side, quantity, price source, time-in-force, precision, and available balance before submitting.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, worth about 1,000 USDT, and want to reduce your exposure if the price falls to
+95,000 USDT
+, but you will not sell below
+94,500 USDT
+A Last Price trade at or below 95,000 USDT activates the stop.
+Polyester submits a Limit sell for 0.01 BTC at 94,500 USDT.
+The market gaps to 94,000 USDT, where all available bids are below your limit price.
+The child order does not accept those lower bids and remains open.
+Result:
+Your 0.01 BTC remains unsold until eligible liquidity reaches 94,500 USDT or higher, or you cancel the child order.
+These are example prices. A child order can also fill partially before its remaining quantity rests.
+What to watch
+A fast move can pass through the limit before the child works.
+A restrictive limit can leave exposure open.
+Partial fills can leave a working remainder.
+Canceling the trigger does not cancel a child that already exists.
+Monitor the parent in
+Order Triggers
+and the child separately.
+Related Topics
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Previous
+Stop-Loss Market
+Next
+Trailing Stop
+On this page
+What it does
+How it works
+When to use it
+Example
+What to watch
+Related Topics
+Share this page
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Share
+Copy Link

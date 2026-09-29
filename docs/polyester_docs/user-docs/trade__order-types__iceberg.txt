@@ -1,0 +1,226 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/iceberg
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Iceberg · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+svg]:size-3.5">
+/
+Iceberg
+Iceberg
+Copy page
+View as Markdown
+Open in
+An iceberg order displays part of a larger limit instruction and replenishes it from hidden quantity.
+What it would do
+In the general market concept, an
+iceberg order
+exposes only part of a larger limit instruction in the public Order Book. The undisplayed remainder stays hidden under defined replenishment rules.
+It is designed for a trader who wants limit-price control without displaying the full intended quantity at once. Repeated displayed fills can still reveal the larger execution over time.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Iceberg is not available
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The current public order and trigger contracts have no Iceberg request. The public Pair catalog also has no advanced-order capability flag that enables it.
+How the concept works
+Quantity or rule
+What it controls
+Total quantity
+The complete amount managed by the instruction
+Display quantity
+The maximum amount shown publicly at one time
+Hidden quantity
+The undisplayed remainder
+Replenishment
+When another displayed portion enters the book after fills
+Priority
+Whether replenished quantity keeps or receives a new time priority
+These fields describe the concept only. Polyester has not published reservation, replenishment, queue-priority, cancellation, or lifecycle rules for an implemented Iceberg order.
+When it would fit
+Use it when displayed size should stay smaller.
+The concept fits a larger limit order that should reveal only part of its intended quantity at once.
+Avoid it when the instruction must work on Polyester today.
+Iceberg is not currently available, and repeated replenishment can still reveal the larger intent over time.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, worth about 1,000 USDT, without displaying the full order at once. You would choose an Iceberg order with a
+0.002 BTC display quantity
+so only one portion is visible at a time.
+The first 0.002 BTC appears in the public Order Book.
+After that portion fills, the next 0.002 BTC becomes visible under the order's priority rules.
+The order continues replenishing in 0.002 BTC portions until the full 0.01 BTC fills or the order ends.
+Result:
+No more than 0.002 BTC is displayed at once, though repeated fills can still reveal that a larger order exists.
+This is a conceptual example. Polyester does not currently accept Iceberg orders through the application or public API.
+Related Topics
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Previous
+Time-in-Force & Post-Only
+Next
+TWAP
+On this page
+What it would do
+How the concept works
+When it would fit
+Example
+Related Topics
+Share this page
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+Share
+Copy Link

@@ -1,0 +1,42 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/ladder.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+A ladder distributes one target quantity across several limit-price levels.
+## What it does
+A **ladder** distributes a target quantity across several limit-price levels. It expresses a scaled entry or exit without manually creating each child order.
+Each level becomes an independent limit order with its own position, fills, fees, and final state.
+> **Ladder availability depends on configuration**
+>
+> A visible form or request field does not establish end-to-end support. Use Ladder when the current product flow exposes the strategy and its lifecycle for the active Pair and account.
+## How it works
+| Setting        | What it controls                                          |
+| -------------- | --------------------------------------------------------- |
+| Minimum price  | One boundary of the ladder range                          |
+| Maximum price  | The other boundary of the ladder range                    |
+| Levels         | The number of limit children distributed across the range |
+| Total quantity | The amount allocated across all levels                    |
+The current client builds linearly distributed limit-GTC levels. Every rounded child must independently satisfy the Pair's price increment, quantity increment, and minimum-order rules.
+Only the **LINEAR** distribution is supported by the current public create-trigger contract. Geometric, weighted, or another nonlinear distribution is not available. Internal representations of those choices do not make them callable.
+The parent Ladder creates no trigger-level reservation. All LINEAR child orders are admitted immediately, and each resting child reserves its own balance. The compacted strategy state persists server-side after the browser closes.
+Children are admitted in sequence. The first explicit rejection, transport failure, or system error stops further children and marks the parent failed. Ladder does not retry that failed level. Children accepted before that point remain live or filled and are not rolled back automatically.
+## When to use it
+- **Use it when entry or exit should span a price range.** Ladder fits a plan that intentionally distributes quantity across several limit-price levels.
+- **Avoid it when one price or immediate execution matters.** Choose one Limit or Market order when separate children would add unnecessary exposure, reservations, or monitoring.
+Review the generated children before submission. One level can fill while other levels remain active, so the result can be only part of the intended ladder.
+## Example
+Let's say Bitcoin is currently trading at **100,000 USDT**. You want to buy **0.01 BTC** across several price levels instead of relying on one entry price. You choose a five-level LINEAR Ladder with **0.002 BTC** at each level.
+1. Polyester creates Limit buys at 98,000, 99,000, 100,000, 101,000, and 102,000 USDT.
+2. Each 0.002 BTC child order is admitted and reserves balance independently.
+3. One price level can fill while the other child orders remain open.
+4. If a child is rejected, Polyester stops submitting later children without canceling or reversing the children already accepted.
+**Result:** The five planned child orders total 0.01 BTC and exactly 1,000 USDT across the example price range.
+*These are example prices. Rounding, Pair minimums, available balance, fills, and fees apply separately to every child order.*
+## What to watch
+- A wide range can leave some children far from the market.
+- Open children reserve balance independently.
+- Partial execution changes the remaining exposure across the range.
+- Canceling the parent can race with a match at one level.
+- A ladder does not guarantee that every level fills.

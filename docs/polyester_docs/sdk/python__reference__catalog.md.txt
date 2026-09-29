@@ -1,0 +1,49 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/catalog.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+`client.catalogs` is a `CatalogManager` holding venue reference data (spot pairs and Zipper / deposit-withdraw config). Services consult it to resolve symbols to ids and decimal quantities to scaled integers.
+This is **not** the TypeScript `client.catalog.market` / `.orders` / `.zipper` reader surface. Python exposes hydration helpers and lookup methods on `CatalogManager`. Design notes live in [Catalog & precision](https://testnet.polyester.com/docs/sdk/python/concepts/catalog-and-precision).
+## Lifecycle
+By default (`hydrate_catalogs=True`) the client starts background hydration of spot config and deposit-withdraw config. Await readiness before decimal writes:
+```python
+await client.wait_for_catalogs()
+```
+| API                                                | Behavior                                           |
+| -------------------------------------------------- | -------------------------------------------------- |
+| `wait_for_catalogs()`                              | Await hydration; **raises** when the attempt fails |
+| `catalogs_last_error`                              | Most recent hydration error, if any                |
+| `client.market_data.get_spot_config()`             | Fetch the public raw spot-pair catalog             |
+| `catalogs.hydrate_spot_config(raw)`                | Replace spot snapshot                              |
+| `catalogs.hydrate_zipper_config(config)` / typed   | Replace Zipper / DW snapshot (typed preferred)     |
+| `catalogs.hydrate_deposit_withdraw_config(config)` | Alias of zipper hydrate                            |
+Hydration is fail-closed: `wait_for_catalogs` raises when spot/zipper fetch or parse fails, including invalid scales/IDs, empty names, and duplicate/conflicting identities. Empty catalogs after a soft skip are not treated as success. A rejected refresh leaves the previous valid snapshot intact. Scale `0` is valid for whole-unit assets and is distinct from a missing scale.
+> **Service methods vs direct reads**
+>
+> Order and trigger write paths auto-await hydration when enabled. Catalog scale lookups return `None` for unknown symbols (they never invent scale 8). Scale-dependent reads and streams return a `PolyesterValidationError` when the required scale is unavailable.
+## Lookups
+```python
+await client.wait_for_catalogs()
+symbol_id = client.catalogs.symbol_id_for_symbol("BTC-USDT")
+scale = client.catalogs.base_quantity_scale_for_symbol("BTC-USDT")
+buckets = client.catalogs.orderbook_price_buckets_for_symbol("BTC-USDT")
+ledger_id = client.catalogs.ledger_id_for_asset("USDT")
+asset_scale = client.catalogs.quantity_scale_for_asset("USDT")
+```
+| Method                                         | Returns                  |
+| ---------------------------------------------- | ------------------------ |
+| `symbol_id_for_symbol(symbol)`                 | `int \| None`            |
+| `base_quantity_scale_for_symbol(symbol)`       | `int \| None`            |
+| `base_quantity_scale_for_symbol_id(symbol_id)` | `int \| None`            |
+| `orderbook_price_buckets_for_symbol(symbol)`   | `list[str]`              |
+| `ledger_id_for_asset(asset_symbol)`            | `int \| None`            |
+| `quantity_scale_for_asset(asset_symbol)`       | `int \| None`            |
+| `quantity_scale_for_zipped_asset_id(id)`       | `int \| None`            |
+| `patch_zipper_supply(updates)`                 | `bool` if supply patched |
+There is no `validateSpotOrderDecimalInput` / `getSpotOrderConstraints` helper in Python like TypeScript. Invalid precision or constraints typically fail at encode time or as an API error.
+## Related
+- [Catalog & precision](https://testnet.polyester.com/docs/sdk/python/concepts/catalog-and-precision)
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders)
+- [Errors](https://testnet.polyester.com/docs/sdk/python/reference/errors)

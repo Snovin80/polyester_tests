@@ -1,0 +1,989 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/tutorials/two-sided-quoting
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Two-sided quoting · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Tutorials
+svg]:size-3.5">
+/
+Two-sided quoting
+Two-sided quoting
+Copy page
+View as Markdown
+Open in
+This tutorial extends the single-order trading bot into a two-sided quote cycle. It deliberately
+keeps strategy math outside the SDK: your strategy chooses valid typed prices and quantities; the
+SDK validates, submits, streams, and reconciles them.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Start on a dedicated testnet account
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Fund both quote and base trading balances. Keep the write gate disabled until the dry-run plan,
+prefix cleanup, and dead-man switch have been verified. This is an execution pattern, not a
+profitable strategy or financial advice.
+Quote-cycle invariants
+Use a fresh, sequence-checked book.
+Size bid and ask independently from available quote and base balances.
+Give every quote a unique client order ID under a process-owned prefix.
+Inspect every batch item; a successful RPC is not an all-items guarantee.
+Reconcile open orders before retrying an unknown outcome.
+Keep the dead-man switch refreshed while writes are enabled.
+1
+Read a quoteable book
+let
+book
+=
+client
+orderbook
+get
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+let
+best_bid
+=
+book
+bids
+first
+()
+and_then
+(
+|
+level
+|
+level
+price
+as_ref
+())
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"book has no bid"
+))
+?
+format
+();
+let
+best_ask
+=
+book
+asks
+first
+()
+and_then
+(
+|
+level
+|
+level
+price
+as_ref
+())
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"book has no ask"
+))
+?
+format
+();
+println!
+(
+"book_seq={} bid={} ask={}"
+,
+book
+book_seq,
+best_bid
+,
+best_ask
+);
+For a long-running bot, use
+orderbook.create_subscription
+and pause writes during snapshot
+refresh. Quoting at the displayed best bid and ask is only a teaching baseline. The backend's
+post_only
+validation remains the final protection against a stale quote crossing the book.
+2
+Size both sides independently
+use
+polyester
+proto
+ledger
+read
+v1
+GetBalancesRequest
+;
+let
+balances
+=
+client
+balances
+list
+(
+GetBalancesRequest
+default
+())
+;
+for
+balance
+in
+&
+balances
+balances {
+println!
+(
+"{} available={} reserved={}"
+,
+balance
+asset_id,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+balance
+available,
+18
+)
+?
+,
+polyester
+codecs
+scalars
+format_ledger_u128
+(
+&
+balance
+reserved,
+18
+)
+?
+,
+);
+}
+available
+and
+reserved
+are raw ledger
+u128
+strings at ledger scale 18. Format once for
+display, but retain raw values for exact sizing.
+The bid consumes quote balance; the ask consumes base balance. Compute each quantity from the
+catalog step size, minimum quantity/notional, available balance, and your own inventory cap. Do not
+mirror one quantity blindly across both sides. The tested sizing functions live in
+polyester-examples-rust
+and use
+rust_decimal
+3
+Submit one bid and one ask
+use
+polyester
+models
+CreateOrderType
+,
+CreateSide
+,
+CreateTimeInForce
+};
+use
+polyester
+services
+OrdersService
+;
+use
+polyester
+Price
+,
+Quantity
+};
+use
+std
+time
+SystemTime
+,
+UNIX_EPOCH
+};
+let
+book
+=
+client
+orderbook
+get
+(
+"BTC-USDT"
+,
+Some
+(
+20
+))
+;
+let
+best_bid
+=
+book
+bids
+first
+()
+and_then
+(
+|
+level
+|
+level
+price
+as_ref
+())
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"book has no bid"
+))
+?
+format
+();
+let
+best_ask
+=
+book
+asks
+first
+()
+and_then
+(
+|
+level
+|
+level
+price
+as_ref
+())
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"book has no ask"
+))
+?
+format
+();
+let
+nonce
+=
+SystemTime
+now
+()
+duration_since
+(
+UNIX_EPOCH
+)
+expect
+(
+"system clock before Unix epoch"
+)
+as_nanos
+();
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+mut
+bid
+=
+OrdersService
+create_params
+(
+"BTC-USDT"
+,
+CreateSide
+Buy
+,
+CreateOrderType
+Limit
+,
+Quantity
+from_decimal_str
+(
+"0.001"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+,
+Some
+(
+Price
+from_decimal_str
+(
+&
+best_bid
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+Some
+(
+&
+format!
+(
+"quote-bid-{nonce}"
+)),
+);
+bid
+time_in_force
+=
+Some
+(
+CreateTimeInForce
+Gtc
+);
+bid
+post_only
+=
+Some
+(
+true
+);
+let
+mut
+ask
+=
+OrdersService
+create_params
+(
+"BTC-USDT"
+,
+CreateSide
+Sell
+,
+CreateOrderType
+Limit
+,
+Quantity
+from_decimal_str
+(
+"0.001"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+,
+Some
+(
+Price
+from_decimal_str
+(
+&
+best_ask
+,
+Some
+(
+"BTC-USDT"
+into
+()))
+?
+),
+Some
+(
+&
+format!
+(
+"quote-ask-{nonce}"
+)),
+);
+ask
+time_in_force
+=
+Some
+(
+CreateTimeInForce
+Gtc
+);
+ask
+post_only
+=
+Some
+(
+true
+);
+let
+created
+=
+client
+orders
+batch_create
+(
+vec!
+bid
+,
+ask
+],
+None
+,
+Some
+(
+format!
+(
+"quote-batch-{nonce}"
+)))
+;
+for
+item
+in
+&
+created
+results {
+println!
+(
+"{} {} {} {}"
+,
+item
+client_order_id,
+item
+status,
+item
+order_id,
+item
+code);
+}
+Replace the demonstration quantities with catalog-aligned, balance-capped values.
+batch_create
+accepts at most 20 items. Inspect
+results
+,
+accepted_count
+, and
+rejected_count
+; accepted and
+rejected sides can coexist in one response.
+4
+Reconcile the desired quote set
+let
+open
+=
+client
+orders
+list_open
+(
+None
+)
+;
+let
+owned
+Vec
+<
+_
+>
+=
+open
+orders
+iter
+()
+filter
+(
+|
+order
+|
+order
+client_order_id
+starts_with
+(
+"quote-"
+))
+collect
+();
+for
+order
+in
+owned
+println!
+(
+"{} {} {:?}"
+,
+order
+client_order_id,
+order
+status,
+order
+leaves_qty);
+}
+After a timeout, never resubmit with new IDs first. List open orders and query the known IDs.
+Cancel stale or duplicate owned quotes, then place only the missing side. Admission responses and
+the open-order read model can be briefly out of sync.
+5
+Arm the dead-man switch and clean up
+use
+std
+time
+SystemTime
+,
+UNIX_EPOCH
+};
+let
+nonce
+=
+SystemTime
+now
+()
+duration_since
+(
+UNIX_EPOCH
+)
+expect
+(
+"system clock before Unix epoch"
+)
+as_nanos
+();
+let
+armed
+=
+client
+orders
+cancel_all_after
+(
+30
+,
+Some
+(
+"BTC-USDT"
+),
+None
+,
+Some
+(
+format!
+(
+"quote-dms-{nonce}"
+)),
+)
+;
+if
+armed
+status
+!=
+"armed"
+return
+Err
+(
+polyester
+Error
+transport
+(
+format!
+(
+"unexpected dead-man status {:?}"
+,
+armed
+status
+)));
+}
+for
+order
+in
+client
+orders
+list_open
+(
+None
+)
+orders {
+if
+order
+client_order_id
+starts_with
+(
+"quote-"
+) {
+match
+client
+orders
+cancel_by_client_order_id
+(
+&
+order
+client_order_id,
+Some
+(
+"BTC-USDT"
+),
+None
+,
+)
+Ok
+(
+_
+)
+=>
+Err
+(
+polyester
+Error
+Api
+code
+,
+})
+if
+code
+eq_ignore_ascii_case
+(
+"not_found"
+)
+=>
+Err
+(
+err
+)
+=>
+return
+Err
+(
+err
+),
+}
+}
+}
+Refresh the switch well before expiry. During shutdown, stop quote creation first, cancel only
+owned IDs, confirm they disappear, and leave the switch armed if confirmation fails. Treat
+not_found
+from an owned targeted cancel as idempotent success because the order may have filled
+or left the book after listing; propagate every other cancel error. Never substitute account-wide
+cancel for ownership filtering.
+Requote policy
+Do not cancel and recreate continuously. Requote only when a deterministic condition is met, such
+as price drift beyond a configured number of ticks, quantity/inventory change, approaching expiry,
+or loss of one side. Preserve enough balance headroom for replace behavior and fees.
+Inventory skew belongs in strategy code. A common control is to reduce or disable bids when base
+inventory is above its ceiling, and reduce or disable asks when it is below its floor. The SDK does
+not choose those limits for you.
+Failure decisions
+Observation
+Required action
+Post-only
+rejection
+Refresh the book and compute a new price
+Error::Validation
+Fix input; do not retry unchanged
+mutation_outcome_unknown()
+Reconcile IDs before retrying
+One batch item rejected
+Keep/reconcile the accepted side; decide whether to replace the missing side
+Book gap or reconnect
+Pause writes until the managed snapshot refresh completes
+Dead-man refresh failure
+Stop new orders and assume expiry cleanup will run
+Error::QueueOverflow
+Replace the subscription and run a full snapshot reconciliation
+Evidence
+The exact order, batch, book, balance, and dead-man calls above are compiled by the documentation
+gate. Released-SDK example
+07
+exercises batch post-only create and cleanup; the long-running Rust
+canary exercises managed books, balance-aware sizing, private order updates, post-only create,
+cancel, reconciliation, and staleness handling.
+Related
+Build a production trading bot
+Orders
+Order book
+Requests & idempotency
+Error handling
+Related Topics
+Live market ticker
+Build a snapshot-then-stream Rust market monitor with trades, candles, staleness detection, and clean shutdown.
+Build a production trading bot
+Build a resilient Rust quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+Portfolio tracker
+Build a revision-aware Rust account monitor for balances, reservations, open orders, fills, and reconciliation.
+Previous
+Portfolio tracker
+On this page
+Quote-cycle invariants
+Requote policy
+Failure decisions
+Evidence
+Related
+Related Topics
+Share this page
+Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+let book = client.orderbook.get("BTC-USDT", Some(20)).await?;
+let best_bid = book
+    .bids
+    .first()
+    .and_then(|level| level.price.as_ref())
+    .ok_or_else(|| polyester::Error::validation("book has no bid"))?
+    .format();
+let best_ask = book
+    .asks
+    .first()
+    .and_then(|level| level.price.as_ref())
+    .ok_or_else(|| polyester::Error::validation("book has no ask"))?
+    .format();
+println!("book_seq={} bid={} ask={}", book.book_seq, best_bid, best_ask);
+
+---
+
+use polyester::proto::ledger::read::v1::GetBalancesRequest;
+
+let balances = client.balances.list(GetBalancesRequest::default()).await?;
+for balance in &balances.balances {
+    println!(
+        "{} available={} reserved={}",
+        balance.asset_id,
+        polyester::codecs::scalars::format_ledger_u128(&balance.available, 18)?,
+        polyester::codecs::scalars::format_ledger_u128(&balance.reserved, 18)?,
+    );
+}
+
+---
+
+use polyester::models::{CreateOrderType, CreateSide, CreateTimeInForce};
+use polyester::services::OrdersService;
+use polyester::{Price, Quantity};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+let book = client.orderbook.get("BTC-USDT", Some(20)).await?;
+let best_bid = book
+    .bids
+    .first()
+    .and_then(|level| level.price.as_ref())
+    .ok_or_else(|| polyester::Error::validation("book has no bid"))?
+    .format();
+let best_ask = book
+    .asks
+    .first()
+    .and_then(|level| level.price.as_ref())
+    .ok_or_else(|| polyester::Error::validation("book has no ask"))?
+    .format();
+let nonce = SystemTime::now()
+    .duration_since(UNIX_EPOCH)
+    .expect("system clock before Unix epoch")
+    .as_nanos();
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let mut bid = OrdersService::create_params(
+    "BTC-USDT",
+    CreateSide::Buy,
+    CreateOrderType::Limit,
+    Quantity::from_decimal_str("0.001", quantity_scale, Some("BTC-USDT".into()), None)?,
+    Some(Price::from_decimal_str(&best_bid, Some("BTC-USDT".into()))?),
+    Some(&format!("quote-bid-{nonce}")),
+);
+bid.time_in_force = Some(CreateTimeInForce::Gtc);
+bid.post_only = Some(true);
+
+let mut ask = OrdersService::create_params(
+    "BTC-USDT",
+    CreateSide::Sell,
+    CreateOrderType::Limit,
+    Quantity::from_decimal_str("0.001", quantity_scale, Some("BTC-USDT".into()), None)?,
+    Some(Price::from_decimal_str(&best_ask, Some("BTC-USDT".into()))?),
+    Some(&format!("quote-ask-{nonce}")),
+);
+ask.time_in_force = Some(CreateTimeInForce::Gtc);
+ask.post_only = Some(true);
+
+let created = client
+    .orders
+    .batch_create(vec![bid, ask], None, Some(format!("quote-batch-{nonce}")))
+    .await?;
+for item in &created.results {
+    println!("{} {} {} {}", item.client_order_id, item.status, item.order_id, item.code);
+}
+
+---
+
+let open = client.orders.list_open(None).await?;
+let owned: Vec<_> = open
+    .orders
+    .iter()
+    .filter(|order| order.client_order_id.starts_with("quote-"))
+    .collect();
+for order in owned {
+    println!("{} {} {:?}", order.client_order_id, order.status, order.leaves_qty);
+}
+
+---
+
+use std::time::{SystemTime, UNIX_EPOCH};
+
+let nonce = SystemTime::now()
+    .duration_since(UNIX_EPOCH)
+    .expect("system clock before Unix epoch")
+    .as_nanos();
+let armed = client
+    .orders
+    .cancel_all_after(
+        30,
+        Some("BTC-USDT"),
+        None,
+        Some(format!("quote-dms-{nonce}")),
+    )
+    .await?;
+if armed.status != "armed" {
+    return Err(polyester::Error::transport(format!(
+        "unexpected dead-man status {:?}",
+        armed.status
+    )));
+}
+
+for order in client.orders.list_open(None).await?.orders {
+    if order.client_order_id.starts_with("quote-") {
+        match client
+            .orders
+            .cancel_by_client_order_id(
+                &order.client_order_id,
+                Some("BTC-USDT"),
+                None,
+            )
+            .await
+        {
+            Ok(_) => {}
+            Err(polyester::Error::Api { code, .. }) if code.eq_ignore_ascii_case("not_found") => {}
+            Err(err) => return Err(err),
+        }
+    }
+}

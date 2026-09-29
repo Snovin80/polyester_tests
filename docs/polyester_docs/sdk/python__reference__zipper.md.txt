@@ -1,0 +1,23 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/zipper.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Zipper
+Deposit/withdraw config and related Zipper reads.
+`client.zipper` exposes route configuration and live zipped-asset supply updates.
+```python
+config = await client.zipper.get_deposit_withdraw_config()
+client.catalogs.hydrate_zipper_config(config)
+```
+Client construction starts catalog hydration when `hydrate_catalogs=True`. Await `wait_for_catalogs()` returns an error when hydration fails (HTTP/transport error, malformed config, or invalid scales). Call `hydrate_zipper_config` directly for an explicit refresh.
+```python
+sub = await client.zipper.subscribe_zipped_asset_supply(patch_catalog=True)
+async with sub:
+async for batch in sub:
+for update in batch.updates:
+print(update.zipped_asset_id, update.supply)
+break
+```
+With `patch_catalog=True` (default), supply events update the shared catalog before being delivered. Disable it only if your application owns reconciliation. The stream is public.
+Route configuration is not a fee quote and can change. Quote immediately before an on-chain withdraw and enforce your own maximum fee/slippage.
+Related: [Catalog](https://testnet.polyester.com/docs/sdk/python/reference/catalog), [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).

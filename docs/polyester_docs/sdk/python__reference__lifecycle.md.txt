@@ -1,0 +1,40 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/lifecycle.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+`client.lifecycle` correlates multi-step deposit, withdrawal, and transfer flows for operations dashboards.
+| Method                                 | Purpose                       |
+| -------------------------------------- | ----------------------------- |
+| `list_flows(...)`                      | Paginated flow summaries      |
+| `get_flow(intent_id=..., flow_id=...)` | One flow by intent or flow ID |
+| `get_flow_by_tx(tx_hash=...)`          | First matching flow           |
+| `list_flows_by_tx(tx_hash=...)`        | All matching flows            |
+| `subscribe_open_flows(account_id=...)` | Open-flow summaries           |
+| `subscribe_flow_detail(flow_id=...)`   | One flow's updates            |
+```python
+flows = await client.lifecycle.list_flows(limit=50, scope="all")
+for flow in flows.flows:
+print(
+flow.intent_id,
+flow.flow_kind,
+flow.latest_step,
+flow.is_terminal,
+flow.lifecycle_reason,
+)
+if flow.zipper_reason is not None:
+print(
+flow.zipper_reason.reason_id,
+flow.zipper_reason.message,
+flow.zipper_reason.code,
+)
+detail = await client.lifecycle.get_flow(intent_id="...")
+```
+Each flow summary exposes:
+- `lifecycle_reason`: product-facing catalog label (`unspecified`, `zipper_validation_rejected`, ledger-mirror variants, or `unknown_reason_
+` when the wire code is ahead of the SDK catalog).
+- `zipper_reason`: optional Zipper detail (`code`, `reason_id`, `message`) when Zipper supplied a precise rejection. Prefer `reason_id` / `message` for user-facing copy instead of raw numeric codes.
+Page tokens are opaque. Transaction lookup `lookup_kind` defaults to `"any"`; pass the exact transaction hash returned by the relevant chain. Singular lookups raise `PolyesterTransportError` if a successful response omits the requested flow or its required summary; they never return an empty placeholder flow.
+`subscribe_open_flows(account_id=...)` uses a private account channel. Omitting Account ID uses the public open-flows channel. `subscribe_flow_detail` is public-by-flow-id; flow IDs should still be treated as sensitive operational identifiers.
+Lifecycle reports progress, not final ledger availability. Confirm completed funding/trading balances before enabling dependent orders.

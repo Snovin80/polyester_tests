@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/stop-loss-limit.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+A stop-loss limit order triggers after a downside condition and then places a limit child at a separate price.
+## What it does
+A **stop-loss limit** trigger activates after a downside condition and attempts to submit a limit child at a separate configured price.
+It adds price control after activation, but that control can prevent the child from completing.
+## How it works
+| Price         | Purpose                                      |
+| ------------- | -------------------------------------------- |
+| Trigger price | Determines when the condition activates      |
+| Limit price   | Defines the worst price the child may accept |
+After activation, the child follows normal limit-order behavior. It can execute immediately, fill in parts, rest in [Open Orders](https://testnet.polyester.com/docs/user-docs/trade/widgets/open-orders), or remain completely unfilled.
+> **Activation does not guarantee a fill**
+>
+> If the market moves beyond the limit before the child can match, the limit order can remain open while the market continues away from it.
+## When to use it
+- **Use it when the child needs a firm price boundary.** Stop-Loss Limit fits a downside condition where the trader will not accept execution beyond a chosen limit price.
+- **Avoid it when reducing exposure matters more than price.** Choose Stop-Loss Market when a limit child remaining unfilled would create more risk than price movement during execution.
+Confirm both prices, the eligible side, quantity, price source, time-in-force, precision, and available balance before submitting.
+## Example
+Let's say Bitcoin is currently trading at **100,000 USDT**. You hold **0.01 BTC**, worth about 1,000 USDT, and want to reduce your exposure if the price falls to **95,000 USDT**, but you will not sell below **94,500 USDT**. Because that minimum price matters more than guaranteeing a fill, you choose Stop-Loss Limit.
+1. A Last Price trade at or below 95,000 USDT activates the stop.
+2. Polyester submits a Limit sell for 0.01 BTC at 94,500 USDT.
+3. The market gaps to 94,000 USDT, where all available bids are below your limit price.
+4. The child order does not accept those lower bids and remains open.
+**Result:** Your 0.01 BTC remains unsold until eligible liquidity reaches 94,500 USDT or higher, or you cancel the child order.
+*These are example prices. A child order can also fill partially before its remaining quantity rests.*
+## What to watch
+- A fast move can pass through the limit before the child works.
+- A restrictive limit can leave exposure open.
+- Partial fills can leave a working remainder.
+- Canceling the trigger does not cancel a child that already exists.
+- Monitor the parent in [Order Triggers](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-triggers) and the child separately.

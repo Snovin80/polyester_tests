@@ -1,0 +1,20 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-chain/rpcs.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# RPC Nodes
+Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+Anyone can run a Polyester Chain RPC node on their own computer or server. Sync your node with Polyester Chain, then connect your wallet or application to its local RPC endpoint.
+> **Installation details coming soon**
+>
+> The official node download, supported platforms, Polyester Chain configuration, and exact installation commands will be linked here once confirmed. The workflow below explains the setup process; it is not yet a complete installation guide.
+## Run your own node
+1. Download the node client
+Download the Polyester Chain node release for your chosen operating system. Follow its installation instructions and verify the release using the supplied integrity information.
+2. Configure your node
+Load the Polyester Chain configuration, including its chain identifiers, genesis file, and initial peer addresses. These connect your node to Polyester Chain. Choose a data directory with enough storage for the history you intend to retain.
+3. Synchronize with Polyester Chain
+Start the node and let it connect to peers and synchronize. Before using its responses as current state, confirm it has caught up and continues following new blocks. Any supported snapshot or state-sync route must follow the release's verification instructions.
+4. Connect to your local RPC endpoint
+Enable the node's EVM JSON-RPC interface and bind it to localhost for applications on the same machine. Point your compatible wallet, script, or application to that configured endpoint. Confirm the node is connected to Polyester Chain and its block height is advancing before submitting transactions.
+Keep the node running to follow new blocks, and apply Polyester Chain's published software upgrades. Storage and historical query availability depend on how much data your node retains.

@@ -1,0 +1,158 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/auth.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+`client.auth` is the authentication surface. Every client exposes a base `AuthService` for caller introspection and wallet-challenge requests. The [browser client](https://testnet.polyester.com/docs/sdk/typescript/reference/client-configuration) (`PolyesterBrowserClient`) upgrades `client.auth` to an `AccountSignerAuthService`, which adds the managed login, session, and account-switching flow most browser apps use directly.
+Only wallet-challenge creation is public. Everything else on this page is authenticated. For the task-oriented walkthrough see [Wallet Login](https://testnet.polyester.com/docs/sdk/typescript/guides/authentication/wallet-login), and for how sessions, tokens, and account scope fit together see the [authentication model](https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model) concept.
+## Base `AuthService`
+Available on every client as `client.auth`.
+| Method                  | Auth            | Summary                                       |
+| ----------------------- | --------------- | --------------------------------------------- |
+| `acceptTerms`           | interactive JWT | Record explicit consent to the current terms. |
+| `me`                    | authenticated   | Read the backend-verified caller identity.    |
+| `createWalletChallenge` | public          | Request a single-use EIP-4361 login message.  |
+| `profile`               | authenticated   | Sub-service for the caller's public profile.  |
+### `me(options?)`
+Returns the authenticated caller's `Me`: the backend-verified identity behind the presented token or API key. Use it to confirm who you are and which account you are acting as.
+```ts
+const me = await client.auth.me();
+console.log(me.accountId, me.username, me.apiKeyId ?? "session token");
+```
+```ts
+import type { MfaSessionInfo } from "@polyester/sdk";
+interface Me {
+accountId: string;
+apiKeyId?: string;
+username: string;
+session?: MfaSessionInfo;
+}
+```
+`apiKeyId` is present only when the caller authenticated with an API key. It is the stable public `ak_...` handle. `session` carries MFA assurance details when the token was elevated.
+### `acceptTerms(options?)`
+Records explicit consent to the current terms for the caller's root account and returns `Promise
+`. Call it only after the user agrees to the terms. It requires an interactive JWT session; API keys cannot accept terms. No MFA is required. Repeated acceptance succeeds without changing the first acceptance time.
+```ts
+// Run from the user's explicit terms-acceptance action.
+await client.auth.acceptTerms();
+const profile = await client.auth.profile.get();
+console.log(profile.currentTermsAccepted);
+```
+Login does not accept terms automatically. Creating subaccounts, API keys, or deposit addresses requires current acceptance. A provisioning rejection exposes `error.detail.service === "auth"` and `error.detail.code === "AUTH_TERMS_NOT_ACCEPTED"` on a `PolyesterError`.
+### `createWalletChallenge(input, options?)`
+Requests a short-lived EIP-4361 login message. This is the one public method here: no token is required. The challenge is single-use, replaced by any later login request for the same smart account, and expires after five minutes. Wallet challenges are login-only; subaccount creation uses [`client.subaccounts.createChallenge`](https://testnet.polyester.com/docs/sdk/typescript/reference/subaccounts#createchallengeinput-options).
+```ts
+const { message, expiresAt } = await client.auth.createWalletChallenge({
+smartAccountAddress: "0x1111111111111111111111111111111111111111",
+signerAddress: account.address,
+uri: window.location.origin,
+});
+```
+```ts
+interface WalletChallenge {
+message: string;
+expiresAt?: number; // epoch ms
+}
+```
+Sign `message` exactly as returned with the owner EOA's EIP-191 `personal_sign`. Do not hash or reconstruct it. Login accepts only the raw 65-byte EOA signature, not a Safe or ERC-6492-wrapped signature. The backend sets the SIWE Chain ID to Ethereum mainnet (`1`) and binds the Polyester chain in the message's Resources; do not rewrite either. If a wallet requires the signing network to match, such as Phantom, select Ethereum mainnet before signing. This does not change the Polyester environment used for Safe signing. Browser apps should call [`login()`](#login-options) on `PolyesterBrowserClient`, which creates the challenge, signs it, and persists the session. `loginWithWallet` exists on the base service as a protected helper for that flow; it is not part of the public `client.auth` surface.
+### `profile`
+`client.auth.profile` is a sub-service for the caller's public profile (username, socials, avatar, VIP tier) and realtime identity updates. It is documented on its own page: [Profile](https://testnet.polyester.com/docs/sdk/typescript/reference/profile). The VIP catalog and caller-root status live on [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip).
+## Browser `AccountSignerAuthService`
+On `PolyesterBrowserClient`, `client.auth` is an `AccountSignerAuthService`. It wraps the base service and coordinates the account signer, session storage, subaccount selection, and refresh.
+> **Configure an account signer**
+>
+> The managed flow needs an account signer to sign login and subaccount-creation challenges. Pass one through the client's `accountSigner` config, or set it later with `client.auth.setAccountSigner(signer)`. See the [client configuration reference](https://testnet.polyester.com/docs/sdk/typescript/reference/client-configuration).
+| Method                   | Summary                                                   |
+| ------------------------ | --------------------------------------------------------- |
+| `login`                  | Sign a SIWE challenge and start an authenticated session. |
+| `restoreSession`         | Rehydrate state from a stored token, or return `null`.    |
+| `refreshSession`         | Re-sign and extend the current session.                   |
+| `logout`                 | Clear state and disconnect the private realtime channel.  |
+| `getState`               | Read the current auth state snapshot.                     |
+| `getSessionTimeToExpiry` | Milliseconds left on the stored token.                    |
+| `hydrateAuthState`       | Seed state from SSR before `restoreSession`.              |
+| `switchAccount`          | Set the active account or subaccount.                     |
+| `createSubaccount`       | Create a subaccount for the authenticated account.        |
+| `setAccountSigner`       | Attach the signer used for wallet challenges.             |
+| `getAccountSigner`       | Read the attached signer, or `null`.                      |
+| `events`                 | Subscribe to auth lifecycle events.                       |
+### `login(options)`
+Requests a SIWE challenge, signs its exact message with the configured owner-EOA account signer, exchanges it for a session token, and persists the hydrated session. The signer's `accountAddress` is the target Safe, while `ownerAddress` is the EOA that produces the raw 65-byte EIP-191 signature. Returns a `LoginResult`.
+```ts
+const result = await client.auth.login({ provider: "metamask" });
+console.log(result.accountId, result.username, result.expiresAt);
+```
+```ts
+interface LoginOptions {
+provider: "metamask" | "phantom" | "turnkey" | "other";
+uri?: string;
+loginMethod?: "google" | "email" | "metamask" | "rabby" | "phantom" | "walletconnect" | null;
+}
+interface LoginResult {
+accountId: string;
+username: string;
+expiresAt: Date;
+}
+```
+On success the service emits both `authenticated` and `stateChange`. If a later login, refresh, logout, signer change, or hydration supersedes this login before it completes, it rejects with an `AbortError` and does not overwrite the newer state.
+### `restoreSession()`
+Loads the stored token, verifies it still belongs to this environment, and calls `me()` to rehydrate state. Returns `{ accountId, username }` on success, or `null` when credentials are missing, malformed, expired, backend-rejected, or this restore was superseded by a newer auth operation. Missing, malformed, expired, and backend-rejected credentials clear stored auth state. A superseded restore returns `null` without changing the newer state. Transport failures and account-signer initialization failures reject instead, preserving the session so the caller can retry.
+```ts
+const restored = await client.auth.restoreSession();
+if (restored) {
+console.log("welcome back", restored.username);
+} else {
+// prompt login
+}
+```
+### `refreshSession(params?)`
+Re-signs the current session and extends it, returning a fresh `LoginResult`. Throws if the caller is not already authenticated. Handy ahead of `getSessionTimeToExpiry()` reaching zero.
+```ts
+if (client.auth.getSessionTimeToExpiry()
+deriveSubaccountSigner(challenge.smartAccountSaltNonce),
+label: "Trading bot",
+uri: window.location.origin,
+});
+```
+```ts
+import type { AccountSigner, SubaccountChallenge } from "@polyester/sdk";
+interface CreateSubaccountParams {
+accountSigner:
+| AccountSigner
+| ((challenge: SubaccountChallenge) => AccountSigner | Promise
+);
+label?: string;
+uri?: string;
+ownerAddress?: `0x${string}`;
+}
+```
+A stale, replaced, or replayed challenge fails with `SubaccountChallengeInvalidError`; call `createSubaccount` again to request a fresh one.
+### `setAccountSigner(signer)` / `getAccountSigner()`
+Attaches or reads the account signer that signs login and subaccount-creation challenges. Its login signature must be the owner EOA's raw 65-byte EIP-191 signature; a Safe-wrapped signer remains valid for subaccount creation. Passing `null` clears it.
+```ts
+client.auth.setAccountSigner(signer);
+const current = client.auth.getAccountSigner();
+```
+### `events`
+An `EventEmitter` for the auth lifecycle. Subscribe to react to login, logout, and state changes.
+```ts
+client.auth.events.on("authenticated", ({ accountId, username }) => {
+console.log("logged in as", username);
+});
+client.auth.events.on("stateChange", (state) => render(state));
+client.auth.events.on("loggedOut", () => redirectToLogin());
+```
+| Event           | Payload                   | Fires when                                    |
+| --------------- | ------------------------- | --------------------------------------------- |
+| `authenticated` | `{ accountId, username }` | A login succeeds.                             |
+| `loggedOut`     | `void`                    | Logout runs or an expired session is cleared. |
+| `error`         | `{ code, message }`       | An auth operation fails.                      |
+| `servicesReady` | `void`                    | Dependent services finish wiring up.          |
+| `stateChange`   | `AuthState`               | Any part of the auth state changes.           |
+## Related
+- [Wallet Login](https://testnet.polyester.com/docs/sdk/typescript/guides/authentication/wallet-login) for the end-to-end login walkthrough.
+- [Authentication model](https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model) for tokens, sessions, and scope.
+- [Profile](https://testnet.polyester.com/docs/sdk/typescript/reference/profile) for the caller's public profile via `client.auth.profile`.
+- [Subaccounts](https://testnet.polyester.com/docs/sdk/typescript/reference/subaccounts) for creating and managing subaccounts.
+- [Client configuration](https://testnet.polyester.com/docs/sdk/typescript/reference/client-configuration) for wiring an account signer and token storage.

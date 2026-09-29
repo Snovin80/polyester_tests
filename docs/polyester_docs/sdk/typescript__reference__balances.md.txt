@@ -1,0 +1,112 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+`client.balances` reads your current ledger balances and their history, root-portfolio equity, and streams live updates. Every method is authenticated. Ledger reads and account equity history are account-scoped, so each input accepts an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). Root-portfolio methods always read the caller's main account and its owned subaccounts. See [Account scoping](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for how the default resolves.
+Amounts are decimal strings, never floats. A single `LedgerBalance` splits an asset across four buckets: `trading`, `funding`, `reserved`, and `available`. History responses come back columnar (parallel arrays keyed by a shared timeline) so they drop straight into a chart.
+## Methods
+| Method                       | Summary                                                            |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `list`                       | Read current balances for the account scope.                       |
+| `getBalanceHistory`          | Columnar balance history over a range, by asset and bucket.        |
+| `getEquityHistory`           | Columnar equity history over a range, grouped by account or asset. |
+| `getPortfolioEquityHistory`  | Root-portfolio history by main account and owned subaccounts.      |
+| `getPortfolioEquitySnapshot` | Current root-portfolio equity by account and asset.                |
+| `subscribe`                  | Stream live balance updates over a private channel.                |
+### `list(input?, options?)`
+Returns a `LedgerBalance[]` for the resolved account scope. Input is optional; pass `account` to override the default.
+```ts
+const balances = await client.balances.list();
+for (const b of balances) {
+console.log(b.assetId, b.available, b.trading, b.funding, b.reserved);
+}
+// A specific subaccount
+const sub = await client.balances.list({ account: { subaccountId: "sub_123" } });
+```
+#### `LedgerBalance`
+Every amount is a decimal string. There are no floating-point values in the shape.
+```ts
+interface LedgerBalance {
+assetId: number;
+trading: string; // held in the trading venue
+funding: string; // held in funding
+reserved: string; // locked by open orders or pending intents
+available: string; // free to trade or move
+tradingRevision: string; // monotonic revision for trading balances
+fundingRevision: string; // monotonic revision for funding balances
+}
+```
+### `getBalanceHistory(input, options?)`
+Returns a `BalanceHistoryResponse` for the account scope: a fixed set of time buckets plus one `balance` series per (asset, bucket) pair. Choose a `range`, and optionally narrow to specific `accountCodes`.
+```ts
+const history = await client.balances.getBalanceHistory({
+range: "30d",
+accountCodes: ["trading", "funding"],
+});
+console.log(history.bucket, history.points, history.startTsSec, history.endTsSec);
+for (const series of history.series) {
+// series.balance is a decimal-string array aligned to the response's timeline
+console.log(series.assetId, series.accountCode, series.balance.length);
+}
+```
+- `range` is one of `"1d"`, `"7d"`, `"30d"`, `"90d"`, `"180d"`, `"365d"`.
+- `accountCodes` is any subset of `"funding"` and `"trading"`; omit it for both.
+- `ledger` is an optional numeric ledger filter (defaults to `0`).
+- Each `series.balance` is a decimal-string array whose length matches `points`.
+### `getEquityHistory(input, options?)`
+Returns an `EquityHistoryResponse`: equity series over the same range buckets, grouped either by account or by asset. Equity is quoted in the response's `quoteAsset`, and the response also carries a `btcPrices` array (decimal strings) for the same timeline.
+```ts
+const equity = await client.balances.getEquityHistory({
+range: "90d",
+groupBy: "asset",
+});
+console.log(equity.quoteAsset, equity.points);
+for (const series of equity.series) {
+if (series.grouping.type === "asset") {
+console.log(series.grouping.symbol, series.equity.length);
+} else {
+console.log(series.grouping.name, series.equity.length);
+}
+}
+```
+- `groupBy` is `"account"` (the default) or `"asset"`.
+- `range` and `accountCodes` behave the same as in `getBalanceHistory`.
+- Each `series.equity` is a decimal-string array; `btcPrices` gives BTC priced in the quote asset at each timestamp.
+### `getPortfolioEquityHistory(input, options?)`
+Returns root-portfolio equity history over a `range`, grouped by the main account, leading owned subaccounts, and an optional remaining-subaccounts series. This method always reads the root portfolio and does not accept `account`.
+```ts
+const history = await client.balances.getPortfolioEquityHistory({ range: "30d" });
+for (const series of history.series) {
+console.log(series.grouping, series.equity.length);
+}
+```
+`series.grouping` is either `{ type: "portfolioAccount", accountId, remaining: false }` or `{ type: "portfolioAccount", remaining: true }`. `equity` and `btcPrices` are decimal-string arrays aligned to the response timeline. The response also includes `quoteAsset`, `bucket`, `points`, `startTsSec`, and `endTsSec`.
+### `getPortfolioEquitySnapshot(options?)`
+Returns current root-portfolio equity, grouped by logical account and asset. This method always reads the root portfolio.
+```ts
+const snapshot = await client.balances.getPortfolioEquitySnapshot();
+console.log(snapshot.quoteAsset, snapshot.totalEquity, snapshot.btcPrice);
+for (const account of snapshot.accounts) {
+console.log(account.accountId, account.equity, account.topAssetIds);
+}
+```
+`totalEquity`, `btcPrice`, account `equity`, asset `balance`, and asset `equity` are decimal strings. Each asset row includes its numeric `assetId`; each account row includes its `accountId` and `topAssetIds`.
+### `subscribe(input)`
+Streams live balance updates over a private channel. Takes an `accountId` plus the standard handler fields, and returns an idempotent unsubscribe function. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.balances.subscribe({
+accountId,
+onEvent: (balance) => console.log(balance.assetId, balance.available),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+Each event is a `LedgerBalance`. Balances for assets unknown to the catalog route a `CatalogLookupError` to `onError` rather than silently dropping.
+## Related
+- [Accounts and balances guide](https://testnet.polyester.com/docs/sdk/typescript/guides/accounts-and-balances) for the task-oriented walkthrough and account scoping.
+- [Transfers](https://testnet.polyester.com/docs/sdk/typescript/reference/transfers) for every balance movement behind these numbers.
+- [Deposit](https://testnet.polyester.com/docs/sdk/typescript/reference/deposit) and [Withdrawals](https://testnet.polyester.com/docs/sdk/typescript/reference/withdrawals) for moving funds in and out.
+- [Realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the streaming handler contract.

@@ -1,0 +1,200 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Order Book · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Widgets
+svg]:size-3.5">
+/
+Order Book
+Order Book
+Copy page
+View as Markdown
+Open in
+The Order Book shows visible orders resting in the active spot market.
+Buy orders appear as bids, sell orders appear as asks, and the difference between the best bid and best ask is the spread.
+What the widget shows
+Field
+What it means
+Price
+Aggregated price level in the
+quote Asset
+Amount
+Visible base-Asset quantity at that level
+Total
+Cumulative visible quantity through that level
+Depth shading
+Relative amount or cumulative depth, depending on the selected view
+Spread
+Difference between the best visible bid and ask
+Price buckets combine orders at the selected granularity. Pair metadata controls valid price and quantity precision, so settings from one Pair should not be reused for another.
+Choose a price with context
+Selecting a price level can copy that price into the Order Form. It does not submit an order. Review the Pair, side, amount, order type, and price before continuing.
+A market order can execute across several levels within its price-protection boundary. A limit order controls its worst price, but it can remain partially filled or unfilled.
+Use the widget settings to adjust the visible depth, price grouping, base or quote display unit, and supported row layout. Use the
+Depth Chart
+when the overall shape of liquidity matters more than an exact level.
+Public depth snapshots support 1, 5, 10, 20, 50, 100, 200, 500, or 1,000 aggregated price levels. The service default is 50, and the current client selector reaches 500. More executable liquidity can exist beyond the rows displayed, so the widget is not the authoritative test for whether a Fill Or Kill order can complete.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Wait for a synchronized book after reconnecting
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+If prices look crossed, quantities jump without context, or updates appear stale, refresh the market view and wait for a new snapshot before relying on later changes.
+Related Topics
+Depth Chart
+See where visible buy and sell liquidity is concentrated around the current market.
+Order Form
+Choose a side, order type, amount, price, and execution controls before submitting an order.
+Market Trades
+Follow recent public executions for the active Pair and see where trading is taking place.
+Previous
+Depth Chart
+Next
+Market Trades
+On this page
+What the widget shows
+Choose a price with context
+Related Topics
+Share this page
+Order Book
+Read current buy and sell prices, the spread, and visible liquidity for one spot market.
+Share
+Copy Link

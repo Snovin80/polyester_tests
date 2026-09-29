@@ -1,0 +1,47 @@
+Источник: https://testnet.polyester.com/docs/user-docs/fees-and-vip/vip-tiers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# VIP Tiers
+See how rolling spot volume or average account equity determines your Polyester VIP tier.
+## Qualification
+You qualify through **either volume or equity**. You do not need both. Polyester applies the higher result to your Main Account and all of its Subaccounts.
+- **30-day settled spot volume**: Polyester totals the USD value of completed spot fills over the rolling 30-day window.
+- **30-day average account equity**: Polyester averages eligible balances over 30 days.
+## VIP tier requirements
+Qualify by meeting either the volume requirement or the equity requirement for a tier.
+| VIP tier | 30-day settled spot volume | 30-day average account equity |
+| -------- | -------------------------- | ----------------------------- |
+| VIP 0    | Default                    | Default                       |
+| VIP 1    | $100K                      | $50K                          |
+| VIP 2    | $500K                      | $100K                         |
+| VIP 3    | $1M                        | $250K                         |
+| VIP 4    | $5M                        | $500K                         |
+| VIP 5    | $10M                       | $1M                           |
+| VIP 6    | $25M                       | $2.5M                         |
+| VIP 7    | $50M                       | $5M                           |
+| VIP 8    | $100M                      | $10M                          |
+| VIP 9    | $250M                      | $25M                          |
+| VIP 10   | $500M                      | $100M                         |
+> **The higher qualifying tier wins**
+>
+> Volume and equity are evaluated separately. They are not added together, and you never need to meet both thresholds. See [Trading Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees) for the maker and taker rate at every tier.
+## How your tier is calculated
+### Spot trading volume
+Polyester adds the USD value of your settled spot fills across the rolling 30-day window. Open, canceled, unfilled, and failed-settlement quantities do not count.
+**30-day settled spot volume = settled spot fill value over the rolling 30-day window**
+Maker and taker fills both count. Activity from the Main Account and every Subaccount beneath it is combined into the same volume total.
+### Account equity
+Polyester measures the USD value of your eligible account equity across the Main Account and all of its Subaccounts, then averages hourly values across the rolling 30-day window.
+**30-day average account equity = total hourly account equity values / 720**
+Funding and Trading balances count toward the same account-level equity total. Moving an asset between your own accounts does not create additional equity, and a large new deposit must remain in the account long enough to raise the rolling average.
+## Examples
+- **Qualify through trading volume.** Your settled 30-day spot volume is $6 million, which qualifies for VIP 4. Your 30-day average account equity is $200,000, which qualifies for VIP 2. Polyester applies **VIP 4** because the volume path gives you the higher tier.
+- **Qualify through account equity.** Your settled 30-day spot volume is $600,000, which qualifies for VIP 2. Your 30-day average account equity is $1.2 million, which qualifies for VIP 5. Polyester applies **VIP 5** even though your trading volume is below the VIP 5 requirement.
+- **Use the higher tier without combining paths.** If your volume qualifies for VIP 5 and your equity qualifies for VIP 4, your effective tier is **VIP 5**. The two results do not combine into VIP 6.
+## When your tier changes
+Polyester evaluates complete qualification data hourly. Your tier can move up or down as new activity enters each rolling window and older activity leaves it. Account-equity promotions require the full threshold, while an existing account-equity tier is retained down to 95% of its threshold to avoid frequent changes near a boundary.
+A new tier applies to future fills; it does not recalculate fees on trades that have already settled. Authenticated API clients can call `GET /v1/vip/status` to inspect the current component tiers, metrics, and next-tier thresholds. `GET /v1/vip/tiers` returns the active public catalog.
+## FAQ
+### How do I increase my VIP tier to qualify for lower trading fees?
+Polyester offers lower trading fees through its VIP tiers, which are based on your trading volume or average account equity. You only need to meet one requirement, and the higher qualifying tier applies to your Main Account and its Subaccounts. See [VIP Tiers](https://testnet.polyester.com/docs/user-docs/fees-and-vip/vip-tiers) in the user docs for the current qualification requirements.

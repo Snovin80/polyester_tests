@@ -1,0 +1,77 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-ip-allowlists.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API key IP allowlists
+Restrict Ed25519 API keys to approved IPv4 and IPv6 source networks.
+An API key IP allowlist restricts where an Ed25519 API key can be used. Polyester accepts a correctly signed request only when its authoritative client address belongs to at least one CIDR configured on the key.
+Use an IP allowlist as defense in depth. It limits the usefulness of a stolen private key, but it does not replace secure key storage, request signing, API-key policies, or endpoint authorization.
+> **API field name**
+>
+> The API field remains `ipWhitelist`. In this guide, “IP allowlist” refers to that field.
+## Allowlist behavior
+- An omitted or empty allowlist means the key has no IP restriction.
+- A non-empty allowlist permits a request when any configured CIDR contains the client address.
+- Matching is family-aware after IPv4-mapped IPv6 addresses are normalized to IPv4. Ordinary IPv4 addresses do not match IPv6 CIDRs, and ordinary IPv6 addresses do not match IPv4 CIDRs.
+- Each entry must include a prefix length. Use `/32` for one IPv4 address and `/128` for one IPv6 address.
+- A key supports up to 32 unique CIDR entries.
+- Send canonical network prefixes. Entries that resolve to the same normalized network are rejected as duplicates.
+- The restriction applies to every endpoint and transport that accepts the API key.
+- A request outside the allowlist fails authentication before the domain operation runs.
+Polyester determines the client address from the network connection and trusted network path. Forwarding headers supplied by an untrusted public client cannot select or override the address used for this check.
+## Choose the correct source addresses
+Allow the public egress addresses that Polyester sees for your integration. These are commonly the static NAT gateway or proxy addresses used by your production workload.
+Before enabling a restriction:
+1. Confirm the public IPv4 and IPv6 egress addresses for every production region.
+2. Include redundant egress paths used during failover.
+3. Avoid broad network ranges when a host prefix is sufficient.
+4. Do not use workstation, mobile, or other frequently changing addresses for unattended production integrations.
+> **Prevent accidental lockout**
+>
+> Adding an allowlist takes effect for new authenticated requests after the updated key configuration propagates. Keep a separate recovery path, test from an approved source, and do not remove the last known-good source until replacement connectivity is verified.
+## Configure an allowlist when creating a key
+Set `ipWhitelist` when calling `POST /v1/auth/api-keys`. The public key is Base64-encoded because `publicKeyEd25519` is a protobuf bytes field in JSON.
+```json
+"label": "production-trading",
+"publicKeyEd25519": "
+",
+"ipWhitelist": ["203.0.113.10/32", "2001:db8:1234::/48"]
+}
+```
+The key can authenticate from `203.0.113.10` or any IPv6 address inside `2001:db8:1234::/48`. Other source addresses are denied.
+## Replace or clear an existing allowlist
+Update a key with `PATCH /v1/auth/api-keys/{key_id}`.
+To replace the complete allowlist:
+```json
+"ipWhitelist": {
+"cidrs": ["198.51.100.24/32", "2001:db8:5678::/48"]
+}
+}
+```
+To clear the allowlist and make the key unrestricted:
+```json
+"ipWhitelist": {
+"cidrs": []
+}
+}
+```
+If `ipWhitelist` is omitted from an update, the current allowlist remains unchanged.
+> **Clearing removes the network restriction**
+>
+> An empty CIDR list is intentionally unrestricted. Disable the key instead if authentication should stop while network configuration is being changed.
+## Handle denied requests
+A request with a valid signature returns `IP_NOT_ALLOWED` with HTTP status `401` when its trusted client address is outside the configured ranges or cannot be safely determined.
+Do not retry the same request unchanged. Retry only after one of these conditions is true:
+- the request originates from an approved network
+- an authorized account administrator has corrected the key's allowlist
+- the key has been deliberately changed to unrestricted access
+Changing forwarding headers does not correct the source address.
+## Production recommendations
+- Generate and store the Ed25519 private key in a dedicated secret manager or signing service.
+- Prefer one API key per workload and environment instead of sharing a key.
+- Use narrow host prefixes for fixed egress addresses.
+- Include IPv4 and IPv6 ranges only when the workload can use both address families.
+- Attach the minimum API-key policy required by the integration.
+- Disable or revoke a key immediately if its private key or approved network is compromised.
+- Test failover from every approved egress path before relying on it during an incident.
+See [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys) for canonical request signing and [API key replay protection](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy) for retry and idempotency guidance.

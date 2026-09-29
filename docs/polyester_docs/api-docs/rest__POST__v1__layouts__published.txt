@@ -1,0 +1,279 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/layouts/published
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LayoutService
+Publish Layout
+Publish a layout for discovery.
+Copy URL
+Method
+POST
+Path
+/v1/layouts/published
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+/v1/layouts/published
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/layouts/published' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"changelog": "Initial public release.",
+"description": "Example configuration for the API playground.",
+"isListed": false,
+"layoutId": "1",
+"tags": [
+"spot"
+],
+"title": "My Trading Board"
+}'
+Responses
+"template": {
+"description": "Example configuration for the API playground.",
+"isListed": false,
+"latestVersion": 1,
+"publishedAtMs": "1",
+"tags": [
+"spot"
+],
+"template": {
+"ownerId": "1",
+"templateId": "1"
+},
+"title": "My Trading Board",
+"updatedAtMs": "1"
+},
+"version": 1
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Request body
+Form
+JSON
+Example
+changelog
+string
+Optional release notes for the new immutable version.
+description
+string
+Public description shown with the template.
+isListed
+boolean
+True when the template should appear in discovery listings.
+Unset
+False
+True
+layoutId
+string (int64)
+Saved layout identifier to publish.
+tags
+string[]
+Public tags used for grouping or filtering.
+Add item
+title
+string
+min 1 chars
+Public display title.
+Response
+Form
+JSON
+template
+object
+Published template metadata after the update.
+8 fields
+template
+object
+Template identifier.
+2 fields
+ownerId
+string (fixed64)
+Viewer that owns the template.
+Example
+1
+templateId
+string (fixed64)
+Template identifier unique within the owner.
+Example
+1
+title
+string
+Public display title.
+Example
+My Trading Board
+description
+string
+Public description shown with the template.
+Example
+Example configuration for the API playground.
+tags
+string[]
+Public tags used for grouping or filtering.
+Example
+isListed
+boolean
+True when the template appears in discovery listings.
+Example
+false
+latestVersion
+integer (int32)
+Latest immutable version number for this template.
+Example
+1
+publishedAtMs
+string (fixed64)
+Initial publication time in milliseconds since epoch (UTC).
+Example
+1
+updatedAtMs
+string (fixed64)
+Last metadata update time in milliseconds since epoch (UTC).
+Example
+1
+version
+integer (int32)
+Immutable version number created by this publish operation.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/layouts/published
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s377" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/layouts/published' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"changelog": "Initial public release.",
+"description": "Example configuration for the API playground.",
+"isListed": false,
+"layoutId": "1",
+"tags": [
+"spot"
+],
+"title": "My Trading Board"
+}'
+Responses
+"template": {
+"description": "Example configuration for the API playground.",
+"isListed": false,
+"latestVersion": 1,
+"publishedAtMs": "1",
+"tags": [
+"spot"
+],
+"template": {
+"ownerId": "1",
+"templateId": "1"
+},
+"title": "My Trading Board",
+"updatedAtMs": "1"
+},
+"version": 1
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/layouts/published' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "changelog": "Initial public release.",
+  "description": "Example configuration for the API playground.",
+  "isListed": false,
+  "layoutId": "1",
+  "tags": [
+    "spot"
+  ],
+  "title": "My Trading Board"
+}'
+
+---
+
+{
+  "template": {
+    "description": "Example configuration for the API playground.",
+    "isListed": false,
+    "latestVersion": 1,
+    "publishedAtMs": "1",
+    "tags": [
+      "spot"
+    ],
+    "template": {
+      "ownerId": "1",
+      "templateId": "1"
+    },
+    "title": "My Trading Board",
+    "updatedAtMs": "1"
+  },
+  "version": 1
+}

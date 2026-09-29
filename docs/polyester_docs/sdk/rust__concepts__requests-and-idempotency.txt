@@ -1,0 +1,452 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/concepts/requests-and-idempotency
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Requests & idempotency · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Requests & idempotency
+Requests & idempotency
+Copy page
+View as Markdown
+Open in
+Service methods are async functions on
+Client
+services. Learn the conventions once; they apply
+across orders, triggers, balances, and market data.
+Call shape
+use
+polyester
+models
+CreateOrderParams
+,
+CreateOrderType
+,
+CreateSide
+};
+use
+polyester
+Quantity
+;
+let
+quantity_scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+params
+=
+CreateOrderParams
+symbol
+"BTC-USDT"
+into
+(),
+side
+CreateSide
+Buy
+,
+order_type
+CreateOrderType
+Limit
+,
+quantity
+Some
+(
+Quantity
+from_decimal_str
+(
+"0.01"
+,
+quantity_scale
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+)
+?
+),
+max_quote_debit_scaled
+None
+,
+price
+None
+,
+time_in_force
+None
+,
+client_order_id
+Some
+(
+"strategy-run-20260725-0001"
+into
+()),
+subaccount_id
+None
+,
+post_only
+None
+,
+market_client_ref_price
+None
+,
+fee_asset
+None
+,
+self_trade_prevention
+None
+,
+market_max_slippage
+None
+,
+attached_risk
+None
+,
+};
+let
+result
+=
+client
+orders
+create
+(
+params
+)
+;
+let
+_
+=
+result
+;
+Methods return
+polyester::Result<T>
+Account scope is often an
+Option
+on the params/request (or client defaults).
+Some reads take proto request structs (for example balances
+GetBalancesRequest
+).
+Cancel surrounding work by dropping/aborting the Tokio task, there is no TypeScript-style
+AbortSignal
+bag on every call.
+There is no TypeScript
+stepUpToken
+options bag on these mutations. Creating
+API keys
+is a
+JWT/session product flow, not available on this API-key SDK.
+Stable mutation identifiers
+Mutation
+Key
+orders.create
+/ batch items
+client_order_id
+(duplicate guard)
+orders.modify
+,
+cancel_all
+, batch helpers
+request_id
+(correlation/deduplication)
+triggers.create
+client_trigger_id
+internal_transfers.create
+idempotency_key
+(required)
+withdraw.create_to_*
+idempotency_key
+and
+nonce
+(required)
+Withdrawal and internal-transfer identities are required for every call, including one-shot
+attempts. Do not treat them as "only for retries."
+client_order_id
+remains optional, and the SDK does not generate one. If you omit it on create,
+the call is accepted but you cannot safely reconcile by client ID. A retained value cannot be
+reused: even an identical create returns
+CONFLICT_DUPLICATE_CLIENT_ORDER_ID
+instead of replaying
+the earlier result. Keep the original value after an ambiguous response, look up the order by that
+ID, and handle a duplicate conflict as a signal to continue reconciliation. In contrast,
+client_trigger_id
+is required and never generated; create and persist it before the first
+trigger attempt and reuse it for reconciliation and retries.
+If you omit
+request_id
+on
+modify
+,
+cancel_all
+/
+cancel_all_with
+,
+cancel_all_after
+, or batch create/cancel/modify, the SDK generates one for that single call
+(same idea as TypeScript/Go/Python). Fine for one-shot mutations. To retry safely after an
+ambiguous failure, supply and reuse your own value - a blind retry that omits
+request_id
+mints
+a
+new
+id and is not an idempotent replay.
+let
+client_order_id
+=
+"strategy-run-20260725-0001"
+to_owned
+();
+// create and persist once
+// put Some(client_order_id) on create params
+// On an ambiguous error, reconcile by the SAME client_order_id before deciding to retry.
+let
+request_id
+=
+"mod-strategy-run-20260725-0001"
+to_owned
+();
+// choose once per logical modify
+// params.request_id = Some(request_id);
+// On mutation_outcome_unknown, reconcile then retry modify with the SAME request_id.
+let
+client_trigger_id
+=
+"stop-strategy-run-20260725-0001"
+to_owned
+();
+// required; persist once
+// params.client_trigger_id = client_trigger_id;
+// Reconcile and retry the same logical trigger with the SAME client_trigger_id.
+Client order IDs accept 1 to 36 ASCII letters, digits,
+,
+_
+,
+,
+/
+, and
+-
+use the same character set and accept 1 to 64 characters. The Rust SDK validates both locally and
+returns
+Error::Validation
+before the request is sent.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A new key every attempt is a bug
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Generating a fresh
+client_order_id
+while the first create is unresolved can place a
+second order. Persist the original value for reconciliation. For replayable request IDs and trigger
+identities, create the key once outside the loop and reuse it for the same logical action. The SDK
+generates neither client ID; request-ID generation is only for the single call.
+request_id
+does not make a multi-item batch atomic. After an ambiguous batch timeout, the same
+request_id
+may complete only the remaining work, replay a cached result, or reject source items
+that already changed. Reconcile every item before and after retrying.
+Retrying safely
+Use
+err.is_retryable()
+to identify failures that may succeed after backoff, and honor
+err.retry_after()
+when present. This is not proof that a mutation was unapplied. When
+err.mutation_outcome_unknown()
+is true, reconcile server state before retrying. A repeated
+single-order create with a retained
+client_order_id
+returns a duplicate conflict rather than the
+original result. For mutations with replayable request IDs, reuse the original key, nonce, and
+request identifier. For batch mutations, reconcile every item because partial commit is possible.
+Do not blindly retry
+Error::Validation
+or most
+Error::Api
+responses; fix input, authentication,
+or state.
+Error::ResponseContract
+is not retryable even though
+mutation_outcome_unknown()
+is true. It
+means the RPC succeeded but its response violated the SDK contract. Reconcile the mutation using
+the original stable identifier and escalate or inspect server state instead of blindly resending.
+See
+Error handling
+and
+Errors
+Pagination cursors
+Most list APIs return opaque tokens (
+next_page_token
+) or similar cursors. Replay them exactly as
+returned, including trigger list/event pages.
+Related
+Client order IDs
+Trading guide
+Catalog & precision
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Environments
+Testnet endpoints, the environment preset, and URL overrides for the Rust client.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Catalog & precision
+Next
+Limitations & non-features
+On this page
+Call shape
+Stable mutation identifiers
+Retrying safely
+Pagination cursors
+Related
+Related Topics
+Share this page
+Requests & idempotency
+Rust call conventions, cancellation, and idempotency keys for orders and triggers.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::models::{CreateOrderParams, CreateOrderType, CreateSide};
+use polyester::Quantity;
+
+let quantity_scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let params = CreateOrderParams {
+    symbol: "BTC-USDT".into(),
+    side: CreateSide::Buy,
+    order_type: CreateOrderType::Limit,
+    quantity: Some(Quantity::from_decimal_str("0.01", quantity_scale, Some("BTC-USDT".into()), None)?),
+    max_quote_debit_scaled: None,
+    price: None,
+    time_in_force: None,
+    client_order_id: Some("strategy-run-20260725-0001".into()),
+    subaccount_id: None,
+    post_only: None,
+    market_client_ref_price: None,
+    fee_asset: None,
+    self_trade_prevention: None,
+    market_max_slippage: None,
+    attached_risk: None,
+};
+let result = client.orders.create(params).await?;
+let _ = result;
+
+---
+
+let client_order_id = "strategy-run-20260725-0001".to_owned(); // create and persist once
+// put Some(client_order_id) on create params
+// On an ambiguous error, reconcile by the SAME client_order_id before deciding to retry.
+
+let request_id = "mod-strategy-run-20260725-0001".to_owned(); // choose once per logical modify
+// params.request_id = Some(request_id);
+// On mutation_outcome_unknown, reconcile then retry modify with the SAME request_id.
+
+let client_trigger_id = "stop-strategy-run-20260725-0001".to_owned(); // required; persist once
+// params.client_trigger_id = client_trigger_id;
+// Reconcile and retry the same logical trigger with the SAME client_trigger_id.

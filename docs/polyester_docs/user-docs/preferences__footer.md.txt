@@ -1,0 +1,339 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/footer.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Footer settings control the market ticker along the bottom of the trading screen. Choose which markets it follows, how quickly it moves, and how much information it shows.
+Open **Footer Settings** from the trading footer or use Quick Settings to show or hide it.
+![Market ticker along the bottom of the trading screen](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/a3ff41988fdf5f886ea3852fb72fa0c567440a352fbed8db0663e89f8dc63257/source.webp)
+## Footer
+Turn **Footer** on when you want the market ticker visible. Turn it off when you want more room for the trading workspace.
+Interactive
+Personalization
+Mode
+- Theme
+Polyester
+- Trading Palette
+Polyester Classic
+- Fonts
+Inter
+Footer
+Hide Balances
+Audio
+Muted
+![BTC](https://testnet.polyester.com/icons/tokens/btc.svg)
+BTC / USDT
+·
+1.84%
+$67,245.12
+![ETH](https://testnet.polyester.com/icons/tokens/eth.svg)
+ETH / USDT
+·
+0.92%
+$3,482.55
+![SOL](https://testnet.polyester.com/icons/tokens/sol.svg)
+SOL / USDT
+·
+2.46%
+$178.40
+![BNB](https://testnet.polyester.com/icons/tokens/bnb.svg)
+BNB / USDT
+·
+0.48%
+$612.08
+![DOGE](https://testnet.polyester.com/icons/tokens/doge.svg)
+DOGE / USDT
+·
+1.26%
+$0.16
+![AVAX](https://testnet.polyester.com/icons/tokens/avax.webp)
+AVAX / USDT
+·
+0.64%
+$36.72
+![LINK](https://testnet.polyester.com/icons/tokens/link.svg)
+LINK / USDT
+·
+2.12%
+$14.88
+![ADA](https://testnet.polyester.com/icons/tokens/ada.webp)
+ADA / USDT
+·
+0.38%
+$0.68
+![SUI](https://testnet.polyester.com/icons/tokens/sui.svg)
+SUI / USDT
+·
+3.18%
+$3.42
+![NEAR](https://testnet.polyester.com/icons/tokens/near.svg)
+NEAR / USDT
+·
+0.74%
+$5.16
+Dummy data only, for preview purposes.
+## Ticker category
+Ticker category selects the group shown in the footer, such as Favorites, Popular, Gainers, Losers, or New listed.
+Choose **Favorites** when you want the footer to follow the markets you selected yourself.
+Interactive
+- Ticker category
+Popular
+- Scroll settings
+Slow
+- Icon labels
+***
+### Ticker settings
+- Pair name
+- Token icon
+- 24h change %
+- Price
+Favorites Popular Gainers Losers New listed
+![BTC](https://testnet.polyester.com/icons/tokens/btc.svg)
+BTC / USDT
+·
+1.84%
+$67,245.12
+![ETH](https://testnet.polyester.com/icons/tokens/eth.svg)
+ETH / USDT
+·
+0.92%
+$3,482.55
+![SOL](https://testnet.polyester.com/icons/tokens/sol.svg)
+SOL / USDT
+·
+2.46%
+$178.40
+![BNB](https://testnet.polyester.com/icons/tokens/bnb.svg)
+BNB / USDT
+·
+0.48%
+$612.08
+![DOGE](https://testnet.polyester.com/icons/tokens/doge.svg)
+DOGE / USDT
+·
+1.26%
+$0.16
+![AVAX](https://testnet.polyester.com/icons/tokens/avax.webp)
+AVAX / USDT
+·
+0.64%
+$36.72
+![LINK](https://testnet.polyester.com/icons/tokens/link.svg)
+LINK / USDT
+·
+2.12%
+$14.88
+![ADA](https://testnet.polyester.com/icons/tokens/ada.webp)
+ADA / USDT
+·
+0.38%
+$0.68
+![SUI](https://testnet.polyester.com/icons/tokens/sui.svg)
+SUI / USDT
+·
+3.18%
+$3.42
+![NEAR](https://testnet.polyester.com/icons/tokens/near.svg)
+NEAR / USDT
+·
+0.74%
+$5.16
+Dummy data only, for preview purposes.
+## Scroll settings
+Pause the ticker or choose a slow, medium, or fast scrolling speed. Changing the speed does not affect the live prices inside it.
+Interactive
+- Ticker category
+Popular
+- Scroll settings
+Slow
+- Icon labels
+***
+### Ticker settings
+- Pair name
+- Token icon
+- 24h change %
+- Price
+Off Slow Medium Fast
+![BTC](https://testnet.polyester.com/icons/tokens/btc.svg)
+BTC / USDT
+·
+1.84%
+$67,245.12
+![ETH](https://testnet.polyester.com/icons/tokens/eth.svg)
+ETH / USDT
+·
+0.92%
+$3,482.55
+![SOL](https://testnet.polyester.com/icons/tokens/sol.svg)
+SOL / USDT
+·
+2.46%
+$178.40
+![BNB](https://testnet.polyester.com/icons/tokens/bnb.svg)
+BNB / USDT
+·
+0.48%
+$612.08
+![DOGE](https://testnet.polyester.com/icons/tokens/doge.svg)
+DOGE / USDT
+·
+1.26%
+$0.16
+![AVAX](https://testnet.polyester.com/icons/tokens/avax.webp)
+AVAX / USDT
+·
+0.64%
+$36.72
+![LINK](https://testnet.polyester.com/icons/tokens/link.svg)
+LINK / USDT
+·
+2.12%
+$14.88
+![ADA](https://testnet.polyester.com/icons/tokens/ada.webp)
+ADA / USDT
+·
+0.38%
+$0.68
+![SUI](https://testnet.polyester.com/icons/tokens/sui.svg)
+SUI / USDT
+·
+3.18%
+$3.42
+![NEAR](https://testnet.polyester.com/icons/tokens/near.svg)
+NEAR / USDT
+·
+0.74%
+$5.16
+Dummy data only, for preview purposes.
+## Icon labels
+Turn **Icon labels** on to show text next to ticker icons.
+Interactive
+- Ticker category
+Popular
+- Scroll settings
+Slow
+- Icon labels
+***
+### Ticker settings
+- Pair name
+- Token icon
+- 24h change %
+- Price
+![BTC](https://testnet.polyester.com/icons/tokens/btc.svg)
+BTC / USDT
+·
+1.84%
+$67,245.12
+![ETH](https://testnet.polyester.com/icons/tokens/eth.svg)
+ETH / USDT
+·
+0.92%
+$3,482.55
+![SOL](https://testnet.polyester.com/icons/tokens/sol.svg)
+SOL / USDT
+·
+2.46%
+$178.40
+![BNB](https://testnet.polyester.com/icons/tokens/bnb.svg)
+BNB / USDT
+·
+0.48%
+$612.08
+![DOGE](https://testnet.polyester.com/icons/tokens/doge.svg)
+DOGE / USDT
+·
+1.26%
+$0.16
+![AVAX](https://testnet.polyester.com/icons/tokens/avax.webp)
+AVAX / USDT
+·
+0.64%
+$36.72
+![LINK](https://testnet.polyester.com/icons/tokens/link.svg)
+LINK / USDT
+·
+2.12%
+$14.88
+![ADA](https://testnet.polyester.com/icons/tokens/ada.webp)
+ADA / USDT
+·
+0.38%
+$0.68
+![SUI](https://testnet.polyester.com/icons/tokens/sui.svg)
+SUI / USDT
+·
+3.18%
+$3.42
+![NEAR](https://testnet.polyester.com/icons/tokens/near.svg)
+NEAR / USDT
+·
+0.74%
+$5.16
+Dummy data only, for preview purposes.
+## Ticker settings
+Show or hide the pair name, token icon, 24-hour change, and price for each market. Keep at least the pair name or token icon visible so each market is easy to identify.
+Interactive
+- Ticker category
+Popular
+- Scroll settings
+Slow
+- Icon labels
+***
+### Ticker settings
+- Pair name
+- Token icon
+- 24h change %
+- Price
+![BTC](https://testnet.polyester.com/icons/tokens/btc.svg)
+BTC / USDT
+·
+1.84%
+$67,245.12
+![ETH](https://testnet.polyester.com/icons/tokens/eth.svg)
+ETH / USDT
+·
+0.92%
+$3,482.55
+![SOL](https://testnet.polyester.com/icons/tokens/sol.svg)
+SOL / USDT
+·
+2.46%
+$178.40
+![BNB](https://testnet.polyester.com/icons/tokens/bnb.svg)
+BNB / USDT
+·
+0.48%
+$612.08
+![DOGE](https://testnet.polyester.com/icons/tokens/doge.svg)
+DOGE / USDT
+·
+1.26%
+$0.16
+![AVAX](https://testnet.polyester.com/icons/tokens/avax.webp)
+AVAX / USDT
+·
+0.64%
+$36.72
+![LINK](https://testnet.polyester.com/icons/tokens/link.svg)
+LINK / USDT
+·
+2.12%
+$14.88
+![ADA](https://testnet.polyester.com/icons/tokens/ada.webp)
+ADA / USDT
+·
+0.38%
+$0.68
+![SUI](https://testnet.polyester.com/icons/tokens/sui.svg)
+SUI / USDT
+·
+3.18%
+$3.42
+![NEAR](https://testnet.polyester.com/icons/tokens/near.svg)
+NEAR / USDT
+·
+0.74%
+$5.16
+Dummy data only, for preview purposes.
+Footer choices save automatically in the current browser.

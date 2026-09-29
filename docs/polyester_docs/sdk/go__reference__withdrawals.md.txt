@@ -1,0 +1,52 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+`client.Withdraw` (alias `client.TradingWithdraws`) creates durable, signed withdrawal intents out of the **trading** venue: to funding or to an external chain via Zipper.
+API-key bots should prepare a complete signed request once, persist its bytes, then submit that unchanged request. This preserves the generated deadline and nonce after an outcome-unknown timeout. The SDK signs deterministic protobuf payload bytes with the configured Ed25519 key.
+## Methods (API-key surface)
+| Method                                       | Summary                                       |
+| -------------------------------------------- | --------------------------------------------- |
+| `PrepareAPIKeyToFunding`                     | Build and sign Trading → funding.             |
+| `PrepareAPIKeyToExternalChain`               | Build and sign Trading → external chain.      |
+| `SubmitPrepared`                             | Submit persisted bytes unchanged.             |
+| `CreateAPIKeyToFunding` / `...ExternalChain` | One-call prepare + submit convenience.        |
+| `CreateToFunding` / `CreateToExternalChain`  | Advanced precomputed-signature compatibility. |
+`CreateWalletTradingWithdraw` exists for session/custody products; API-key trading applications typically use the payload-signature helpers above.
+### Prepare, persist, submit
+```go
+import (
+"github.com/Fabric-Labs/polyester-sdk-go/models"
+"github.com/Fabric-Labs/polyester-sdk-go/services"
+)
+prepared, err := client.Withdraw.PrepareAPIKeyToFunding(services.PrepareAPIKeyWithdrawParams{
+AssetID: 2,
+Amount: models.AssetAmountFromDecimal("100.00"),
+AmountScale: 2, // input precision; wire amount_e18 is always fixed scale 18
+IdempotencyKey: "withdraw-stable-1",
+})
+if err != nil { log.Fatal(err) }
+if err := os.WriteFile("prepared-withdraw.bin", prepared.RequestBytes(), 0600); err != nil {
+log.Fatal(err)
+}
+result, err := client.Withdraw.SubmitPrepared(ctx, prepared)
+fmt.Println(result.IntentID)
+```
+After an ambiguous result, restore and resubmit the same bytes:
+```go
+raw, err := os.ReadFile("prepared-withdraw.bin")
+restored, err := services.PreparedTradingWithdrawFromBytes(raw)
+withdrawResult, err := client.Withdraw.SubmitPrepared(ctx, restored)
+fmt.Println(withdrawResult.IntentID)
+```
+`amount_e18` is canonical fixed scale 18. `AmountScale` describes the input. Upscaling must fit uint128; downscaling must be exact. The SDK never rounds. Compatibility methods that accept a precomputed signature require an explicit nonzero deadline and never invent signed fields.
+> **Persist before first submit**
+>
+> The one-call helpers are convenient, but do not expose persistence between signing and sending. Use prepare → persist → submit whenever an unknown network outcome must be safely retried.
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/go/guides/deposits-and-withdrawals)
+- [Internal transfers](https://testnet.polyester.com/docs/sdk/go/reference/internal-transfers)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency)
+- [Withdrawals & transfers security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security)

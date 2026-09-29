@@ -1,0 +1,204 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/fees.v1.FeeService/GetSpotFeeRates
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+fees.v1.FeeService
+GetSpotFeeRates
+Get effective maker and taker fee rates for the authenticated caller's
+root account or selected subaccount.
+Copy URL
+Method
+POST
+Path
+fees.v1.FeeService/GetSpotFeeRates
+Service
+fees.v1.FeeService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+fees.v1.FeeService/GetSpotFeeRates
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/fees.v1.FeeService/GetSpotFeeRates' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678",
+"symbolId": [
+1
+]
+}'
+Responses
+"feeRates": [
+"makerFeeRatePercent": "0.09",
+"symbolId": 1,
+"takerFeeRatePercent": "0.03",
+"vipTier": 1
+}
+]
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+fees.v1.GetSpotFeeRatesRequest
+Response
+fees.v1.GetSpotFeeRatesResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+> 0
+Optional subaccount public identifier. When omitted, the authenticated
+caller's root account is used.
+symbolId
+integer[] (int32)
+max 100 items, unique
+Optional unique spot market identifier filter. When empty, all currently
+listed, non-disabled spot markets are returned. At most 100 identifiers
+may be requested.
+Add item
+Response
+Form
+JSON
+feeRates
+object[]
+Effective spot fee rows ordered by symbol_id ascending. The result is a
+finite snapshot of the requested or currently listed, non-disabled spot
+market catalog and is not paginated.
+4 fields
+symbolId
+integer (int32)
+> 0
+Stable numeric spot market identifier.
+makerFeeRatePercent
+string
+1-14 chars
+/^-?(10…]+)?)$/
+Effective maker fee rate encoded as a base-10 percentage string without a
+percent sign. Values are between -100 and 100 inclusive.
+takerFeeRatePercent
+string
+1-13 chars
+/^(100(…]+)?)$/
+Effective taker fee rate encoded as a non-negative base-10 percentage
+string without a percent sign. Values are between 0 and 100 inclusive.
+vipTier
+integer (int32)
+≤ 10
+VIP tier used to resolve these rates, in the inclusive range 0 through 10.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+fees.v1.FeeService/GetSpotFeeRates
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s385" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/fees.v1.FeeService/GetSpotFeeRates' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"subaccountId": "6789012345678",
+"symbolId": [
+1
+]
+}'
+Responses
+"feeRates": [
+"makerFeeRatePercent": "0.09",
+"symbolId": 1,
+"takerFeeRatePercent": "0.03",
+"vipTier": 1
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/fees.v1.FeeService/GetSpotFeeRates' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "subaccountId": "6789012345678",
+  "symbolId": [
+    1
+  ]
+}'
+
+---
+
+{
+  "feeRates": [
+    {
+      "makerFeeRatePercent": "0.09",
+      "symbolId": 1,
+      "takerFeeRatePercent": "0.03",
+      "vipTier": 1
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/polychart.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Polychart
+Polychart collaboration APIs (reference-only).
+`client.Polychart` wraps chart-layer reads, snapshots, subscribe tokens, share links, publish/unpublish, revisioned layer/drawing mutations, and layer subscriptions.
+## Methods
+| Group         | Methods                                                                                   |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| Discovery     | `GetMarketLayers`, `ListInboxMarketLayers`, `GetLayerSnapshot`, `GetLayerSubscribeTokens` |
+| Share links   | `ResolveLayerShareToken`, `CreateLayerShareLink`, `RevokeLayerShareLink`                  |
+| Publishing    | `ListOwnerPublishedLayers`, `PublishLayer`, `UnpublishLayer`                              |
+| Layer data    | `UpsertLayer`, `DeleteLayer`, `UpsertDrawing`, `DeleteDrawing`                            |
+| Subscriptions | `SetLayerSubscriptions`                                                                   |
+```go
+layers, err := client.Polychart.GetMarketLayers(ctx, 1)
+snapshot, err := client.Polychart.GetLayerSnapshot(
+ctx,
+map[string]any{"engine_symbol_id": 1, "layer_id": "..."},
+)
+```
+Methods accept typed scalar arguments plus map-shaped Protobuf data for layer/drawing identities and return `models.ApiData`. Mutation methods with `expectedRevision` must use the latest read revision. `AUTH_REVISION_CONFLICT` means re-read and reconcile, not blind retry. Results are generally `models.ApiData`.
+This collaboration surface is not required for trading and is not a supported production API-key workflow. It may require JWT/session auth or be unmounted. Keep failures isolated from order placement, cancellation, and risk loops.

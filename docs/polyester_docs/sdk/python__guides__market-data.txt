@@ -1,0 +1,423 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/market-data
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Market data · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Market data
+Market data
+Copy page
+View as Markdown
+Open in
+Every service on this page is public. An unauthenticated
+AsyncPolyester()
+can call them.
+from
+polyester
+import
+AsyncPolyester,
+POLYESTER_TESTNET_ENVIRONMENT
+async
+with
+AsyncPolyester(
+environment
+=
+POLYESTER_TESTNET_ENVIRONMENT
+)
+as
+client:
+await
+client.wait_for_catalogs()
+Symbols
+Prefer pair symbols like
+"BTC-USDT"
+hydration. You can also pass
+symbol_id
+directly.
+Fetch the public raw spot-pair catalog directly when you need the wire snapshot:
+spot_config
+=
+await
+client.market_data.get_spot_config()
+print
+(spot_config.raw)
+Market overview (tickers)
+overview
+=
+await
+client.market_overview.list(
+limit
+=
+50
+)
+for
+m
+in
+overview.markets:
+print
+(m.symbol, m.last_price)
+sub
+=
+await
+client.market_overview.create_subscription(
+limit
+=
+50
+)
+async
+with
+sub:
+async
+for
+rows
+in
+sub:
+Prefer
+create_subscription
+(snapshot-then-stream) over raw
+subscribe
+Candles (OHLCV)
+Alias:
+client.candles
+→
+client.market_data
+1s
+,
+1m
+,
+5m
+,
+15m
+,
+30m
+,
+1h
+,
+4h
+,
+12h
+,
+1d
+,
+1w
+,
+1mo
+result
+=
+await
+client.candles.get_candles(
+symbol
+=
+"BTC-USDT"
+,
+timeframe
+=
+"1h"
+,
+limit
+=
+200
+)
+if
+result.candles:
+latest
+=
+result.candles[
+0
+]
+print
+(latest.close, latest.is_closed)
+chronological
+=
+list
+(
+reversed
+(result.candles))
+# Feed chronological (oldest-first) to rolling indicators.
+live
+=
+await
+client.candles.subscribe_candles(
+symbol
+=
+"BTC-USDT"
+,
+timeframe
+=
+"1m"
+)
+async
+with
+live:
+async
+for
+candle
+in
+live:
+print
+(candle.ts_sec, candle.close, candle.is_closed)
+break
+Row results are newest-first, with the requested open/incomplete candle prepended. The columns API
+is oldest-first.
+Order book
+book
+=
+await
+client.orderbook.get(
+symbol
+=
+"BTC-USDT"
+,
+depth
+=
+20
+)
+print
+(book.bids[
+0
+], book.asks[
+0
+], book.book_seq)
+sub
+=
+await
+client.orderbook.create_subscription(
+symbol
+=
+"BTC-USDT"
+,
+depth
+=
+50
+)
+async
+with
+sub:
+async
+for
+book
+in
+sub:
+print
+(book.book_seq)
+break
+Managed subscriptions refetch on sequence gaps. See
+Order book
+Public trades
+tape
+=
+await
+client.market_data.get_trades(
+symbol
+=
+"BTC-USDT"
+,
+limit
+=
+20
+)
+sub
+=
+await
+client.market_data.subscribe_trades(
+symbol
+=
+"BTC-USDT"
+)
+Private fills are
+client.trades
+, not the public tape.
+Heatmap & chain analytics
+client.heatmap
+and
+client.chain_analytics
+for L2 heatmap queries and chain analytics reads.
+See matching reference pages when present.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Streaming model
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Centrifugo WebSocket + Protobuf. Details:
+Streaming
+Related
+Order book
+·
+Candles
+·
+Public trades
+·
+Market overview
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers and risk attachments.
+Streaming
+Subscribe to public and private WebSocket Protobuf channels with async iterators, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, lifecycle, and chain helpers.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify failures, retry safely with idempotency keys, and handle realtime overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Python trading system safely.
+Previous
+Authentication
+Next
+Trading
+On this page
+Symbols
+Market overview (tickers)
+Candles (OHLCV)
+Order book
+Public trades
+Heatmap & chain analytics
+Related
+Related Topics
+Share this page
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+
+async with AsyncPolyester(environment=POLYESTER_TESTNET_ENVIRONMENT) as client:
+    await client.wait_for_catalogs()
+    ...
+
+---
+
+spot_config = await client.market_data.get_spot_config()
+print(spot_config.raw)
+
+---
+
+overview = await client.market_overview.list(limit=50)
+for m in overview.markets:
+    print(m.symbol, m.last_price)
+
+sub = await client.market_overview.create_subscription(limit=50)
+async with sub:
+    async for rows in sub:
+        ...
+
+---
+
+result = await client.candles.get_candles(symbol="BTC-USDT", timeframe="1h", limit=200)
+if result.candles:
+    latest = result.candles[0]
+    print(latest.close, latest.is_closed)
+
+chronological = list(reversed(result.candles))
+# Feed chronological (oldest-first) to rolling indicators.
+
+live = await client.candles.subscribe_candles(symbol="BTC-USDT", timeframe="1m")
+async with live:
+    async for candle in live:
+        print(candle.ts_sec, candle.close, candle.is_closed)
+        break
+
+---
+
+book = await client.orderbook.get(symbol="BTC-USDT", depth=20)
+print(book.bids[0], book.asks[0], book.book_seq)
+
+sub = await client.orderbook.create_subscription(symbol="BTC-USDT", depth=50)
+async with sub:
+    async for book in sub:
+        print(book.book_seq)
+        break
+
+---
+
+tape = await client.market_data.get_trades(symbol="BTC-USDT", limit=20)
+sub = await client.market_data.subscribe_trades(symbol="BTC-USDT")

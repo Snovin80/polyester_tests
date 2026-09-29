@@ -1,0 +1,237 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/order-types/limit-order
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Limit Order · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Trading
+svg]:size-3.5">
+/
+Order Types
+svg]:size-3.5">
+/
+Limit Order
+Limit Order
+Copy page
+View as Markdown
+Open in
+A limit order trades only at your chosen price or better, even if that means waiting or not filling.
+What it does
+A
+limit order
+gives you control over the worst price the order may accept. A Limit buy can execute at its limit price or lower, while a Limit sell can execute at its limit price or higher.
+If eligible liquidity is not available, the order can remain open, fill partially, or end without a fill according to its
+time-in-force instruction
+How it works
+Side
+Price boundary
+Example
+Buy
+The order cannot pay more than the limit price
+A buy at 99,000 USDT can fill at 99,000 USDT or lower
+Sell
+The order cannot accept less than the limit price
+A sell at 101,000 USDT can fill at 101,000 USDT or higher
+A Limit order can rest in the Order Book, but it can also execute immediately when its price crosses available liquidity. Add
+post-only
+when it must add liquidity instead of executing immediately as a
+taker
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+A limit price does not guarantee a fill
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The market may never reach your price, or only part of the requested quantity may become available there.
+When to use it
+Use it when your price boundary matters most.
+Choose a Limit order when you will buy only at or below a maximum price, or sell only at or above a minimum price.
+Avoid it when you need to trade immediately.
+Choose a Market order when attempting execution now matters more than waiting for one price or better.
+Choose the limit price, time-in-force, and post-only setting based on whether the order may wait, take liquidity immediately, or must remain maker-only.
+Example
+Let's say Bitcoin is currently trading at
+100,000 USDT
+0.01 BTC
+, but only if the price falls to
+99,000 USDT or lower
+You submit a Limit buy for 0.01 BTC at 99,000 USDT.
+The best available ask is still above 99,000 USDT, so the order waits in the Order Book.
+Bitcoin falls and 0.006 BTC becomes available at 99,000 USDT, partially filling the order.
+The remaining 0.004 BTC later fills at 98,950 USDT, which is better than your limit price.
+Result:
+You buy 0.01 BTC for 989.80 USDT before fees, at an average price of 98,980 USDT. The order never pays more than 99,000 USDT per BTC.
+These are example prices and available quantities. If the market never reaches the limit, the order may remain open or end without filling.
+What to watch
+A Limit order is not guaranteed to fill.
+Partial fills can leave quantity open in the Order Book.
+A crossing Limit order can execute immediately as a taker.
+Time-in-force determines what happens to unfilled quantity.
+Use a
+Market Order
+when trading immediately matters more than one fixed price.
+Related Topics
+Market Order
+Attempt immediate execution against available Order Book liquidity within price protection.
+Time-in-Force & Post-Only
+Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+Iceberg
+Understand the Iceberg order concept and its current availability on Polyester.
+TWAP
+Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+Ladder
+Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+Stop-Loss Market
+Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+Stop-Loss Limit
+Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+Trailing Stop
+Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+Previous
+Market Order
+Next
+Time-in-Force & Post-Only
+On this page
+What it does
+How it works
+When to use it
+Example
+What to watch
+Related Topics
+Share this page
+Limit Order
+Buy at a chosen maximum price or sell at a chosen minimum price.
+Share
+Copy Link

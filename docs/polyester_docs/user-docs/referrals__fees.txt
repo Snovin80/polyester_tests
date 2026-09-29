@@ -1,0 +1,231 @@
+Источник: https://testnet.polyester.com/docs/user-docs/referrals/fees
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Rewards · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Referrals
+svg]:size-3.5">
+/
+Rewards
+Rewards
+Copy page
+View as Markdown
+Open in
+Referral rewards come from eligible spot trading fees. When a friend joins through your referral, they receive
+4% off each eligible positive trading fee
+, and you earn
+15% of the discounted fee they pay
+The
+Referrals page
+shows your earnings by asset and records every reward in a detailed ledger. Collect rewards manually or on an automatic schedule, then keep the original assets or convert them into the payout asset you choose.
+How your reward is calculated
+The calculation begins with the
+maker
+or
+taker
+fee charged on an eligible fill. Polyester first applies the referred trader's 4% discount, then calculates your 15% reward from the fee they actually pay.
+Let's say Bitcoin is currently trading at
+$100,000
+, and your friend completes a
+$1,000 BTC/USDT trade
+at a
+0.08%
+fee rate:
+The standard trading fee is
+0.80 USDT
+The 4% referral discount saves your friend
+0.032 USDT
+Your friend pays
+0.768 USDT
+after the discount.
+You earn 15% of the paid fee, or
+0.1152 USDT
+The reward appears in your Reward Ledger as
+0.1152 USDT
+The fee share is based on the trading fee, not the value of the trade, deposit, withdrawal, or account balance.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Referral rewards apply only to positive fees
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A fill with a 0.00% maker fee does not create a referral reward. Maker rebates are separate: a negative maker rate rewards the trader directly and is not discounted or shared with a referrer.
+How rewards are credited
+Your reward is first recorded in the asset used to pay the trading fee. This keeps every ledger entry connected to the actual fee that produced it, even when your referred traders pay fees in several different assets.
+The Reward Ledger gives each amount a clear history, including:
+the referral link that produced it
+the eligible fee event
+the original reward asset and amount
+any automatic conversion
+its available or claimed status.
+Claim your rewards
+The Referrals page groups available rewards by asset. To collect them manually, review the balance, choose
+Claim Rewards
+, and confirm the payout to your Trading Account. You can keep each reward in its original asset or convert it into another asset as part of the claim.
+Completed claims remain in the Reward Ledger, giving you one history from the original trading fee through conversion and payout.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Collect rewards automatically
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Turn on automatic collection to send available rewards to your Trading Account without returning to select Claim. Choose the payout interval in minutes and the asset you want to receive. When the selected payout asset differs from the assets you earned, Polyester converts the rewards as part of each automatic payout.
+Choose your payout asset
+Reward conversion happens when rewards are collected. For a manual claim, choose the destination asset in the claim flow. For automatic collection, save one preferred payout asset in your automatic payout settings.
+For example, if you earn USDT but want to accumulate SOL, choose SOL before confirming a manual claim or set SOL as the asset for automatic payouts. Polyester converts the available USDT at the current market price, deposits the resulting SOL into your Trading Account, and records both sides of the conversion in the Reward Ledger.
+If you keep the original reward assets, Polyester deposits them without conversion.
+See
+Trading Fees
+for the complete spot fee schedule and maker rebate tiers. See
+Analytics
+to compare earnings across links and referred users.
+Related Topics
+Overview
+Invite friends to Polyester, earn a share of their trading fees, and track every referral from one dashboard.
+Analytics
+Track referred users, trading volume, and rewards across every referral link and date range.
+Previous
+Overview
+Next
+Analytics
+On this page
+How your reward is calculated
+How rewards are credited
+Claim your rewards
+Choose your payout asset
+Related Topics
+Share this page
+Rewards
+See how referral rewards are calculated, collected, converted, and paid to your Trading Account.
+Share
+Copy Link

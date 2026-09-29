@@ -1,0 +1,117 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/concepts/requests-and-idempotency.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Requests & idempotency
+How every service call is shaped, cancelled, retried, and deduplicated, and where idempotency keys fit.
+Every service method follows one calling convention. Learn it once; all services read the same way: input object, optional options, typed result.
+## The call shape
+```ts
+client.
+(input, options?): Promise
+```
+`input` carries request fields. Account-scoped services always accept optional `account` (`"main"`, `"active"`, or `{ subaccountId }`). Some reads take no input, so the argument is optional.
+`options` is last and controls the transport, not the payload. Reads use `PolyesterRequestOptions`. Mutations use `PolyesterMutationOptions`.
+`Result` is a plain parsed object. Prices and quantities are decimal strings. Timestamps are epoch milliseconds unless the field name ends in `TsSec` or `TsNs`. Enums are string literal unions. Wire shapes do not leak through.
+```ts
+interface PolyesterRequestOptions {
+signal?: AbortSignal; // cancel the request
+}
+interface PolyesterMutationOptions extends PolyesterRequestOptions {
+stepUpToken?: string | null; // MFA fresh step-up proof (sent as X-Auth-Step-Up)
+}
+```
+## Cancellation
+Every method accepts an `AbortSignal`, same idea as `fetch`:
+```ts
+const controller = new AbortController();
+const promise = client.marketOverview.list({}, { signal: controller.signal });
+controller.abort();
+```
+Aborts are not `PolyesterError`s. Detect them with `isAbortError(err)` and treat them as flow control:
+```ts
+import { isAbortError } from "@polyester/sdk";
+try {
+await promise;
+} catch (err) {
+if (isAbortError(err)) return; // caller cancelled
+throw err;
+}
+```
+## Stable mutation identifiers
+Mutations use stable identifiers for different guarantees. A single-order `clientOrderId` is an account-scoped duplicate guard, not a replay key. Reusing a retained value returns `CONFLICT_DUPLICATE_CLIENT_ORDER_ID` instead of the earlier result. Other request IDs can replay or deduplicate the operation described by their endpoint:
+| Mutation                                                   | Key field                                                            |
+| ---------------------------------------------------------- | -------------------------------------------------------------------- |
+| `orders.create`                                            | `clientOrderId` (no replay)                                          |
+| `orders.batchCreate`                                       | batch `requestId` (replay); item `clientOrderId` is correlation only |
+| `orders.modify`, `orders.cancelAll`, order batch mutations | `requestId`                                                          |
+| Each deliberate `orders.cancelAllAfter` heartbeat          | `requestId`                                                          |
+| `triggers.create`                                          | `clientTriggerId`                                                    |
+| `internalTransfers.create`                                 | idempotency key (built in)                                           |
+| `tradingWithdraws.create*`                                 | idempotency key (built in)                                           |
+The SDK generates order `requestId` values and `clientTriggerId` values when omitted, but it does not synthesize `clientOrderId`. Create and persist a client order ID before the first attempt so an uncertain outcome can be reconciled without inventing a second logical order:
+```ts
+const clientOrderId = crypto.randomUUID();
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+await client.orders.create({
+symbolId,
+side: "buy",
+qty: "0.01",
+execution: { type: "limit_gtc", price: "60000" },
+clientOrderId,
+});
+// If the response is uncertain, look up the order by clientOrderId before resubmitting.
+// Reuse of a retained clientOrderId returns CONFLICT_DUPLICATE_CLIENT_ORDER_ID.
+```
+> **A new key every attempt is a bug**
+>
+> Generating a fresh `clientOrderId` while the first create is unresolved can place a second order. Persist the original value for reconciliation. A duplicate conflict does not replay the original outcome.
+A batch timeout is an unknown outcome, not proof that nothing committed. Give every batch-create item a stable `clientOrderId`, reconcile every item, then retry the unchanged batch with the same `requestId`. For `cancelAllAfter`, create a new ID for each deliberate heartbeat and reuse it only for an ambiguous retry of that heartbeat.
+## Retrying safely
+The error tree splits on retryability.
+`TransientError` (network, timeout, rate limit, unavailable) may have failed before or after the backend applied a mutation. Do not automatically retry a single-order create. Reconcile by `clientOrderId`; a retained ID returns a duplicate conflict instead of replaying the result. For mutations with replayable request IDs, keep the key constant.
+`RequestError` is permanent. An identical retry fails the same way. Fix the input, auth, or state instead.
+```ts
+const clientOrderId = crypto.randomUUID();
+try {
+await client.orders.create({
+symbolId,
+side: "buy",
+qty: "0.001",
+execution: { type: "limit_gtc", price: "10000", postOnly: true },
+clientOrderId,
+});
+} catch (err) {
+const details = await client.orders.getDetails({
+clientOrderId,
+includeExecutionHistory: false,
+});
+if (details) console.log("create already accepted", details.order.orderId);
+else throw err; // decide whether and when a new logical order is appropriate
+}
+```
+Use a retry helper only for an operation whose `requestId` contract permits replay, such as `orders.cancelAll`. Keep its request ID unchanged for the same logical mutation.
+`RateLimitError` may carry `retryAfterMs` when the backend suggests a wait. See [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling) and the [Errors reference](https://testnet.polyester.com/docs/sdk/typescript/reference/errors).
+## Step-up on protected mutations
+A mutation can require a fresh multi-factor proof. On `StepUpRequiredError`, complete an MFA challenge and retry with `options.stepUpToken`:
+```ts
+import { StepUpRequiredError } from "@polyester/sdk";
+try {
+await client.apiKeys.create(payload);
+} catch (err) {
+if (!(err instanceof StepUpRequiredError)) throw err;
+const challenge = await client.mfa.beginChallenge({ purpose: "freshStepUp" });
+const { stepUpToken } = await client.mfa.verifyTotpChallenge({
+challengeId: challenge.challengeId,
+code: userEnteredCode,
+});
+await client.apiKeys.create(payload, { stepUpToken });
+}
+```
+The step-up token is one-use and bound to a single request. See the [authentication model](https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model) for session elevation vs fresh step-up, and [MFA](https://testnet.polyester.com/docs/sdk/typescript/reference/mfa) for challenge methods.
+## Related
+- [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling)
+- [Errors reference](https://testnet.polyester.com/docs/sdk/typescript/reference/errors)
+- [Client configuration](https://testnet.polyester.com/docs/sdk/typescript/reference/client-configuration)
+- [Catalog & precision](https://testnet.polyester.com/docs/sdk/typescript/concepts/catalog-and-precision)

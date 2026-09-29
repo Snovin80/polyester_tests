@@ -1,0 +1,36 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/getting-started.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Developer documentation
+Start integrating with Polyester APIs, SDKs, realtime streams, and trading interfaces.
+Polyester developer documentation covers API connectivity, authentication, trading, funds and transfers, realtime data, and official SDKs.
+## Choose your path
+## REST & JSON
+- [REST getting started](https://testnet.polyester.com/docs/developer-docs/rest/getting-started)
+- [WebSocket JSON](https://testnet.polyester.com/docs/developer-docs/rest/websocket-json)
+## ConnectRPC & Protobuf
+- [ConnectRPC getting started](https://testnet.polyester.com/docs/developer-docs/connectrpc/getting-started)
+- [Scaled integers](https://testnet.polyester.com/docs/developer-docs/connectrpc/scaled-integers)
+- [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf)
+- [TypeScript SDK](https://testnet.polyester.com/docs/sdk/typescript/get-started)
+- [Python SDK](https://testnet.polyester.com/docs/sdk/python/get-started)
+- [Go SDK](https://testnet.polyester.com/docs/sdk/go/get-started)
+- [Rust SDK](https://testnet.polyester.com/docs/sdk/rust/get-started)
+## SBE order entry
+- [SBE WebSocket getting started](https://testnet.polyester.com/docs/developer-docs/sbe-websocket/getting-started)
+- [WebSocket Protobuf](https://testnet.polyester.com/docs/developer-docs/connectrpc/websocket-protobuf)
+## Institutional FIX
+- [FIX Classic getting started](https://testnet.polyester.com/docs/developer-docs/fix-classic/getting-started)
+- [FIX-SBE getting started](https://testnet.polyester.com/docs/developer-docs/fix-sbe/getting-started)
+## API foundations
+- [Connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix)
+- [SDK capability matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix)
+- [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview)
+- [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids)
+- [Client order IDs and idempotency](https://testnet.polyester.com/docs/developer-docs/shared-concepts/client-order-ids)
+- [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model)
+- [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys)
+- [API-key replay protection](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy)
+- [Multi-factor authentication](https://testnet.polyester.com/docs/developer-docs/authentication-security/multi-factor-authentication)
+- [Withdrawals and transfer security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security)

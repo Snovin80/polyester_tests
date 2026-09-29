@@ -1,0 +1,86 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Supported Assets
+Deposit and withdraw Unified Assets on supported networks. Expand a row for fees, minimums, and confirmation time.
+This page lists all Unified Assets available for deposit and withdrawal, along with the networks they support. Browse the directory to explore Polyester’s supported assets and chains, including the requirements for each route. For how those balances work in your account, see [Unified Assets](https://testnet.polyester.com/docs/user-docs/funds/unified-assets).
+Total Unified Assets 28
+Total Networks 16
+Asset Routes 31
+zSupply -
+## View By Asset
+| Asset                         | Chains                                                              | uToken address                                                                                                                     | zSupply     |
+| ----------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| AVAX Avalanche                | Ethereum Sepolia                                                    | [0x51ae…81595](https://testnet.polyesterscan.com/unified-asset/0x51ae1b9bb3103c91be3c12db9f97165657aee56ce412966fd68b8715b0481595) | 852.2K AVAX |
+| BCH Bitcoin Cash              | Ethereum Sepolia                                                    | [0xa97c…6abe9](https://testnet.polyesterscan.com/unified-asset/0xa97cddf4a06bc5f21aca7e7540ef9ea0ff4f8adb9d7dbd7f6c26efb3f696abe9) | 27K BCH     |
+| BNB BNB                       | Ethereum Sepolia                                                    | [0x84f2…1178d](https://testnet.polyesterscan.com/unified-asset/0x84f284b8f96a449a73a2abd6faa45f5180a36ce1925ba9b4c9683ccaa3d1178d) | 15.6K BNB   |
+| BTC Bitcoin                   | Ethereum Sepolia                                                    | [0x4bac…8703d](https://testnet.polyesterscan.com/unified-asset/0x4bac7d8baf3f4f429951de9baff555c2f70564c6a43361e09971ef219908703d) | 150.84 BTC  |
+| DOGE Dogecoin                 | Ethereum Sepolia                                                    | [0xf94a…5f736](https://testnet.polyesterscan.com/unified-asset/0xf94adcdd39eb156b60766264ff00058b4ed540a41fcd1e3f0ef433285885f736) | 128M DOGE   |
+| ETC Ethereum Classic          | Ethereum Sepolia                                                    | [0x9979…4fba4](https://testnet.polyesterscan.com/unified-asset/0x997997d543f68c7b77e62a13efc6e546bd2a81c2aa8769c3354422ebbbb4fba4) | 874.7K ETC  |
+| ETH Ethereum                  | Ethereum Sepolia                                                    | [0x4f5b…3d7f0](https://testnet.polyesterscan.com/unified-asset/0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0) | 4.7K ETH    |
+| HYPE Hyperliquid              | Ethereum Sepolia                                                    | [0x0649…43126](https://testnet.polyesterscan.com/unified-asset/0x0649d38da6f5787457713c5795c1c027fe6111e5cf01a67e38913394e5043126) | 90.3K HYPE  |
+| LTC Litecoin                  | Ethereum Sepolia                                                    | [0xf709…2491f](https://testnet.polyesterscan.com/unified-asset/0xf7094f76ac4abd28abcac62793e9d561c2235a0bcfaaa496b3e98f57eca2491f) | 120.6K LTC  |
+| POL Polygon                   | Ethereum Sepolia                                                    | [0x356c…480d6](https://testnet.polyesterscan.com/unified-asset/0x356c43ca90181266c1a9f2f60338a4fa2205dba031b27b21fafa41af88a480d6) | 77M POL     |
+| SOL Solana                    | Ethereum Sepolia                                                    | [0x62a2…be979](https://testnet.polyesterscan.com/unified-asset/0x62a22ed7f43907e9065ebbd4094e4ffa89985583e52d491251619a4c5b0be979) | 205.8K SOL  |
+| tAVAX Avalanche Testnet       | Avalanche Fuji Testnet                                              | [0x4ef9…893d4](https://testnet.polyesterscan.com/unified-asset/0x4ef9b3b69a8a86339a1d13f18abe42a262a69676813e26d76ff0d0cd345893d4) | 11.99 tAVAX |
+| tBCH Bitcoin Cash Testnet     | Bitcoin Cash Testnet                                                | [0x753e…26e04](https://testnet.polyesterscan.com/unified-asset/0x753ea03dbd66c641acde033a947d4ac1d53d45c7a118ebf026fe578e17226e04) | 0.10 tBCH   |
+| tBNB BNB Testnet              | BNB Smart Chain Testnet                                             | [0x4468…90a4c](https://testnet.polyesterscan.com/unified-asset/0x4468b1f077c33647e943a8062ccccb22382b93234668f81c4c221f9269c90a4c) | 3.45 tBNB   |
+| tBTC Bitcoin Testnet          | Bitcoin Testnet                                                     | [0x8c57…5804b](https://testnet.polyesterscan.com/unified-asset/0x8c57c39dc55571a0692c274beabd16b16ec29a4b198a9895033b32310035804b) | 0.16 tBTC   |
+| tDOGE Dogecoin Testnet        | Dogecoin Testnet                                                    | [0x8c5a…15f30](https://testnet.polyesterscan.com/unified-asset/0x8c5aa2db30688606399fffbb50b8b7136afc48eb25b94750cdfc7f9fec515f30) | 1.1K tDOGE  |
+| tETC Ethereum Classic Testnet | Ethereum Classic Testnet                                            | [0x0c00…f4c52](https://testnet.polyesterscan.com/unified-asset/0x0c00f64df2e5ad84ccae6e04059606b927879255fcfdb70cf1a3bcb7e2cf4c52) | 11.09 tETC  |
+| tETH Ethereum Testnet         | Ethereum Sepolia, Base Sepolia, Arbitrum Sepolia, Robinhood Testnet | [0x2d77…2bb48](https://testnet.polyesterscan.com/unified-asset/0x2d7798691a071f8d08bed5b068ee0c43a3e7184cd95ede8f379d11ae0df2bb48) | 116.55 tETH |
+| tHYPE Hyperliquid Testnet     | HyperEVM Testnet                                                    | [0x7722…ea684](https://testnet.polyesterscan.com/unified-asset/0x7722d4a84dd55a18c0659c51848fabb3eab346dc8af75cdb99c56784346ea684) | 0.67 tHYPE  |
+| tLTC Litecoin Testnet         | Litecoin Testnet                                                    | [0xcd73…a5b7d](https://testnet.polyesterscan.com/unified-asset/0xcd732973d1487777680d9cff69ee3a4fb394045078d20a0b838a6c8e384a5b7d) | 0.31 tLTC   |
+| tPOL Polygon Testnet          | Polygon PoS Testnet                                                 | [0xc31a…55419](https://testnet.polyesterscan.com/unified-asset/0xc31a94f6a8d50f6e06187d17c55ed46d9cdb3442540158cea077228a02f55419) | 14.39 tPOL  |
+| TRX Tron                      | Ethereum Sepolia                                                    | [0xff5b…5a09c](https://testnet.polyesterscan.com/unified-asset/0xff5bc9d5c9e3e6ac87e67da6ad891b8532cb6220ad79e6fb2f39a42cf985a09c) | 35.5M TRX   |
+| tSOL Solana Testnet           | Solana Devnet                                                       | [0x6197…a760e](https://testnet.polyesterscan.com/unified-asset/0x6197899c383ff3bfb1c723fbc19f21397ead32e53c59b3bb14b95fef9e2a760e) | 37.51 tSOL  |
+| tTRX Tron Testnet             | Tron Nile                                                           | [0xabc4…60e46](https://testnet.polyesterscan.com/unified-asset/0xabc4b1b305a5184aa4dc5ba7efde7d2622c20344d217f64f85b5f3b2d9760e46) | 17.6K tTRX  |
+| tXRP Ripple Testnet           | Ripple Testnet                                                      | [0x7590…2ec26](https://testnet.polyesterscan.com/unified-asset/0x759004c94873a8f7d9a40a8ca2b1e4e942ec85ec633409f839c9a782ac22ec26) | 252.59 tXRP |
+| USDC USD Coin                 | Ethereum Sepolia                                                    | [0x1773…9d5fb](https://testnet.polyesterscan.com/unified-asset/0x1773e1ddf200efb0fafc1e372028aa623f95d2de00ee1f4be9d606ee8c89d5fb) | 50.6M USDC  |
+| USDT Tether USD               | Ethereum Sepolia                                                    | [0xca41…b8787](https://testnet.polyesterscan.com/unified-asset/0xca41b004d4133d516f2302a6a68d02d659739ecd39c702e354f6b4f4df7b8787) | 64M USDT    |
+| XRP Ripple                    | Ethereum Sepolia                                                    | [0x449a…a5fea](https://testnet.polyesterscan.com/unified-asset/0x449a38e45f496f53fe215fa3fcd2041abc7fd3ac76af9defce42ea241b2a5fea) | 6.8M XRP    |
+## View By Chain
+| Chain                    | Supported assets                                                                     | Block confirmations | Est. confirmation time |
+| ------------------------ | ------------------------------------------------------------------------------------ | ------------------- | ---------------------- |
+| Arbitrum Sepolia         | tETH                                                                                 | 1                   | \~1 min                |
+| Avalanche Fuji Testnet   | tAVAX                                                                                | 1                   | 2s                     |
+| Base Sepolia             | tETH                                                                                 | 1                   | \~1 min                |
+| Bitcoin Cash Testnet     | tBCH                                                                                 | 1                   | \~2 min                |
+| Bitcoin Testnet          | tBTC                                                                                 | 1                   | \~2 min                |
+| BNB Smart Chain Testnet  | tBNB                                                                                 | 1                   | 50s                    |
+| Dogecoin Testnet         | tDOGE                                                                                | 5                   | 50s                    |
+| Ethereum Classic Testnet | tETC                                                                                 | 1                   | \~1 min                |
+| Ethereum Sepolia         | AVAX, BCH, BNB, BTC, DOGE, ETC, ETH, HYPE, LTC, POL, SOL, TRX, USDC, USDT, XRP, tETH | 1                   | \~1 min                |
+| HyperEVM Testnet         | tHYPE                                                                                | 4                   | 4s                     |
+| Litecoin Testnet         | tLTC                                                                                 | 1                   | 50s                    |
+| Polygon PoS Testnet      | tPOL                                                                                 | 6                   | 12s                    |
+| Ripple Testnet           | tXRP                                                                                 | 1                   | 30s                    |
+| Robinhood Testnet        | tETH                                                                                 | 3                   | 6s                     |
+| Solana Devnet            | tSOL                                                                                 | 1                   | \~1 min                |
+| Tron Nile                | tTRX                                                                                 | 1                   | \~1 min                |
+## How to read this table
+Use **View By Asset** to group routes by asset, or **View By Chain** to see every asset supported on a chain. Expand any row for its route details.
+| Field                                  | Meaning                                                                           |
+| -------------------------------------- | --------------------------------------------------------------------------------- |
+| Source address                         | The asset contract on the external chain, or Native when no contract is required. |
+| Zipped Asset address                   | The Polyester Chain contract for that asset-and-chain route.                      |
+| Network fee                            | The fee currently listed for the route.                                           |
+| Deposit minimum and withdrawal minimum | The smallest listed amount for each action.                                       |
+| Confirmations required                 | The minimum number of block confirmations listed for the route.                   |
+| Average deposit time                   | An estimate based on the route's confirmation requirement.                        |
+Assets with the same symbol are combined only when Polyester maps them to the same Unified Asset.
+Timing is an estimate and can vary with chain conditions.
+## FAQ
+### Which assets and networks are supported on Polyester?
+Polyester supports most major assets and blockchains for deposits, withdrawals, and trading. Examples include native BTC on Bitcoin, XRP on the XRP Ledger, BCH on Bitcoin Cash, and DOGE on Dogecoin. See the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) table in the user docs for the full list and details for each asset and network.
+### Can I deposit or withdraw fiat?
+No. Polyester does not currently support deposits or withdrawals through banks or cards. For a full list of what you can deposit or withdraw, visit [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) in the user docs.
+### Is there a minimum deposit amount?
+Yes. Each asset and network has its own minimum deposit amount. You can see the applicable minimum during the deposit flow or find all minimums on the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) page.
+### Why is a deposit or withdrawal network temporarily unavailable?
+A supported network can be temporarily unavailable because of network issues, service pauses, or security checks. Withdrawals also depend on sufficient assets being available on the destination network. You can check Deposit or Withdraw for another supported network that works with your sending or receiving wallet.
+### Is there a minimum withdrawal amount?
+Yes. Each asset and network has its own minimum withdrawal amount. You can see the applicable minimum during the withdrawal flow or find all minimums on the [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) page.
+### If one network is paused, can I still trade or use other networks?
+A pause affecting one deposit or withdrawal network does not automatically stop trading or other networks. If the trading services remain available, you can continue trading assets already in your Unified Trading Account. Deposits and withdrawals can use other supported networks that are available for the selected asset. Check [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks) in the user docs for any asset or network interruptions.

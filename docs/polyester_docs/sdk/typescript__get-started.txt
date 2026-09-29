@@ -1,0 +1,184 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/get-started
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Overview · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Get started
+Overview
+Copy page
+View as Markdown
+Open in
+is the official TypeScript client for Polyester.
+It wraps the public ConnectRPC API with full types. Requests are validated before they leave your
+process. Responses come back as plain TypeScript objects. Prices and quantities are decimal
+strings, not floats and not raw scaled integers.
+What you can build
+Market data: tickers, candles, order books, public trades, heatmaps, chain analytics
+Trading: spot orders with attached TP/SL/trailing risk, standalone triggers, fee rates, and trading quotas
+Accounts: wallet and
+API key
+auth,
+subaccounts
+, policies, balances,
+MFA
+, profiles, VIP status, address books, daily reward claims
+Funding: deposits, ledger transfers, internal transfers, withdrawals
+Realtime: typed WebSocket streams with a shared
+subscribe(...)
+/ unsubscribe contract
+One SDK, three clients
+Same service surface in every JavaScript runtime:
+Client
+Runs in
+Authenticates with
+PolyesterClient
+Anywhere (Node, Bun, edge, browser)
+API key (Ed25519) or a JWT you supply
+PolyesterBrowserClient
+Browsers
+Wallet-backed account signer
+PolyesterServerClient
+Servers handling user requests
+Session cookies forwarded from the browser
+All three expose the same lazy services (
+client.orders
+,
+client.marketData
+,
+client.balances
+,
+client.vip
+,
+client.fees
+,
+client.tradingRateLimits
+, and so on), plus a shared realtime client
+and reference-data catalog.
+Entry points
+Heavy helpers live on subpaths so they stay out of your main bundle:
+Import
+Contents
+Clients, environments, errors, service types, utilities
+Error classes and codes on their own
+Safe account derivation and subaccount signing
+Smart account
++ bundler/paymaster helpers
+Catalog snapshot builders and reader types
+Cookie/session parsing helpers for servers
+Raw protobuf types and service descriptors
+Anything under
+unstable/
+can change in a patch release.
+How these docs are organized
+Get started: install through your first testnet order
+Tutorials
+Guides: auth, market data, trading, streaming, accounts, funding, server-side, errors
+Concepts: architecture, environments, auth model, catalog and precision
+Reference: every service method, config option, and error type by domain
+Start at
+Installation
+Compare languages on the
+SDK capability matrix
+Related Topics
+Installation
+Install the SDK, check runtime requirements, and verify your setup with a first request.
+Quickstart
+From zero to a filled testnet order: create a client, read market data, stream candles, and place your first trade.
+Next
+Installation
+On this page
+What you can build
+One SDK, three clients
+Entry points
+How these docs are organized
+Related Topics
+Share this page
+Overview
+A typed TypeScript SDK for the Polyester exchange API: market data, trading, accounts, funding, and realtime streams.
+Share
+Copy Link

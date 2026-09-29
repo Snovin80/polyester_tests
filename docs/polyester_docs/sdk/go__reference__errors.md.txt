@@ -1,0 +1,49 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/errors.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Errors
+Go SDK error types, sentinel ErrPolyester, MFA auth codes, and queue overflow.
+SDK errors implement `error` and match the sentinel `errors.ErrPolyester` via `errors.Is`. Use `errors.As` to unwrap concrete types.
+Package: `github.com/Fabric-Labs/polyester-sdk-go/errors`.
+For usage patterns see the [Error handling guide](https://testnet.polyester.com/docs/sdk/go/guides/error-handling).
+## Types
+| Type                     | When                                                                         |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `*AuthError`             | Missing/invalid credentials; realtime HTTP errors include structured context |
+| `*ValidationError`       | Bad SDK input (`post_only`, enums, shapes, precision)                        |
+| `*TransportError`        | Network / timeout, usually retryable with backoff                            |
+| `*RateLimitError`        | Rate limited; optional `RetryAfter *float64`                                 |
+| `*ServerError`           | Backend 5xx                                                                  |
+| `*APIError`              | Structured Connect/API error (`Code`, `Metadata`)                            |
+| `*ResponseContractError` | Successful mutation response was incomplete or internally inconsistent       |
+| `*RouteNotFoundError`    | RPC not exposed on this host                                                 |
+| `*RealtimeError`         | Realtime connect / decode failures                                           |
+| `*QueueOverflowError`    | Subscription queue full (fail-closed)                                        |
+```go
+import sdkerrors "github.com/Fabric-Labs/polyester-sdk-go/errors"
+_, err := client.Orders.Create(ctx, req, nil)
+if err != nil {
+var rl *sdkerrors.RateLimitError
+if errors.As(err, &rl) {
+// backoff using rl.RetryAfter; reconcile this create by ClientOrderID
+}
+if errors.Is(err, sdkerrors.ErrPolyester) {
+log.Println(err)
+}
+}
+```
+There is no separate catalog-conversion error type like TypeScript. Catalog / precision failures typically surface as `*ValidationError` or `*APIError`.
+`sdkerrors.IsRetryable(err)` identifies failures that may succeed after backoff. `sdkerrors.MutationOutcomeUnknown(err)` identifies failures where a mutation may already have been applied; reconcile first and reuse the original request identity.
+`*ResponseContractError` is deliberately non-retryable, but `MutationOutcomeUnknown(err) == true`: the server returned success yet omitted a required ID, reported an invalid status, or disagreed with per-item/count outcomes. Reconcile before deciding whether to resubmit.
+Realtime token HTTP failures populate `AuthError.Status`, `Code`, `Context`, `Endpoint`, `Label`, and bounded `Body`. A 403 is a non-transient permission failure: inspect `Code` and provision the required API-key policy before retrying.
+## MFA helpers
+For session/JWT products sharing auth error codes (not API-key create-key flows on this SDK):
+- `IsMFAEnrollmentRequired`, `IsStepUpRequired`, `IsMFAElevationRequired`, `IsMFALastFactorRequired`, `AuthErrorCode`
+Creating API keys requires a JWT/session client, do not invent Create API key methods here.
+## Retry sketch
+Classify with `IsRetryable`, then back off. Reconcile a single-order create by its stable `ClientOrderID`; retained reuse returns a duplicate conflict, not the earlier result. Reuse replayable `requestID` / `clientTriggerID` values; withdrawals also reuse their required key, nonce, and signed payload. On subscriptions, `*QueueOverflowError` means resubscribe after catching up, not a unary retry.
+See [Requests & idempotency](https://testnet.polyester.com/docs/sdk/go/concepts/requests-and-idempotency).
+## Related
+- [Error handling guide](https://testnet.polyester.com/docs/sdk/go/guides/error-handling)
+- [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming)

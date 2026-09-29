@@ -1,0 +1,443 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/concepts/catalog-and-precision
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Catalog & precision · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Catalog & precision
+Catalog & precision
+Copy page
+View as Markdown
+Open in
+Every market has tick size, step size, and minimums. The SDK loads
+spot
+and
+Zipper
+catalogs so decimal inputs can be converted to wire integers safely.
+Wait for ready
+Order and trigger
+write
+paths wait for catalog hydration when
+hydrate_catalogs: true
+(default). You can still call this explicitly before reads that need symbol ids/scales:
+client
+wait_for_catalogs
+()
+;
+Hydration is fail-closed:
+wait_for_catalogs
+returns an error when the attempt fails. See
+Catalog
+Decimal inputs
+Order writes take typed
+Price
+/
+Quantity
+on create params (see
+Orders
+). Prefer decimal constructors for human inputs;
+use ticks / scaled integers for bots. Strict decimal form is digits with an optional fractional
+part (
+65000
+/
+65000.5
+); bare trailing dots (
+65000.
+) are rejected. Leading/trailing
+whitespace is trimmed before validation.
+Unscaled decimal quantities need a symbol (or an already-scaled
+Quantity
+) so the SDK can resolve
+catalog scale.
+base_quantity_scale_for_symbol
+returns
+Option<u32>
+and never invents scale 8
+for unknown or unhydrated symbols. Write paths fail as
+Error::Validation
+instead of
+guessing. Scale-dependent reads and streams fail the same way when the catalog scale is unknown.
+Scale
+0
+is valid for whole-unit assets and is distinct from a missing scale.
+Protocol scale ceiling
+Quantity and ledger formatters, parsers, and catalog hydration reject scales above
+MAX_PROTOCOL_SCALE
+(
+36
+). That ceiling is an SDK safety bound against pathological padding —
+it is
+not
+the ledger canonical scale. Ledger balances and
+amount_e18
+remain fixed at
+scale
+18
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+post_only is limit GTC only
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Invalid combinations return
+Error::Validation
+before send.
+Scaled integers (bots)
+use
+polyester
+types
+Price
+,
+Quantity
+,
+QuantityDomain
+};
+let
+price
+=
+Price
+from_ticks
+(
+100_000_000
+,
+None
+)
+?
+;
+// protocol 1e6 ticks
+let
+scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+)
+ok_or_else
+(
+||
+polyester
+Error
+validation
+(
+"BTC-USDT quantity scale is unavailable"
+))
+?
+;
+let
+qty
+=
+Quantity
+from_scaled
+(
+1_000_000
+,
+Some
+(
+scale
+),
+QuantityDomain
+OrderBase
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+,
+)
+?
+;
+Protocol
+price ticks
+use fixed 1e6 scale; the server still validates market tick size.
+Immutable money metadata
+Price
+and
+Quantity
+metadata is fixed by their validated constructors. Read it through
+immutable getters:
+use
+polyester
+types
+Price
+,
+Quantity
+,
+QuantityDomain
+};
+let
+scale
+=
+8
+;
+let
+price
+=
+Price
+from_ticks
+(
+100_000_000
+,
+None
+)
+?
+;
+let
+qty
+=
+Quantity
+from_scaled
+(
+1_000_000
+,
+Some
+(
+scale
+),
+QuantityDomain
+OrderBase
+,
+Some
+(
+"BTC-USDT"
+into
+()),
+None
+,
+)
+?
+;
+assert_eq!
+(
+price
+symbol
+(),
+None
+);
+assert_eq!
+(
+qty
+scale
+(),
+Some
+(
+scale
+));
+assert_eq!
+(
+qty
+domain
+(),
+QuantityDomain
+OrderBase
+);
+assert_eq!
+(
+qty
+symbol
+(),
+Some
+(
+"BTC-USDT"
+));
+assert_eq!
+(
+qty
+symbol_id
+(),
+None
+);
+This is an alpha breaking change. Migrate
+price.symbol
+to
+price.symbol()
+and migrate
+quantity.scale
+,
+quantity.domain
+,
+quantity.symbol
+, and
+quantity.symbol_id
+to the
+corresponding getter calls. Metadata cannot be reassigned or supplied through struct literals;
+construct a new validated value instead.
+let
+id
+=
+client
+catalogs
+symbol_id_for_symbol
+(
+"BTC-USDT"
+);
+let
+scale
+=
+client
+catalogs
+base_quantity_scale_for_symbol
+(
+"BTC-USDT"
+);
+Also see
+Scaled integers
+and
+Public IDs
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Environments
+Testnet endpoints, the environment preset, and URL overrides for the Rust client.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Requests & idempotency
+Rust call conventions, cancellation, and idempotency keys for orders and triggers.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Authentication model
+Next
+Requests & idempotency
+On this page
+Wait for ready
+Decimal inputs
+Protocol scale ceiling
+Scaled integers (bots)
+Immutable money metadata
+Related Topics
+Share this page
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+client.wait_for_catalogs().await?;
+
+---
+
+use polyester::types::{Price, Quantity, QuantityDomain};
+
+let price = Price::from_ticks(100_000_000, None)?; // protocol 1e6 ticks
+let scale = client
+    .catalogs
+    .base_quantity_scale_for_symbol("BTC-USDT")
+    .ok_or_else(|| polyester::Error::validation("BTC-USDT quantity scale is unavailable"))?;
+let qty = Quantity::from_scaled(
+    1_000_000,
+    Some(scale),
+    QuantityDomain::OrderBase,
+    Some("BTC-USDT".into()),
+    None,
+)?;
+
+---
+
+use polyester::types::{Price, Quantity, QuantityDomain};
+
+let scale = 8;
+let price = Price::from_ticks(100_000_000, None)?;
+let qty = Quantity::from_scaled(
+    1_000_000,
+    Some(scale),
+    QuantityDomain::OrderBase,
+    Some("BTC-USDT".into()),
+    None,
+)?;
+
+assert_eq!(price.symbol(), None);
+assert_eq!(qty.scale(), Some(scale));
+assert_eq!(qty.domain(), QuantityDomain::OrderBase);
+assert_eq!(qty.symbol(), Some("BTC-USDT"));
+assert_eq!(qty.symbol_id(), None);
+
+---
+
+let id = client.catalogs.symbol_id_for_symbol("BTC-USDT");
+let scale = client.catalogs.base_quantity_scale_for_symbol("BTC-USDT");

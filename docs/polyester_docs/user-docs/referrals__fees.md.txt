@@ -1,0 +1,41 @@
+Источник: https://testnet.polyester.com/docs/user-docs/referrals/fees.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Rewards
+See how referral rewards are calculated, collected, converted, and paid to your Trading Account.
+Referral rewards come from eligible spot trading fees. When a friend joins through your referral, they receive **4% off each eligible positive trading fee**, and you earn **15% of the discounted fee they pay**.
+The **[Referrals page](https://testnet.polyester.com/account/referrals)** shows your earnings by asset and records every reward in a detailed ledger. Collect rewards manually or on an automatic schedule, then keep the original assets or convert them into the payout asset you choose.
+## How your reward is calculated
+The calculation begins with the maker or taker fee charged on an eligible fill. Polyester first applies the referred trader's 4% discount, then calculates your 15% reward from the fee they actually pay.
+Let's say Bitcoin is currently trading at **$100,000**, and your friend completes a **$1,000 BTC/USDT trade** at a **0.08%** fee rate:
+1. The standard trading fee is **0.80 USDT**.
+2. The 4% referral discount saves your friend **0.032 USDT**.
+3. Your friend pays **0.768 USDT** after the discount.
+4. You earn 15% of the paid fee, or **0.1152 USDT**.
+5. The reward appears in your Reward Ledger as **0.1152 USDT**.
+The fee share is based on the trading fee, not the value of the trade, deposit, withdrawal, or account balance.
+> **Referral rewards apply only to positive fees**
+>
+> A fill with a 0.00% maker fee does not create a referral reward. Maker rebates are separate: a negative maker rate rewards the trader directly and is not discounted or shared with a referrer.
+## How rewards are credited
+Your reward is first recorded in the asset used to pay the trading fee. This keeps every ledger entry connected to the actual fee that produced it, even when your referred traders pay fees in several different assets.
+The Reward Ledger gives each amount a clear history, including:
+- the referral link that produced it
+- the eligible fee event
+- the original reward asset and amount
+- any automatic conversion
+- its available or claimed status.
+![Reward Ledger with Fees Earned and Reward Claimed rows](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/b125bd04080a350f8e526fe780ae339d6c8f9c7bbe2ac8a3e0c3cea7b94abcfd/source.webp)
+## Claim your rewards
+The Referrals page groups available rewards by asset. To collect them manually, review the balance, choose **Claim Rewards**, and confirm the payout to your Trading Account. You can keep each reward in its original asset or convert it into another asset as part of the claim.
+![Claim Rewards dialog with Native asset and USDT conversion](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3b0f603aae54e3501bdb47b8fbf35c6ca37cf2b395e3916fffe07030e3582e8e/source.webp)
+Completed claims remain in the Reward Ledger, giving you one history from the original trading fee through conversion and payout.
+> **Collect rewards automatically**
+>
+> Turn on automatic collection to send available rewards to your Trading Account without returning to select Claim. Choose the payout interval in minutes and the asset you want to receive. When the selected payout asset differs from the assets you earned, Polyester converts the rewards as part of each automatic payout.
+## Choose your payout asset
+Reward conversion happens when rewards are collected. For a manual claim, choose the destination asset in the claim flow. For automatic collection, save one preferred payout asset in your automatic payout settings.
+For example, if you earn USDT but want to accumulate SOL, choose SOL before confirming a manual claim or set SOL as the asset for automatic payouts. Polyester converts the available USDT at the current market price, deposits the resulting SOL into your Trading Account, and records both sides of the conversion in the Reward Ledger.
+If you keep the original reward assets, Polyester deposits them without conversion.
+See [Trading Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees) for the complete spot fee schedule and maker rebate tiers. See [Analytics](https://testnet.polyester.com/docs/user-docs/referrals/analytics) to compare earnings across links and referred users.

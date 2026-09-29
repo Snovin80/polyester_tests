@@ -1,0 +1,43 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/concepts/authentication-model.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Programmatic access uses **Ed25519 API keys**. The SDK signs each authenticated request.
+## Credentials
+| Value           | Where to find it                              |
+| --------------- | --------------------------------------------- |
+| API key id      | App → **API** → create or view key            |
+| API private key | Shown **once** at creation (64-char hex seed) |
+| Account ID      | App → **Profile** → **Account ID**            |
+Use the Account ID string exactly as shown. Do not use internal numeric ids. Account-ID authentication is valid even when the account has no username; username is optional profile metadata, not an authentication requirement or a value that must be set to `"-"`. The `ak_...` API credential handle is also distinct from the base58 `api_key_id` returned by `client.auth.me()`; they are not interchangeable.
+> **Subaccount keys need their own policy**
+>
+> A key scoped to a subaccount must have an attached **API-key policy**. That policy must permit ledger reads for balance snapshots/private balance streams and the relevant trading actions for order mutations. This is separate from the subaccount policy; authorization evaluates both.
+## Signing (what the SDK does)
+For each authenticated unary call the SDK builds a signature over:
+```text
+timestamp_ms
+METHOD
+pathname
+canonical_query
+hex(sha256(body))
+```
+and sends headers `X-API-KEY-ID`, `X-API-TIMESTAMP`, `X-API-SIGNATURE`.
+The client allocates a distinct timestamp for every call, including concurrent identical calls, so replay protection does not confuse them. You normally never assemble this yourself; pass credentials to the client constructor. Automatic timestamps may lead the local wall clock by at most five seconds, leaving half of the API's 10-second freshness window for clock and network skew. A burst that exhausts that capacity is backpressured; prolonged exhaustion raises a retryable `PolyesterRateLimitError` instead of reusing an authentication tuple.
+Deep dive: [Ed25519 API keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys) and [API key replay policy](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy).
+## Public vs private
+- **Public** market-data calls work with no key.
+- **Private** RPCs and **private WebSocket channels** need a key **and** Account ID.
+- Private Centrifugo tokens are fetched using the same API-key credentials. Hyphenated channel segments (for example `api-keys`, `api-policies`) stay unescaped in the signed query, `urllib.parse.quote` never percent-encodes RFC 3986 unreserved characters (`-` `_` `.` `~`).
+## Key lifecycle on this SDK
+| Action                       | Supported                          |
+| ---------------------------- | ---------------------------------- |
+| `generate_keypair`           | Yes (local only)                   |
+| `list` / `get` / `subscribe` | Yes (API-key auth)                 |
+| `create` / update / revoke   | No, JWT/session (TypeScript / app) |
+> **Not JWT**
+>
+> This SDK does not implement wallet login or session MFA. Those are TypeScript / browser flows.
+Guide: [Authentication](https://testnet.polyester.com/docs/sdk/python/guides/authentication).

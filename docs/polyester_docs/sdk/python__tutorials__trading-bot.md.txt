@@ -1,0 +1,159 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/tutorials/trading-bot.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Build a production trading bot
+Build a resilient Python quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+This tutorial builds the operational skeleton of an automated trading system: hydrate exact market constraints, consume a sequence-checked book, place uniquely identified post-only quotes, reconcile ambiguous outcomes, arm a dead-man switch, and remove only this process's orders during shutdown.
+> **Dedicated testnet account only**
+>
+> Use a dedicated testnet API key and trading account. Start in observation-only mode. Do not enable order writes until the symbol, balance, policy limits, and cleanup behavior are verified. The strategy below is intentionally naive and is not financial advice.
+## Production invariants
+| Invariant                            | SDK mechanism                                              | Failure action                      |
+| ------------------------------------ | ---------------------------------------------------------- | ----------------------------------- |
+| Never invent precision               | `wait_for_catalogs()`, decimal `Price` / `Quantity` inputs | Stop quoting until catalogs recover |
+| Never quote from a gapped book       | `orderbook.create_subscription()`                          | Wait for its snapshot refresh       |
+| Never duplicate a logical quote      | Stable `client_order_id` per quote attempt                 | Reconcile before retrying           |
+| Never treat admission as final state | `list_open`, `get`, private order stream                   | Keep local state pending            |
+| Never leave unknown live risk        | `cancel_all_after` plus targeted cancel                    | Reconcile all bot-prefixed orders   |
+| Never retry validation unchanged     | `PolyesterValidationError`                                 | Correct configuration or input      |
+1. Create a client and hydrate catalogs
+```python
+import os
+from polyester import AsyncPolyester, POLYESTER_TESTNET_ENVIRONMENT
+client = AsyncPolyester(
+environment=POLYESTER_TESTNET_ENVIRONMENT,
+api_key_id=os.environ["POLYESTER_API_KEY_ID"],
+api_private_key=os.environ["POLYESTER_API_PRIVATE_KEY"],
+default_account_id=os.environ["POLYESTER_ACCOUNT_ID"],
+)
+await client.wait_for_catalogs()
+```
+Catalog readiness is a hard startup gate. Decimal order helpers must use the backend's actual price and quantity scales; a trading system should never fall back to an assumed scale. For a subaccount-scoped key, attach an API-key policy that permits ledger reads and the trading mutations this bot uses. The key policy is separate from, and intersects with, subaccount policy.
+2. Start a managed order book
+```python
+book_state: dict[str, object] = {}
+book_sub = await client.orderbook.create_subscription(
+symbol="BTC-USDT",
+depth=20,
+on_sequence_gap=lambda: print("book gap; waiting for refresh"),
+on_snapshot_refresh=lambda: print("book refreshed"),
+)
+async def consume_books() -> None:
+async with book_sub:
+async for book in book_sub:
+if not book.bids or not book.asks:
+continue
+book_state["best_bid"] = book.bids[0].price
+book_state["best_ask"] = book.asks[0].price
+book_state["book_seq"] = book.book_seq
+```
+Use the managed subscription instead of applying raw deltas yourself. It fetches an initial snapshot, detects sequence gaps, and refetches after reconnects. Pause quoting whenever the book is empty, crossed, stale, or awaiting refresh.
+3. Size from trading balance and policy limits
+```python
+from polyester import format_ledger_u128
+balances = await client.balances.list()
+for balance in balances.balances:
+print(balance.asset_id, "available", format_ledger_u128(balance.available))
+```
+Balance components are raw ledger `u128` strings at ledger scale 18. Format them once for display; keep the raw values for sizing and accounting.
+Orders reserve **trading** balance, not funding balance. Size from each asset's **`available`** field (trading minus holds), not raw `trading` - missing or empty `available` means zero spendable headroom. Cap each quote by all of:
+- available trading balance after existing holds,
+- API-key policy maximum order size,
+- strategy inventory and notional limits,
+- pair minimum quantity/notional and step size.
+Use the tested sizing helpers in [`polyester-examples-python`](https://github.com/Fabric-Labs/polyester-examples-python) rather than binary floating-point arithmetic.
+4. Place one uniquely identified post-only quote
+```python
+from uuid import uuid4
+async def place_quote(side: str, price: str, qty: str) -> tuple[str, str]:
+client_order_id = f"trader-{side}-{uuid4().hex[:20]}"
+created = await client.orders.create(
+symbol="BTC-USDT",
+side=side,
+order_type="limit",
+tif="gtc",
+price=price,
+qty=qty,
+post_only=True,
+client_order_id=client_order_id,
+)
+# "accepted" is admission only; the read model may not show the order yet.
+return client_order_id, created.order_id
+```
+Keep the same ID if you retry the **same logical quote** after an ambiguous transport failure. Generate a new ID only for a new quote decision. A `post_only` rejection means the price would cross; recompute from a fresh book instead of retrying unchanged.
+5. Arm and refresh the dead-man switch
+```python
+from uuid import uuid4
+armed = await client.orders.cancel_all_after(
+timeout_sec=30,
+symbol="BTC-USDT",
+request_id=f"dms-{uuid4().hex[:20]}",
+)
+assert armed.status == "armed"
+```
+Refresh the switch on a cadence comfortably below its timeout. If refresh fails, stop creating orders and assume the backend will cancel them at expiry. Disable it only after targeted shutdown cleanup is confirmed.
+6. Refresh quotes through successor identities
+`batch_replace` records admission, not a final execution outcome. On a successful receipt, predecessor order and client IDs are stale. Persist the new client order ID and switch immediately to each `replacement_order_id`; a predecessor lookup may return `not_found` / `ORDER_UNKNOWN`, which is expected. Poll `get_batch_replace_status` through `admitted`, `working`, `rejected`, and `terminal`. A 404 immediately after admission is transient, so retry the poll.
+For a quote-refresh loop, use `is_batch_replace_settled(status)` only to decide that every item is `working`, `rejected`, or `terminal`. `working` means the successor is live, not that execution is final. Persist and reuse the same `request_id` after an ambiguous retry. Do not send another replacement against a stale predecessor.
+7. Reconcile instead of guessing
+```python
+from polyester import PolyesterApiError
+async def bot_open_orders(prefix: str = "trader-"):
+page = await client.orders.list_open(limit=100)
+return [order for order in page.orders if order.client_order_id.startswith(prefix)]
+async def cancel_bot_order(client_order_id: str) -> None:
+try:
+await client.orders.cancel(
+client_order_id=client_order_id,
+symbol="BTC-USDT",
+)
+except PolyesterApiError as exc:
+if str(exc.code or "").lower() != "not_found":
+raise
+```
+After a timeout, reconnect, or process restart:
+1. list open orders,
+2. select only IDs owned by this bot,
+3. compare them with persisted quote intent,
+4. cancel stale quotes,
+5. place only missing quotes.
+Do not use account-wide `cancel_all` as bot-ownership cleanup. A targeted cleanup cancel returning `not_found` is idempotent success: the owned order may have filled or left the book after the snapshot. Every other cancel error remains an error. Do not assume a timeout means the create was unapplied.
+8. Shut down with targeted cleanup
+Persist quote intent before sending mutations and install `SIGINT` / `SIGTERM` handlers. On shutdown:
+1. stop the quote producer,
+2. close the managed book and private subscriptions,
+3. call `bot_open_orders()` and `cancel_bot_order()` for each owned ID,
+4. confirm those IDs disappear from `list_open`,
+5. close the client.
+If cleanup cannot be confirmed, leave the dead-man switch armed and alert an operator.
+## Trading API map
+| Method                                                                     | Important inputs                                          | Result / stream                      | Operational use                                   |
+| -------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------ | ------------------------------------------------- |
+| `wait_for_catalogs()`                                                      | none                                                      | readiness or error                   | Startup gate for scales and symbol IDs            |
+| `balances.list()`                                                          | account scope                                             | `BalancesList`                       | Available trading collateral and revisions        |
+| `orderbook.get()`                                                          | `symbol`, `depth`                                         | `OrderbookData`                      | One-shot health check or reconciliation snapshot  |
+| `orderbook.create_subscription()`                                          | `symbol`, `depth`, optional `bucket`, callbacks           | managed `OrderbookSubscription`      | Sequence-checked best bid/ask and depth           |
+| `orders.create()`                                                          | symbol, side, type, qty, price, TIF, post-only, client ID | admission `OrderMutationResult`      | Place one uniquely identified quote               |
+| `orders.modify()`                                                          | existing ID, new price/qty, stable request ID             | `ModifyOrderResult`                  | Amend or replace with reserve headroom            |
+| `orders.cancel()`                                                          | exactly one order ID, optional routing symbol             | admission `OrderMutationResult`      | Targeted cleanup                                  |
+| `orders.list_open()`                                                       | account scope, page token, limit                          | `OrdersList`                         | Restart and timeout reconciliation                |
+| `orders.get()`                                                             | order ID or client order ID                               | order plus related trades            | Resolve one ambiguous lifecycle                   |
+| `orders.subscribe()`                                                       | account ID                                                | private order stream                 | Working, partial, terminal transitions            |
+| `orders.cancel_all_after()`                                                | timeout, optional symbol/side, request ID                 | armed/disabled result                | Dead-man switch                                   |
+| `orders.batch_create()`                                                    | up to 20 uniquely identified items, request ID            | per-item outcomes and counts         | Submit a quote ladder; reconcile partial outcomes |
+| `orders.batch_replace()` / `get_batch_replace_status()` / `batch_cancel()` | up to 50 items, request ID                                | admission receipt + status phases    | Efficient ladder maintenance                      |
+| `orders.wait_for_order_trades_complete()`                                  | order identity, overall timeout                           | order plus complete trade projection | Fee-correct post-fill accounting                  |
+Use the linked reference pages for exact optional fields and return shapes. Treat every mutation timeout as an unknown outcome until reads or the private stream resolve it.
+## Tested runnable sources
+- Example `03`: targeted place and cancel.
+- Example `07`: batch create and reconciliation.
+- Example `10`: dry-run-first RSI bot with capped sizing.
+- The Python canary: long-running managed book, private order stream, create/cancel cycles, and bot-prefix cleanup.
+These live in [`polyester-examples-python`](https://github.com/Fabric-Labs/polyester-examples-python) and [`polyester-sdk-canaries`](https://github.com/Fabric-Labs/polyester-sdk-canaries). The documentation snippets are type-checked against `polyester-sdk==0.1.0a25`; place/cancel, funded roundtrip, trigger lifecycle, and realtime heartbeat paths were also executed live for this release.
+## Related
+- [Trading](https://testnet.polyester.com/docs/sdk/python/guides/trading)
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/python/concepts/requests-and-idempotency)
+- [Streaming](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [Error handling](https://testnet.polyester.com/docs/sdk/python/guides/error-handling)

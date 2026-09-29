@@ -1,0 +1,314 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/realtime
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Realtime · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Realtime
+Realtime
+Copy page
+View as Markdown
+Open in
+client.realtime
+is the shared Centrifugo WebSocket client. Realtime support is always included;
+the
+realtime
+Cargo feature is an empty compatibility flag.
+Prefer typed service helpers (
+client.orders.subscribe
+,
+client.balances.subscribe
+, …). They
+return
+TypedSubscription<T>
+Realtime is binary-only: the transport negotiates
+centrifuge-protobuf
+and uses length-delimited
+Protobuf control frames and publication payloads. JSON wire mode applies only to ConnectRPC
+debugging, never to realtime. Incoming WebSocket messages, frames, and protobuf record/field
+lengths are capped at 8 MiB before publication decoding.
+Managed order-book and market-overview subscriptions return dedicated types that expose
+updates()
+(an
+mpsc::Receiver
+) instead of
+recv()
+on
+TypedSubscription
+set_on_error(...)
+and
+err()
+; use the callback so a failed managed book cannot become a silent,
+frozen input to quoting logic.
+Subscription contract
+API
+Behavior
+recv_result().await
+Next publication, clean close, or terminal error
+recv().await
+Compatibility API; inspect
+err()
+after
+None
+set_on_error(...)
+Callback for background transport/feed errors
+err()
+/
+take_err()
+Latest terminal background error
+is_alive()
+Background task still running
+close()
+Stop the subscription
+let
+mut
+sub
+=
+client
+orders
+subscribe
+(
+client
+default_account_id
+as_deref
+())
+;
+// handshake done
+sub
+set_on_error
+(
+|
+error
+|
+eprintln!
+(
+"realtime interruption: {error}"
+));
+while
+let
+Some
+(
+order
+)
+=
+sub
+recv_result
+()
+println!
+(
+"{} {}"
+,
+order
+status,
+order
+order_id);
+}
+Handshake before return
+Subscribe helpers wait for the Centrifugo connect/subscribe handshake (including private token
+fetch) before returning. Initial auth failures return
+Err
+immediately.
+Reconnects after a successful handshake use capped exponential backoff with per-subscription
+jitter. A successful resubscription resets the backoff.
+Private channels need Account ID
+Private channels require API-key credentials and an Account ID (
+default_account_id
+or an
+explicit
+account_id
+argument).
+Fail-closed overflow
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+No silent drops
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Bounded queues. A slow consumer fails the subscription with
+Error::QueueOverflow
+instead of dropping updates.
+Snapshot-then-stream
+Order book and market overview managed subscriptions snapshot via REST, then stream with gap
+recovery. Their constructors wait for the WebSocket handshake and initial snapshot before
+returning. Prefer those helpers over wiring raw channels yourself.
+Channel naming
+Hyphenated private channel segments (for example
+api-keys
+) are valid; the SDK signs with
+RFC 3986-preserving query encoding.
+Related
+Streaming
+WebSocket session model
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+Candles
+Read and stream public spot OHLCV candles via market_data.
+Catalog
+Spot/Zipper catalog hydration with hydrate_catalogs and wait_for_catalogs.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Config fields, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Rust Error enum variants, MFA auth codes, and queue overflow.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders with the Rust OrdersService.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market_data.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Transfers
+Transfer history reads.
+Triggers
+Create, manage, pause/resume, and stream standalone triggers with the Rust TriggersService.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+Public trades
+Next
+Social verification
+On this page
+Subscription contract
+Handshake before return
+Private channels need Account ID
+Fail-closed overflow
+Snapshot-then-stream
+Channel naming
+Related
+Related Topics
+Share this page
+Realtime
+Shared Centrifugo client, observable failures, handshake-before-return, and fail-closed overflow.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+let mut sub = client
+    .orders
+    .subscribe(client.default_account_id.as_deref())
+    .await?; // handshake done
+sub.set_on_error(|error| eprintln!("realtime interruption: {error}"));
+while let Some(order) = sub.recv_result().await? {
+    println!("{} {}", order.status, order.order_id);
+}

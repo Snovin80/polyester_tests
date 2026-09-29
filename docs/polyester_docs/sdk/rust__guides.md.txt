@@ -1,0 +1,66 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Programmatic access uses **Ed25519 API keys**. The SDK signs authenticated ConnectRPC requests and fetches private realtime tokens for you.
+## Recommended: explicit credentials
+```rust
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+api_key_id: Some("ak_...".into()),
+api_private_key: Some("...".into()), // 64-char hex from key creation
+default_account_id: Some("...".into()), // Profile → Account ID
+})?;
+client.wait_for_catalogs().await?;
+```
+## Environment variables
+Read secrets in your process and pass them in:
+```rust
+use std::env;
+use polyester::{Client, Config};
+let client = Client::new(Config {
+environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+api_key_id: env::var("POLYESTER_API_KEY_ID").ok(),
+api_private_key: env::var("POLYESTER_API_PRIVATE_KEY").ok(),
+default_account_id: env::var("POLYESTER_ACCOUNT_ID").ok(),
+})?;
+```
+For scripts only, `Client::from_env()` loads credentials, Account ID, `POLYESTER_ENV` (set it to `testnet`), and optional `POLYESTER_API_URL` / `POLYESTER_WS_URL`. Prefer explicit `Config` in production.
+| Variable                    | Purpose                                      |
+| --------------------------- | -------------------------------------------- |
+| `POLYESTER_API_KEY_ID`      | API key id                                   |
+| `POLYESTER_API_PRIVATE_KEY` | 64-char hex private key                      |
+| `POLYESTER_ACCOUNT_ID`      | Profile Account ID                           |
+| `POLYESTER_ENV`             | Environment preset: `testnet`                |
+| `POLYESTER_API_URL`         | Optional API base override (`from_env`)      |
+| `POLYESTER_WS_URL`          | Optional WebSocket URL override (`from_env`) |
+Unlike Python/Go, Rust `from_env` **does** load API and WebSocket URL env vars.
+> **Never commit secrets**
+>
+> Use placeholders in docs and samples. Store production keys in your secret manager.
+## Generate a keypair
+```rust
+let pair = client.api_keys.generate_keypair();
+```
+Local key material only. Listing and subscribing to keys uses `client.api_keys` with an API key. **Creating** API keys is JWT/session-only (TypeScript / browser), not exposed on this SDK.
+See [API keys](https://testnet.polyester.com/docs/sdk/rust/reference/api-keys).
+## Configure trading permissions
+After creating a key in the Polyester app, open that key's **Permissions** page:
+1. Enable **Spot trading**.
+2. Select the markets the bot may trade.
+3. Set the maximum order size and any transfer or withdrawal limits.
+4. Save the policy and confirm it is assigned to the key.
+The Rust API-key SDK uses the assigned policy but cannot create or assign one. Policy administration requires an interactive JWT/session.
+## Public vs private
+- Public market data works with no key.
+- Private RPCs and private WebSocket channels need a key **and** Account ID.
+- Realtime support is always included. The legacy `realtime` Cargo feature is a no-op compatibility flag.
+## Subaccount scope
+Set `default_sub_account_id` for default scoping, or pass per-call account scope where the service supports it.
+## Related
+- [Authentication model](https://testnet.polyester.com/docs/sdk/rust/concepts/authentication-model)
+- [Client configuration](https://testnet.polyester.com/docs/sdk/rust/reference/client-configuration)
+- [API keys](https://testnet.polyester.com/docs/sdk/rust/reference/api-keys)

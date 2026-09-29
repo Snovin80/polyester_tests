@@ -1,0 +1,106 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/order-book.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+`client.orderbook` reads spot depth snapshots and maintains a stateful live book. It uses the public transport, so no authentication is required.
+Levels come back as `{ price, qty }` pairs of decimal strings, best-first (bids descending, asks ascending). Each response carries a `bookSeq`, the backend sequence number used to detect gaps.
+## Methods
+| Method               | Summary                                               |
+| -------------------- | ----------------------------------------------------- |
+| `get`                | Fetch a one-shot depth snapshot.                      |
+| `createSubscription` | Build a managed live book with a stateful handle.     |
+| `subscribe`          | Shorthand that returns just the unsubscribe function. |
+### `get(input, options?)`
+Fetches a depth snapshot for a `symbolId` and returns `OrderbookData`. The ID must be an integer from 1 through 4,294,967,295. `depth` defaults to `50` and is snapped to the nearest supported level (`1, 5, 10, 20, 50, 100, 200, 500, 1000`).
+```ts
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const book = await client.orderbook.get({ symbolId, depth: 20 });
+console.log(book.bids[0]); // { price: "64250.5", qty: "0.35" }
+console.log(book.asks[0]);
+console.log(book.bookSeq);
+```
+### `createSubscription(input)`
+Builds a managed live order book. It fetches an initial snapshot, applies sequence-checked deltas, and refetches when it observes a sequence gap or the socket reconnects. `onEvent` then sees a consistent book relative to the last applied snapshot or delta. The return value is an `OrderbookSubscription` handle, not a bare unsubscribe function.
+```ts
+const sub = client.orderbook.createSubscription({
+symbolId,
+depth: 10,
+onEvent: (book) => {
+console.log(book.depth, book.bids[0], book.asks[0], book.bookSeq);
+},
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// Re-aggregate locally into 1.0-wide price buckets without reconnecting
+sub.setBucket("1.0");
+// later
+sub.unsubscribe();
+```
+`onEvent` is required. `onOpen`, `onClose`, and `onError` are optional. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+### Depth
+`get` snaps `depth` to the nearest REST snapshot step (`1, 5, 10, 20, 50, 100, 200, 500, 1000`). Default is `50`.
+`createSubscription` accepts any integer in `[1, 500]`. Values above `500` clamp to `500`. The SDK subscribes to a published channel that covers the request and slices levels back down. Emitted events use the depth you asked for, not the channel's depth.
+Any depth in that range works. You do not pick from a channel list. The published set is backend config and can change; the SDK absorbs it.
+### Silent feeds
+Refetch runs only on an observed sequence gap (`bookSeqStart > currentBookSeq + 1`) or a reconnect. There is no idle or staleness check. A subscription that stays connected but stops publishing will not fire `onError`, will not reconnect, and will not refetch. The SDK cannot tell a dead feed from a quiet market.
+`OrderbookSubscription` exposes `unsubscribe` and `setBucket`. There is no last-event timestamp or connection-state accessor.
+Continuity across a silent-but-connected feed is your job. Track the time of the last `onEvent`. When that age exceeds a threshold you choose, call `orderbook.get()` to resync, and tear down and resubscribe if you want a fresh stream. Pick the threshold from how actively the market trades.
+```ts
+function subscribeBookWithIdleWatchdog(idleThresholdMs: number) {
+let lastEventAt = Date.now();
+let sub = start();
+function start() {
+return client.orderbook.createSubscription({
+symbolId,
+depth: 10,
+onEvent: (book) => {
+lastEventAt = Date.now();
+render(book);
+},
+});
+}
+const timer = setInterval(async () => {
+if (Date.now() - lastEventAt
+clearInterval(timer);
+sub.unsubscribe();
+};
+}
+// you choose idleThresholdMs from how actively this market trades
+const stop = subscribeBookWithIdleWatchdog(idleThresholdMs);
+```
+### `subscribe(input)`
+A shorthand for `createSubscription(...).unsubscribe`. Use it when you only need to start and stop the stream and do not need the handle.
+```ts
+const unsubscribe = client.orderbook.subscribe({
+symbolId,
+onEvent: (book) => console.log(book.bids.length, book.asks.length),
+});
+// later
+unsubscribe();
+```
+## Shapes
+```ts
+interface OrderbookLevel {
+price: string; // decimal string
+qty: string; // decimal string
+}
+interface OrderbookData {
+symbolId: number;
+depth: number;
+bookSeq: string; // backend sequence number
+bids: OrderbookLevel[]; // descending by price
+asks: OrderbookLevel[]; // ascending by price
+}
+interface OrderbookSubscription {
+unsubscribe: () => void;
+setBucket: (bucket: string | null | undefined) => void;
+}
+```
+Pass `bucket` in the input (or call `setBucket` later) to aggregate levels into coarser price buckets. Passing `null` or an empty value clears bucketing back to raw levels.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/typescript/guides/market-data) for the task-oriented walkthrough.
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/typescript/guides/streaming) for the subscription model.
+- [Market overview](https://testnet.polyester.com/docs/sdk/typescript/reference/market-overview) for per-market stats.
+- [Public trades](https://testnet.polyester.com/docs/sdk/typescript/reference/public-trades) for prints.
+- [Heatmap](https://testnet.polyester.com/docs/sdk/typescript/reference/heatmap) for depth over time.

@@ -1,0 +1,41 @@
+Источник: https://testnet.polyester.com/docs/user-docs/subaccounts/permissions-and-policies.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Permissions & Policies
+Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+The Subaccount policy defines the maximum access available inside a Subaccount. It applies across the account and limits the access available through member roles and API keys.
+Open a Subaccount and select **Permissions** to manage its trading, balance, Address Book, and safety controls.
+## How permissions work
+The Subaccount policy supersedes the member's role and any API-key policy. A role or API-key policy can restrict access further, but it cannot allow an action that the Subaccount policy does not allow.
+A new Subaccount defaults to read-only until the Owner updates its policy. A role does not independently grant write access.
+Read and Write are access levels in one control, not separate permissions. Selecting Write also includes Read.
+For example, a member with the Trader role cannot place orders while the Subaccount policy allows only Read access for Spot Trading. The Owner must set Spot Trading to Write. If the member places orders through an API key, that key must also have Spot Trading Write access.
+## What you can control
+Use the policy to choose:
+- whether the account can view balances or trade
+- which spot markets it can use
+- the maximum size of one order
+- the maximum number of open orders
+- whether it can manage address-book or whitelist settings
+- whether new trading activity is halted
+- whether the policy is locked against changes.
+Manage internal transfer and external withdrawal destinations from **[Address Book & Whitelists](https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist)**.
+Trading halt rejects new orders and order or trigger changes that can resume trading. Existing orders and triggers can still be canceled or paused.
+## Set the policy
+1. Open Permissions
+Choose the Subaccount you want to manage and open its Permissions tab.
+2. Choose the available actions
+Set the trading, balance, Address Book, and safety access that fits the account's purpose.
+3. Add useful limits
+Choose the spot markets, per-order size, open-order limit, and trading-halt setting that should apply across the Subaccount.
+4. Review and save
+Review the complete policy and save your changes. Polyester may ask for MFA before applying a protected change.
+## Lock the policy
+The Owner can lock a policy after it is configured. A locked policy continues to apply, but only the Owner can unlock it before making changes.
+> **Roles and permissions have different jobs**
+>
+> Roles describe what a person can manage. Permissions describe what the Subaccount allows. Both must allow an action before it is available.
+## FAQ
+### Can I give another person or bot access to trading and nothing else?
+Yes. For a team member, give them the Trader role on a Subaccount. For a bot, create an API key for the chosen Main Account or Subaccount with trading permissions enabled. To keep access limited to trading and nothing else, make sure to turn off all withdrawal and transfer permissions. You can further restrict a team member or bot to specific markets and trading actions in the respective permissions sections.

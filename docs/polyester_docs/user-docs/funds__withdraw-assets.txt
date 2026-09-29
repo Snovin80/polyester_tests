@@ -1,0 +1,378 @@
+Источник: https://testnet.polyester.com/docs/user-docs/funds/withdraw-assets
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Withdraw Funds · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Funds
+svg]:size-3.5">
+/
+Withdraw Funds
+Withdraw Funds
+Copy page
+View as Markdown
+Open in
+Withdrawals let you send an available Polyester balance to an external wallet on a supported chain.
+Zipper
+handles the
+route
+, validation, and external delivery, so you do not need to unwrap assets or hold gas on Polyester.
+Zipper handles the
+Withdrawal Flow
+automatically. You submit once, and Polyester tracks the request until the destination transaction reaches
+finality
+If the recipient is another Polyester account, use the
+Transfer page
+instead.
+Make a withdrawal
+Open Withdraw from the
+Main Account
+or
+Subaccount
+that holds the balance. Switching the active account changes the balances and history you see.
+1
+Choose the sending account
+Select the Main Account or Subaccount that holds the balance, then open
+Withdraw
+2
+Choose the Asset and source
+Select the
+Asset
+and whether it comes from Funding or Unified Trading.
+Selecting USDT as the token and Trading as the source
+3
+Enter the destination and amount
+Select the destination Network, paste the complete address or choose an
+Address Book entry
+, and enter the amount. Include the Destination Tag when the route requires one.
+Selecting Ethereum Sepolia and entering 90 USDT
+4
+Review and confirm
+Review You will receive, the route fee, Fee source, and Balance after withdrawal. Then approve the request in the connected wallet.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Check the destination before submitting
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Compare the complete withdrawal address, Destination Tag, Asset, and Network before you submit. Once the external transfer is broadcast, it cannot be canceled or reversed.
+Using the wallet to confirm the 90 USDT withdrawal
+5
+Watch the in-progress withdrawal
+Open the withdrawal record after you submit. Follow Requested Withdrawal while Polyester validates and submits the destination transfer.
+Watching an in-progress 90 USDT withdrawal
+6
+Confirm the completed withdrawal
+When Withdrawal Settled completes, check the settled amount and the destination transaction.
+Interactive
+USDT Withdrawn
+via Ethereum
+Completed
+span:first-child]:underline [&>span:first-child]:decoration-muted-foreground [&>span:first-child]:decoration-dashed [&>span:first-child]:underline-offset-4 svelte-15ghqu1">
+90
+USDT
+Started
+1m ago
+Overall progress:
+100%
+Completed
+just now
+Steps
+Requested Withdrawal
+Requested Withdrawal
+0xc2c1…eff9
+Validated Withdrawal
+Validated Withdrawal
+0xd9e9…8943
+Processed Withdrawal
+Processed Withdrawal
+0xa531…457c
+Submitted to Source Chain
+Submitted to Source Chain
+0x43ed…8950
+Zipper Fulfillment
+Zipper Fulfillment
+0x4428…20c0
+Withdrawal Settled
+Withdrawal Settled
+261437…6483
+View on Polyester Scan
+Confirming 90 USDT withdrawn via Ethereum Sepolia
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+Open Withdraw before every request and use the destination, Asset, and Network shown for the selected account. A saved address or an older screenshot may no longer match the route you intend to use.
+What happens after you submit
+Submitting the request begins the Withdrawal Flow. Polyester then moves it through six stages:
+Interactive
+1
+Requested Withdrawal
+5m ago
+2
+Validated Withdrawal
+4m ago
+3
+Processed Withdrawal
+3m ago
+4
+Submitted to Source Chain
+2m ago
+5
+Zipper Fulfillment
+2m ago
+6
+Withdrawal Settled
+45s ago
+Withdrawal Flow
+1
+Requested Withdrawal
+Polyester accepts the request and locks the withdrawal amount plus the applicable fee from the selected source.
+2
+Validated Withdrawal
+Independent Zipper validators review the route, amount, destination, and account policy. The flow continues only after they approve the request.
+3
+Processed Withdrawal
+Zipper executes the approved request on
+Polyester Chain
+Zipped Asset
+for external delivery.
+4
+Submitted to Source Chain
+Zipper submits the external transfer toward the destination Network. The withdrawal record then links that destination transaction.
+5
+Zipper Fulfillment
+Zipper follows the destination transaction until the receiving wallet can observe it. The route-specific Zipped Asset remains locked while the transaction awaits finality.
+6
+Withdrawal Settled
+After the destination transaction reaches finality, Zipper burns the locked route-specific Zipped Asset and Polyester completes the request. The wallet receives the settled amount after any route fee.
+You can see more details on
+Polyester Scan
+Viewing a completed 90 USDT Withdrawal Flow on Polyester Scan
+You never need to unwrap the Asset yourself or hold the Zipped Asset in an external wallet. The Withdrawal Flow handles those steps between your Polyester account and the destination Network.
+Track each withdrawal
+Every request has its own withdrawal record. Follow that record from submission through external delivery rather than treating one completed withdrawal as confirmation that every request arrived.
+Open
+Account/Withdraw
+to view the withdrawals data table.
+In view (Account/Withdraw) data table
+Do not submit a second withdrawal while the original request is still pending or its result is unclear. Continue following the same Flow ID and destination transaction.
+After completion, compare the settled amount with the withdrawal record and the destination wallet.
+Withdraw from Funding or Unified Trading
+Choose the balance area that currently holds the amount you want to withdraw.
+Funding Account
+Withdraw any available Funding balance supported by the selected destination route.
+Unified Trading Account
+Withdraw the available balance that is not reserved by Orders or another pending action.
+A withdrawal from Unified Trading can use only the amount shown as available. Open orders and other pending actions can reserve part of the balance. Polyester moves an approved Trading withdrawal through Funding and Zipper automatically; you do not need to transfer it yourself first.
+Fees and amounts
+Each destination route has a current
+Polyester route fee
+denominated in the selected Asset.
+Fee source
+changes how that fee relates to the amount you enter; it does not select a different fee.
+Fee source
+The amount you enter
+What leaves your balance
+What the wallet receives
+Principal
+Total amount to withdraw
+The entered amount
+The entered amount minus the fee
+Balance
+Amount the wallet should receive
+The entered amount plus the fee
+The entered amount
+Use
+You will receive
+and
+Balance after withdrawal
+to confirm the result before submitting. When Balance is selected, your available source balance must cover the entered amount plus the fee.
+The Withdraw page also shows the route minimum and any current
+Max
+value. Your available balance, route inventory, minimum, fee, and account controls determine the amount that can be withdrawn. Polyester does not apply a separate global daily or per-transaction monetary cap.
+Address Book and Withdrawal Whitelist
+An
+Address Book
+entry saves an external destination for easier reuse. It does not automatically approve that address for withdrawals.
+If the active account requires an
+External Withdrawal Whitelist
+, select a destination with an active whitelist record for that chain. Each Main Account and Subaccount has its own Address Book and withdrawal controls.
+For XRP, enter the classic address in
+Withdrawal address
+and the receiver's numeric tag in
+Destination Tag
+FAQ
+Why can’t I withdraw my full balance?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+You can withdraw your Available Balance at any time, although funds reserved for open orders or pending activity cannot be withdrawn. Once you close all open orders and complete any other pending transactions, the reservations will be released and your Available Balance will equal your Total Balance in both your Funding Account and Unified Trading Account.
+Can I withdraw directly from my Unified Trading Account?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Yes. Select Unified Trading as the source for your withdrawal. Polyester automatically moves the funds through the Funding Account to Zipper. Only your available balance in the Unified Trading Account can be withdrawn. Funds reserved for open orders or other pending actions must be released first if you want to withdraw them.
+How long does a withdrawal take?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+Withdrawal times depend on the destination blockchain and its current network conditions. The receiving wallet or exchange may also require confirmations before showing the funds as available. You can track your withdrawal’s progress in the withdrawal history table on the Withdraw page.
+What happens to my funds if a withdrawal fails?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+If a withdrawal fails before external delivery, the withdrawal amount can be returned, although fees already charged may not be refunded. For withdrawals from Unified Trading, returned funds go back to the same Trading Account. If delivery is still uncertain, the funds may remain reserved until the outcome is resolved. Check the withdrawal history table on the Withdraw page for its status.
+Related Topics
+Unified Assets
+Learn how Polyester turns chain-specific deposits into one account balance you can trade, transfer, or withdraw.
+Supported Assets
+Deposit and withdraw Unified Assets on supported networks. Expand a row for fees, minimums, and confirmation time.
+Funding Account
+Learn how the Funding Account keeps on-chain balances ready to deposit, transfer, trade, or withdraw.
+Trading Account
+Learn how the Trading Account manages available and reserved balances for trading, borrowing, transfers, and withdrawals.
+Deposit Funds
+Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+Internal Transfers
+Move an available balance between Polyester accounts or balance areas.
+Previous
+Deposit Funds
+Next
+Internal Transfers
+On this page
+Make a withdrawal
+What happens after you submit
+Track each withdrawal
+Withdraw from Funding or Unified Trading
+Fees and amounts
+Address Book and Withdrawal Whitelist
+FAQ
+Related Topics
+Share this page
+Withdraw Funds
+Withdraw an available Polyester balance to an external wallet on a supported chain.
+Share
+Copy Link

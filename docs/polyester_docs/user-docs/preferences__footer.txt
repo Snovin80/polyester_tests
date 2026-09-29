@@ -1,0 +1,621 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/footer
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Footer · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Preferences
+svg]:size-3.5">
+/
+Footer
+Footer
+Copy page
+View as Markdown
+Open in
+Footer settings control the market ticker along the bottom of the trading screen. Choose which markets it follows, how quickly it moves, and how much information it shows.
+Open
+Footer Settings
+from the trading footer or use Quick Settings to show or hide it.
+Footer
+Turn
+Footer
+on when you want the market ticker visible. Turn it off when you want more room for the trading workspace.
+Interactive
+Personalization
+Mode
+Theme
+Polyester
+Trading Palette
+Polyester Classic
+Fonts
+Inter
+Footer
+Hide Balances
+Audio
+Muted
+BTC
+/
+USDT
+·
+1.84%
+$
+67,245.12
+ETH
+/
+USDT
+·
+0.92%
+$
+3,482.55
+SOL
+/
+USDT
+·
+2.46%
+$
+178.40
+BNB
+/
+USDT
+·
+0.48%
+$
+612.08
+DOGE
+/
+USDT
+·
+1.26%
+$
+0.16
+AVAX
+/
+USDT
+·
+0.64%
+$
+36.72
+LINK
+/
+USDT
+·
+2.12%
+$
+14.88
+ADA
+/
+USDT
+·
+0.38%
+$
+0.68
+SUI
+/
+USDT
+·
+3.18%
+$
+3.42
+NEAR
+/
+USDT
+·
+0.74%
+$
+5.16
+Dummy data only, for preview purposes.
+Ticker category
+Ticker category selects the group shown in the footer, such as Favorites, Popular, Gainers, Losers, or New listed.
+Choose
+Favorites
+when you want the footer to follow the markets you selected yourself.
+Interactive
+Ticker category
+Popular
+Scroll settings
+Slow
+Icon labels
+Ticker settings
+Pair name
+Token icon
+24h change %
+Price
+Favorites
+Popular
+Gainers
+Losers
+New listed
+BTC
+/
+USDT
+·
+1.84%
+$
+67,245.12
+ETH
+/
+USDT
+·
+0.92%
+$
+3,482.55
+SOL
+/
+USDT
+·
+2.46%
+$
+178.40
+BNB
+/
+USDT
+·
+0.48%
+$
+612.08
+DOGE
+/
+USDT
+·
+1.26%
+$
+0.16
+AVAX
+/
+USDT
+·
+0.64%
+$
+36.72
+LINK
+/
+USDT
+·
+2.12%
+$
+14.88
+ADA
+/
+USDT
+·
+0.38%
+$
+0.68
+SUI
+/
+USDT
+·
+3.18%
+$
+3.42
+NEAR
+/
+USDT
+·
+0.74%
+$
+5.16
+Dummy data only, for preview purposes.
+Scroll settings
+Pause the ticker or choose a slow, medium, or fast scrolling speed. Changing the speed does not affect the live prices inside it.
+Interactive
+Ticker category
+Popular
+Scroll settings
+Slow
+Icon labels
+Ticker settings
+Pair name
+Token icon
+24h change %
+Price
+Off
+Slow
+Medium
+Fast
+BTC
+/
+USDT
+·
+1.84%
+$
+67,245.12
+ETH
+/
+USDT
+·
+0.92%
+$
+3,482.55
+SOL
+/
+USDT
+·
+2.46%
+$
+178.40
+BNB
+/
+USDT
+·
+0.48%
+$
+612.08
+DOGE
+/
+USDT
+·
+1.26%
+$
+0.16
+AVAX
+/
+USDT
+·
+0.64%
+$
+36.72
+LINK
+/
+USDT
+·
+2.12%
+$
+14.88
+ADA
+/
+USDT
+·
+0.38%
+$
+0.68
+SUI
+/
+USDT
+·
+3.18%
+$
+3.42
+NEAR
+/
+USDT
+·
+0.74%
+$
+5.16
+Dummy data only, for preview purposes.
+Icon labels
+Turn
+Icon labels
+on to show text next to ticker icons.
+Interactive
+Ticker category
+Popular
+Scroll settings
+Slow
+Icon labels
+Ticker settings
+Pair name
+Token icon
+24h change %
+Price
+BTC
+/
+USDT
+·
+1.84%
+$
+67,245.12
+ETH
+/
+USDT
+·
+0.92%
+$
+3,482.55
+SOL
+/
+USDT
+·
+2.46%
+$
+178.40
+BNB
+/
+USDT
+·
+0.48%
+$
+612.08
+DOGE
+/
+USDT
+·
+1.26%
+$
+0.16
+AVAX
+/
+USDT
+·
+0.64%
+$
+36.72
+LINK
+/
+USDT
+·
+2.12%
+$
+14.88
+ADA
+/
+USDT
+·
+0.38%
+$
+0.68
+SUI
+/
+USDT
+·
+3.18%
+$
+3.42
+NEAR
+/
+USDT
+·
+0.74%
+$
+5.16
+Dummy data only, for preview purposes.
+Ticker settings
+Show or hide the pair name, token icon, 24-hour change, and price for each market. Keep at least the pair name or token icon visible so each market is easy to identify.
+Interactive
+Ticker category
+Popular
+Scroll settings
+Slow
+Icon labels
+Ticker settings
+Pair name
+Token icon
+24h change %
+Price
+BTC
+/
+USDT
+·
+1.84%
+$
+67,245.12
+ETH
+/
+USDT
+·
+0.92%
+$
+3,482.55
+SOL
+/
+USDT
+·
+2.46%
+$
+178.40
+BNB
+/
+USDT
+·
+0.48%
+$
+612.08
+DOGE
+/
+USDT
+·
+1.26%
+$
+0.16
+AVAX
+/
+USDT
+·
+0.64%
+$
+36.72
+LINK
+/
+USDT
+·
+2.12%
+$
+14.88
+ADA
+/
+USDT
+·
+0.38%
+$
+0.68
+SUI
+/
+USDT
+·
+3.18%
+$
+3.42
+NEAR
+/
+USDT
+·
+0.74%
+$
+5.16
+Dummy data only, for preview purposes.
+Footer choices save automatically in the current browser.
+Related Topics
+Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Appearance
+Choose your theme, colors, and typeface.
+Language & Region
+Choose how Polyester displays language, dates, times, currencies, and numbers.
+Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Notifications
+Choose which Polyester updates you receive and how they appear.
+Balances
+Hide account amounts on screen without changing the balances themselves.
+Previous
+Balances
+Next
+Overview
+On this page
+Footer
+Ticker category
+Scroll settings
+Icon labels
+Ticker settings
+Related Topics
+Share this page
+Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Share
+Copy Link

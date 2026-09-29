@@ -1,0 +1,221 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/layouts/layout_id
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LayoutService
+Get Layout
+Retrieve a single layout by layout ID.
+Copy URL
+Method
+GET
+Path
+/v1/layouts/{layout_id}
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+GET
+/v1/layouts/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/layouts/1' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"layout": {
+"dockviewState": "AA==",
+"isDefault": false,
+"layoutId": "1",
+"name": "BTC Trading",
+"updatedAtMs": "1",
+"viewerId": "1",
+"widgets": [
+"widgetConfig": "AA==",
+"widgetId": "chart-main",
+"widgetType": "CHART"
+}
+]
+}
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+layout_id
+string (int64)
+required
+Layout identifier to fetch.
+Response
+Form
+JSON
+layout
+object
+Saved layout matching the requested id.
+7 fields
+viewerId
+string (fixed64)
+Viewer that owns the saved layout.
+Example
+1
+layoutId
+string (fixed64)
+Layout identifier unique within the viewer's saved layouts.
+Example
+1
+name
+string
+Human-readable layout name.
+Example
+BTC Trading
+isDefault
+boolean
+True when this is the viewer's default layout.
+Example
+false
+dockviewState
+string (byte)
+Serialized editor panel arrangement snapshot.
+Example
+AA==
+widgets
+object[]
+Widgets contained in the layout.
+3 fields
+widgetId
+string
+Stable widget identifier within the layout, such as "chart-1".
+Example
+chart-main
+widgetType
+enum
+Widget kind that determines how widget_config is decoded.
+CHART
+ORDERBOOK
+TRADES
+POSITIONS
+ORDERS
+Example
+CHART
+widgetConfig
+string (byte)
+Serialized widget configuration bytes for the selected widget_type.
+Example
+AA==
+updatedAtMs
+string (fixed64)
+Last update time in milliseconds since epoch (UTC).
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/layouts/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s370" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/layouts/1' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"layout": {
+"dockviewState": "AA==",
+"isDefault": false,
+"layoutId": "1",
+"name": "BTC Trading",
+"updatedAtMs": "1",
+"viewerId": "1",
+"widgets": [
+"widgetConfig": "AA==",
+"widgetId": "chart-main",
+"widgetType": "CHART"
+}
+]
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/layouts/1' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "layout": {
+    "dockviewState": "AA==",
+    "isDefault": false,
+    "layoutId": "1",
+    "name": "BTC Trading",
+    "updatedAtMs": "1",
+    "viewerId": "1",
+    "widgets": [
+      {
+        "widgetConfig": "AA==",
+        "widgetId": "chart-main",
+        "widgetType": "CHART"
+      }
+    ]
+  }
+}

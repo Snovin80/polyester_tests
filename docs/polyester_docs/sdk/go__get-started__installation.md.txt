@@ -1,0 +1,50 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/get-started/installation.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Installation
+Install the Go SDK and verify connectivity to Polyester testnet.
+## Install the package
+```bash
+GOPRIVATE='github.com/Fabric-Labs/*' \
+GONOSUMDB='github.com/Fabric-Labs/*' \
+go get github.com/Fabric-Labs/polyester-sdk-go@v0.1.0a54
+```
+Requires a recent Go toolchain (see `go.mod` in the repository). Realtime and on-chain Funding helpers are always included.
+The source repository is currently private. Your GitHub account needs access, and Git must be authenticated (credential helper, SSH rewrite, or CI token). `GOPRIVATE` / `GONOSUMDB` prevent the Go proxy and checksum database from treating the private module as public.
+Source (access required): [Fabric-Labs/polyester-sdk-go](https://github.com/Fabric-Labs/polyester-sdk-go).
+> **Alpha**
+>
+> The SDK is pre-1.0. Pin a git tag in production (example above), not `@latest`. Version `v0.1.0a54` is the current API-key-only release. It supports signed unary calls, binary realtime subscriptions with handshake-before-return, and opaque pagination tokens for complete trigger list/event scans. Breaking public API changes are called out in the repository changelog.
+## Testnet endpoints
+Pass `Environment: &polyester.TestnetEnvironment` to target Polyester **testnet**:
+| Setting   | Value                               |
+| --------- | ----------------------------------- |
+| API       | `https://api-testnet.polyester.com` |
+| WebSocket | `wss://api-testnet.polyester.com`   |
+Override with `Config.APIURL` / `Config.WSURL`. `FromEnv` reads `POLYESTER_ENV=testnet` and optional `POLYESTER_API_URL` / `POLYESTER_WS_URL` overrides.
+## Verify the install
+Public market data needs no credentials:
+```go
+client, err := polyester.New(polyester.Config{
+Environment: &polyester.TestnetEnvironment,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+ctx := context.Background()
+```
+```go
+overview, err := client.MarketOverview.List(ctx, nil, 5, "", false)
+if err != nil { log.Fatal(err) }
+for _, market := range overview.Markets {
+fmt.Println(market.Symbol, market.LastPrice.Ticks())
+}
+```
+If that prints a few markets, you are connected. Next: [Quickstart](https://testnet.polyester.com/docs/sdk/go/get-started/quickstart).
+## Contributor live harness (strict)
+```bash
+make test                               # unit only (CI)
+make test-integration                   # live (reads .env)
+# or: go test -tags=integration -v ./tests/integration/...
+```
+Credentialed live tests need `POLYESTER_API_KEY_ID` / `POLYESTER_API_PRIVATE_KEY` (optional `POLYESTER_ACCOUNT_ID`). Optional gates: `POLYESTER_TEST_MUTATION=1`, `POLYESTER_TEST_FUNDED=1`. Set `POLYESTER_TEST_STRICT_LIVE=1` for release certification so soft-skips fail instead of appearing green.

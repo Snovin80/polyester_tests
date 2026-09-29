@@ -1,0 +1,36 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Transfers
+Transfer history reads.
+`client.Transfers` reads and streams ledger transfer history. Create movements with `client.InternalTransfers`, `client.Withdraw`, or the on-chain `chain` package.
+```go
+page, err := client.Transfers.List(ctx, nil, nil, 50, true, nil)
+if err != nil { log.Fatal(err) }
+for _, transfer := range page.Transfers {
+fmt.Println(
+transfer.TxID,
+transfer.AssetID,
+transfer.Amount,
+transfer.IsDebit,
+transfer.Pending,
+)
+}
+if page.NextCursor != nil {
+next, err := client.Transfers.List(ctx, nil, nil, 50, false, page.NextCursor)
+_ = next
+_ = err
+}
+```
+`since` is a numeric ledger cursor, not a page-token string.
+```go
+sub, err := client.Transfers.Subscribe(ctx, nil) // nil → DefaultAccountID
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for transfer := range sub.Messages() {
+fmt.Println(transfer.TxID, transfer.Amount)
+break
+}
+```
+The stream is private and requires API key + Account ID.

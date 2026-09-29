@@ -1,0 +1,179 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/PUT/v1/polychart/markets/engine_symbol_id/layer-subscriptions
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+PolychartService
+Set Layer Subscriptions
+Replace caller drawing-layer subscriptions for a market.
+Copy URL
+Method
+PUT
+Path
+/v1/polychart/markets/{engine_symbol_id}/layer-subscriptions
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+PUT
+/v1/polychart/markets/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request PUT \ \
+--url 'https://api.testnet.polyester.com/v1/polychart/markets/1/layer-subscriptions' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"subscriptions": [
+"aliasName": "BTC Bias Line",
+"engineSymbolId": 1,
+"isEnabled": false,
+"isLockedOverride": false,
+"isPinned": false,
+"isVisibleOverride": false,
+"layer": {
+"layerId": "1",
+"ownerId": "1"
+},
+"sortOrder": 1,
+"viewerId": "1"
+}
+]
+}'
+Responses
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+engine_symbol_id
+integer
+required
+> 0
+Engine symbol identifier for the market whose subscriptions should be replaced.
+Request body
+Form
+JSON
+Example
+subscriptions
+object[]
+Full replace for (viewer_id, engine_symbol_id).
+Server replaces all existing rows for the market with this list.
+Edit in JSON
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+PUT
+/v1/polychart/markets/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s360" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request PUT \ \
+--url 'https://api.testnet.polyester.com/v1/polychart/markets/1/layer-subscriptions' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"subscriptions": [
+"aliasName": "BTC Bias Line",
+"engineSymbolId": 1,
+"isEnabled": false,
+"isLockedOverride": false,
+"isPinned": false,
+"isVisibleOverride": false,
+"layer": {
+"layerId": "1",
+"ownerId": "1"
+},
+"sortOrder": 1,
+"viewerId": "1"
+}
+]
+}'
+Responses
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request PUT \ \
+  --url 'https://api.testnet.polyester.com/v1/polychart/markets/1/layer-subscriptions' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "subscriptions": [
+    {
+      "aliasName": "BTC Bias Line",
+      "engineSymbolId": 1,
+      "isEnabled": false,
+      "isLockedOverride": false,
+      "isPinned": false,
+      "isVisibleOverride": false,
+      "layer": {
+        "layerId": "1",
+        "ownerId": "1"
+      },
+      "sortOrder": 1,
+      "viewerId": "1"
+    }
+  ]
+}'
+
+---
+
+{}

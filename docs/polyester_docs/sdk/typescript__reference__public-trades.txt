@@ -1,0 +1,510 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/public-trades
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Public trades · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Public trades
+Public trades
+Copy page
+View as Markdown
+Open in
+client.marketData
+reads and streams public spot trade prints, and exposes the raw spot
+configuration. It uses the public transport, so no authentication is required.
+Prices and quantities are decimal strings. Trade timestamps are nanosecond epochs (
+tsNs
+), with a
+millisecond convenience field (
+tsMs
+) alongside.
+Methods
+Method
+Summary
+listTrades
+List recent public trades for a market, newest-first.
+getSpotConfig
+Fetch the raw spot reference-data snapshot.
+subscribeTrades
+Stream live trade prints for a symbol.
+listTrades(input, options?)
+Returns
+, ordered newest-first by execution time. Only
+symbolId
+is
+required.
+const
+trades
+}
+=
+await
+client
+marketData
+listTrades
+({
+symbolId:
+1
+,
+limit:
+100
+,
+side:
+"buy"
+,
+});
+for
+(
+const
+t
+of
+trades
+) {
+console
+log
+(
+t
+tsMs
+,
+t
+sideLabel
+,
+t
+price
+,
+t
+qty
+);
+}
+Page through history with the returned token:
+let
+pageToken
+=
+""
+;
+do
+const
+page
+=
+await
+client
+marketData
+listTrades
+({ symbolId:
+1
+,
+pageToken
+, limit:
+200
+});
+console
+log
+(
+page
+trades
+length
+);
+pageToken
+=
+page
+nextPageToken
+;
+}
+while
+(
+pageToken
+!==
+""
+);
+GetMarketTradesInput
+Field
+Type
+Required
+Notes
+symbolId
+number
+yes
+Positive uint32 engine symbol id (1 through 4,294,967,295).
+limit
+number
+no
+Integer from 1 through 1,000.
+side
+"buy" | "sell"
+no
+Filter to one aggressor side.
+startTsNs
+string
+no
+Range start, epoch nanoseconds.
+endTsNs
+string
+no
+Range end, epoch nanoseconds.
+pageToken
+string
+no
+Cursor from a previous
+nextPageToken
+getSpotConfig(options?)
+Returns the raw
+SpotConfig
+snapshot: asset metadata, pair trading constraints, display scales, and
+market slippage defaults. This is the reference data the catalog is built from.
+const
+config
+=
+await
+client
+marketData
+getSpotConfig
+();
+console
+log
+(
+config
+assets
+length
+,
+config
+pairs
+length
+);
+Most of the time you want the parsed, indexed
+catalog
+instead of raw config: reach for
+getSpotConfig
+only when you need the untransformed snapshot.
+subscribeTrades(input)
+Streams live trade prints for one symbol. Returns an idempotent unsubscribe function.
+const
+unsubscribe
+=
+client
+marketData
+subscribeTrades
+({
+symbolId:
+1
+,
+onEvent
+trade
+)
+=>
+console
+log
+(
+trade
+sideLabel
+,
+trade
+price
+,
+trade
+qty
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+ctx
+channel
+,
+ctx
+error
+),
+});
+// later
+unsubscribe
+();
+onEvent
+is required.
+onOpen
+,
+onClose
+, and
+onError
+are optional. See the
+realtime client reference
+for the handler contract.
+The
+MarketTrade
+shape
+listTrades
+rows and
+subscribeTrades
+events share this shape.
+interface
+MarketTrade
+symbolId
+number
+;
+matchId
+string
+;
+// stable print id, also the pagination tie-breaker
+isBuy
+boolean
+;
+// true when the aggressor bought
+sideLabel
+"buy"
+|
+"sell"
+;
+qty
+string
+;
+// decimal string
+price
+string
+;
+// decimal string
+tsNs
+string
+;
+// execution time, epoch nanoseconds
+tsMs
+number
+;
+// same time, epoch milliseconds
+}
+Related
+Market data guide
+for the task-oriented walkthrough.
+Streaming guide
+for the subscription model.
+Catalog reference
+for the parsed reference data.
+Order book
+for depth.
+Candles
+for OHLCV series.
+Related Topics
+Accounts
+Resolve usernames, account IDs, and smart-account addresses into transfer destinations.
+Address book
+Manage saved transfer destinations, tags, whitelists, and recent counterparties per account book.
+API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+Auth
+Introspect the caller, request SIWE wallet challenges, and run the managed browser login, session, and account-switching flow.
+Balances
+Read current ledger balances, plus balance and equity history, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles in row and columnar formats.
+Catalog
+The reference-data store behind every symbol lookup and decimal conversion, with typed readers for markets, ledger assets, order constraints, and zipper routes.
+Chain analytics
+Public chain chart series (zToken supply and unified balances) as columnar time windows.
+Client configuration
+Constructors, config options, auth providers, request options, and package entry points.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+The complete error hierarchy: classes, codes, retryability, and helper functions.
+Fees
+Look up the effective spot maker and taker rates that apply to fills for a given account.
+Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+Heatmap
+Order book liquidity heatmaps as delta chains, plus a live per-interval bucket stream.
+Internal transfers
+Move funds between Polyester accounts instantly, without touching a chain.
+Lifecycle
+Read and stream cross-chain flow state for deposits and withdrawals, with history, per-flow detail, and live progress.
+Market overview
+Ticker-style per-market stats with last and index prices, 24h stats, top-of-book, and optional sparklines.
+MFA
+Enroll TOTP and passkey factors, run challenges, manage recovery codes, and mint step-up proofs.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, and read spot orders, with attached take-profit, stop-loss, and trailing-stop risk.
+Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+Trading rate limits
+Fetch the public trading quota catalog, or the placement and cancellation limits that apply to an account.
+Realtime client
+The shared realtime connection every subscribe method rides, plus its handler contract, refcounting, and public versus private channels.
+Social verification
+Prove ownership of a Twitter account or Discord identity with provider-specific verification.
+Subaccounts
+Create, share, audit, and stream subaccounts, and manage the reusable policy templates that govern them.
+Trades
+List and stream your fills, with prices, quantities, fees, and liquidity as parsed decimal strings.
+Transfers
+Read and stream the ledger transfer history behind every balance movement on your account.
+Triggers
+Create, manage, and stream standalone automations that place a child order when a market condition fires.
+VIP
+Fetch the public VIP tier catalog, or the authenticated root account's current qualification.
+Withdrawals
+Create durable, signed withdrawal intents out of the Trading venue, to Funding or to an external chain.
+Zipper
+Read the deposit and withdraw configuration (chains, unified assets, routes, fees, minimums, contracts) and stream live route supply.
+Market data services
+Reference for the public services: market data, overview, candles, order book, heatmap, chain analytics, zipper, and lifecycle.
+Trading services
+Reference for orders, triggers, user trades, spot fee rates, and trading rate limits.
+Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Funding services
+Reference for deposits, ledger transfers, internal transfers, and trading withdrawals.
+Previous
+Profile
+Next
+Trading rate limits
+On this page
+Methods
+listTrades(input, options?)
+GetMarketTradesInput
+getSpotConfig(options?)
+subscribeTrades(input)
+The MarketTrade shape
+Related
+Related Topics
+Share this page
+Public trades
+Read and stream public spot trade prints, plus the raw spot config that feeds the catalog.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+const { trades } = await client.marketData.listTrades({
+	symbolId: 1,
+	limit: 100,
+	side: "buy",
+});
+
+for (const t of trades) {
+	console.log(t.tsMs, t.sideLabel, t.price, t.qty);
+}
+
+---
+
+let pageToken = "";
+do {
+	const page = await client.marketData.listTrades({ symbolId: 1, pageToken, limit: 200 });
+	console.log(page.trades.length);
+	pageToken = page.nextPageToken;
+} while (pageToken !== "");
+
+---
+
+const config = await client.marketData.getSpotConfig();
+console.log(config.assets.length, config.pairs.length);
+
+---
+
+const unsubscribe = client.marketData.subscribeTrades({
+	symbolId: 1,
+	onEvent: (trade) => console.log(trade.sideLabel, trade.price, trade.qty),
+	onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+
+// later
+unsubscribe();
+
+---
+
+interface MarketTrade {
+	symbolId: number;
+	matchId: string; // stable print id, also the pagination tie-breaker
+	isBuy: boolean; // true when the aggressor bought
+	sideLabel: "buy" | "sell";
+	qty: string; // decimal string
+	price: string; // decimal string
+	tsNs: string; // execution time, epoch nanoseconds
+	tsMs: number; // same time, epoch milliseconds
+}

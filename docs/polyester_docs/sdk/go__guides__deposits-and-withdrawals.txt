@@ -1,0 +1,338 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/deposits-and-withdrawals
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Deposits & withdrawals · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Deposits & withdrawals
+Deposits & withdrawals
+Copy page
+View as Markdown
+Open in
+How funds move
+Flow
+How
+External → funding
+Deposit address
+route
+configured to stop in Funding
+External → trading
+Deposit address route configured to continue to Trading
+Funding → funding
+On-chain
+Funding Account
+transfer
+Funding → trading
+On-chain (not a ConnectRPC trading deposit)
+Funding → external
+On-chain
+Zipper
+path
+Trading → funding
+PrepareAPIKeyToFunding
+→ persist →
+SubmitPrepared
+Trading → external
+PrepareAPIKeyToExternalChain
+→ persist → submit
+Trading → trading
+client.InternalTransfers.Create
+Product overview:
+Funds & Transfers
+Deposit addresses
+addr
+,
+err
+client
+Deposit
+CreateAddress
+(
+ctx
+,
+1
+,
+nil
+,
+nil
+)
+listed
+,
+err
+client
+Deposit
+ListAddresses
+(
+ctx
+,
+1
+,
+nil
+,
+nil
+)
+See
+Deposit
+Trading withdraws
+API-key bots prepare and persist the complete signed request before sending:
+import
+(
+"
+github.com/Fabric-Labs/polyester-sdk-go/models
+"
+"
+github.com/Fabric-Labs/polyester-sdk-go/services
+"
+)
+prepared
+,
+err
+client
+Withdraw
+PrepareAPIKeyToFunding
+(
+services
+PrepareAPIKeyWithdrawParams
+AssetID
+2
+,
+Amount
+models
+AssetAmountFromDecimal
+(
+"100.00"
+),
+AmountScale
+2
+,
+IdempotencyKey
+"withdraw-stable-1"
+,
+})
+if
+err
+os
+WriteFile
+(
+"prepared-withdraw.bin"
+,
+prepared
+RequestBytes
+(),
+0600
+);
+err
+!=
+nil
+log
+Fatal
+(
+err
+)
+}
+result
+,
+err
+client
+Withdraw
+SubmitPrepared
+(
+ctx
+,
+prepared
+)
+Wire
+amount_e18
+always uses fixed scale 18. Input scale conversion is exact, overflow checked,
+and never rounded. Restore persisted bytes with
+services.PreparedTradingWithdrawFromBytes
+and
+submit them unchanged after an outcome-unknown error.
+Details:
+Withdrawals
+Internal transfers
+dest
+"123"
+_
+,
+err
+client
+InternalTransfers
+Create
+(
+ctx
+,
+2
+,
+models
+AssetAmountFromDecimal
+(
+"10"
+),
+"xfer-1"
+,
+nil
+,
+nil
+,
+nil
+,
+&
+dest
+,
+nil
+,
+nil
+,
+)
+See
+Internal transfers
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Security
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+High-risk money movement may require additional account controls. See
+Withdrawals & transfers security
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Go SDK.
+Streaming
+Subscribe with Messages() channels, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify Go SDK errors with errors.As, retry with idempotency keys, handle queue overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Go trading system safely.
+Previous
+Accounts & balances
+Next
+Server-side usage
+On this page
+How funds move
+Deposit addresses
+Trading withdraws
+Internal transfers
+Related Topics
+Share this page
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+addr, err := client.Deposit.CreateAddress(ctx, 1, nil, nil)
+listed, err := client.Deposit.ListAddresses(ctx, 1, nil, nil)
+
+---
+
+import (
+    "github.com/Fabric-Labs/polyester-sdk-go/models"
+    "github.com/Fabric-Labs/polyester-sdk-go/services"
+)
+
+prepared, err := client.Withdraw.PrepareAPIKeyToFunding(services.PrepareAPIKeyWithdrawParams{
+    AssetID: 2, Amount: models.AssetAmountFromDecimal("100.00"),
+    AmountScale: 2, IdempotencyKey: "withdraw-stable-1",
+})
+if err := os.WriteFile("prepared-withdraw.bin", prepared.RequestBytes(), 0600); err != nil {
+    log.Fatal(err)
+}
+result, err := client.Withdraw.SubmitPrepared(ctx, prepared)
+
+---
+
+dest := "123"
+_, err := client.InternalTransfers.Create(
+    ctx, 2, models.AssetAmountFromDecimal("10"),
+    "xfer-1", nil, nil, nil, &dest, nil, nil,
+)

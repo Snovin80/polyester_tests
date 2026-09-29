@@ -1,0 +1,47 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/public-trades.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Public trades
+Public trade tape reads and subscribe via MarketData.
+Public prints for a spot market live on `client.MarketData` (not `client.Trades`, which is your private fills). No authentication is required. Consume streams with `Messages()`, Go has no `Recv()`. Call `client.WaitForCatalogs(ctx)` first; quantity decoding fails closed when the market scale is unavailable.
+## Methods
+| Method            | Summary                          |
+| ----------------- | -------------------------------- |
+| `GetTrades`       | Recent public trades.            |
+| `SubscribeTrades` | Live public tape for one symbol. |
+### GetTrades(ctx, symbol, symbolID, limit, pageToken)
+```go
+symbol := "BTC-USDT"
+result, err := client.MarketData.GetTrades(ctx, &symbol, nil, 20, nil)
+if err != nil { log.Fatal(err) }
+for _, t := range result.Trades {
+fmt.Println(t.MatchID, t.Side, t.Price, t.Qty, t.TsNs)
+}
+if result.NextPageToken != "" {
+page := result.NextPageToken
+more, err := client.MarketData.GetTrades(ctx, &symbol, nil, 20, &page)
+if err != nil { log.Fatal(err) }
+_ = more
+}
+```
+`MarketTrade.Side` is `"buy"` or `"sell"` (aggressor / taker side). There is no `IsBuy` field on the decoded model. `MarketTradesResult.NextPageToken` continues a previous page when the backend returns one.
+REST and realtime attach the same hydrated catalog scale to `Qty`. The SDK does not decode public trade quantities using a guessed scale.
+### SubscribeTrades(ctx, symbol, symbolID)
+```go
+symbol := "BTC-USDT"
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for trade := range sub.Messages() {
+fmt.Println(trade.Price, trade.Qty, trade.Side)
+break
+}
+if err := sub.Err(); err != nil {
+log.Println(err) // includes *errors.QueueOverflowError
+}
+```
+## Related
+- [User trades](https://testnet.polyester.com/docs/sdk/go/reference/trades) for your private fills
+- [Market data guide](https://testnet.polyester.com/docs/sdk/go/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming)

@@ -1,0 +1,597 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/tutorials
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Live market ticker · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Tutorials
+Live market ticker
+Copy page
+View as Markdown
+Open in
+Build a public market monitor that starts from REST state, follows realtime trades, confirms candle
+availability, and fails visibly when its stream becomes stale. This pattern is useful both for a
+terminal ticker and as the market-data health input to a trading system.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Public and non-mutating
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+No
+API key
+is required. Empty trade or candle arrays are valid on a quiet testnet market; distinguish
+an empty successful response from a transport failure.
+1
+Create the client and load catalogs
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+HydrateCatalogs
+true
+,
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+client
+Close
+()
+ctx
+,
+cancel
+context
+WithCancel
+(
+context
+Background
+())
+defer
+cancel
+()
+if
+err
+client
+WaitForCatalogs
+(
+ctx
+);
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+Catalog hydration resolves symbols to engine IDs and attaches the correct quantity scale to public
+trades.
+2
+Bootstrap from recent trades and candles
+symbol
+"BTC-USDT"
+recent
+,
+err
+client
+MarketData
+GetTrades
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+20
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+trade
+range
+recent
+Trades
+fmt
+Println
+(
+trade
+MatchID
+,
+trade
+Side
+,
+trade
+Price
+,
+trade
+Qty
+,
+trade
+TsNs
+)
+}
+candles
+,
+err
+client
+Candles
+GetCandles
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1m"
+,
+50
+,
+nil
+,
+nil
+,
+true
+,
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+if
+len
+(
+candles
+Candles
+)
+>
+0
+latest
+candles
+Candles
+0
+]
+fmt
+Println
+(
+latest
+TsSec
+,
+latest
+Close
+,
+latest
+Volume
+)
+}
+REST bootstrap prevents a blank screen while waiting for the next trade. Keep the match ID and
+timestamp of the newest row so consumers can deduplicate a reconnect overlap. Candle rows are
+newest-first, and an included open candle is prepended. For indicators, request closed candles and
+reverse or sort the rows by
+TsSec
+into chronological order first.
+3
+Follow the public trade tape
+sub
+,
+err
+client
+MarketData
+SubscribeTrades
+(
+ctx
+,
+&
+symbol
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+select
+case
+trade
+,
+ok
+<-
+sub
+Messages
+():
+if
+!
+ok
+if
+err
+sub
+Err
+();
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+break
+}
+fmt
+Println
+(
+trade
+MatchID
+,
+trade
+Side
+,
+trade
+Price
+,
+trade
+Qty
+,
+trade
+TsNs
+)
+case
+<-
+time
+After
+(
+30
+*
+time
+Second
+):
+log
+Print
+(
+"no trade in 30s; market may be quiet or stream may be stale"
+)
+case
+<-
+ctx
+Done
+():
+break
+}
+SubscribeTrades
+completes its handshake before returning. A closed message channel must always be
+followed by
+sub.Err()
+; queue overflow is terminal and requires a fresh subscription.
+4
+Add candle updates
+candleSub
+,
+err
+client
+Candles
+SubscribeCandles
+(
+ctx
+,
+&
+symbol
+,
+nil
+,
+"1m"
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+candleSub
+Close
+()
+if
+candle
+,
+ok
+<-
+candleSub
+Messages
+();
+ok
+fmt
+Println
+(
+candle
+TsSec
+,
+candle
+Open
+,
+candle
+High
+,
+candle
+Low
+,
+candle
+Close
+)
+}
+if
+err
+candleSub
+Err
+();
+err
+!=
+nil
+log
+Print
+(
+err
+) }
+models.Candle
+does not expose
+IsClosed
+includeIncomplete=false
+for indicators that must not repaint. For the stream, treat a
+TsSec
+bucket as forming until the next bucket begins.
+5
+Operate and shut down
+Use
+signal.NotifyContext
+for
+SIGINT
+and
+SIGTERM
+trades and candles. A quiet market can legitimately produce no events, so verify staleness with a
+bounded REST read before declaring the websocket unhealthy. Cancel the context, close each
+subscription, and finally close the client.
+API map
+Method
+Important inputs
+Use
+MarketData.GetTrades
+symbol/ID, limit, page token
+Initial tape and reconnect overlap
+MarketData.SubscribeTrades
+symbol/ID
+Live public executions
+Candles.GetCandles
+symbol/ID, timeframe, bounds, incomplete flag
+Historical/bootstrap OHLCV
+Candles.GetCurrentCandle
+symbol/ID, timeframe
+Lightweight health check
+Candles.SubscribeCandles
+symbol/ID, timeframe
+Forming and closed candle updates
+Orderbook.CreateSubscription
+symbol, depth, bucket, callbacks
+Sequence-checked bid/ask state
+Tested source
+Example
+01
+performs live REST market reads and example
+04
+runs the public trade stream in
+polyester-examples-go
+compiles against the exact
+v0.1.0a25
+commit; the REST path and candle-backed RSI dry-run were
+executed live.
+Related
+Streaming
+Market data
+Candles
+Public trades
+Related Topics
+Build a production trading bot
+Build a resilient Go quoting loop with managed books, stable identities, reconciliation, a dead-man switch, and targeted cleanup.
+Portfolio tracker
+Build a revision-aware Go account monitor for balances, reservations, open orders, fills, and reconciliation.
+Two-sided quoting
+Maintain one post-only bid and ask with exact book prices, independent sizing, partial-batch reconciliation, and a dead-man switch.
+Previous
+Zipper
+Next
+Build a production trading bot
+On this page
+API map
+Tested source
+Related
+Related Topics
+Share this page
+Live market ticker
+Build a snapshot-then-stream Go market monitor with trades, candles, staleness detection, and clean shutdown.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+client, err := polyester.New(polyester.Config{
+    Environment:     &polyester.TestnetEnvironment,
+    HydrateCatalogs: true,
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+
+ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
+if err := client.WaitForCatalogs(ctx); err != nil { log.Fatal(err) }
+
+---
+
+symbol := "BTC-USDT"
+recent, err := client.MarketData.GetTrades(ctx, &symbol, nil, 20, nil)
+if err != nil { log.Fatal(err) }
+for _, trade := range recent.Trades {
+    fmt.Println(trade.MatchID, trade.Side, trade.Price, trade.Qty, trade.TsNs)
+}
+
+candles, err := client.Candles.GetCandles(
+    ctx, &symbol, nil, "1m", 50, nil, nil, true,
+)
+if err != nil { log.Fatal(err) }
+if len(candles.Candles) > 0 {
+    latest := candles.Candles[0]
+    fmt.Println(latest.TsSec, latest.Close, latest.Volume)
+}
+
+---
+
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+
+select {
+case trade, ok := <-sub.Messages():
+    if !ok {
+        if err := sub.Err(); err != nil { log.Fatal(err) }
+        break
+    }
+    fmt.Println(trade.MatchID, trade.Side, trade.Price, trade.Qty, trade.TsNs)
+case <-time.After(30 * time.Second):
+    log.Print("no trade in 30s; market may be quiet or stream may be stale")
+case <-ctx.Done():
+    break
+}
+
+---
+
+candleSub, err := client.Candles.SubscribeCandles(ctx, &symbol, nil, "1m")
+if err != nil { log.Fatal(err) }
+defer candleSub.Close()
+
+if candle, ok := <-candleSub.Messages(); ok {
+    fmt.Println(candle.TsSec, candle.Open, candle.High, candle.Low, candle.Close)
+}
+if err := candleSub.Err(); err != nil { log.Print(err) }

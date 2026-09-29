@@ -1,0 +1,22 @@
+Источник: https://testnet.polyester.com/docs/user-docs/trade/widgets/tradingview-chart.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# TradingView Chart
+Analyze Polyester markets with TradingView Advanced Charts and your saved chart preferences.
+**The TradingView Chart is an alternative charting surface for Polyester market data.** Use it when you prefer TradingView Advanced Charts, indicators, drawing tools, and chart controls.
+![TradingView Chart](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/d2fa3aed39dca9c21106d6c1bdf53127a461d053aa3e7c04c4f092788695600f/source.webp)
+## Chart settings and market context
+TradingView changes how the market is displayed and analyzed. It does not change how Polyester admits, matches, or settles an order.
+Before using the chart for a decision, confirm:
+- the active Polyester Pair matches the chart symbol
+- the interval and chart style fit the question you are asking
+- the latest candle time is current
+- saved indicators or drawings are the ones you intended to load.
+Available tools can vary with the embedded chart configuration. The controls visible in the current widget are the source of truth.
+## Move from analysis to an order
+A chart can help you choose an intended price or condition. The [Order Form](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-form) defines the instruction Polyester receives.
+Use the [Order Book](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book) for current displayed liquidity and [Market Trades](https://testnet.polyester.com/docs/user-docs/trade/widgets/market-trades) for recent public executions. Use account order and fill records to confirm your own result.
+> **Saved chart settings stay local**
+>
+> Saved chart preferences can depend on the current browser. Confirm the expected style, indicators, and drawings when opening the workspace somewhere else.

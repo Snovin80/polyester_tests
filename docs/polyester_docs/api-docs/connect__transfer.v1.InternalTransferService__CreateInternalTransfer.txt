@@ -1,0 +1,382 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/transfer.v1.InternalTransferService/CreateInternalTransfer
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+transfer.v1.InternalTransferService
+CreateInternalTransfer
+Create or return one accepted Trading to Trading transfer.
+Root-owner same-owner transfers and root-owner transfers to explicitly
+whitelisted destinations accept recent MFA; delegated and other
+interactive transfers require fresh step-up.
+Copy URL
+Method
+POST
+Path
+transfer.v1.InternalTransferService/CreateInternalTransfer
+Service
+transfer.v1.InternalTransferService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Conditionally required
+POST
+transfer.v1.InternalTransferService/CreateInternalTransfer
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/transfer.v1.InternalTransferService/CreateInternalTransfer' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"destinationAccountId": "7563897446546",
+"idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+"subaccountId": "6789012345678"
+}'
+Responses
+"acceptedAtTsNs": "1735689600000000000",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetCode": "USDC",
+"assetId": 100,
+"destination": {
+"rootAccountPublicId": "7563897446546",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountPublicId": "6789012345678"
+},
+"requestId": "request_01J0EXAMPLE",
+"status": "INTERNAL_TRANSFER_STATUS_ACCEPTED",
+"transferId": "9155001234569",
+"uAssetId": "100"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+transfer.v1.CreateInternalTransferRequest
+Response
+transfer.v1.CreateInternalTransferResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+> 0
+Optional source subaccount public id. When omitted, the authenticated
+caller's root account is used as the source account.
+destinationAccountId
+string (fixed64)
+required one of
+> 0
+Destination root account public id.
+destinationSubaccountId
+string (fixed64)
+required one of
+> 0
+Destination subaccount public id.
+one-of
+destinationSmartAccountAddress
+string
+required one of
+1-128 chars
+Destination smart-account address.
+assetId
+integer (int32)
+> 0
+Canonical public unified asset id for the asset being transferred.
+amountE18
+object
+required
+Transfer amount in canonical 18-decimal unified asset units.
+For example, 0.5 is encoded as 500000000000000000.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+idempotencyKey
+string
+1-128 chars
+Stable client-supplied idempotency key used to collapse safe retries.
+Response
+Form
+JSON
+requestId
+string
+Stable server-owned request identifier for this intake.
+transferId
+string
+Stable transfer identifier for the settled internal transfer.
+acceptedAtTsNs
+string (uint64)
+Acceptance timestamp in nanoseconds since epoch (server time).
+assetId
+integer (int32)
+Echoed canonical public unified asset id.
+assetCode
+string
+Resolved asset code for convenience.
+uAssetId
+string
+Resolved unified asset id used by downstream settlement.
+amountE18
+object
+Echoed transfer amount in canonical 18-decimal unified asset units.
+2 fields
+hi
+string (fixed64)
+Most significant 64 bits.
+lo
+string (fixed64)
+Least significant 64 bits.
+destination
+object
+Server-resolved destination summary.
+3 fields
+rootAccountPublicId
+string
+Destination root account public id.
+subaccountPublicId
+string
+Destination subaccount public id when the destination targets a subaccount.
+smartAccountAddress
+string
+Destination smart-account address resolved by the server.
+status
+enum
+Public status for the transfer request.
+INTERNAL_TRANSFER_STATUS_ACCEPTED
+INTERNAL_TRANSFER_STATUS_REJECTED
+INTERNAL_TRANSFER_STATUS_FAILED
+Possible errors
+Possible errors: 27
+Key
+Status
+Error
+When
+account-shard-unavailable
+503
+Account Shard Unavailable
+The account shard cannot currently accept fund movement.
+capital-view-unavailable
+503
+Capital View Unavailable
+The authoritative capital view is not ready.
+conflict
+409
+Conflict
+The request conflicts with existing state.
+destination-inactive
+400
+Destination Inactive
+The destination account is not active.
+destination-not-found
+404
+Destination Not Found
+The destination account could not be found.
+destination-not-whitelisted
+403
+Destination Not Whitelisted
+The destination is not on the caller's internal whitelist.
+failed-precondition
+400
+Failed Precondition
+A required transfer precondition was not satisfied.
+funds-lock-conflict
+409
+Funds Lock Conflict
+The funds lock conflicts with an existing or finalized reservation.
+idempotency-conflict
+409
+Idempotency Conflict
+The idempotency key was reused with different request data.
+insufficient-funds
+400
+Insufficient Funds
+The source account does not have enough available Trading balance.
+internal-error
+500
+Internal Error
+The transfer failed because of an unexpected server error.
+invalid-amount
+400
+Invalid Amount
+The transfer amount is invalid.
+invalid-destination
+400
+Invalid Destination
+The destination identifier is invalid.
+invalid-request
+400
+Invalid Request
+The request payload or one of its fields is invalid.
+invalid-subaccount-id
+400
+Invalid Subaccount
+The selected subaccount identifier is invalid.
+not-found
+404
+Not Found
+The requested resource was not found.
+permission-denied
+403
+Permission Denied
+The caller is not permitted to create this transfer.
+policy-denied
+403
+Policy Denied
+An account or API-key policy rejected the transfer.
+rate-limit-exceeded
+429
+Rate Limit Exceeded
+The transfer admission rate limit was exceeded.
+same-source-destination
+400
+Source Equals Destination
+Source and destination must be different accounts.
+service-unavailable
+503
+Service Unavailable
+A required service is temporarily unavailable.
+smart-account-unavailable
+400
+Smart Account Unavailable
+A required smart-account address is unavailable.
+source-account-inactive
+400
+Source Account Inactive
+The source account is not active.
+step-up-unavailable
+503
+Step-Up Unavailable
+Fresh step-up verification is temporarily unavailable.
+subaccount-not-found
+404
+Subaccount Not Found
+The selected subaccount does not exist.
+unauthenticated
+401
+Unauthenticated
+Authentication is required.
+unsupported-asset
+400
+Unsupported Asset
+The requested asset is not supported for internal transfers.
+POST
+transfer.v1.InternalTransferService/CreateInternalTransfer
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s402" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/transfer.v1.InternalTransferService/CreateInternalTransfer' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetId": 100,
+"destinationAccountId": "7563897446546",
+"idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+"subaccountId": "6789012345678"
+}'
+Responses
+"acceptedAtTsNs": "1735689600000000000",
+"amountE18": {
+"hi": "1",
+"lo": "1"
+},
+"assetCode": "USDC",
+"assetId": 100,
+"destination": {
+"rootAccountPublicId": "7563897446546",
+"smartAccountAddress": "0x2222222222222222222222222222222222222222",
+"subaccountPublicId": "6789012345678"
+},
+"requestId": "request_01J0EXAMPLE",
+"status": "INTERNAL_TRANSFER_STATUS_ACCEPTED",
+"transferId": "9155001234569",
+"uAssetId": "100"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/transfer.v1.InternalTransferService/CreateInternalTransfer' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "amountE18": {
+    "hi": "1",
+    "lo": "1"
+  },
+  "assetId": 100,
+  "destinationAccountId": "7563897446546",
+  "idempotencyKey": "idem_01J5EXAMPLE0000000000000",
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "acceptedAtTsNs": "1735689600000000000",
+  "amountE18": {
+    "hi": "1",
+    "lo": "1"
+  },
+  "assetCode": "USDC",
+  "assetId": 100,
+  "destination": {
+    "rootAccountPublicId": "7563897446546",
+    "smartAccountAddress": "0x2222222222222222222222222222222222222222",
+    "subaccountPublicId": "6789012345678"
+  },
+  "requestId": "request_01J0EXAMPLE",
+  "status": "INTERNAL_TRANSFER_STATUS_ACCEPTED",
+  "transferId": "9155001234569",
+  "uAssetId": "100"
+}

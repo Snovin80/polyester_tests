@@ -1,0 +1,35 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/deposit.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+`client.deposit` manages chain deposit addresses. Methods are authenticated.
+Deposit addresses are per-account and per-chain. Creating an address is idempotent: it returns the existing address when one is already assigned. A deposit flow can target **funding** or **trading**; select and confirm the intended destination in the corresponding chain flow.
+Address creation carries no client-supplied amount or `amount_scale`. Amounts observed later in deposit lifecycle and balance records use canonical ledger `amount_e18`; display precision comes from asset metadata and must not be confused with the 18-decimal wire scale.
+## Methods
+| Method           | Summary                                                               |
+| ---------------- | --------------------------------------------------------------------- |
+| `create_address` | Create or return the deposit address (`CreateDepositAddressRequest`). |
+| `list_addresses` | List deposit addresses (all chains for the caller).                   |
+### Create address
+```rust
+use polyester::proto::chain::deposit::v1::CreateDepositAddressRequest;
+let addr = client
+chain_id: 1,
+})
+println!("{} {}", addr.chain_id, addr.deposit_address);
+```
+The SDK returns `Error::Transport` if a successful response omits or empties the required address; it never fabricates a placeholder address.
+### List addresses
+Rust’s helper lists addresses without a chain filter (unlike Python/Go, which require `chain_id`).
+```rust
+let listed = client.deposit.list_addresses().await?;
+for a in &listed.addresses {
+println!("{} {}", a.chain_id, a.deposit_address);
+}
+```
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals)
+- [Balances](https://testnet.polyester.com/docs/sdk/rust/reference/balances)
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals)

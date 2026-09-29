@@ -1,0 +1,24 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/environments.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Environments
+Testnet endpoints and how to point the client at another deployment.
+Pass the testnet preset on every client:
+```go
+client, err := polyester.New(polyester.Config{
+Environment: &polyester.TestnetEnvironment,
+})
+```
+`polyester.TestnetEnvironment` targets Polyester **testnet**:
+| Setting       | Value                               |
+| ------------- | ----------------------------------- |
+| API URL       | `https://api-testnet.polyester.com` |
+| WebSocket URL | `wss://api-testnet.polyester.com`   |
+| RPC URL       | `https://rpc.polyester.live`        |
+| Chain ID      | `888169`                            |
+| Name          | `polyester-testnet`                 |
+The environment keeps API, WebSocket, RPC, and contract pins together. `Config.APIURL` / `Config.WSURL` remain transport overrides. For custom or VPC endpoints, build a complete environment with `polyester.CreateEnvironment` or `polyester.TestnetEnvironment.WithURLs`.
+Scripts using `polyester.FromEnv()` select the preset with `POLYESTER_ENV=testnet`. Optional `POLYESTER_API_URL` / `POLYESTER_WS_URL` override the transport URLs.
+On-chain Funding helpers in the `chain` package take the same preset for contract addresses, RPC, and account-abstraction endpoints. See [Chain helpers](https://testnet.polyester.com/docs/sdk/go/reference/chain) and [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).
+Do not hard-code production URLs until your account team confirms the production API host.

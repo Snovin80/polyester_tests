@@ -1,0 +1,164 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/guides/server-side
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Server-side usage · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Guides
+svg]:size-3.5">
+/
+Server-side usage
+Server-side usage
+Copy page
+View as Markdown
+Open in
+Python ships
+async
+(
+AsyncPolyester
+) and
+sync
+(
+Polyester
+) clients with the same service tree. Prefer async for bots with streams.
+Process lifecycle
+Create
+one client
+per process (or per logical bot) and reuse it.
+Close / drop the client on shutdown so HTTP and WebSocket pools release cleanly
+(Python context managers, Go
+Close()
+, Rust drop).
+Cancel work with async cancellation (Python task cancel),
+context.Context
+(Go), or
+Tokio cancellation (Rust).
+Configuration
+Prefer explicit credentials from your secret store. Use
+from_env
+/
+FromEnv
+only for local
+scripts.
+Wait for catalogs before decimal writes. Disable catalog hydration only if you exclusively use
+pre-scaled integers and understand the tradeoff.
+Wire format
+Binary Protobuf is the default Connect codec. JSON wire formats are for debugging, not hot
+paths. If you enable JSON, API-key signatures hash the
+codec-encoded JSON body bytes that are
+actually sent
+, not a separately marshaled protobuf blob. A body/signature mismatch fails auth.
+See
+Client configuration
+Related Topics
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers and risk attachments.
+Streaming
+Subscribe to public and private WebSocket Protobuf channels with async iterators, handshake-before-return, and fail-closed overflow.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, lifecycle, and chain helpers.
+Error handling
+Classify failures, retry safely with idempotency keys, and handle realtime overflow.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Python trading system safely.
+Previous
+Deposits & withdrawals
+Next
+Error handling
+On this page
+Process lifecycle
+Configuration
+Wire format
+Related Topics
+Share this page
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Share
+Copy Link

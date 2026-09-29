@@ -1,0 +1,346 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/spot/config
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+MarketDataService
+Get Spot Config
+Retrieve a cacheable snapshot of spot assets and pairs, including precision and trading constraints.
+Copy URL
+Method
+GET
+Path
+/v1/spot/config
+Visibility
+Public endpoint
+GET
+/v1/spot/config
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/config' \
+--header 'Accept: */*'
+Responses
+"assets": [
+"asset": "BTC",
+"ledgerId": 1,
+"marketDataVolumeScale": 123456,
+"name": "Bitcoin",
+"quantityDisplayDecimals": 8,
+"quantityScale": 8
+}
+],
+"pairs": [
+"allowBuyFeeFromBase": false,
+"baseAsset": "BTC",
+"baseQuantityScale": 8,
+"defaultMarketSlippageBpsBuy": 1,
+"defaultMarketSlippageBpsSell": 1,
+"delistingAt": "2025-01-01T00:00:00Z",
+"listingAt": "2025-01-01T00:00:00Z",
+"marketdata": {
+"orderbookPriceBuckets": [
+0.1
+]
+},
+"maxClientRefDriftBps": 1,
+"minNotionalQuote": "10",
+"minQtyBase": "0.0001",
+"quoteAsset": "USDT",
+"quoteQuantityScale": 6,
+"referencePriceScale": 5000000,
+"status": "ENABLED",
+"stepSize": "0.0001",
+"symbol": "BTC-USDT",
+"symbolId": 1,
+"tickSize": "0.01"
+}
+],
+"tsSec": "1735689600"
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+assets
+object[]
+Assets ordered by asset code in ascending alphabetical order.
+6 fields
+asset
+string
+Asset code, e.g. "USDT" or "BTC".
+Example
+BTC
+ledgerId
+integer (int32)
+Stable numeric asset id used by account, balance, and order APIs.
+Example
+1
+marketDataVolumeScale
+integer (int32)
+Integer scale for public candle and market-overview base volume (0..18).
+Example
+123456
+name
+string
+Human-friendly display name, e.g. "Bitcoin".
+Example
+Bitcoin
+quantityDisplayDecimals
+integer (int32)
+Suggested decimal precision for displaying user-facing asset amounts.
+Example
+8
+quantityScale
+integer (int32)
+Integer scale for quantities and balances in this asset (0..18). A scale of 8 means one whole asset is represented as 100000000 in scaled integer fields such as qty_scaled.
+Example
+8
+pairs
+object[]
+Pairs ordered by symbol in ascending alphabetical order.
+19 fields
+allowBuyFeeFromBase
+boolean
+Whether BUY order fees may be paid from the base asset instead of the spent quote asset when the order request selects the base fee asset.
+Example
+false
+baseAsset
+string
+Base asset code. For BTC-USDT, this is "BTC".
+Example
+BTC
+baseQuantityScale
+integer (int32)
+Quantity scale for base-asset amounts in this pair.
+Example
+8
+defaultMarketSlippageBpsBuy
+integer (int32)
+Default MARKET order slippage cap for BUY orders, in basis points (1 bp = 0.01%). A request-level slippage setting can override this value.
+Example
+1
+defaultMarketSlippageBpsSell
+integer (int32)
+Default MARKET order slippage cap for SELL orders, in basis points (1 bp = 0.01%). A request-level slippage setting can override this value.
+Example
+1
+delistingAt
+string
+Scheduled delisting timestamp. When unset, the pair has no explicit delisting time.
+Example
+2025-01-01T00:00:00Z
+listingAt
+string
+Scheduled listing timestamp. When unset, the pair has no explicit future listing time.
+Example
+2025-01-01T00:00:00Z
+marketdata
+object
+Market-data display settings for this pair.
+1 field
+orderbookPriceBuckets
+number[]
+Suggested order book aggregation bucket sizes in quote-asset price units, e.g. 0.01, 0.1, 1, or 10.
+Example
+maxClientRefDriftBps
+integer (int32)
+Maximum allowed drift between client reference price and server reference price for MARKET orders, in basis points (1 bp = 0.01%), when client reference pricing is used.
+Example
+1
+minNotionalQuote
+string
+Minimum order notional as a decimal string in quote-asset units.
+Example
+10
+minQtyBase
+string
+Minimum order quantity as a decimal string in base-asset units.
+Example
+0.0001
+quoteAsset
+string
+Quote asset code. For BTC-USDT, this is "USDT".
+Example
+USDT
+quoteQuantityScale
+integer (int32)
+Quantity scale for quote-asset amounts in this pair.
+Example
+6
+referencePriceScale
+integer (int32)
+Integer scale for composite reference prices in candle responses (0..18). Primary market and execution prices use the fixed scale 9.
+Example
+5000000
+status
+enum
+Current trading status.
+ENABLED
+DISABLED
+CANCEL_ONLY
+POST_ONLY
+REDUCE_ONLY
+Example
+ENABLED
+stepSize
+string
+Minimum allowed quantity increment as a decimal string in base-asset units.
+Example
+0.0001
+symbol
+string
+Trading pair symbol, e.g. "BTC-USDT".
+Example
+BTC-USDT
+symbolId
+integer (int32)
+Stable numeric pair id used by low-latency ConnectRPC requests and streams.
+Example
+1
+tickSize
+string
+Minimum allowed price increment as a decimal string in quote-asset units. Prices use 9 decimal places in scaled integer fields; for example "0.01" means orders must be priced in 0.01 quote-asset increments.
+Example
+0.01
+tsSec
+string
+/^[0-9]+$/
+Snapshot generation timestamp, in seconds since the Unix epoch (UTC).
+Example
+1735689600
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/spot/config
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s364" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/spot/config' \
+--header 'Accept: */*'
+Responses
+"assets": [
+"asset": "BTC",
+"ledgerId": 1,
+"marketDataVolumeScale": 123456,
+"name": "Bitcoin",
+"quantityDisplayDecimals": 8,
+"quantityScale": 8
+}
+],
+"pairs": [
+"allowBuyFeeFromBase": false,
+"baseAsset": "BTC",
+"baseQuantityScale": 8,
+"defaultMarketSlippageBpsBuy": 1,
+"defaultMarketSlippageBpsSell": 1,
+"delistingAt": "2025-01-01T00:00:00Z",
+"listingAt": "2025-01-01T00:00:00Z",
+"marketdata": {
+"orderbookPriceBuckets": [
+0.1
+]
+},
+"maxClientRefDriftBps": 1,
+"minNotionalQuote": "10",
+"minQtyBase": "0.0001",
+"quoteAsset": "USDT",
+"quoteQuantityScale": 6,
+"referencePriceScale": 5000000,
+"status": "ENABLED",
+"stepSize": "0.0001",
+"symbol": "BTC-USDT",
+"symbolId": 1,
+"tickSize": "0.01"
+}
+],
+"tsSec": "1735689600"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/spot/config' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "assets": [
+    {
+      "asset": "BTC",
+      "ledgerId": 1,
+      "marketDataVolumeScale": 123456,
+      "name": "Bitcoin",
+      "quantityDisplayDecimals": 8,
+      "quantityScale": 8
+    }
+  ],
+  "pairs": [
+    {
+      "allowBuyFeeFromBase": false,
+      "baseAsset": "BTC",
+      "baseQuantityScale": 8,
+      "defaultMarketSlippageBpsBuy": 1,
+      "defaultMarketSlippageBpsSell": 1,
+      "delistingAt": "2025-01-01T00:00:00Z",
+      "listingAt": "2025-01-01T00:00:00Z",
+      "marketdata": {
+        "orderbookPriceBuckets": [
+          0.1
+        ]
+      },
+      "maxClientRefDriftBps": 1,
+      "minNotionalQuote": "10",
+      "minQtyBase": "0.0001",
+      "quoteAsset": "USDT",
+      "quoteQuantityScale": 6,
+      "referencePriceScale": 5000000,
+      "status": "ENABLED",
+      "stepSize": "0.0001",
+      "symbol": "BTC-USDT",
+      "symbolId": 1,
+      "tickSize": "0.01"
+    }
+  ],
+  "tsSec": "1735689600"
+}

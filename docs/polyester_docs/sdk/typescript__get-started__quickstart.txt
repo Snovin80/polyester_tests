@@ -1,0 +1,505 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/get-started/quickstart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Quickstart · TypeScript SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+TypeScript
+Get started
+Overview
+Installation
+Quickstart
+Guides
+Authentication
+API Keys
+Wallet Login
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Tutorials
+Live market ticker
+Build a trading bot
+Portfolio tracker
+Reference
+Accounts
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain analytics
+Client configuration
+Deposit
+Errors
+Fees
+Guard signer
+Heatmap
+Internal transfers
+Lifecycle
+Market overview
+MFA
+Order book
+Orders
+Profile
+Public trades
+Trading rate limits
+Realtime client
+Social verification
+Subaccounts
+Trades
+Transfers
+Triggers
+VIP
+Withdrawals
+Zipper
+Market data services
+Trading services
+Account services
+Funding services
+SDK
+svg]:size-3.5">
+/
+TypeScript
+svg]:size-3.5">
+/
+Get started
+svg]:size-3.5">
+/
+Quickstart
+Quickstart
+Copy page
+View as Markdown
+Open in
+About ten minutes. You will hit Polyester testnet, read public market data, open a live stream,
+then place and cancel a spot order with an
+API key
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prerequisites
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Install the SDK first (see
+Installation
+).
+You also need a Polyester testnet account with an API key. Create one in the app under Settings →
+API keys, or with the SDK. The key needs a policy with
+trade-spot
+,
+read-spot
+, and
+read-balances
+(
+auth.me
+) and then throws
+PermissionError
+on trading and ledger calls.
+See the
+Authentication guide
+1
+Create a client
+An environment is a frozen object that points at API, WebSocket, and chain endpoints. Testnet
+ships with the package:
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+});
+With no
+auth
+option, every public service works (market data, candles, books, chain analytics,
+the VIP catalog, and the trading quota catalog). Credentials come in step 4.
+2
+Read public market data
+Fetch the market overview. One row per pair, with last price and 24h stats:
+const
+markets
+}
+=
+await
+client
+marketOverview
+list
+({ limit:
+10
+});
+for
+(
+const
+market
+of
+markets
+) {
+console
+log
+(
+`#${
+market
+symbolId
+}: ${
+market
+lastPrice
+}`
+);
+}
+Prices and quantities are always decimal strings (
+"64250.5"
+), never floats. Why: see
+Catalog & precision
+3
+Resolve a symbol with the catalog
+Trading endpoints use a stable numeric
+symbolId
+and loads reference data on first use:
+await
+client
+catalog
+ensureReady
+();
+const
+symbolId
+=
+client
+catalog
+market
+requireSymbolIdByPairSymbol
+(
+"BTC-USDT"
+);
+const
+symbol
+=
+client
+catalog
+market
+requirePairSymbolBySymbolId
+(
+symbolId
+);
+console
+log
+(
+symbol
+,
+symbolId
+);
+4
+Stream live candles
+Same contract for every stream: call
+subscribe(...)
+, get back an unsubscribe function.
+const
+unsubscribe
+=
+client
+candles
+subscribe
+({
+symbolId
+,
+timeframe:
+"1m"
+,
+onEvent
+candle
+)
+=>
+console
+log
+(
+"candle"
+,
+candle
+close
+),
+onError
+ctx
+)
+=>
+console
+error
+(
+"stream error"
+,
+ctx
+),
+});
+// later
+unsubscribe
+();
+5
+Authenticate with an API key
+Trading needs credentials. Recreate the client with an Ed25519 API key provider. The SDK signs
+each request for you:
+import
+PolyesterClient
+,
+POLYESTER_TESTNET_ENVIRONMENT
+,
+evmHexToBytes
+}
+from
+"@polyester/sdk"
+;
+const
+client
+=
+new
+PolyesterClient
+({
+environment:
+POLYESTER_TESTNET_ENVIRONMENT
+,
+auth: {
+kind:
+"api-key-ed25519"
+,
+getKeyId
+=>
+process
+env
+POLYESTER_API_KEY_ID
+??
+null
+,
+getSecretKey
+=>
+evmHexToBytes
+(
+process
+env
+POLYESTER_API_SECRET_HEX
+??
+"0x"
+),
+},
+});
+getKeyId
+returns your
+ak_...
+key ID.
+getSecretKey
+returns the 32-byte Ed25519 secret.
+evmHexToBytes
+requires a
+0x
+prefix (
+generateKeypair
+'s
+secretKey.hex
+does not include one).
+Both getters may be async, so
+vault
+lookups work.
+6
+Place and cancel an order
+Small
+post-only
+limit, then cancel it:
+const
+created
+=
+await
+client
+orders
+create
+({
+symbolId
+,
+side:
+"buy"
+,
+qty:
+"0.001"
+,
+execution: { type:
+"limit_gtc"
+, price:
+"10000"
+, postOnly:
+true
+},
+clientOrderId:
+crypto
+randomUUID
+(),
+// persist this ID to reconcile an uncertain response
+});
+console
+log
+(
+"order accepted:"
+,
+created
+);
+const
+orders
+}
+=
+await
+client
+orders
+listOpen
+({ symbolId: [
+symbolId
+] });
+console
+log
+(
+`${
+orders
+length
+} open order(s)`
+);
+await
+client
+orders
+cancel
+({
+orderId:
+created
+orderId
+,
+symbolId
+,
+});
+create
+acknowledges admission, not that the order is already in
+listOpen
+created.orderId
+listOpen
+is paginated; drain
+nextPageToken
+when you need every open order.
+The SDK rejects malformed inputs and decimal values with excess fractional precision before a
+request. To preflight tick size, step size, minimum quantity, or notional, call
+client.catalog.orders.validateSpotOrderDecimalInput(...)
+yourself. Catalog data can be stale, so
+the backend remains authoritative.
+CatalogConversionError
+comes from
+Where to go next
+Authentication
+Trading
+Streaming
+Architecture
+Related Topics
+Overview
+A typed TypeScript SDK for the Polyester exchange API: market data, trading, accounts, funding, and realtime streams.
+Installation
+Install the SDK, check runtime requirements, and verify your setup with a first request.
+Previous
+Installation
+Next
+API Keys
+On this page
+Where to go next
+Related Topics
+Share this page
+Quickstart
+From zero to a filled testnet order: create a client, read market data, stream candles, and place your first trade.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT } from "@polyester/sdk";
+
+const client = new PolyesterClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+});
+
+---
+
+const { markets } = await client.marketOverview.list({ limit: 10 });
+for (const market of markets) {
+	console.log(`#${market.symbolId}: ${market.lastPrice}`);
+}
+
+---
+
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+const symbol = client.catalog.market.requirePairSymbolBySymbolId(symbolId);
+console.log(symbol, symbolId);
+
+---
+
+const unsubscribe = client.candles.subscribe({
+	symbolId,
+	timeframe: "1m",
+	onEvent: (candle) => console.log("candle", candle.close),
+	onError: (ctx) => console.error("stream error", ctx),
+});
+
+// later
+unsubscribe();
+
+---
+
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT, evmHexToBytes } from "@polyester/sdk";
+
+const client = new PolyesterClient({
+	environment: POLYESTER_TESTNET_ENVIRONMENT,
+	auth: {
+		kind: "api-key-ed25519",
+		getKeyId: () => process.env.POLYESTER_API_KEY_ID ?? null,
+		getSecretKey: () => evmHexToBytes(process.env.POLYESTER_API_SECRET_HEX ?? "0x"),
+	},
+});
+
+---
+
+const created = await client.orders.create({
+	symbolId,
+	side: "buy",
+	qty: "0.001",
+	execution: { type: "limit_gtc", price: "10000", postOnly: true },
+	clientOrderId: crypto.randomUUID(), // persist this ID to reconcile an uncertain response
+});
+
+console.log("order accepted:", created);
+
+const { orders } = await client.orders.listOpen({ symbolId: [symbolId] });
+console.log(`${orders.length} open order(s)`);
+
+await client.orders.cancel({
+	orderId: created.orderId,
+	symbolId,
+});

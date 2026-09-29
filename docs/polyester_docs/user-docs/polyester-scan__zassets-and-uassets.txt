@@ -1,0 +1,217 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan/zassets-and-uassets
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+zAssets & uAssets · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Polyester Scan
+svg]:size-3.5">
+/
+zAssets & uAssets
+zAssets & uAssets
+Copy page
+View as Markdown
+Open in
+Polyester Scan
+shows two connected asset types. A
+Zipped Asset
+, or
+zAsset
+, represents one asset from one source chain. A
+Unified Asset
+, or
+uAsset
+, brings compatible Zipped Assets together as one account-facing balance.
+For example, USDT deposited from Ethereum and USDT deposited from Solana create separate Zipped Assets. When both
+routes
+map to Unified USDT, you see one USDT balance in your Polyester account.
+Browse Unified Assets
+The
+Unified Assets directory
+lists each Unified Asset with its supported chains, Unified Asset ID, Ledger ID, decimals, and combined Zipped Asset supply.
+Expand a row to see every route behind that asset. Each route includes its source chain, Polyester contract, and source-chain contract. Native assets show
+Native
+instead of a source contract address.
+On a Unified Asset page, you can use:
+Flows
+to see related deposits, withdrawals, and transfers
+Zipped Assets
+to compare the routes that contribute to the balance
+Info
+to see IDs, decimals, and route metadata
+Holders
+when holder information is available.
+Browse a Zipped Asset
+Open a Zipped Asset from the Tokens directory, a transfer, a Flow, or a Unified Asset page. Its detail page connects the route's source chain and source asset to the corresponding contract on
+Polyester Chain
+It can also show transfers, holders, flows, supply, and contract information. The supply shown here belongs to this individual source-chain route. A
+Verified
+badge means Scan recognizes the asset from Polyester's configured catalog.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+One symbol can represent several routes
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+USDT from Ethereum and USDT from Solana can use the same symbol while remaining separate Zipped Assets. Their source chains and contract addresses show which route each one represents.
+Use
+Asset Flows
+to follow a specific movement, or
+Tokens & Chains
+to explore the routes available in Scan.
+Related Topics
+Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+Asset Flows
+Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+Chain Activity
+Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+Tokens & Chains
+Browse assets, token transfers, and the source chains connected to Polyester.
+Contracts & Tools
+Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+Previous
+Overview
+Next
+Asset Flows
+On this page
+Browse Unified Assets
+Browse a Zipped Asset
+Related Topics
+Share this page
+zAssets & uAssets
+See how route-specific Zipped Assets connect to one Unified Asset balance.
+Share
+Copy Link

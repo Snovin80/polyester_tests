@@ -1,0 +1,237 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-ip-allowlists
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+API key IP allowlists · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Authentication & Security
+svg]:size-3.5">
+/
+API key IP allowlists
+API key IP allowlists
+Copy page
+View as Markdown
+Open in
+An
+API key
+IP allowlist restricts where an Ed25519 API key can be used. Polyester accepts a
+correctly signed request only when its authoritative client address belongs to at least one CIDR
+configured on the key.
+Use an IP allowlist as defense in depth. It limits the usefulness of a stolen private key, but it
+does not replace secure key storage, request signing, API-key policies, or endpoint authorization.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+API field name
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+The API field remains
+ipWhitelist
+Allowlist behavior
+An omitted or empty allowlist means the key has no IP restriction.
+A non-empty allowlist permits a request when any configured CIDR contains the client address.
+Matching is family-aware after IPv4-mapped IPv6 addresses are normalized to IPv4. Ordinary IPv4
+addresses do not match IPv6 CIDRs, and ordinary IPv6 addresses do not match IPv4 CIDRs.
+Each entry must include a prefix length. Use
+/32
+for one IPv4 address and
+/128
+for one IPv6
+address.
+A key supports up to 32 unique CIDR entries.
+Send canonical network prefixes. Entries that resolve to the same normalized network are rejected
+as duplicates.
+The restriction applies to every endpoint and transport that accepts the API key.
+A request outside the allowlist fails authentication before the domain operation runs.
+Polyester determines the client address from the network connection and trusted network path.
+Forwarding headers supplied by an untrusted public client cannot select or override the address
+used for this check.
+Choose the correct source addresses
+Allow the public egress addresses that Polyester sees for your integration. These are commonly the
+static NAT gateway or proxy addresses used by your production workload.
+Before enabling a restriction:
+Confirm the public IPv4 and IPv6 egress addresses for every production region.
+Include redundant egress paths used during failover.
+Avoid broad network ranges when a host prefix is sufficient.
+Do not use workstation, mobile, or other frequently changing addresses for unattended
+production integrations.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Prevent accidental lockout
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Adding an allowlist takes effect for new authenticated requests after the updated key configuration
+propagates. Keep a separate recovery path, test from an approved source, and do not remove the last
+known-good source until replacement connectivity is verified.
+Configure an allowlist when creating a key
+Set
+ipWhitelist
+when calling
+POST /v1/auth/api-keys
+publicKeyEd25519
+is a protobuf bytes field in JSON.
+"label"
+"production-trading"
+,
+"publicKeyEd25519"
+"<base64-ed25519-public-key>"
+,
+"ipWhitelist"
+"203.0.113.10/32"
+,
+"2001:db8:1234::/48"
+]
+}
+The key can authenticate from
+203.0.113.10
+or any IPv6 address inside
+2001:db8:1234::/48
+Replace or clear an existing allowlist
+Update a key with
+PATCH /v1/auth/api-keys/{key_id}
+To replace the complete allowlist:
+"ipWhitelist"
+"cidrs"
+"198.51.100.24/32"
+,
+"2001:db8:5678::/48"
+]
+}
+}
+To clear the allowlist and make the key unrestricted:
+"ipWhitelist"
+"cidrs"
+}
+}
+If
+ipWhitelist
+is omitted from an update, the current allowlist remains unchanged.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Clearing removes the network restriction
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+An empty CIDR list is intentionally unrestricted. Disable the key instead if authentication should
+stop while network configuration is being changed.
+Handle denied requests
+A request with a valid signature returns
+IP_NOT_ALLOWED
+with HTTP status
+401
+when its trusted
+client address is outside the configured ranges or cannot be safely determined.
+Do not retry the same request unchanged. Retry only after one of these conditions is true:
+the request originates from an approved network
+an authorized account administrator has corrected the key's allowlist
+the key has been deliberately changed to unrestricted access
+Changing forwarding headers does not correct the source address.
+Production recommendations
+Generate and store the Ed25519 private key in a dedicated secret manager or signing service.
+Prefer one API key per workload and environment instead of sharing a key.
+Use narrow host prefixes for fixed egress addresses.
+Include IPv4 and IPv6 ranges only when the workload can use both address families.
+Attach the minimum API-key policy required by the integration.
+Disable or revoke a key immediately if its private key or approved network is compromised.
+Test failover from every approved egress path before relying on it during an incident.
+See
+Ed25519 API keys
+for canonical
+request signing and
+API key replay protection
+for retry and idempotency guidance.
+Related Topics
+Ed25519 API Keys
+Create Ed25519 API keys and sign private Polyester API requests with the required canonical format.
+API key replay protection
+Understand signed-request freshness, replay rejection, and operation idempotency when using Ed25519 API keys.
+Multi-Factor Authentication
+How Polyester MFA works: TOTP, passkeys, recovery codes, elevated sessions, and fresh step-up for high-risk actions.
+Guard Signer
+How clients initialize Guard Signer and request approval for protected Funding Account whitelist actions.
+Withdrawals and transfer security
+Understand authentication, MFA, signatures, policies, and whitelist checks for Trading withdrawals and internal transfers.
+Previous
+Withdrawals and transfer security
+Next
+Overview
+On this page
+Allowlist behavior
+Choose the correct source addresses
+Configure an allowlist when creating a key
+Replace or clear an existing allowlist
+Handle denied requests
+Production recommendations
+Related Topics
+Share this page
+API key IP allowlists
+Restrict Ed25519 API keys to approved IPv4 and IPv6 source networks.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+{
+	"label": "production-trading",
+	"publicKeyEd25519": "<base64-ed25519-public-key>",
+	"ipWhitelist": ["203.0.113.10/32", "2001:db8:1234::/48"]
+}
+
+---
+
+{
+	"ipWhitelist": {
+		"cidrs": ["198.51.100.24/32", "2001:db8:5678::/48"]
+	}
+}
+
+---
+
+{
+	"ipWhitelist": {
+		"cidrs": []
+	}
+}

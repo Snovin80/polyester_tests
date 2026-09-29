@@ -1,0 +1,52 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/market-overview.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+`client.MarketOverview` returns one row per spot market (last price, 24h stats, and related fields). Public, no authentication required.
+## Methods
+| Method               | Summary                                       |
+| -------------------- | --------------------------------------------- |
+| `List`               | Overview rows (optional symbol filter).       |
+| `CreateSubscription` | Snapshot-then-stream merged rows (preferred). |
+| `Subscribe`          | Raw Centrifugo batches (`Messages()`).        |
+### List(ctx, symbols, limit, pageToken, includeSparklines)
+```go
+overview, err := client.MarketOverview.List(ctx, []string{"BTC-USDT"}, 50, "", false)
+if err != nil { log.Fatal(err) }
+for _, m := range overview.Markets {
+fmt.Println(m.SymbolID, m.Symbol, m.LastPrice)
+}
+```
+The `pageToken` argument is accepted for signature parity; filtering is primarily via `symbols` and `limit`.
+### CreateSubscription(ctx, opts)
+Managed books expose **`Updates()`** (slice of merged rows), not `Messages()`.
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/services"
+sub, err := client.MarketOverview.CreateSubscription(ctx, services.MarketOverviewCreateSubscriptionOptions{
+Symbols: []string{"BTC-USDT"},
+Limit:   50,
+OnEvent: func(rows []models.MarketOverviewEntry) {
+for _, m := range rows {
+fmt.Println(m.Symbol, m.LastPrice)
+}
+},
+})
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+for rows := range sub.Updates() {
+fmt.Println(len(rows))
+break
+}
+```
+### Subscribe(ctx)
+Raw batches, consume with `Messages()`. Prefer `CreateSubscription` for dashboards.
+> **Prefer CreateSubscription**
+>
+> Raw `Subscribe` does not merge a REST snapshot for you.
+## Related
+- [Market data guide](https://testnet.polyester.com/docs/sdk/go/guides/market-data)
+- [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming)
+- [Candles](https://testnet.polyester.com/docs/sdk/go/reference/candles)
+- [Order book](https://testnet.polyester.com/docs/sdk/go/reference/order-book)

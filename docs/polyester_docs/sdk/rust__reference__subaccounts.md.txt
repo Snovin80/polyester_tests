@@ -1,0 +1,37 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/subaccounts.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Subaccounts
+Subaccount reads, members, invites, activity.
+`client.sub_accounts` contains API-key-safe reads and private streams. Mutations and member/invite administration are JWT/session-only and are not exposed.
+## Methods
+| Method                             | Summary                            |
+| ---------------------------------- | ---------------------------------- |
+| `list`                             | List subaccounts.                  |
+| `get`                              | Read a numeric subaccount ID.      |
+| `list_members` / `list_invites`    | Read members or invitations.       |
+| `list_activity`                    | Read paginated activity.           |
+| `subscribe` / `subscribe_api_keys` | Stream private subaccount updates. |
+```rust
+use polyester::proto::auth::v1::ListSubaccountsRequest;
+use polyester::services::GetSubaccountOpts;
+let subs = client
+for subaccount in subs.subaccounts {
+println!(
+"{} {} {}",
+subaccount.subaccount_id, subaccount.label, subaccount.status
+);
+}
+let detail = client
+include_members: true,
+include_policy: true,
+include_balances: true,
+})
+```
+Use `Config.default_sub_account_id` or method request fields to scope trading. Subaccount IDs are canonical public base58 strings in client configuration; do not reinterpret digit-only values as decimal. They are not the root Account ID used in private channel names. Replay activity page tokens unchanged. Subscribe methods accept an optional argument because `None` falls back to `Config.default_account_id`; one of those two sources must provide the root Account ID.
+`GetSubaccountOpts` intentionally lives in `polyester::services`; the import above matches the public SDK.
+## Related
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/rust/guides/accounts-and-balances)
+- [Policies](https://testnet.polyester.com/docs/sdk/rust/reference/policies)
+- [Authentication model](https://testnet.polyester.com/docs/sdk/rust/concepts/authentication-model)

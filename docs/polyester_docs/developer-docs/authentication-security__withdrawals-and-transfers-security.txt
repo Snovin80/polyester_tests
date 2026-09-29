@@ -1,0 +1,304 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Withdrawals and transfer security · Developer Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+All interfaces
+Start Here
+Developer documentation
+Connectivity matrix
+SDK capability matrix
+Interfaces
+REST
+ConnectRPC & Protobuf
+SBE WebSocket
+FIX Classic
+FIX-SBE
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+Authentication & Security
+svg]:size-3.5">
+/
+Withdrawals and transfer security
+Withdrawals and transfer security
+Copy page
+View as Markdown
+Open in
+Polyester applies different security controls according to the movement flow and caller type. An
+interactive Trading withdrawal, an API-key withdrawal, a Trading-to-Trading internal transfer, and
+an on-chain Funding transfer do not share one authentication model.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Whitelisting does not remove MFA
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+When a whitelist requirement is enabled, the destination must be allowed. Whitelist membership does
+not remove required
+MFA
+or movement signatures, but an interactive root owner can use Recent MFA
+instead of a fresh single-use step-up for an explicitly listed destination.
+Security requirements by flow
+Movement flow
+Caller
+Required authorization
+Trading withdrawal
+Interactive JWT
+JWT, wallet-signed intent, recent MFA for root-owner Trading-to-Funding or a root-owner withdrawal to an explicitly listed external destination; otherwise fresh step-up, plus source and movement authorization
+Trading withdrawal
+Ed25519
+API key
+Signed HTTP request, signed withdrawal payload, mandatory API-key policy
+Trading-to-Trading internal transfer
+Interactive JWT
+JWT, recent MFA elevation for root-owner same-owner or explicitly listed destinations; otherwise fresh step-up
+Trading-to-Trading internal transfer
+Ed25519 API key
+Signed HTTP request and mandatory API-key policy
+Funding-to-Funding on-chain transfer
+Smart account
+Wallet-authorized on-chain transaction and applicable contract whitelist checks
+Protected Funding whitelist change
+Interactive owner
+Owner JWT, fresh step-up, wallet-authorized transaction, and Guard Signer approval
+Destination whitelist checks are additional to the controls shown above when the selected source
+account requires them.
+Interactive and API-key callers
+Interactive callers
+Interactive movement methods authenticate a normal JWT session. For a newly accepted request:
+CreateWalletTradingWithdraw
+accepts a recent MFA-elevated session when the authoritative root
+owner moves funds from Trading to Funding inside one ownership tree or when an external
+destination is explicitly listed in the chain-confirmed whitelist. Other cross-owner, delegated,
+and external movements require fresh step-up. Every request includes an EIP-191
+personal_sign
+withdrawal intent signed by an active wallet bound to the selected account.
+CreateInternalTransfer
+accepts a recent MFA-elevated session when the authoritative root owner
+moves funds inside the same ownership tree or when the destination is explicitly listed in the
+chain-confirmed internal whitelist. Other cross-owner and delegated transfers require a fresh
+step-up. It does not use a separate wallet-signed movement intent.
+An address-book entry or a destination that is merely allowed because its whitelist requirement is
+disabled does not receive the listed-destination MFA relaxation.
+API-key callers
+API-key movement does not use interactive MFA:
+CreateTradingWithdraw
+requires normal Ed25519 HTTP authentication and a separate Ed25519
+signature over the deterministic withdrawal payload.
+CreateInternalTransfer
+uses the signed HTTP request body and does not have a separate movement
+signature field.
+An API-key policy must explicitly allow the requested movement. The key remains bound to its root
+account or configured
+subaccount
+and cannot use the request to escape that scope.
+See
+Ed25519 API keys
+for HTTP signing
+and
+API key replay protection
+for
+retry guidance.
+Account selection, roles, and policies
+The authenticated identity determines the root account. A JWT caller can optionally select an
+accessible subaccount. Moving funds from a subaccount requires the owner, administrator, or treasury
+role.
+For API keys:
+a root-scoped key moves funds only from the root account
+a subaccount-scoped key moves funds only from its bound subaccount
+the API-key policy must allow the movement action
+an attached subaccount policy must allow the same movement action
+For interactive subaccount callers, an attached subaccount policy must allow the movement action.
+Root-account movement does not use a generic subaccount policy. Other published capital-policy
+controls, including daily movement limits and own-only transfer restrictions, are not all currently
+enforced by these intake methods.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Authentication does not replace authorization
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+A valid session or API-key signature identifies the caller. Polyester still checks source-account
+access, movement permission, the currently mirrored destination allowance, available funds, and
+request invariants.
+Wallet-signed Trading withdrawal intents
+The interactive Trading withdrawal method requires an EIP-191
+personal_sign
+message signed by a
+wallet bound to the selected account. This signature is independent of the wallet's currently
+selected network. The signed facts include:
+movement type
+source and target account
+asset and amount
+Polyester chain
+, destination chain, and destination address
+deadline and nonce
+idempotency key
+chain and verifying-contract context
+Polyester verifies the signature against the complete request. Changing a signed field invalidates
+the intent.
+API-key Trading withdrawals use a different Ed25519 movement payload. Do not submit a wallet intent
+to the API-key method.
+MFA for Trading movements
+Interactive root owners may reuse an MFA-elevated session completed within the previous 30 minutes
+for Trading-to-Funding withdrawals, same-owner Trading-to-Trading internal transfers, and movements
+to explicitly listed external or internal destinations. Other cross-owner, delegated, and external
+interactive movements require fresh step-up.
+For fresh-step-up movement, Polyester consumes the single-use proof before locking funds, creating a
+ledger reserve or transfer, publishing movement lifecycle state, or queueing execution. If
+consumption cannot be confirmed, movement does not begin. Retrying the same accepted request reuses
+its recorded authorization and does not consume another proof; changing the movement facts conflicts
+with the original idempotent request.
+API-key movement does not prompt for MFA. Its security boundary is the API-key signature, strict
+account scope, mandatory API-key policy, destination enforcement, and movement invariants.
+See
+Multi-factor authentication
+for interactive step-up behavior.
+External and internal whitelists
+Polyester has two movement whitelists:
+Whitelist
+Destination identity
+Enforced for
+External
+External network plus destination bytes
+External-chain withdrawals
+Internal
+Polyester smart-account address
+Internal account movement
+Each source account has separate external and internal requirement flags:
+If a requirement is disabled, an unlisted destination can be accepted.
+If a requirement is enabled, the exact destination must be present.
+If the service has not loaded its whitelist mirror, movement fails closed.
+Enforcement uses mirrored chain-confirmed state. The current implementation does not guarantee
+rejection when that mirror has become stale or skipped an update.
+The external whitelist is scoped by both network and destination. The internal whitelist contains
+smart-account addresses, not usernames or public account IDs.
+Another subaccount under the same root account is not automatically whitelisted. The direct shortcut
+is Trading to the selected account's own
+Funding account
+different Funding address is checked against the internal whitelist when that requirement is enabled.
+Saved destinations are separate
+An address-book entry stores reusable labels and destination metadata. Saving an address does not
+whitelist it and does not grant movement permission. A destination can be saved, whitelisted, both,
+or neither.
+Whitelist changes
+Whitelist state is chain-authoritative. The selected account submits the on-chain change through its
+smart account:
+adding or removing external or internal destinations requires a Guard Signer approval
+disabling either whitelist requirement requires a Guard Signer approval
+enabling a whitelist requirement remains wallet-authorized but does not require Guard Signer
+approval
+Guard Signer approval methods accept interactive owner JWT callers only and require fresh step-up
+for every supported whitelist addition, removal, or requirement-disable approval.
+See
+Guard Signer
+for approval details.
+Movement-specific behavior
+Trading withdrawals
+A Trading withdrawal can:
+move Trading funds to the selected account's own Funding account
+move Trading funds to another Funding smart-account address
+withdraw Trading funds to an external network and address
+The own-Funding path omits a destination override. Another Funding address is subject to the internal
+whitelist requirement. An external destination is subject to the external whitelist requirement for
+the selected network.
+Interactive callers always provide the wallet-signed intent. Root-owner Trading-to-Funding and
+root-owner withdrawals to explicitly listed external destinations accept recent MFA; other
+cross-owner, delegated, and external movements require fresh step-up. API-key callers always
+provide the API-key withdrawal signature and never use interactive MFA.
+Trading-to-Trading internal transfers
+An internal transfer targets another Trading account or subaccount by its supported public
+identifier or smart-account address. Self-transfer to the identical source account is rejected.
+An interactive root owner may reuse MFA completed within the previous 30 minutes for transfers
+inside the same ownership tree or to an explicitly listed destination. Other cross-owner and
+delegated interactive callers require fresh step-up. API-key callers require a policy that allows
+internal transfers. No caller receives a same-owner exemption from an enabled internal whitelist.
+Funding-to-Funding transfers
+Funding movement is an on-chain account action, not the Trading internal-transfer API. The selected
+smart account submits wallet-authorized calldata, and the Funding contract enforces its internal
+whitelist requirement.
+Safe retries
+Trading withdrawal and Trading internal-transfer requests require an idempotency key. Generate it
+before the first attempt and persist it with the movement intent.
+For a retry:
+reuse the idempotency key
+keep all movement facts unchanged
+preserve the original wallet or API-key movement signature when the request contains one
+create a fresh HTTP timestamp and signature for each API-key request attempt
+Retry a signed Trading withdrawal only while its original
+deadlineTsSec
+remains valid. The API
+validates the deadline before looking up the idempotent result, so an expired retry can be rejected
+even when the first attempt succeeded.
+Changing the source, destination, asset, amount, or signed movement payload while reusing the key can
+produce a conflict instead of a second movement.
+Related Topics
+Ed25519 API Keys
+Create Ed25519 API keys and sign private Polyester API requests with the required canonical format.
+API key replay protection
+Understand signed-request freshness, replay rejection, and operation idempotency when using Ed25519 API keys.
+Multi-Factor Authentication
+How Polyester MFA works: TOTP, passkeys, recovery codes, elevated sessions, and fresh step-up for high-risk actions.
+Guard Signer
+How clients initialize Guard Signer and request approval for protected Funding Account whitelist actions.
+API key IP allowlists
+Restrict Ed25519 API keys to approved IPv4 and IPv6 source networks.
+Previous
+Guard Signer
+Next
+API key IP allowlists
+On this page
+Security requirements by flow
+Interactive and API-key callers
+Interactive callers
+API-key callers
+Account selection, roles, and policies
+Wallet-signed Trading withdrawal intents
+MFA for Trading movements
+External and internal whitelists
+Saved destinations are separate
+Whitelist changes
+Movement-specific behavior
+Trading withdrawals
+Trading-to-Trading internal transfers
+Funding-to-Funding transfers
+Safe retries
+Related Topics
+Share this page
+Withdrawals and transfer security
+Understand authentication, MFA, signatures, policies, and whitelist checks for Trading withdrawals and internal transfers.
+Share
+Copy Link

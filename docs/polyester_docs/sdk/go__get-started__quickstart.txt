@@ -1,0 +1,511 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/get-started/quickstart
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Quickstart · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Get started
+svg]:size-3.5">
+/
+Quickstart
+Quickstart
+Copy page
+View as Markdown
+Open in
+About ten minutes on Polyester testnet: public reads, a live stream, then a place-and-cancel
+with an
+API key
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-success-bg); --alert-line: var(--status-new-success-border); --alert-fg: var(--status-new-success-fg);" data-slot="alert" data-variant="success" role="alert">
+Prerequisites
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Install the SDK
+app (
+API
+in the sidebar). Copy the key id and private key when shown, the private key is
+only displayed once. Open the key's
+Permissions
+, enable
+Spot trading
+, choose the allowed
+markets, and set a maximum order size that covers this test. Copy your
+Account ID
+from Profile.
+The API-key SDK can use an assigned policy but cannot create or assign one.
+1
+Create a client
+accountID
+"..."
+// Profile → Account ID
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+APIKeyID
+"ak_..."
+,
+APIPrivateKey
+"..."
+,
+// 64-char hex from key creation
+DefaultAccountID
+&
+accountID
+,
+HydrateCatalogs
+true
+,
+// required before WaitForCatalogs / decimal order helpers
+})
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+client
+Close
+()
+ctx
+context
+Background
+()
+Go is
+synchronous
+context.Context
+on every call. Cancel the context to stop waits and stream receives.
+2
+Wait for catalogs
+Decimal order inputs need spot config scales. Wait before first write:
+if
+err
+client
+WaitForCatalogs
+(
+ctx
+);
+err
+!=
+nil
+log
+Fatal
+(
+err
+)
+}
+See
+Catalog & precision
+3
+Read public market data
+overview
+,
+err
+client
+MarketOverview
+List
+(
+ctx
+,
+nil
+,
+5
+,
+""
+,
+false
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+for
+_
+,
+market
+range
+overview
+Markets
+fmt
+Println
+(
+market
+Symbol
+,
+market
+LastPrice
+Ticks
+())
+}
+4
+Stream public trades
+symbol
+"BTC-USDT"
+sub
+,
+err
+client
+MarketData
+SubscribeTrades
+(
+ctx
+,
+&
+symbol
+,
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+defer
+sub
+Close
+()
+select
+case
+trade
+,
+ok
+<-
+sub
+Messages
+():
+if
+!
+ok
+log
+Fatal
+(
+sub
+Err
+()) }
+fmt
+Println
+(
+trade
+)
+case
+<-
+ctx
+Done
+():
+log
+Fatal
+(
+ctx
+Err
+())
+}
+Subscription queues are bounded. If your consumer falls behind, the SDK raises a realtime
+overflow error and faults the subscription, it does
+not
+silently drop updates. See
+Streaming
+5
+Place and cancel a limit order
+Your API key policy must allow Spot trading for
+BTC-USDT
+, and its maximum order size must cover
+the order below. Spot orders spend
+trading
+balance. Manage the policy from the key's
+Permissions
+page in the Polyester app.
+symbol
+"BTC-USDT"
+tif
+"gtc"
+clientOrderID
+fmt
+Sprintf
+(
+"quickstart-
+%d
+"
+,
+time
+Now
+().
+UnixNano
+())
+price
+models
+PriceFromDecimal
+(
+"50000"
+)
+result
+,
+err
+client
+Orders
+Create
+(
+ctx
+,
+models
+CreateOrderRequest
+Symbol
+&
+symbol
+,
+Side
+"buy"
+,
+OrderType
+"limit"
+,
+TIF
+&
+tif
+,
+Qty
+models
+QtyFromDecimal
+(
+"0.001"
+),
+Price
+&
+price
+,
+PostOnly
+true
+,
+ClientOrderID
+&
+clientOrderID
+,
+},
+nil
+)
+if
+err
+!=
+nil
+log
+Fatal
+(
+err
+) }
+fmt
+Println
+(
+result
+Status
+,
+result
+OrderID
+)
+// Status == "accepted" (admission ack)
+_
+,
+err
+=
+client
+Orders
+Cancel
+(
+ctx
+,
+nil
+,
+nil
+,
+&
+clientOrderID
+,
+&
+symbol
+,
+nil
+,
+nil
+)
+Next:
+Authentication
+and
+Trading
+Related Topics
+Overview
+Build typed Polyester integrations with the official Go API-key SDK.
+Installation
+Install the Go SDK and verify connectivity to Polyester testnet.
+Previous
+Installation
+Next
+Architecture
+On this page
+Related Topics
+Share this page
+Quickstart
+Connect to testnet, read market data, stream trades, and place a test order.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+accountID := "..." // Profile → Account ID
+client, err := polyester.New(polyester.Config{
+    Environment:      &polyester.TestnetEnvironment,
+    APIKeyID:         "ak_...",
+    APIPrivateKey:    "...", // 64-char hex from key creation
+    DefaultAccountID: &accountID,
+    HydrateCatalogs:  true, // required before WaitForCatalogs / decimal order helpers
+})
+if err != nil { log.Fatal(err) }
+defer client.Close()
+ctx := context.Background()
+
+---
+
+if err := client.WaitForCatalogs(ctx); err != nil {
+    log.Fatal(err)
+}
+
+---
+
+overview, err := client.MarketOverview.List(ctx, nil, 5, "", false)
+if err != nil { log.Fatal(err) }
+for _, market := range overview.Markets {
+    fmt.Println(market.Symbol, market.LastPrice.Ticks())
+}
+
+---
+
+symbol := "BTC-USDT"
+sub, err := client.MarketData.SubscribeTrades(ctx, &symbol, nil)
+if err != nil { log.Fatal(err) }
+defer sub.Close()
+select {
+case trade, ok := <-sub.Messages():
+    if !ok { log.Fatal(sub.Err()) }
+    fmt.Println(trade)
+case <-ctx.Done():
+    log.Fatal(ctx.Err())
+}
+
+---
+
+symbol := "BTC-USDT"
+tif := "gtc"
+clientOrderID := fmt.Sprintf("quickstart-%d", time.Now().UnixNano())
+price := models.PriceFromDecimal("50000")
+result, err := client.Orders.Create(ctx, models.CreateOrderRequest{
+    Symbol:        &symbol,
+    Side:          "buy",
+    OrderType:     "limit",
+    TIF:           &tif,
+    Qty:           models.QtyFromDecimal("0.001"),
+    Price:         &price,
+    PostOnly:      true,
+    ClientOrderID: &clientOrderID,
+}, nil)
+if err != nil { log.Fatal(err) }
+fmt.Println(result.Status, result.OrderID) // Status == "accepted" (admission ack)
+
+_, err = client.Orders.Cancel(ctx, nil, nil, &clientOrderID, &symbol, nil, nil)

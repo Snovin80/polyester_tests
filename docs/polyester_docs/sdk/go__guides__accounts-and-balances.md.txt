@@ -1,0 +1,39 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/guides/accounts-and-balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+## Funding vs trading
+Ledger balances have separate **funding** and **trading** buckets per asset.
+- An external deposit can stop in **funding** or continue to **trading**, depending on its route
+- Spot orders spend **trading**
+- Move funding → trading on-chain (or via the Polyester UI), not through a ConnectRPC balance call
+Balance component fields are scaled integer strings. Format with `codecs.FormatLedgerU128`.
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/codecs"
+balances, err := client.Balances.List(ctx, nil, nil)
+if err != nil { log.Fatal(err) }
+for _, b := range balances.Balances {
+funding, err := codecs.FormatLedgerU128(b.Funding, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+trading, err := codecs.FormatLedgerU128(b.Trading, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+available, err := codecs.FormatLedgerU128(b.Available, codecs.LedgerScale)
+if err != nil { log.Fatal(err) }
+fmt.Println(b.AssetID, funding, trading, available)
+}
+```
+Also: balance/equity history, holds, and `Balances.Subscribe` (`Messages()`). See [Balances](https://testnet.polyester.com/docs/sdk/go/reference/balances).
+## Account scope
+Pass an `AccountScope` / `subAccountID`, or set `DefaultSubAccountID` / `DefaultAccountID` on `Config`. Private streams need Account ID.
+## Subaccounts & policies
+The Go SDK exposes subaccount **reads** plus private subaccount streams. `client.Policies` is subscribe-only. Create/update/delete and membership or policy administration require the Polyester app/TypeScript session client.
+A subaccount-scoped API key also needs its own attached API-key policy. Permit ledger reads for balance reads/streams and add the required trading actions for mutations. The API-key policy and subaccount policy are distinct and both constrain the request.
+## Profile & API keys
+`client.Auth` and `client.APIKeys` cover identity and key metadata. Unary reads work with an API key; the private administration stream requires its API-key administration permission. **Creating** keys is JWT/session-only.
+## Transfer history
+`client.Transfers` lists transfer history. Mutations: [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/go/guides/deposits-and-withdrawals).
+> **Private realtime**
+>
+> Use `Messages()`. Go has no `Recv()`. See [Streaming](https://testnet.polyester.com/docs/sdk/go/guides/streaming).

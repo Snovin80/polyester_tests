@@ -1,0 +1,294 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/ledger.read.v1.LedgerReadService/GetBalanceHistory
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+ledger.read.v1.LedgerReadService
+GetBalanceHistory
+Retrieve balance history buckets for an account.
+Supports optional subaccount, range, asset, and account-code filters.
+Copy URL
+Method
+POST
+Path
+ledger.read.v1.LedgerReadService/GetBalanceHistory
+Service
+ledger.read.v1.LedgerReadService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+ledger.read.v1.LedgerReadService/GetBalanceHistory
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/ledger.read.v1.LedgerReadService/GetBalanceHistory' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"accountCodes": [
+"FUNDING"
+],
+"ledger": 1,
+"range": "DAY_1",
+"subaccountId": "6789012345678"
+}'
+Responses
+"bucket": "1m",
+"endTsSec": 1735689600,
+"points": 1,
+"range": "DAY_1",
+"series": [
+"accountCode": "FUNDING",
+"assetId": 100,
+"balanceQ": [
+"1"
+]
+}
+],
+"startTsSec": 1735689600
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+ledger.read.v1.GetBalanceHistoryRequest
+Response
+ledger.read.v1.GetBalanceHistoryResponse
+Request body
+Form
+JSON
+Example
+subaccountId
+string (fixed64)
+Optional sub-account to scope balances to. If omitted, balances are
+returned for the authenticated root account derived from the JWT or API
+key. The logical account id itself is always derived from the caller's JWT
+or API key, not from this payload.
+range
+enum
+must be defined value
+History window to return. When unset/UNSPECIFIED, defaults to 1D.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s358" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+DAY_1
+ledger
+integer (int32)
+Optional public asset filter. When unset/0, returns all assets.
+accountCodes
+enum[]
+Optional subset of account buckets to return. When empty, returns all
+account buckets.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md rounded-r-none text-sm" id="bits-s360" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+FUNDING
+Add item
+Response
+Form
+JSON
+range
+enum
+Resolved history window.
+DAY_1
+DAY_7
+DAY_30
+DAY_90
+DAY_180
+DAY_365
+bucket
+string
+Sampling interval between points, such as "5m" or "1h".
+startTsSec
+integer (int32)
+First point timestamp in seconds since epoch (UTC).
+endTsSec
+integer (int32)
+Last point timestamp in seconds since epoch (UTC).
+points
+integer (int32)
+Number of aligned points in each returned series.
+series
+object[]
+Balance series ordered by asset ID, then account bucket.
+3 fields
+assetId
+integer (int32)
+public unified asset id
+accountCode
+enum
+account bucket
+FUNDING
+TRADING
+balanceQ
+string[] (uint64)
+Chart balance in asset units scaled by 1e7 (7 decimals).
+Values are downscaled from 18-decimal ledger balances for compact charting
+and align 1:1 with implicit timestamps.
+Possible errors
+Possible errors: 16
+Key
+Status
+Error
+When
+api-key-action-deny
+403
+API Key Policy Denied
+API key policy does not allow this read action.
+api-key-policy-not-found
+404
+API Key Policy Not Found
+API key policy was not found.
+api-key-policy-required
+400
+API Key Policy Required
+API key policy is required for ledger reads.
+api-key-root-scope-only
+400
+API Key Root Scope Only
+This API key is scoped to the root account and cannot read sub-accounts.
+api-key-subaccount-mismatch
+400
+API Key Sub-account Mismatch
+This API key is bound to a different sub-account.
+api-key-unknown
+400
+API Key Unknown
+The authenticated API key has no metadata entry in the API key store.
+ip-not-allowed
+401
+API Key IP Not Allowed
+API key is not authorized from this IP address.
+key-disabled
+401
+API Key Disabled
+API key is disabled.
+key-expired
+401
+API Key Expired
+API key has expired.
+missing-headers
+401
+Missing API Key Headers
+Missing required API key authentication headers.
+role-action-deny
+403
+Role Denied
+Your role does not allow this read action.
+signature-invalid
+401
+Invalid API Key Signature
+API key signature is invalid.
+subaccount-policy-deny
+403
+Sub-account Policy Denied
+Sub-account policy does not allow this read action.
+subaccount-read-forbidden
+403
+Sub-account Read Forbidden
+You do not have permission to read this sub-account.
+timestamp-skew
+400
+API Key Timestamp Skew
+API key timestamp is outside the allowed skew window.
+unauthenticated
+401
+Unauthenticated
+Ledger reads require a valid bearer JWT or signed API-key request.
+POST
+ledger.read.v1.LedgerReadService/GetBalanceHistory
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s388" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/ledger.read.v1.LedgerReadService/GetBalanceHistory' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"accountCodes": [
+"FUNDING"
+],
+"ledger": 1,
+"range": "DAY_1",
+"subaccountId": "6789012345678"
+}'
+Responses
+"bucket": "1m",
+"endTsSec": 1735689600,
+"points": 1,
+"range": "DAY_1",
+"series": [
+"accountCode": "FUNDING",
+"assetId": 100,
+"balanceQ": [
+"1"
+]
+}
+],
+"startTsSec": 1735689600
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/ledger.read.v1.LedgerReadService/GetBalanceHistory' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "accountCodes": [
+    "FUNDING"
+  ],
+  "ledger": 1,
+  "range": "DAY_1",
+  "subaccountId": "6789012345678"
+}'
+
+---
+
+{
+  "bucket": "1m",
+  "endTsSec": 1735689600,
+  "points": 1,
+  "range": "DAY_1",
+  "series": [
+    {
+      "accountCode": "FUNDING",
+      "assetId": 100,
+      "balanceQ": [
+        "1"
+      ]
+    }
+  ],
+  "startTsSec": 1735689600
+}

@@ -1,0 +1,156 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/layouts/templates/owner_id/template_id/versions
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LayoutService
+List Layout Template Versions
+List immutable versions for a layout template.
+Copy URL
+Method
+GET
+Path
+/v1/layouts/templates/{owner_id}/{template_id}/versions
+Visibility
+Public endpoint
+GET
+/v1/layouts/templates/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/layouts/templates/1/1/versions' \
+--header 'Accept: */*'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"versions": [
+"changelog": "Initial public release.",
+"createdAtMs": "1",
+"version": 1
+}
+]
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+owner_id
+string (int64)
+required
+Viewer that owns the template.
+template_id
+string (int64)
+required
+Template identifier.
+Query parameters
+limit
+integer
+≤ 500
+Maximum number of versions to return. Defaults to 100 when omitted; maximum
+is 500.
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to owner, template, and newest-version sort order.
+Response
+Form
+JSON
+versions
+object[]
+Template versions, returned newest version first.
+3 fields
+version
+integer (int32)
+Immutable template version number.
+Example
+1
+changelog
+string
+Optional release notes for this version.
+Example
+Initial public release.
+createdAtMs
+string (fixed64)
+Version creation time in milliseconds since epoch (UTC).
+Example
+1
+nextPageToken
+string
+Opaque cursor for the next page. Empty when no more results exist.
+Example
+eyJvZmZzZXQiOjIwMH0
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/layouts/templates/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s362" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/layouts/templates/1/1/versions' \
+--header 'Accept: */*'
+Responses
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+"versions": [
+"changelog": "Initial public release.",
+"createdAtMs": "1",
+"version": 1
+}
+]
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/layouts/templates/1/1/versions' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0",
+  "versions": [
+    {
+      "changelog": "Initial public release.",
+      "createdAtMs": "1",
+      "version": 1
+    }
+  ]
+}

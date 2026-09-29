@@ -1,0 +1,168 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/orderbook/symbol
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+OrderbookService
+Get Order Book
+Retrieve a spot order book depth snapshot for a symbol. Bids are ordered best price first (descending), asks are ordered best price first (ascending), and each level is returned as a [price, quantity] tuple of decimal strings.
+Copy URL
+Method
+GET
+Path
+/v1/orderbook/{symbol}
+Visibility
+Public endpoint
+GET
+/v1/orderbook/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s313" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/orderbook/BTC-USDT?depth=50' \
+--header 'Accept: */*'
+Responses
+"asks": [
+"0.005",
+"100000"
+]
+],
+"bids": [
+"0.005",
+"100000"
+]
+],
+"bookSeq": "984321",
+"symbol": "BTC-USDT",
+"ts": 1735689600000
+}
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Path parameters
+Example
+symbol
+string
+required
+Trading pair symbol, e.g. BTC-USDT.
+Query parameters
+Example
+depth
+enum
+must be defined value
+Number of price levels per side. Defaults to 50 when omitted.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="s335-depth" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+Select depth
+Response
+Form
+JSON
+asks
+string[]
+Best ask first; ascending price. Empty when there is no current liquidity.
+Example
+bids
+string[]
+Best bid first; descending price. Empty when there is no current liquidity.
+Example
+bookSeq
+string
+/^[0-9]+$/
+Monotonic book sequence for this symbol.
+Example
+984321
+symbol
+string
+Trading pair symbol, e.g. BTC-USDT.
+Example
+BTC-USDT
+ts
+integer (int64)
+Snapshot timestamp as Unix epoch milliseconds.
+Example
+1735689600000
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/orderbook/
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s356" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/orderbook/BTC-USDT?depth=50' \
+--header 'Accept: */*'
+Responses
+"asks": [
+"0.005",
+"100000"
+]
+],
+"bids": [
+"0.005",
+"100000"
+]
+],
+"bookSeq": "984321",
+"symbol": "BTC-USDT",
+"ts": 1735689600000
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/orderbook/BTC-USDT?depth=50' \
+  --header 'Accept: */*'
+
+---
+
+{
+  "asks": [
+    [
+      "0.005",
+      "100000"
+    ]
+  ],
+  "bids": [
+    [
+      "0.005",
+      "100000"
+    ]
+  ],
+  "bookSeq": "984321",
+  "symbol": "BTC-USDT",
+  "ts": 1735689600000
+}

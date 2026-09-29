@@ -1,0 +1,48 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/guides/authentication.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API Keys
+Authenticate bots, scripts, and backend services with an Ed25519 API key.
+An API key is an Ed25519 keypair for authenticating a bot, script, or backend service with `PolyesterClient`. The secret never leaves your process. The SDK signs each request locally and sends `X-API-KEY-ID`, `X-API-TIMESTAMP`, and `X-API-SIGNATURE`.
+For browser apps, see [Wallet Login](https://testnet.polyester.com/docs/sdk/typescript/guides/authentication/wallet-login). For the underlying model, see [Authentication model](https://testnet.polyester.com/docs/sdk/typescript/concepts/authentication-model).
+## Create a key
+Generate the keypair client-side. Register only the public key. You need an already authenticated client, either a browser session or an existing key, to create a new key:
+```ts
+const { publicKey, secretKey } = await client.apiKeys.generateKeypair();
+const apiKey = await client.apiKeys.create({
+label: "trading-bot",
+publicKeyEd25519: publicKey.bytes,
+ipWhitelist: ["203.0.113.7/32"], // optional
+});
+// Persist `0x${secretKey.hex}` somewhere safe. The SDK never sends it.
+console.log(apiKey?.keyId, `0x${secretKey.hex}`);
+```
+A newly created key has no policy. `auth.me` works; trading, order reads, and ledger reads throw `PermissionError` until you attach one. Create and assign it from an interactive session (wallet login), not from the new key. The key itself cannot call `apiKeys.policies.*`.
+```ts
+await client.apiKeys.policies.create({
+name: "trading-bot",
+spotMarketScope: "all",
+actions: ["read-balances", "read-spot", "trade-spot"],
+assignToKeyId: apiKey?.keyId,
+});
+```
+Policies control spot-market scopes and allowed actions. Use `spotMarketScope: "allowlist"` with `spotMarkets: [{ symbolId }]` to restrict a key to selected markets.
+> **MFA step-up**
+>
+> Depending on account settings, `apiKeys.create` may throw `StepUpRequiredError`. Complete an MFA challenge and retry with `options.stepUpToken`. See [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling).
+## Use the key
+```ts
+import { PolyesterClient, POLYESTER_TESTNET_ENVIRONMENT, evmHexToBytes } from "@polyester/sdk";
+const client = new PolyesterClient({
+environment: POLYESTER_TESTNET_ENVIRONMENT,
+auth: {
+kind: "api-key-ed25519",
+getKeyId: () => process.env.POLYESTER_API_KEY_ID ?? null,
+getSecretKey: () => evmHexToBytes(process.env.POLYESTER_API_SECRET_HEX ?? "0x"),
+},
+});
+const me = await client.auth.me();
+console.log("authenticated as", me.username, me.apiKeyId);
+```
+Both getters may return promises, so secrets-manager lookups work. `evmHexToBytes` requires a `0x` prefix; `secretKey.hex` from `generateKeypair` does not include one. Scope keys with policies (`client.apiKeys.policies`), including market allowlists, action lists, and notional limits. For an API-key request, `me.apiKeyId` is the stable public `ak_...` handle.

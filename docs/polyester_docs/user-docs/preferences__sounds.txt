@@ -1,0 +1,199 @@
+Источник: https://testnet.polyester.com/docs/user-docs/preferences/sounds
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Sounds · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Preferences
+svg]:size-3.5">
+/
+Sounds
+Sounds
+Copy page
+View as Markdown
+Open in
+Sound settings control the audio feedback you hear while using Polyester. Turn everything on or off at once, then adjust each type of sound separately.
+Open
+Audio Settings
+to choose your levels and preview the result.
+Interactive
+Enable audio
+Turn
+Enable audio
+off when you want Polyester to stay silent. Your individual volume choices remain saved for the next time you turn audio on.
+Set the overall volume
+Master volume controls the overall level for every Polyester sound. Start here, then fine-tune the categories underneath it.
+Adjust each category
+Notifications
+controls sounds for account and product alerts.
+UI sounds
+controls feedback from buttons and other interface actions.
+Voice alerts
+controls supported spoken updates.
+Use the play button beside a category to hear its current level.
+Choose a sound pack
+Sound packs change the style of supported Polyester sounds without changing which alerts you receive. Choose a pack and use the preview before keeping it.
+If nothing plays, check Enable audio, Master volume, the category level, your device output, and whether the browser tab is muted.
+Related Topics
+Overview
+Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+Appearance
+Choose your theme, colors, and typeface.
+Language & Region
+Choose how Polyester displays language, dates, times, currencies, and numbers.
+Notifications
+Choose which Polyester updates you receive and how they appear.
+Balances
+Hide account amounts on screen without changing the balances themselves.
+Footer
+Choose what appears in the ticker at the bottom of the trading screen.
+Previous
+Language & Region
+Next
+Notifications
+On this page
+Enable audio
+Set the overall volume
+Adjust each category
+Choose a sound pack
+Related Topics
+Share this page
+Sounds
+Control Polyester sound effects, alerts, and volume levels.
+Share
+Copy Link

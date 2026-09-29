@@ -1,0 +1,178 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/concepts/environments
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Environments · Go SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Go
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Go
+svg]:size-3.5">
+/
+Concepts
+svg]:size-3.5">
+/
+Environments
+Environments
+Copy page
+View as Markdown
+Open in
+Pass the testnet preset on every client:
+client
+,
+err
+polyester
+New
+(
+polyester
+Config
+Environment
+&
+polyester
+TestnetEnvironment
+,
+})
+polyester.TestnetEnvironment
+targets Polyester
+testnet
+Setting
+Value
+API URL
+https://api-testnet.polyester.com
+WebSocket URL
+wss://api-testnet.polyester.com
+RPC URL
+https://rpc.polyester.live
+Chain ID
+888169
+Name
+polyester-testnet
+The environment keeps API, WebSocket, RPC, and contract pins together.
+Config.APIURL
+/
+Config.WSURL
+remain transport overrides. For custom or VPC endpoints, build a complete
+environment with
+polyester.CreateEnvironment
+or
+polyester.TestnetEnvironment.WithURLs
+Scripts using
+polyester.FromEnv()
+select the preset with
+POLYESTER_ENV=testnet
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+override the transport URLs.
+On-chain Funding helpers in the
+chain
+package take the same preset for contract addresses, RPC,
+and account-abstraction endpoints. See
+Chain helpers
+and
+Funds & Transfers
+Do not hard-code production URLs until your account team confirms the production API host.
+Related Topics
+Architecture
+How the API-key SDK layers ConnectRPC, realtime, catalogs, and services.
+Authentication model
+Ed25519 API-key request signing for ConnectRPC and private realtime channels.
+Catalog & precision
+Spot/Zipper catalogs, decimal strings, and scaled-integer inputs.
+Requests & idempotency
+Go call conventions, context cancellation, and idempotency keys for orders and triggers.
+Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Previous
+Architecture
+Next
+Authentication model
+On this page
+Related Topics
+Share this page
+Environments
+Testnet endpoints and how to point the client at another deployment.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+client, err := polyester.New(polyester.Config{
+    Environment: &polyester.TestnetEnvironment,
+})

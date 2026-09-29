@@ -1,0 +1,94 @@
+Источник: https://testnet.polyester.com/docs/user-docs/start/create-account.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Create Your Account
+Choose how to sign in, create your non-custodial Main Account, and protect the wallet that controls it.
+Your Polyester account is controlled by one **non-custodial owner wallet**. You can create an embedded wallet with Google or email, or connect a wallet you already control through MetaMask, Rabby, Phantom, or WalletConnect.
+## Overview
+The wallet address becomes the **owner credential** for your account. Your first successful sign-in creates a **Main Account**, and the same owner wallet opens it on future visits.
+Every Main Account and Subaccount also receives its own **Safe smart account** on Polyester Chain. The owner wallet controls that smart account, so protecting the wallet protects access to your Polyester account and funds.
+Polyester does not create a separate username and password. You can add a username from [Profile](https://testnet.polyester.com/account/profile) when that field is available, but it is display information rather than a sign-in credential.
+> Polyester never holds your private keys. Only your owner wallet can open the account and authorize its activity.
+## Create your account
+The options on the [Create Account screen](https://testnet.polyester.com/login) work for both account creation and future sign-ins. Choose a method you can protect and recover over the long term. Each path creates or opens the Main Account tied to that owner wallet.
+## Google or email
+Google or email Embedded wallet
+Google and email create an embedded non-custodial owner wallet through [Turnkey](https://docs.turnkey.com/security/non-custodial-key-mgmt). Your Google identity or email is how you return to that wallet. Use the same identity every time. A different Google account or email address can create or open a different Polyester account.
+1. Choose Google or Email
+Select Google or Email on the Create Account screen. Both options create an embedded non-custodial owner wallet through Turnkey. [Connect with Google](https://testnet.polyester.com/login)
+![Welcome to Polyester login with Google, wallet, and email options](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/3050de0761371b593ef6a98195d27f8edd2d2e76bb85c47b50e1fc01590f6fca/source.webp)
+2. Verify the identity
+Continue with Google or enter the verification code sent to your email address.
+3. Open your Main Account
+Polyester creates the Main Account and opens it with the embedded owner wallet.
+Turnkey stores the embedded wallet's private key in encrypted form and decrypts it only inside secure enclaves for authorized signing. Polyester does not receive the raw private key during account use.
+You can export the private key through the Polyester interface. The key is revealed only during that export, and Polyester is not notified when you request it.
+> **Keep exported private keys safe**
+>
+> Store an exported private key securely and never share it. Anyone with the key may be able to control the wallet and its Polyester account.
+## Browser wallet
+Browser wallet
+Use MetaMask, Rabby, or Phantom if you already control a browser wallet. The active address becomes the owner credential for your Main Account. Private keys and recovery stay inside the selected wallet. Return with the same wallet and address.
+1. Choose a wallet
+Select MetaMask, Rabby, or Phantom on the Create Account screen. [Connect a wallet](https://testnet.polyester.com/login)
+2. Confirm the address
+Unlock the wallet and confirm that the address you want to use is active.
+3. Sign in
+Review and sign the authentication message to prove that you control the address. Polyester then creates or opens the Main Account tied to that wallet.
+![MetaMask signature request to sign in](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/72ca87681c33e1f9d68c7a4327a72dfeacf49bf90fb726ff9678d3777afb9762/source.webp)
+The authentication signature proves control of the wallet address. It does not transfer an Asset, approve spending, or require a seed phrase or private key.
+Signing in is an off-chain action and costs no gas. It also does not deploy the Safe smart account. Polyester deploys the Safe with the account's first Deposit on Polyester Chain.
+## WalletConnect
+WalletConnect Desktop or mobile
+WalletConnect connects another compatible desktop or mobile wallet. Approve the connection in that wallet, then sign in with its active address. Private keys stay in the wallet you connect.
+1. Choose WalletConnect
+Select WalletConnect on the Create Account screen. [Connect with WalletConnect](https://testnet.polyester.com/login)
+2. Approve the connection
+Pick the desktop or mobile wallet and approve the WalletConnect request there.
+![WalletConnect QR code and waiting for approval](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/f51ad853916ace18b4bcc01fee75f29295aea24acf86d89fc17b37c4ee8b2dfe/source.webp)
+3. Sign in
+Review and sign the authentication message in the connected wallet. Polyester then creates or opens the Main Account tied to that address.
+The authentication signature proves control of the wallet address. It does not transfer an Asset, approve spending, or require a seed phrase or private key.
+Signing in is an off-chain action and costs no gas. It also does not deploy the Safe smart account. Polyester deploys the Safe with the account's first Deposit on Polyester Chain.
+## Confirm your Main Account
+Account creation is complete when Polyester opens your Main Account. The account menu shows the current owner identity and Safe smart account, so you can confirm which account is active.
+1. Open the account menu
+View the authenticated Main Account and the identity used to sign in.
+![Account menu with Main Account identity and Security](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/932bb881ffc3992e709def65dc97bb5d1e88bf3f7d4912fbe2321483ef3946da/source.webp)
+2. View the smart account address
+This address identifies the account's activity on Polyester Chain.
+3. Confirm the account
+Compare the identity and smart account address with your records before making a Deposit.
+> **Missing balances can mean the wrong account**
+>
+> If the expected balances are missing, stop before depositing again. Sign out and return with the exact wallet address, Google identity, or email address used to create the Main Account.
+## Protect your owner wallet
+The owner wallet controls your Main Account and authorizes its chain-visible activity. Polyester does not hold its private keys and cannot replace the wallet's own recovery method.
+| Sign-in path                | Where the private key is protected                                            | What the user must protect                                    |
+| --------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| MetaMask, Rabby, or Phantom | Inside the selected wallet                                                    | The wallet, device access, and its recovery keys              |
+| WalletConnect               | Inside the wallet connected through WalletConnect                             | The connected wallet, device access, and its recovery keys    |
+| Google or email             | Stored as an encrypted private key by Turnkey and used inside secure enclaves | The exact Google identity or mailbox and its recovery methods |
+Add [MFA and recovery methods](https://testnet.polyester.com/docs/user-docs/account/access-and-security/mfa-and-recovery-codes) before funding the account. Polyester MFA protects sensitive account actions, but it does not replace the owner wallet or its recovery method.
+Your original owner credential remains tied to the Main Account. Polyester does not currently provide a general flow to link another sign-in method, replace or unlink the owner credential, or close or delete the Main Account. Protect and reuse the exact method selected during account creation.
+> **Keep recovery keys private**
+>
+> Polyester support will never ask for a seed phrase, private key, email verification code, or MFA recovery code. Anyone who obtains these recovery keys may be able to control the account.
+## FAQ
+### Does Polyester require KYC?
+No. Polyester does not require identity verification to use the platform. All you (or your AI agent) need is a supported crypto wallet, Google account, or email to create an account, deposit, trade, and withdraw.
+### Which wallets can I use to create an account?
+The Create Account screen supports MetaMask, Rabby, and Phantom directly. WalletConnect can connect another compatible desktop or mobile wallet. The selected wallet address becomes the owner credential for the Main Account. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Who creates the wallet when I use Google or email?
+Turnkey creates and secures the embedded non-custodial owner wallet. Google verifies your selected Google account, while email sign-in verifies access to your selected inbox. You use that Turnkey wallet to create or sign back into your Polyester Main Account. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Who controls my wallet and assets when I use Polyester?
+You own your Polyester smart account and control the wallet that authorizes it. Polyester does not hold or control that wallet’s private keys. Your deposited assets remain yours, while their custody and movement are handled through Polyester’s account systems and Zipper. This applies whether you connect an existing wallet or use an embedded wallet created through Google or email.
+### Where are my private keys stored?
+With MetaMask, Rabby, Phantom, or WalletConnect, the private keys remain with you and your connected wallet. With Google or email, Turnkey stores the encrypted private key and decrypts it only inside secure enclaves for authorized signing. Polyester does not receive the raw private key in either path. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Does every account get a smart account?
+Yes. Every Main Account and Subaccount receives its own smart account. This smart account represents your Polyester account on-chain, while your owner credentials control it. [Learn about account creation.](https://testnet.polyester.com/docs/user-docs/start/create-account)
+### Can I link another wallet or sign-in method to my existing account?
+Not currently. Your Polyester account is tied to its owner wallet. Signing in with a different wallet address, Google account, or email address will sign you into a different account instead of adding another way to access the existing one.
+### Can I export the wallet created when I signed up with Google or email?
+Yes. You can export the seed phrase or private key for the embedded wallet created by Turnkey when you signed up with Google or email. Exporting it is not required to use Polyester. Keep it as a secure offline backup. Anyone with this information can control your Turnkey wallet and therefore your Polyester account. So never share it, including with support.

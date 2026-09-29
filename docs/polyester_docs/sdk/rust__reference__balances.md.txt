@@ -1,0 +1,73 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Balances
+List ledger balances via GetBalancesRequest, history, holds, and private subscribe.
+`client.balances` reads ledger balances. Unlike Python/Go convenience signatures, **`list` takes a proto `GetBalancesRequest`**.
+Balance fields are **already scaled integer** decimal strings on the wire (ledger u128 at the asset’s ledger scale, typically 18). Decode once: pass the string into `format_ledger_u128` for display. Do **not** multiply by `1e18` again. Use `format_ledger_u128` for the full wire range; `format_ledger_u64` remains available for values already known to fit in `u64`.
+> **Spot orders spend trading balance**
+>
+> An external deposit can stop in **funding** or continue to **trading**, depending on its route. Spot orders and holds use trading balance. Funding to trading is on-chain / wallet-driven, not a ConnectRPC balance write.
+## Methods
+| Method                | Summary                                           |
+| --------------------- | ------------------------------------------------- |
+| `list`                | `GetBalancesRequest` → `BalancesList`             |
+| `get_balance_history` | `GetBalanceHistoryRequest`                        |
+| `get_equity_history`  | `GetEquityHistorySeriesRequest`                   |
+| `list_holds`          | `ListHoldsRequest`                                |
+| `list_transfers`      | `ListTransfersRequest` (also on balances in Rust) |
+| `subscribe`           | Private balance stream (`recv_result`)            |
+### List
+```rust
+use polyester::proto::ledger::read::v1::GetBalancesRequest;
+let list = client.balances.list(GetBalancesRequest::default()).await?;
+for b in list.balances {
+println!(
+"{} trading={} available={}",
+b.asset_id,
+polyester::codecs::scalars::format_ledger_u128(&b.trading, 18)?,
+polyester::codecs::scalars::format_ledger_u128(&b.available, 18)?,
+);
+}
+let scoped = client.balances.list(GetBalancesRequest {
+subaccount_id: Some(123),
+}).await?;
+```
+`AssetBalance`: `asset_id`, `trading`, `funding`, `reserved`, `available`, `trading_revision`, `funding_revision`.
+### Balance and hold history
+```rust
+use polyester::proto::ledger::read::v1::{
+GetBalanceHistoryRequest, GetEquityHistorySeriesRequest, ListHoldsRequest,
+};
+let hist = client.balances.get_balance_history(GetBalanceHistoryRequest {
+// set range / ledger / account_codes as needed
+}).await?;
+// Each series exposes balance_q as Vec
+and account_code as raw i32,
+// preserving the complete wire values, including unknown future enum codes.
+let equity = client.balances.get_equity_history(GetEquityHistorySeriesRequest {
+}).await?;
+let holds = client.balances.list_holds(ListHoldsRequest {
+limit: 50,
+}).await?;
+```
+> **Hold-route availability is host-specific**
+>
+> The typed `list_holds` wrapper can be present in the SDK while the target host does not mount its RPC. Some deployments may return `Error::RouteNotFound`. That result describes host capability/deployment configuration, not an SDK implementation failure; use the method only against an environment that exposes the route.
+### Subscribe
+```rust
+let mut sub = client
+while let Some(b) = sub.recv_result().await? {
+println!(
+"{} available={}",
+b.asset_id,
+polyester::codecs::scalars::format_ledger_u128(&b.available, 18)?,
+);
+break;
+}
+```
+Streamed balance components use the same raw ledger `u128` representation as snapshots.
+## Related
+- [Accounts & balances](https://testnet.polyester.com/docs/sdk/rust/guides/accounts-and-balances)
+- [Realtime](https://testnet.polyester.com/docs/sdk/rust/reference/realtime)

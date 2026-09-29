@@ -1,0 +1,126 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/triggers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Triggers
+Create, manage, pause/resume, and stream standalone trigger automations with the Go TriggersService.
+`client.Triggers` manages standalone automations that place a child order when a condition fires. Types: `stop_loss`, `take_profit`, `trailing_stop`, `twap`, `ladder`.
+> **post\_only**
+>
+> `postOnly` on conditional children is only valid for limit GTC.
+## Methods
+| Method                          | Summary                                  |
+| ------------------------------- | ---------------------------------------- |
+| `Create`                        | Create any of the five trigger types.    |
+| `Get`                           | Fetch one trigger (`*models.Trigger`).   |
+| `List`                          | List with symbol / status filters.       |
+| `Modify`                        | Patch via `codecs.ModifyTriggerOptions`. |
+| `Cancel` / `Pause` / `Resume`   | Lifecycle controls.                      |
+| `ListEvents`                    | List paginated lifecycle events.         |
+| `Subscribe` / `SubscribeEvents` | Private streams (`Messages()`).          |
+### Create
+```go
+import "github.com/Fabric-Labs/polyester-sdk-go/codecs"
+symbol := "BTC-USDT"
+triggerPrice := models.PriceFromDecimal("60000")
+qty := models.QtyFromDecimal("0.25")
+clientTriggerID := "sl-001"
+result, err := client.Triggers.Create(
+ctx,
+nil, // account scope
+symbol,
+"stop_loss",
+&triggerPrice,
+"sell",
+qty,
+"market",
+nil,    // limitPrice
+"last", // triggerPriceSource, accepted for compat, ignored (not on wire)
+"ioc",  // market children execute as market-IOC; tif unused for market
+nil,    // subAccountID
+&clientTriggerID,
+false, // postOnly, limit GTC children only; rejected otherwise
+codecs.CreateTriggerOptions{},
+)
+```
+Trailing / TWAP / ladder fields go in `codecs.CreateTriggerOptions` (`TrailingDistanceTicks`, `TrailingDistanceBps`, `ActivationPrice`, `MaxSlippage*`, `TwapDurationMs`, `TwapSliceIntervalMs`, `LadderPriceMin` / `Max` / `Levels` / `Distribution`, `FeeAsset`, `SelfTradePreventionMode`). Trailing stops are always **SELL market-IOC**. Pass `side="sell"`; the SDK rejects BUY rather than silently changing intent. `orderType`, `tif`, and `postOnly` do not alter this strategy.
+Returns `models.TriggerMutationResult` (`TriggerID`, `Status`). Create synthesizes `Status: "accepted"` (admission only). Pause / resume / cancel / modify return lifecycle labels such as `armed`, `paused`, `cancelled`.
+`clientTriggerID` is optional and the Go SDK does not auto-generate it. Supply and persist a stable value when a create may be retried or reconciled after an unknown outcome.
+### Strategy capability matrix
+| Strategy                    | Side                         | Child execution             | Required fields                              | Pause / Resume / Cancel / Modify                                     |
+| --------------------------- | ---------------------------- | --------------------------- | -------------------------------------------- | -------------------------------------------------------------------- |
+| `stop_loss` / `take_profit` | buy or sell                  | market-IOC or limit (+ TIF) | `triggerPrice`                               | Supported (generic lifecycle helpers)                                |
+| `trailing_stop`             | **sell only** (BUY rejected) | always SELL market-IOC      | trailing distance ticks or bps               | Supported; Modify patches distance / activation / slippage           |
+| `twap`                      | buy or sell                  | sliced market               | TWAP duration + slice interval               | Supported; server may reject lifecycle ops that do not apply mid-run |
+| `ladder`                    | buy or sell                  | multi-level limit           | ladder min/max/levels; distribution `linear` | Supported; server may reject lifecycle ops that do not apply mid-run |
+Ladder entry quantity is not guaranteed to equal the sum of child limit sizes after step / fee rounding. Child aggregate qty may be lower than the requested entry. TWAP / ladder creates are **not** guaranteed bulk atomic placement of every child; if a mid-run lifecycle op is rejected or children land partially, fall back to single-order placement and explicit cleanup of residual children / open orders. Pause may be rejected for TWAP even when pause appears in generic lifecycle helpers.
+The SDK exposes Pause/Resume/Cancel/Modify for any trigger ID. Strategy-specific restrictions are enforced by the API.
+### Public IDs
+`TriggerID` values returned by Create, List, and subscriptions are **base58** encodings of the underlying uint64 (not bare decimal). Pass them back as strings to `Get` / `Pause` / `Resume` / `Cancel` / `Modify` / `ListEvents`. Use `codecs.IDToInt` / `codecs.FormatID` when you need the integer form. See [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids).
+Canonical base58 can itself contain only digits. `IDToInt` first recognizes canonical base58 round-trips before treating an all-digit string as legacy decimal; do not parse returned IDs with `strconv.ParseUint`.
+### Manage
+```go
+trigger, err := client.Triggers.Get(ctx, nil, result.TriggerID, nil)
+var pageToken *string
+for {
+listed, err := client.Triggers.List(ctx, nil, nil, &symbol, []string{"created", "armed"}, 50, pageToken)
+if err != nil { log.Fatal(err) }
+// Unknown status labels error, they do not silently return empty.
+for _, t := range listed.Triggers {
+fmt.Println(t.Status, t.TriggerID)
+}
+if listed.NextPageToken == "" {
+break
+}
+tok := listed.NextPageToken
+pageToken = &tok
+}
+newTrig := models.PriceFromDecimal("59500")
+_, err = client.Triggers.Modify(ctx, nil, result.TriggerID, nil, codecs.ModifyTriggerOptions{
+TriggerPrice: &newTrig,
+})
+_, err = client.Triggers.Pause(ctx, nil, result.TriggerID, nil)
+_, err = client.Triggers.Resume(ctx, nil, result.TriggerID, nil)
+_, err = client.Triggers.Cancel(ctx, nil, result.TriggerID, nil)
+```
+Status vocabulary: `created`, `armed`, `running`, `completed`, `cancelled`, `failed`, `paused`.
+### ListEvents
+```go
+fired := "fired" // optional filter: fired | canceled | updated
+var eventPage *string
+for {
+events, err := client.Triggers.ListEvents(ctx, nil, result.TriggerID, nil, 20, &fired, eventPage)
+if err != nil { log.Fatal(err) }
+for _, ev := range events.Events {
+fmt.Println(ev.TriggerID, ev.EventType, ev.ChildOrderID, ev.FirePrice, ev.TsNs)
+}
+if events.NextPageToken == "" {
+break
+}
+tok := events.NextPageToken
+eventPage = &tok
+}
+```
+Child orders are not on the trigger snapshot. Filter `ListEvents` with `eventType="fired"` and read `ChildOrderID` / `ChildSeq` from each event.
+Decoded `TriggerEvent` exposes `TriggerID`, `SubaccountID`, `SymbolID`, `TriggerType`, `EventType` (`fired` / `canceled` / `updated`), `TsNs`, `ChildSeq`, `ChildOrderID`, `FirePrice`, and `Reason`.
+### Subscribe
+```go
+sub, err := client.Triggers.Subscribe(ctx, accountID)
+defer sub.Close()
+for t := range sub.Messages() {
+fmt.Println(t.Status, t.TriggerID)
+break
+}
+evSub, err := client.Triggers.SubscribeEvents(ctx, accountID)
+defer evSub.Close()
+for ev := range evSub.Messages() {
+fmt.Println(ev.EventType, ev.TsNs)
+break
+}
+```
+## Trigger shape
+Includes `TriggerID`, `Symbol`, `TriggerType`, `Status`, child-order fields (`Side`, `OrderType`, `TimeInForce`, `Qty`, `LimitPrice`, `PostOnly`, …), timestamps, and `Details` (`Case` = `stop` | `trailing` | `twap` | `ladder`).
+For TWAP, `Details.ExecutedQty` populates as slices fire. Right after create it is typically unset until the first child order is placed. Child-order history comes from `ListEvents`.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/go/guides/trading)
+- [Orders](https://testnet.polyester.com/docs/sdk/go/reference/orders)

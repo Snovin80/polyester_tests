@@ -1,0 +1,150 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/triggers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+`client.triggers` is the standalone automation surface. When a trigger’s condition fires, the venue places a child order for you. Methods are authenticated and account-scoped (`account` / `sub_account_id`).
+Unlike attached risk on [`client.orders`](https://testnet.polyester.com/docs/sdk/python/reference/orders), a trigger created here has no parent order: it stands alone against live market data.
+Trigger types (`trigger_type`): `stop_loss`, `take_profit`, `trailing_stop`, `twap`, `ladder`.
+> **post\_only on children**
+>
+> For conditional children, `post_only` is only valid for limit GTC. Market / IOC / FOK children raise `PolyesterValidationError`.
+## Methods
+| Method             | Summary                                         |
+| ------------------ | ----------------------------------------------- |
+| `create`           | Create a trigger of any of the five types.      |
+| `get`              | Fetch one trigger by id, or `None`.             |
+| `list`             | List triggers (symbol / status filters).        |
+| `modify`           | Patch live price, distance, or slippage fields. |
+| `cancel`           | Cancel a trigger by id.                         |
+| `pause` / `resume` | Pause or resume a trigger.                      |
+| `list_events`      | List paginated lifecycle events.                |
+| `subscribe`        | Stream live trigger state (private).            |
+| `subscribe_events` | Stream trigger lifecycle events (private).      |
+### Create
+```python
+result = await client.triggers.create(
+symbol="BTC-USDT",
+trigger_type="stop_loss",
+side="sell",
+qty="0.25",
+order_type="market",
+tif="ioc",  # market children execute as market-IOC; tif is unused for market
+trigger_price="60000",
+client_trigger_id="sl-001",
+)
+print(result.trigger_id, result.status)  # status == "accepted"
+```
+Trailing stop (always **SELL market-IOC**):
+```python
+await client.triggers.create(
+symbol="BTC-USDT",
+trigger_type="trailing_stop",
+side="sell",  # required; BUY is rejected because the wire strategy is SELL-only
+qty="0.25",
+trailing_distance_ticks=500_000_000,  # distance in price ticks
+activation_price="70000",
+max_slippage_bps=50,
+)
+```
+Returns `TriggerMutationResult` (`trigger_id`, `status`). Create responses synthesize `status="accepted"` (admission only, the wire create response no longer carries a lifecycle enum). Pause / resume / cancel / modify return lifecycle labels such as `armed`, `paused`, `cancelled`.
+#### Common child-order fields
+| Field                        | Required    | Notes                                           |
+| ---------------------------- | ----------- | ----------------------------------------------- |
+| `symbol`                     | yes         | e.g. `"BTC-USDT"`                               |
+| `side`                       | yes         | `"buy"` \| `"sell"`                             |
+| `qty`                        | yes         | decimal / `Quantity`                            |
+| `order_type`                 | no          | default `"market"`                              |
+| `tif`                        | no          | default `"gtc"`                                 |
+| `limit_price`                | limit child |                                                 |
+| `post_only`                  | no          | limit GTC only                                  |
+| `fee_asset`                  | no          | `"quote"` \| `"base"` (`base` is BUY-only)      |
+| `self_trade_prevention_mode` | no          | `expire_taker` / `expire_maker` / `expire_both` |
+| `client_trigger_id`          | no          | Idempotency key                                 |
+| `account` / `sub_account_id` | no          | Scope                                           |
+#### Per-type fields
+- **`stop_loss` / `take_profit`**: `trigger_price`. `trigger_price_source` is accepted for API compat but **ignored** (not sent on the wire; the server chooses evaluation source).
+- **`trailing_stop`**: always SELL market-IOC. Pass `side="sell"`; the SDK rejects `"buy"` rather than silently changing intent. Supply `trailing_distance_ticks` or `trailing_distance_bps`, optional `activation_price`, `max_slippage_ticks` / `max_slippage_bps`. `order_type`, `tif`, and `post_only` do not alter this strategy.
+- **`twap`**: `twap_duration_ms`, `twap_slice_interval_ms`.
+- **`ladder`**: `ladder_price_min`, `ladder_price_max`, `ladder_levels`, `ladder_distribution` (`"linear"`).
+#### Strategy capability matrix
+| Strategy                    | Side                         | Child execution             | Required fields                                | Pause / resume / cancel / modify                                     |
+| --------------------------- | ---------------------------- | --------------------------- | ---------------------------------------------- | -------------------------------------------------------------------- |
+| `stop_loss` / `take_profit` | buy or sell                  | market-IOC or limit (+ TIF) | `trigger_price`                                | Supported (generic lifecycle helpers)                                |
+| `trailing_stop`             | **sell only** (BUY rejected) | always SELL market-IOC      | trailing distance ticks or bps                 | Supported; modify patches distance / activation / slippage           |
+| `twap`                      | buy or sell                  | sliced market               | `twap_duration_ms`, `twap_slice_interval_ms`   | Supported; server may reject lifecycle ops that do not apply mid-run |
+| `ladder`                    | buy or sell                  | multi-level limit           | ladder min/max/levels; distribution `"linear"` | Supported; server may reject lifecycle ops that do not apply mid-run |
+Ladder entry quantity is not guaranteed to equal the sum of child limit sizes after step / fee rounding. Child aggregate qty may be lower than the requested entry. TWAP / ladder creates are **not** guaranteed bulk atomic placement of every child; if a mid-run lifecycle op is rejected or children land partially, fall back to single-order placement and explicit cleanup of residual children / open orders. Pause may be rejected for TWAP even when pause appears in generic lifecycle helpers.
+The SDK exposes pause/resume/cancel/modify for any trigger ID. Strategy-specific restrictions are enforced by the API; treat unexpected rejections as unsupported for that strategy state.
+### Public IDs
+Non-zero `trigger_id` values returned by create, list, and subscriptions are **base58** encodings of the underlying uint64; wire zero is represented as the sentinel string `"0"`. Pass returned IDs back as strings to `get` / `pause` / `resume` / `cancel` / `modify` / `list_events`. Helpers `polyester.codecs.scalars.id_to_int` / `format_id` convert when you need the integer form. Some canonical base58 encodings contain only digits (for example `"2"`), so digit-only does not necessarily mean decimal. The parser prefers a canonical base58 round-trip before the decimal fallback. See [Public IDs](https://testnet.polyester.com/docs/developer-docs/shared-concepts/public-ids).
+### Manage triggers
+```python
+trigger = await client.triggers.get(trigger_id=result.trigger_id)
+if trigger:
+print(trigger.status, trigger.trigger_type, trigger.details)
+page_token = None
+while True:
+listed = await client.triggers.list(
+symbol="BTC-USDT",
+status=["created", "armed", "running"],  # or a single str
+limit=50,
+page_token=page_token,
+)
+# Unknown status labels raise ValueError, they do not silently return empty.
+for trigger in listed.triggers:
+print(trigger.status, trigger.trigger_id)
+page_token = listed.next_page_token or None
+if not page_token:
+break
+await client.triggers.modify(trigger_id=result.trigger_id, trigger_price="59500")
+await client.triggers.pause(trigger_id=result.trigger_id)
+await client.triggers.resume(trigger_id=result.trigger_id)
+await client.triggers.cancel(trigger_id=result.trigger_id)
+```
+Status vocabulary: `created`, `armed`, `running`, `completed`, `cancelled`, `failed`, `paused`.
+### List events
+```python
+page_token = None
+while True:
+events = await client.triggers.list_events(
+trigger_id=result.trigger_id,
+limit=20,
+event_type="fired",  # optional: fired | canceled | updated
+page_token=page_token,
+)
+for event in events.events:
+print(
+event.event_type,
+event.child_order_id,
+event.fire_price,
+event.reason,
+event.ts_ns,
+)
+page_token = events.next_page_token or None
+if not page_token:
+break
+```
+Child orders are not on the trigger snapshot. Use `list_events(..., event_type="fired")` and read `child_order_id` / `child_seq` from each event.
+### Subscribe
+```python
+states = await client.triggers.subscribe(account_id=account_id)
+async with states:
+async for trigger in states:
+print(trigger.status, trigger.trigger_id)
+break
+ev_sub = await client.triggers.subscribe_events(account_id=account_id)
+async with ev_sub:
+async for event in ev_sub:
+print(event.event_type, event.ts_ns)
+break
+```
+## The Trigger shape
+Selected fields: `trigger_id`, `subaccount_id`, `symbol_id`, `symbol`, `trigger_type`, `status`, `parent_order_id`, `side`, `order_type`, `time_in_force`, `qty`, `limit_price`, `fee_asset`, `self_trade_prevention_mode`, `post_only`, `trigger_price`, `client_trigger_id`, `created_at` / `updated_at` / `armed_at` / `completed_at`, `details`.
+`details.case` is one of `stop`, `trailing`, `twap`, `ladder`, with the matching nested payload. For TWAP, `details.twap.executed_qty` populates as slices fire; right after create it is typically unset until the first child order is placed. Child-order history comes from `list_events`.
+Decoded `TriggerEvent` exposes `trigger_id`, `subaccount_id`, `symbol_id`, `trigger_type`, `event_type` (`fired` / `canceled` / `updated`), `ts_ns`, `child_seq`, `child_order_id`, `fire_price`, and `reason`.
+## Related
+- [Trading guide](https://testnet.polyester.com/docs/sdk/python/guides/trading)
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders)
+- [Errors](https://testnet.polyester.com/docs/sdk/python/reference/errors)

@@ -1,0 +1,314 @@
+Источник: https://testnet.polyester.com/docs/api-docs/connect/triggers.v1.TriggersService/ListTriggerEvents
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+triggers.v1.TriggersService
+ListTriggerEvents
+List trigger events (append-only history).
+Copy URL
+Method
+POST
+Path
+triggers.v1.TriggersService/ListTriggerEvents
+Service
+triggers.v1.TriggersService
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Not required
+POST
+triggers.v1.TriggersService/ListTriggerEvents
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s328" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/ListTriggerEvents' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"eventType": "EVENT_FIRED",
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"subaccountId": "6789012345678",
+"triggerId": "9155001234567"
+}'
+Responses
+"events": [
+"cancelReason": "TRIGGER_CANCEL_REASON_USER_REQUEST",
+"childOrderId": "9876543210123",
+"childSeq": 1,
+"eventType": "EVENT_FIRED",
+"firePriceTicks": "5000000",
+"subaccountId": "6789012345678",
+"symbolId": 1,
+"triggerId": "9155001234567",
+"triggerType": "STOP_LOSS",
+"tsNs": "1735689600000000000"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+Authorization
+x-api-key
+string
+required
+Playground credential used as
+Authorization: Bearer …
+when calling this operation.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s343" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Content-Type
+string
+header
+JSON request body (Connect JSON wire).
+application/json
+Connect-Protocol-Version
+string
+Connect protocol version header.
+1
+Types
+Request
+triggers.v1.ListTriggerEventsRequest
+Response
+triggers.v1.ListTriggerEventsResponse
+Request body
+Form
+JSON
+Example
+triggerId
+string (fixed64)
+> 0
+Trigger ID to list events for.
+subaccountId
+string (fixed64)
+Optional sub-account (authorization). When empty or omitted, uses the
+caller's root account.
+limit
+integer (int32)
+≤ 1000
+Maximum number of events to return. Defaults to 100 when omitted; maximum
+is 1000.
+eventType
+enum
+must be defined value
+Optional event category filter. When unspecified, returns all event
+categories. Use EVENT_FIRED to enumerate child-order actions.
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground pr-3 pl-2.5 h-9 w-full min-w-0 rounded-md text-sm" id="bits-s362" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+EVENT_FIRED
+pageToken
+string
+max 512 chars
+Opaque keyset cursor from a previous response. The cursor is exclusive and
+bound to the authenticated account, trigger, sub-account scope, event
+filter, and newest-first sort order.
+Response
+Form
+JSON
+events
+object[]
+Events ordered by event time descending, child sequence descending, and
+stable event tie-breakers descending.
+11 fields
+triggerId
+string (fixed64)
+Trigger ID associated with the event.
+subaccountId
+string (fixed64)
+Public account or sub-account ID associated with the trigger.
+symbolId
+integer (int32)
+Trading symbol numeric identifier.
+triggerType
+enum
+Trigger type at the time of the event.
+STOP_LOSS
+TAKE_PROFIT
+TRAILING_STOP
+TWAP
+LADDER
+eventType
+enum
+Event category.
+EVENT_FIRED
+EVENT_CANCELED
+EVENT_UPDATED
+EVENT_FAILED
+EVENT_ACTIVATED
+tsNs
+string (uint64)
+Event timestamp in nanoseconds since epoch (UTC).
+childSeq
+integer (int32)
+Child sequence number for multi-child trigger strategies.
+childOrderId
+string (fixed64)
+Child order ID created by this event, if any.
+firePriceTicks
+string (int64)
+> 0
+Price that caused a conditional trigger to fire, in quote units scaled by
+1e9. Absent for time-scheduled triggers such as TWAP.
+cancelReason
+enum
+Why an admitted trigger was canceled.
+TRIGGER_CANCEL_REASON_USER_REQUEST
+TRIGGER_CANCEL_REASON_OCO
+TRIGGER_CANCEL_REASON_PARENT_CANCELED_NO_FILL
+TRIGGER_CANCEL_REASON_MISSING_REASON_CODE
+TRIGGER_CANCEL_REASON_INTERNAL_ERROR
+failureReason
+enum
+Why an admitted trigger failed.
+TRIGGER_FAILURE_REASON_UNKNOWN_SYMBOL
+TRIGGER_FAILURE_REASON_PAIR_DISABLED
+TRIGGER_FAILURE_REASON_MIN_NOTIONAL
+TRIGGER_FAILURE_REASON_TICK_SIZE
+TRIGGER_FAILURE_REASON_INSUFFICIENT_FUNDS
+TRIGGER_FAILURE_REASON_RISK_LIMIT
+TRIGGER_FAILURE_REASON_DUPLICATE_CLIENT_ID
+TRIGGER_FAILURE_REASON_MARKET_HALTED
+TRIGGER_FAILURE_REASON_ENGINE_BUSY
+TRIGGER_FAILURE_REASON_ACCOUNT_UNKNOWN
+TRIGGER_FAILURE_REASON_ORDER_UNKNOWN
+TRIGGER_FAILURE_REASON_POST_ONLY_CROSS
+TRIGGER_FAILURE_REASON_REDUCE_ONLY_BLOCKED
+TRIGGER_FAILURE_REASON_PRICE_BAND_VIOLATION
+TRIGGER_FAILURE_REASON_MARKET_CAP_VIOLATION
+TRIGGER_FAILURE_REASON_EMPTY_BOOK
+TRIGGER_FAILURE_REASON_FOK_INSUFFICIENT_LIQUIDITY
+TRIGGER_FAILURE_REASON_FEE_ASSET_NOT_ALLOWED
+TRIGGER_FAILURE_REASON_MARKET_PRICE_UNAVAILABLE
+TRIGGER_FAILURE_REASON_STALE_QUOTE
+TRIGGER_FAILURE_REASON_MIN_QUANTITY
+TRIGGER_FAILURE_REASON_STEP_SIZE
+TRIGGER_FAILURE_REASON_INVALID_SIZING
+TRIGGER_FAILURE_REASON_MAX_QUOTE_DEBIT_TOO_SMALL
+TRIGGER_FAILURE_REASON_FEE_CEILING_EXCEEDED
+TRIGGER_FAILURE_REASON_TRIGGER_PRICE_INVALID
+TRIGGER_FAILURE_REASON_TRIGGER_PRICE_SOURCE_UNSUPPORTED
+TRIGGER_FAILURE_REASON_TRAILING_DISTANCE_INVALID
+TRIGGER_FAILURE_REASON_MODIFICATION_REQUIRES_REPLACE
+TRIGGER_FAILURE_REASON_ORDER_ALREADY_TERMINAL
+TRIGGER_FAILURE_REASON_CONFLICT_IDEMPOTENCY_KEY_REUSE
+TRIGGER_FAILURE_REASON_RATE_LIMITED
+TRIGGER_FAILURE_REASON_POLICY_SPOT_TRADE_DENY
+TRIGGER_FAILURE_REASON_POLICY_MARKET_DENY
+TRIGGER_FAILURE_REASON_POLICY_MAX_NOTIONAL
+TRIGGER_FAILURE_REASON_POLICY_MAX_OPEN_ORDERS
+TRIGGER_FAILURE_REASON_POLICY_TRADING_HALTED
+TRIGGER_FAILURE_REASON_MAX_SLIPPAGE_INVALID
+TRIGGER_FAILURE_REASON_MISSING_REASON_CODE
+TRIGGER_FAILURE_REASON_INTERNAL_ERROR
+nextPageToken
+string
+max 512 chars
+Opaque cursor for the next page. Empty when no more results exist.
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+triggers.v1.TriggersService/ListTriggerEvents
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s441" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+JSON
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/ListTriggerEvents' \
+--header 'Content-Type: application/json' \
+--header 'Connect-Protocol-Version: 1' \
+--data '{
+"eventType": "EVENT_FIRED",
+"limit": 100,
+"pageToken": "eyJvZmZzZXQiOjEwMH0",
+"subaccountId": "6789012345678",
+"triggerId": "9155001234567"
+}'
+Responses
+"events": [
+"cancelReason": "TRIGGER_CANCEL_REASON_USER_REQUEST",
+"childOrderId": "9876543210123",
+"childSeq": 1,
+"eventType": "EVENT_FIRED",
+"firePriceTicks": "5000000",
+"subaccountId": "6789012345678",
+"symbolId": 1,
+"triggerId": "9155001234567",
+"triggerType": "STOP_LOSS",
+"tsNs": "1735689600000000000"
+}
+],
+"nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/triggers.v1.TriggersService/ListTriggerEvents' \
+  --header 'Content-Type: application/json' \
+  --header 'Connect-Protocol-Version: 1' \
+  --data '{
+  "eventType": "EVENT_FIRED",
+  "limit": 100,
+  "pageToken": "eyJvZmZzZXQiOjEwMH0",
+  "subaccountId": "6789012345678",
+  "triggerId": "9155001234567"
+}'
+
+---
+
+{
+  "events": [
+    {
+      "cancelReason": "TRIGGER_CANCEL_REASON_USER_REQUEST",
+      "childOrderId": "9876543210123",
+      "childSeq": 1,
+      "eventType": "EVENT_FIRED",
+      "firePriceTicks": "5000000",
+      "subaccountId": "6789012345678",
+      "symbolId": 1,
+      "triggerId": "9155001234567",
+      "triggerType": "STOP_LOSS",
+      "tsNs": "1735689600000000000"
+    }
+  ],
+  "nextPageToken": "eyJvZmZzZXQiOjIwMH0"
+}

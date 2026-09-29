@@ -1,0 +1,77 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Use deposit routes, signed withdrawal intents, and internal transfers to move funds between external networks, Funding, and Trading.
+## How funds move
+| Flow               | How                                                     |
+| ------------------ | ------------------------------------------------------- |
+| External → funding | Deposit address route configured to stop in Funding     |
+| External → trading | Deposit address route configured to continue to Trading |
+| Funding → funding  | On-chain Funding Account transfer                       |
+| Funding → trading  | On-chain via `polyester::chain` helpers                 |
+| Funding → external | On-chain Zipper path                                    |
+| Trading → funding  | `client.withdraw.create_to_funding` (signed intent)     |
+| Trading → external | `client.withdraw.create_to_external_chain`              |
+| Trading → trading  | `client.internal_transfers.create`                      |
+Product overview: [Funds & Transfers](https://testnet.polyester.com/docs/developer-docs/funds-transfers/overview).
+## Deposit addresses
+```rust
+use polyester::proto::chain::deposit::v1::CreateDepositAddressRequest;
+let addr = client
+let listed = client.deposit.list_addresses().await?; // no chain filter on Rust helper
+```
+See [Deposit](https://testnet.polyester.com/docs/sdk/rust/reference/deposit).
+## Trading withdraws
+Amounts are `AssetAmount` in the ledger domain. Let the configured API key build and sign the complete deterministic payload:
+```rust
+use polyester::models::CreateApiKeyTradingWithdrawParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+use polyester::new_trading_withdraw_idempotency_key;
+let amount = AssetAmount::from_decimal_str("100.00", 2, QuantityDomain::LedgerE18, Some(2))?;
+let idempotency_key = new_trading_withdraw_idempotency_key()?;
+let prepared = client.withdraw.prepare_api_key_to_funding(
+CreateApiKeyTradingWithdrawParams {
+asset_id: 2,
+amount,
+destination_address: String::new(),
+idempotency_key,
+amount_scale: Some(2),
+deadline_ts_sec: None,
+nonce: None,
+},
+)?;
+// Persist before submission; restore and resubmit these exact bytes on retry.
+std::fs::write("prepared-withdraw.bin", prepared.request_bytes())
+let result = client.withdraw.submit_prepared(&prepared).await?;
+```
+The payload signature covers the exact deterministic protobuf bytes, including deadline and nonce. `amount_scale` is input precision; wire `amount_e18` is always exact 18-decimal units. Precomputed signature methods require an explicit deadline and never add one after signing.
+Details: [Withdrawals](https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals).
+## Internal transfers
+```rust
+use polyester::models::CreateInternalTransferParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+client.internal_transfers.create(CreateInternalTransferParams {
+asset_id: 2,
+quantity: AssetAmount::from_decimal_str(
+"10.00", 2, QuantityDomain::LedgerE18, Some(2)
+)?,
+idempotency_key: "xfer-1".into(),
+subaccount_id: None,
+destination_account_id: None,
+destination_subaccount_id: Some("123".into()),
+destination_smart_account_address: None,
+quantity_scale: Some(2),
+}).await?;
+```
+Internal transfers use the same exact conversion to canonical `amount_e18`: no rounding, non-divisible downscaling, zero value, or overflow is accepted.
+See [Internal transfers](https://testnet.polyester.com/docs/sdk/rust/reference/internal-transfers).
+> **Security**
+>
+> High-risk money movement may require additional account controls. See [Withdrawals & transfers security](https://testnet.polyester.com/docs/developer-docs/authentication-security/withdrawals-and-transfers-security).
+## Related
+- [Deposit](https://testnet.polyester.com/docs/sdk/rust/reference/deposit)
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals)
+- [Internal transfers](https://testnet.polyester.com/docs/sdk/rust/reference/internal-transfers)

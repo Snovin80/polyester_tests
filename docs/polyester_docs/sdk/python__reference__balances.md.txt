@@ -1,0 +1,84 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/balances.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Balances
+Read ledger balances, history, holds, and stream live balance updates.
+`client.balances` reads current ledger balances, balance/equity history, and open holds, and can stream live updates. Methods are authenticated and account-scoped (`account` / `sub_account_id`).
+Balance component fields (`trading`, `funding`, `reserved`, `available`) are **scaled integer decimal strings** (ledger u128), not human floats. Values are **already scaled integers** on the wire. Format once with `format_ledger_u128` (default scale 18) for display. Do **not** multiply by `1e18` again.
+> **Spot orders spend trading balance**
+>
+> Deposits can route to **funding** or **trading**. Spot orders and holds use **trading**. Moving funding → trading is on-chain / wallet-driven (see the chain helpers), not a ConnectRPC balance write. A non-zero funding balance does not by itself let you place spot orders.
+## Methods
+| Method                | Summary                                 |
+| --------------------- | --------------------------------------- |
+| `list`                | Current balances for the account scope. |
+| `get_balance_history` | Columnar balance history over a range.  |
+| `get_equity_history`  | Columnar equity history over a range.   |
+| `list_holds`          | Open ledger holds.                      |
+| `subscribe`           | Stream private balance updates.         |
+### List
+Python takes no required request object, optional scope only:
+```python
+from polyester import format_ledger_u128
+balances = await client.balances.list()
+for b in balances.balances:
+print(
+b.asset_id,
+format_ledger_u128(b.available),
+format_ledger_u128(b.trading),
+format_ledger_u128(b.funding),
+format_ledger_u128(b.reserved),
+)
+# Subaccount override
+sub = await client.balances.list(account={"subaccount_id": "123"})
+```
+#### AssetBalance
+| Field                                            | Notes                             |
+| ------------------------------------------------ | --------------------------------- |
+| `asset_id`                                       | Ledger asset id                   |
+| `trading` / `funding` / `reserved` / `available` | Scaled integer strings            |
+| `trading_revision`                               | Orders trading/reserved/available |
+| `funding_revision`                               | Orders funding independently      |
+### Get balance history
+```python
+history = await client.balances.get_balance_history(
+range="30d",  # 1d, 7d, 30d, 90d, 180d, 365d
+account_codes=None,  # optional list[int]
+ledger=0,
+)
+print(history.bucket, history.points, history.start_ts_sec, history.end_ts_sec)
+for series in history.series:
+print(series.asset_id, series.account_code, len(series.balance_q))
+```
+### Get equity history
+```python
+equity = await client.balances.get_equity_history(
+range="90d",
+group_by="asset",  # or "account"
+)
+print(equity.quote_asset, equity.points)
+for series in equity.series:
+print(series.asset_symbol or series.account_name, len(series.equity_q))
+```
+### List holds
+```python
+holds = await client.balances.list_holds(limit=50, reversed=False)
+for h in holds.holds:
+print(h.hold_id, h.asset_id, h.amount_reserved, h.expires_at_ns)
+```
+`list_holds` may not be mounted on every environment. A plain gateway 404 maps to `PolyesterRouteNotFoundError`; treat that as an unavailable RPC, not as an empty holds result or a missing hold.
+### Subscribe
+Private channel; needs Account ID. Handshake-before-return; fail-closed overflow.
+```python
+from polyester import format_ledger_u128
+sub = await client.balances.subscribe(account_id=account_id)
+async with sub:
+async for balance in sub:
+print(balance.asset_id, format_ledger_u128(balance.available))
+break
+```
+## Related
+- [Accounts & balances guide](https://testnet.polyester.com/docs/sdk/python/guides/accounts-and-balances)
+- [Realtime](https://testnet.polyester.com/docs/sdk/python/reference/realtime)
+- [Catalog](https://testnet.polyester.com/docs/sdk/python/reference/catalog)

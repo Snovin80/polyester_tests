@@ -1,0 +1,90 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/profile.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Profile
+Read and update the caller's public profile, review username history, and stream public identity updates.
+`client.auth.profile` is the caller's public profile surface: read the current profile, update mutable fields, review username history, and stream public identity updates. Every method is authenticated. These calls need a wallet session. An API key gets `AuthenticationError`.
+## Methods
+| Method                    | Summary                                     |
+| ------------------------- | ------------------------------------------- |
+| `get`                     | Read the caller's public profile.           |
+| `update`                  | Patch mutable profile fields.               |
+| `getUsernameHistory`      | List recent username changes, newest first. |
+| `generateUsernameOptions` | Offer generated usernames to claim.         |
+| `claimGeneratedUsername`  | Claim one generated username.               |
+| `subscribeIdentity`       | Stream public identity updates.             |
+### `get(options?)`
+Fetches the caller's `Profile`: username eligibility and cooldown, verified socials, avatar, and VIP tier.
+```ts
+const profile = await client.auth.profile.get();
+console.log(profile.username, profile.vipTier);
+if (profile.nextUsernameChangeAt) {
+console.log("username locked until", new Date(profile.nextUsernameChangeAt));
+}
+```
+`Profile` includes `username`, `bio`, `website`, `twitter` / `twitterVerified`, `discord` / `discordVerified`, `avatarUrl`, `vipTier`, `usernameUnlocked`, and the epoch-millisecond timestamps `createdAt` and `nextUsernameChangeAt` (the latter is set only while a username change is on cooldown). `currentTermsAccepted` is a boolean indicating whether the root account has accepted the current terms. Record consent with [`client.auth.acceptTerms()`](https://testnet.polyester.com/docs/sdk/typescript/reference/auth#accepttermsoptions) after the user agrees; profile updates do not accept terms.
+### `update(input, options?)`
+Updates only the fields you pass; omitted fields are left unchanged. Returns the updated `Profile`. An empty string clears an optional text field (for example, `bio: ""` removes the bio).
+```ts
+// Change the bio and website
+await client.auth.profile.update({
+bio: "Trading spot on Polyester.",
+website: "https://example.com",
+});
+// Clear the Twitter handle
+await client.auth.profile.update({ twitter: "" });
+```
+`UpdateProfileInput` accepts the mutable fields `username`, `bio`, `website`, `twitter`, and `avatarUrl`, all optional.
+### `generateUsernameOptions(options?)`
+Returns generated `usernames`, a short-lived `offerToken`, and optional epoch-millisecond `expiresAt`. Use the offer token only with its matching options.
+```ts
+const offer = await client.auth.profile.generateUsernameOptions();
+console.log(offer.usernames, offer.expiresAt);
+```
+### `claimGeneratedUsername(input, options?)`
+Claims one offer option by its zero-based `optionIndex` and returns the updated `Profile`.
+```ts
+await client.auth.profile.claimGeneratedUsername({
+offerToken: offer.offerToken,
+optionIndex: 0,
+});
+```
+### `getUsernameHistory(options?)`
+Returns the caller's recent username changes as `UsernameHistoryEntry[]`, newest first, capped at 20 entries.
+```ts
+const history = await client.auth.profile.getUsernameHistory();
+for (const entry of history) {
+console.log(entry.username, entry.setAt ? new Date(entry.setAt) : "unknown");
+}
+```
+```ts
+interface UsernameHistoryEntry {
+username: string;
+setAt?: number; // epoch ms
+}
+```
+### `subscribeIdentity(input)`
+Streams public identity updates and returns an idempotent unsubscribe function. Pass `onEvent` (required) plus optional `onOpen`, `onClose`, and `onError` handlers. This is a public channel, so it takes no `accountId`. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.auth.profile.subscribeIdentity({
+onEvent: (identity) => console.log(identity.accountId, identity.username),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+Each event is an `AccountIdentity`:
+```ts
+interface AccountIdentity {
+accountId: string;
+username?: string;
+avatarUrl?: string;
+rootSmartAccountAddress: string;
+}
+```
+## Related
+- [Auth](https://testnet.polyester.com/docs/sdk/typescript/reference/auth) for login, `me()`, and the browser session flow.
+- [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip) for the public tier catalog and caller-root status.
+- [Social verification](https://testnet.polyester.com/docs/sdk/typescript/reference/social-verification) for verifying Twitter and Discord handles.
+- [Accounts](https://testnet.polyester.com/docs/sdk/typescript/reference/accounts) for resolving other users by username.

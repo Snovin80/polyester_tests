@@ -1,0 +1,42 @@
+Источник: https://testnet.polyester.com/docs/user-docs/polyester-scan.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+**[Polyester Scan](https://polyesterscan.com/)** is the public browser for Polyester Chain. It organizes blocks, transactions, accounts, tokens, contracts, and Zipper flows in one searchable place.
+You do not need to connect an account to browse. Viewing records and using contract read methods are read-only, so they never change your account or submit a transaction. If you connect a wallet and use a contract write method, your wallet asks you to approve the transaction before it is submitted.
+![Polyester Scan home with search, network summaries, latest blocks, and latest transactions](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/85c8d56dcdcab856d6c65d7097b3364361c35ddab046502d52633b09d5b97a7d/source.webp)
+## What you can explore
+| Area           | What it shows                                                                   |
+| -------------- | ------------------------------------------------------------------------------- |
+| Chain activity | Blocks, transactions, addresses, contract calls, logs, and token transfers      |
+| Assets         | Tokens, route-specific Zipped Assets, Unified Assets, and supported chains      |
+| Asset flows    | The complete journey of a deposit, withdrawal, or internal transfer             |
+| Contracts      | Verified source code, public contract data, and available read or write methods |
+The home page also shows live activity and network summaries. Open any row to see the complete record and its related links.
+## Find a record
+Use the global search when you already have an identifier. Scan can search by:
+- Address
+- Transaction Hash
+- Block Number or Hash
+- Token Name, Symbol, or Contract
+- Unified Asset
+- Chain
+- Flow ID
+An exact address, hash, contract, or Flow ID gives the most direct result. A broader search can show several result types together, which is useful when one symbol represents more than one asset route.
+> **The full asset identity matters**
+>
+> Two assets can share the same name or symbol. The source chain and contract address identify the exact asset and route shown in Scan.
+## Public activity and private account data
+Scan displays public Polyester Chain records and approved public Zipper flow information. This includes assets entering or leaving an account, public smart-account actions, contract events, and Zipped Asset supply changes.
+Your Trading balance, orders, fills, account permissions, sessions, and complete financial ledger remain private. Scan does not expose that information simply because the related account has a public blockchain address.
+## Explore Polyester Scan
+- **[zAssets & uAssets](https://testnet.polyester.com/docs/user-docs/polyester-scan/zassets-and-uassets)** explains how route-specific Zipped Assets connect to one Unified Asset balance.
+- **[Asset Flows](https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows)** follows deposits, withdrawals, and internal transfers from start to finish.
+- **[Chain Activity](https://testnet.polyester.com/docs/user-docs/polyester-scan/chain-activity)** covers blocks, transactions, addresses, and public execution details.
+- **[Tokens & Chains](https://testnet.polyester.com/docs/user-docs/polyester-scan/tokens-and-chains)** helps you browse supported asset routes and their source chains.
+- **[Contracts & Tools](https://testnet.polyester.com/docs/user-docs/polyester-scan/contracts-and-tools)** covers verified contracts, filters, exports, statistics, gas, and APIs.
+## FAQ
+### What can I verify independently on the blockchain, and where can I see it?
+Polyester has its own blockchain explorer, Polyester Scan. It lets you inspect transactions, public contract data, and the on-chain stages of deposits, withdrawals, and transfers. You can check Zipped Asset supplies and their source-chain backing, and follow links to the relevant network’s explorer to inspect the underlying transfers. Your private Trading balances, orders, and fills are not published as part of those blockchain records.

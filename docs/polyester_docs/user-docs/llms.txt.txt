@@ -1,0 +1,123 @@
+Источник: https://testnet.polyester.com/docs/user-docs/llms.txt
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Polyester Documentation
+> Canonical product documentation for Polyester users and developers.
+Polyester is a decentralized exchange that brings assets and liquidity from multiple networks into a unified trading environment. Use the pages below as the canonical entry points for product behavior, workflows, security boundaries, and integration guidance.
+Published entries are canonical for their documented subject. Entries labeled **Draft** describe work in progress and may omit an approved schedule, address registry, report, destination, or released workflow. The live product remains authoritative for availability and transaction terms.
+## Start Here
+- [What is Polyester?](https://testnet.polyester.com/docs/user-docs/start/what-is-polyester): How Polyester unifies Assets from supported chains for trading, lending, bridging, and swaps.
+- [Key Concepts](https://testnet.polyester.com/docs/user-docs/start/key-concepts): Learn how Polyester moves Assets across chains, keeps balances on-chain, and processes order-book trades.
+- [Create Your Account](https://testnet.polyester.com/docs/user-docs/start/create-account): Choose how to sign in, create your non-custodial Main Account, and protect the wallet that controls it.
+- [Secure Your Account](https://testnet.polyester.com/docs/user-docs/start/secure-account): Protect your owner credential, add MFA, save recovery codes, and configure withdrawal and transfer whitelists.
+- [First Deposit & Trade](https://testnet.polyester.com/docs/user-docs/start/first-deposit-and-trade): Deposit an Asset, make it available in Trading, and place your first spot Order.
+## Funds
+- [Unified Assets](https://testnet.polyester.com/docs/user-docs/funds/unified-assets): Learn how Polyester turns chain-specific deposits into one account balance you can trade, transfer, or withdraw.
+- [Supported Assets](https://testnet.polyester.com/docs/user-docs/funds/supported-assets-and-networks): Deposit and withdraw Unified Assets on supported networks. Expand a row for fees, minimums, and confirmation time.
+- [Funding Account](https://testnet.polyester.com/docs/user-docs/funds/funding-account): Learn how the Funding Account keeps on-chain balances ready to deposit, transfer, trade, or withdraw.
+- [Trading Account](https://testnet.polyester.com/docs/user-docs/funds/trading-account): Learn how the Trading Account manages available and reserved balances for trading, borrowing, transfers, and withdrawals.
+- [Deposit Funds](https://testnet.polyester.com/docs/user-docs/funds/deposit-assets): Deposit a supported Asset from an external Network and confirm where Polyester credits it.
+- [Withdraw Funds](https://testnet.polyester.com/docs/user-docs/funds/withdraw-assets): Withdraw an available Polyester balance to an external wallet on a supported chain.
+- [Internal Transfers](https://testnet.polyester.com/docs/user-docs/funds/internal-transfers): Move an available balance between Polyester accounts or balance areas.
+## Trading
+- [Overview](https://testnet.polyester.com/docs/user-docs/trade/spot-trading-overview): See how Polyester combines order-book markets, advanced trading tools, and low-latency APIs.
+- [Trading Screen](https://testnet.polyester.com/docs/user-docs/trade/trading-screen): Use and customize Polyester's connected workspace for market analysis, order entry, and account activity.
+- [Overview](https://testnet.polyester.com/docs/user-docs/trade/widgets/overview): Learn the Trading Screen widgets you can add, group, and rearrange in Advanced layout.
+- [Polyester Chart](https://testnet.polyester.com/docs/user-docs/trade/widgets/polyester-chart): Read candles, volume, indicators, and drawings in Polyester's native market chart.
+- [TradingView Chart](https://testnet.polyester.com/docs/user-docs/trade/widgets/tradingview-chart): Analyze Polyester markets with TradingView Advanced Charts and your saved chart preferences.
+- [Depth Chart](https://testnet.polyester.com/docs/user-docs/trade/widgets/depth-chart): See where visible buy and sell liquidity is concentrated around the current market.
+- [Order Book](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-book): Read current buy and sell prices, the spread, and visible liquidity for one spot market.
+- [Market Trades](https://testnet.polyester.com/docs/user-docs/trade/widgets/market-trades): Follow recent public executions for the active Pair and see where trading is taking place.
+- [Order Form](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-form): Choose a side, order type, amount, price, and execution controls before submitting an order.
+- [Open Orders](https://testnet.polyester.com/docs/user-docs/trade/widgets/open-orders): Monitor working and partially filled orders, then act on their remaining quantity.
+- [Order Triggers](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-triggers): Monitor conditional and staged instructions before and after they create executable orders.
+- [Order History](https://testnet.polyester.com/docs/user-docs/trade/widgets/order-history): Review filled, canceled, expired, and rejected order outcomes for the selected account.
+- [Funds](https://testnet.polyester.com/docs/user-docs/trade/widgets/funds): Compare Unified Trading and Funding balances for the two Assets in the active Pair.
+- [Market Order](https://testnet.polyester.com/docs/user-docs/trade/order-types/market-order): Attempt immediate execution against available Order Book liquidity within price protection.
+- [Limit Order](https://testnet.polyester.com/docs/user-docs/trade/order-types/limit-order): Buy at a chosen maximum price or sell at a chosen minimum price.
+- [Time-in-Force & Post-Only](https://testnet.polyester.com/docs/user-docs/trade/order-types/time-in-force-and-post-only): Control what happens to unfilled limit quantity and whether an order may remove liquidity immediately.
+- [Iceberg](https://testnet.polyester.com/docs/user-docs/trade/order-types/iceberg): Understand the Iceberg order concept and its current availability on Polyester.
+- [TWAP](https://testnet.polyester.com/docs/user-docs/trade/order-types/twap): Spread a target quantity across scheduled child orders while monitoring execution, timing, and completion risk.
+- [Ladder](https://testnet.polyester.com/docs/user-docs/trade/order-types/ladder): Distribute a target quantity across planned limit-price levels and monitor each child order independently.
+- [Stop-Loss Market](https://testnet.polyester.com/docs/user-docs/trade/order-types/stop-loss-market): Attempt market-style execution after a downside condition while accounting for gaps, protection, and partial fills.
+- [Stop-Loss Limit](https://testnet.polyester.com/docs/user-docs/trade/order-types/stop-loss-limit): Activate a limit child after a downside condition while keeping trigger price and execution boundary distinct.
+- [Trailing Stop](https://testnet.polyester.com/docs/user-docs/trade/order-types/trailing-stop): Follow a favorable price extreme and activate a child order after price reverses by a configured distance.
+- [Manage Orders](https://testnet.polyester.com/docs/user-docs/trade/manage-orders): Track active orders, understand fills, modify remaining quantity, and confirm how each order ends.
+- [Quick Swap](https://testnet.polyester.com/docs/user-docs/trade/quick-swap): Convert one supported asset into another and deliver it to a chosen wallet with Quick Swap.
+## Fees & VIP
+- [Trading Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/trading-fees): View spot rates, maker rebates, referral benefits, and the assets you can use to pay trading fees.
+- [VIP Tiers](https://testnet.polyester.com/docs/user-docs/fees-and-vip/vip-tiers): See how rolling spot volume or average account equity determines your Polyester VIP tier.
+- [Deposit & Withdrawal Fees](https://testnet.polyester.com/docs/user-docs/fees-and-vip/deposit-and-withdrawal-fees): View current deposit and withdrawal fees for each supported asset and chain.
+## Referrals
+- [Overview](https://testnet.polyester.com/docs/user-docs/referrals/overview): Invite friends to Polyester, earn a share of their trading fees, and track every referral from one dashboard.
+- [Rewards](https://testnet.polyester.com/docs/user-docs/referrals/fees): See how referral rewards are calculated, collected, converted, and paid to your Trading Account.
+- [Analytics](https://testnet.polyester.com/docs/user-docs/referrals/analytics): Track referred users, trading volume, and rewards across every referral link and date range.
+## Account
+- [Dashboard](https://testnet.polyester.com/docs/user-docs/account/dashboard-balances-and-activity): See your account equity, asset balances, open orders, and recent transactions in one place.
+- [Sign-In & Ownership](https://testnet.polyester.com/docs/user-docs/account/access-and-security/sign-in-and-ownership): Understand how your wallet, Google account, or email connects you to your Polyester account.
+- [MFA & Recovery](https://testnet.polyester.com/docs/user-docs/account/access-and-security/mfa-and-recovery-codes): Add a passkey or authenticator app and keep recovery codes available if you lose a method.
+- [Sessions & Alerts](https://testnet.polyester.com/docs/user-docs/account/access-and-security/sessions-alerts-and-recovery): Manage account sessions, understand security alerts, and respond to unfamiliar activity.
+- [Address Book & Whitelists](https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist): Save trusted destinations and control where withdrawals and internal transfers can be sent.
+- [GuardSigner](https://testnet.polyester.com/docs/user-docs/account/access-and-security/guard-signer): Set up and manage the additional signer that protects withdrawal and internal transfer whitelist changes.
+- [API Keys](https://testnet.polyester.com/docs/user-docs/account/access-and-security/api-keys): Create API keys, choose what they can access, and keep their private signing keys safe.
+- [Overview](https://testnet.polyester.com/docs/user-docs/account/ledger/ledger-overview): See every balance change in your account and connect it to the trade, transfer, or fee that created it.
+- [Account Statements](https://testnet.polyester.com/docs/user-docs/account/ledger/account-statements): Create a report of your balances, trades, fees, and account activity for a selected period.
+## Preferences
+- [Overview](https://testnet.polyester.com/docs/user-docs/preferences/overview): Open Settings to update how Polyester looks and displays information. Choices save in cookies on this browser.
+- [Appearance](https://testnet.polyester.com/docs/user-docs/preferences/appearance): Choose your theme, colors, and typeface.
+- [Language & Region](https://testnet.polyester.com/docs/user-docs/preferences/language-and-region): Choose how Polyester displays language, dates, times, currencies, and numbers.
+- [Sounds](https://testnet.polyester.com/docs/user-docs/preferences/sounds): Control Polyester sound effects, alerts, and volume levels.
+- [Notifications](https://testnet.polyester.com/docs/user-docs/preferences/notifications): Choose which Polyester updates you receive and how they appear.
+- [Balances](https://testnet.polyester.com/docs/user-docs/preferences/balances): Hide account amounts on screen without changing the balances themselves.
+- [Footer](https://testnet.polyester.com/docs/user-docs/preferences/footer): Choose what appears in the ticker at the bottom of the trading screen.
+## Subaccounts
+- [Overview](https://testnet.polyester.com/docs/user-docs/subaccounts/subaccounts-overview): Use Subaccounts to separate balances, trading, people, and access under one Main Account.
+- [Manage Subaccounts](https://testnet.polyester.com/docs/user-docs/subaccounts/manage-subaccounts): Create, switch, fund, disable, reactivate, or leave a Subaccount.
+- [Members & Roles](https://testnet.polyester.com/docs/user-docs/subaccounts/members-and-roles): Invite people to a Subaccount and choose what each role can do.
+- [Permissions & Policies](https://testnet.polyester.com/docs/user-docs/subaccounts/permissions-and-policies): Choose which trading, balance, Address Book, and safety actions a Subaccount supports.
+- [Audit Logs](https://testnet.polyester.com/docs/user-docs/subaccounts/audit-logs): See membership, permission, API-key, and account-setting changes for a Subaccount.
+## PolyEngine
+- [Overview](https://testnet.polyester.com/docs/user-docs/polyengine/overview): See how PolyEngine checks, matches, and settles your spot orders.
+- [Admission](https://testnet.polyester.com/docs/user-docs/polyengine/admission): See how PolyEngine checks your order and protects the balance it may use.
+- [Matching](https://testnet.polyester.com/docs/user-docs/polyengine/matching): See how your eligible order receives priority and becomes one or more fills.
+- [Settlement](https://testnet.polyester.com/docs/user-docs/polyengine/settlement): See how each fill updates your assets, fees, rebates, and reserved balance.
+- [PolyEngine Relay](https://testnet.polyester.com/docs/user-docs/polyengine/relay): Call core PolyEngine functions directly on Polyester Chain using your smart account, without a website login or API key.
+- [Verifier Nodes](https://testnet.polyester.com/docs/user-docs/polyengine/verifiers): See how open-source verifier nodes independently check PolyEngine's matching results while preserving account privacy.
+- [Escape Hatch](https://testnet.polyester.com/docs/user-docs/polyengine/escape-hatch): Understand how validator-controlled exit-only mode protects access to eligible Trading balances during a recovery.
+## Zipper
+- [Overview](https://testnet.polyester.com/docs/user-docs/zipper/overview): See how Zipper moves supported assets between external chains and your Polyester account.
+- [Asset Lifecycle](https://testnet.polyester.com/docs/user-docs/zipper/asset-lifecycle): Follow your asset from an external deposit to a Polyester balance and back to an external chain.
+- [Vaults](https://testnet.polyester.com/docs/user-docs/zipper/vaults): See how Zipper deposit addresses, custody vaults, and route inventory support deposits and withdrawals.
+- [Validators](https://testnet.polyester.com/docs/user-docs/zipper/validators): See how Zipper validators independently review asset movements and how participation expands as the protocol matures.
+- [Security](https://testnet.polyester.com/docs/user-docs/zipper/security): See how Zipper protects deposits, withdrawals, custody, and Zipped Asset supply.
+## Polyester Chain
+- [Overview](https://testnet.polyester.com/docs/user-docs/polyester-chain/overview): See how Polyester Chain supports your account, assets, and public on-chain activity.
+- [Smart Account](https://testnet.polyester.com/docs/user-docs/polyester-chain/smart-account): Understand the Safe smart account that represents your Polyester account.
+- [Gas Abstraction](https://testnet.polyester.com/docs/user-docs/polyester-chain/gasless-transactions): See how Polyester sponsors gas for your supported Polyester Chain actions.
+- [Validators](https://testnet.polyester.com/docs/user-docs/polyester-chain/chain-security): See how Polyester Chain validators secure blocks and how other approval roles remain separate.
+- [RPC Nodes](https://testnet.polyester.com/docs/user-docs/polyester-chain/rpcs): Run your own Polyester Chain node to access public Chain data through a local RPC endpoint.
+## Polyester Scan
+- [Overview](https://testnet.polyester.com/docs/user-docs/polyester-scan/overview): Explore public Polyester Chain activity, assets, contracts, and cross-chain flows.
+- [zAssets & uAssets](https://testnet.polyester.com/docs/user-docs/polyester-scan/zassets-and-uassets): See how route-specific Zipped Assets connect to one Unified Asset balance.
+- [Asset Flows](https://testnet.polyester.com/docs/user-docs/polyester-scan/asset-flows): Follow deposits, withdrawals, and internal transfers from start to finish in Polyester Scan.
+- [Chain Activity](https://testnet.polyester.com/docs/user-docs/polyester-scan/chain-activity): Browse Polyester Chain blocks, transactions, addresses, and public execution details.
+- [Tokens & Chains](https://testnet.polyester.com/docs/user-docs/polyester-scan/tokens-and-chains): Browse assets, token transfers, and the source chains connected to Polyester.
+- [Contracts & Tools](https://testnet.polyester.com/docs/user-docs/polyester-scan/contracts-and-tools): Explore verified contracts and use Polyester Scan's filters, exports, statistics, gas, and API tools.
+## Reference
+- [Confirmation Requirements](https://testnet.polyester.com/docs/user-docs/reference/confirmation-requirements): See the confirmation requirements and estimated deposit times for supported chains.
+- [Testnet Faucets](https://testnet.polyester.com/docs/user-docs/reference/testnet-faucets): Claim testnet Assets from faucets that do not require a mainnet balance.
+- [Faucet Backups](https://testnet.polyester.com/docs/user-docs/reference/faucet-backups): Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+- [Polyester Contracts](https://testnet.polyester.com/docs/user-docs/reference/polyester-contracts): Open official Polyester Chain contract deployments in Polyester Scan.
+- [Audits](https://testnet.polyester.com/docs/user-docs/reference/audits): Open published security reviews for Polyester and Zipper.
+- [Official Links](https://testnet.polyester.com/docs/user-docs/reference/official-links): Open official Polyester products, documentation, support, community, and developer resources.
+- [Glossary](https://testnet.polyester.com/docs/user-docs/reference/glossary): Search definitions for Polyester product and trading terms.
+- [LLMs.txt](https://testnet.polyester.com/docs/user-docs/reference/llms-txt): Open Polyester documentation as a plain-text resource for language models and other tools.
+## Help & Support
+- [FAQs](https://testnet.polyester.com/docs/user-docs/help-and-support/faqs): Search answers to common questions about Polyester.
+- [Feature Requests](https://testnet.polyester.com/docs/user-docs/help-and-support/feature-requests): Submit an idea or browse feature requests from the Polyester community.
+- [Submit a Support Ticket](https://testnet.polyester.com/docs/user-docs/help-and-support/submit-a-support-ticket): Contact Polyester support about a private or account-specific question.
+## Developer Resources
+- [Developer Docs](https://testnet.polyester.com/docs/developer-docs): API, transport, authentication, request-signing, and integration documentation.
+- [SDK Docs](https://testnet.polyester.com/docs/sdk): Language-specific Polyester SDK documentation.
+- [Polyester Scan](https://polyesterscan.com/): Public Polyester Chain and asset-flow explorer.

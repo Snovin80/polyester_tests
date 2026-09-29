@@ -1,0 +1,282 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/transfers
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Transfers · Python SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Python
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Python
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Transfers
+Transfers
+Copy page
+View as Markdown
+Open in
+client.transfers
+reads and streams ledger transfer history. Creating a movement uses a
+purpose-specific service:
+client.internal_transfers
+,
+client.withdraw
+, or an on-chain helper.
+page
+=
+await
+client.transfers.list(
+limit
+=
+50
+,
+reversed
+=
+True
+)
+for
+transfer
+in
+page.transfers:
+print
+(
+transfer.tx_id,
+transfer.asset_id,
+transfer.amount,
+transfer.transfer_type,
+transfer.is_debit,
+transfer.pending,
+)
+# Continue from the numeric cursor when returned.
+if
+page.next_cursor
+is
+not
+None
+next_page
+=
+await
+client.transfers.list(
+since
+=
+page.next_cursor,
+limit
+=
+50
+)
+list
+accepts
+account
+/
+sub_account_id
+,
+limit
+,
+reversed
+, and
+since
+since
+is a
+numeric ledger cursor, not a string page token.
+sub
+=
+await
+client.transfers.subscribe(
+account_id
+=
+client.default_account_id)
+async
+with
+sub:
+async
+for
+transfer
+in
+sub:
+print
+(transfer.tx_id, transfer.amount)
+break
+The stream is private and requires
+API key
++ Account ID.
+Related:
+Internal transfers
+,
+Withdrawals
+Related Topics
+Address book
+Saved destinations and whitelist views.
+API keys
+List, get, subscribe, and generate local API key material (no create on API-key SDKs).
+Auth
+Auth service helpers including nested profile access.
+Balances
+Read ledger balances, history, holds, and stream live balance updates.
+Candles
+Read and stream public spot OHLCV candles via market data (candles alias).
+Catalog
+Spot and Zipper catalog hydration, symbol lookups, and quantity scales used by decimal order writes.
+Chain helpers
+On-chain Funding → Trading and Funding withdraw helpers.
+Chain analytics
+Chain analytics read APIs.
+Client configuration
+Constructor options, URLs, catalogs, wire format, and from_env behavior.
+Deposit
+Create and list per-account chain deposit addresses for funding your Polyester account.
+Errors
+Python SDK error types, MFA auth codes, realtime overflow, and retry guidance.
+Guard signer
+Guard signer approval helpers.
+Heatmap
+L2 order book heatmap reads.
+Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+Layout
+Layout collaboration APIs (reference-only).
+Lifecycle
+Deposit/withdraw lifecycle flows and subscribe.
+Market overview
+List and subscribe to per-market stats with optional snapshot-then-stream merge.
+Order book
+Depth snapshots and a stateful live order book that reconstructs the book for you.
+Orders
+Place, modify, cancel, batch, and stream spot orders, with optional attached take-profit, stop-loss, and trailing-stop risk.
+Policies
+Realtime API-key and subaccount-policy updates.
+Polychart
+Polychart collaboration APIs (reference-only).
+Profile
+Profile identity reads and subscribe helpers.
+Public trades
+Public trade tape reads and subscribe via market data.
+Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+Social verification
+Social verification APIs (reference-only).
+Subaccounts
+Subaccount reads, members, invites, activity.
+User trades
+List and stream your private spot fills (not the public tape).
+Triggers
+Create, manage, pause/resume, and stream standalone automations that place a child order when a market condition fires.
+Whiteboard
+Whiteboard collaboration APIs (reference-only).
+Withdrawals
+Trading withdraw intents to funding or external chain destinations (signed payload).
+Zipper
+Deposit/withdraw config and related Zipper reads.
+Previous
+User trades
+Next
+Triggers
+On this page
+Related Topics
+Share this page
+Transfers
+Transfer history reads.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+page = await client.transfers.list(limit=50, reversed=True)
+for transfer in page.transfers:
+    print(
+        transfer.tx_id,
+        transfer.asset_id,
+        transfer.amount,
+        transfer.transfer_type,
+        transfer.is_debit,
+        transfer.pending,
+    )
+
+# Continue from the numeric cursor when returned.
+if page.next_cursor is not None:
+    next_page = await client.transfers.list(since=page.next_cursor, limit=50)
+
+---
+
+sub = await client.transfers.subscribe(account_id=client.default_account_id)
+async with sub:
+    async for transfer in sub:
+        print(transfer.tx_id, transfer.amount)
+        break

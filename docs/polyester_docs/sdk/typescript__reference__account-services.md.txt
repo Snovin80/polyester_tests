@@ -1,0 +1,155 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/account-services.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Account services
+Reference for auth, subaccounts, API keys, balances, MFA, address book, profile, VIP, and related account services.
+Services on this page use the authenticated transport except the auth login endpoints, `client.subaccounts.listRoles()`, and `client.vip.listTiers()`, which are public. Methods marked **stream** return `() => void` and take `onEvent` (+ optional `onOpen` / `onClose` / `onError`).
+## `client.auth`
+Base auth service (all clients):
+| Method                                   | Input → Result      | Notes                                                                                                           |
+| ---------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `acceptTerms(options?)`                  | → `void`            | Record explicit terms consent. Interactive JWT only; no MFA.                                                    |
+| `me(options?)`                           | → `Me`              | Backend-verified caller identity: `accountId`, public `ak_...` `apiKeyId?`, `username`, session assurance info. |
+| `createWalletChallenge(input, options?)` | → `WalletChallenge` | Server-generated EIP-4361 login message, single-use, 5-minute expiry.                                           |
+| `profile`                                | → `ProfileService`  | See below.                                                                                                      |
+On `PolyesterBrowserClient`, `auth` is an `AccountSignerAuthService` with the managed login flow on top:
+| Member                                            | Signature                                                                                              | Notes                                                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `login(options)`                                  | `{ provider: "metamask" \| "phantom" \| "turnkey" \| "other", uri?, loginMethod? }` → `LoginResult`    | Signs the exact SIWE challenge, stores the session.                    |
+| `restoreSession()`                                | → `{ accountId, username } \| null`                                                                    | Restores a persisted, environment-bound session.                       |
+| `refreshSession(params?)`                         | → `LoginResult`                                                                                        | Fresh SIWE challenge + signature.                                      |
+| `logout()`                                        | → `void`                                                                                               | Clears state, disconnects private realtime.                            |
+| `getState()`                                      | → `AuthState`                                                                                          | `isAuthenticated`, addresses, `mainAccountId`, `activeAccount`.        |
+| `getSessionTimeToExpiry()`                        | → `number`                                                                                             | Milliseconds remaining.                                                |
+| `hydrateAuthState(data)`                          | `AuthHydrationData` → `void`                                                                           | Seed state from SSR before `restoreSession`.                           |
+| `switchAccount(accountId)`                        | → `{ accountId, isMain }`                                                                              | Changes the active account scope.                                      |
+| `createSubaccount(params)`                        | `{ accountSigner, label?, uri?, ownerAddress? }` → `{ subaccountId, smartAccountSaltNonce, revision }` |                                                                        |
+| `setAccountSigner(signer)` / `getAccountSigner()` |                                                                                                        | Swap or read the signer.                                               |
+| `events`                                          | `EventEmitter`                                                                                         | `authenticated`, `loggedOut`, `error`, `servicesReady`, `stateChange`. |
+### `client.auth.profile`
+| Method                                    | Input → Result                             | Notes                                                                                                                                                                 |
+| ----------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get(options?)`                           | → `Profile`                                | Username eligibility/cooldown, socials, avatar, VIP tier. See [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip) for the catalog and root status. |
+| `update(input, options?)`                 | mutable fields → `Profile`                 | Empty string clears an optional text field.                                                                                                                           |
+| `getUsernameHistory(options?)`            | → `UsernameHistoryEntry[]`                 | Newest first, ≤ 20.                                                                                                                                                   |
+| `generateUsernameOptions(options?)`       | → generated offer                          | Usernames, short-lived offer token, optional expiry.                                                                                                                  |
+| `claimGeneratedUsername(input, options?)` | offer token + zero-based index → `Profile` | Claims one generated username.                                                                                                                                        |
+| `subscribeIdentity(input)`                | `accountId` → **stream**                   | Public identity updates.                                                                                                                                              |
+## `client.accounts`
+| Method                     | Input → Result                                                                 | Notes                           |
+| -------------------------- | ------------------------------------------------------------------------------ | ------------------------------- |
+| `resolve(input, options?)` | `query` (username / id / address), `includeSubaccounts?` → `ResolvedAccount[]` | Resolves transfer destinations. |
+## `client.subaccounts`
+| Method                                     | Input → Result                                                          | Notes                                         |
+| ------------------------------------------ | ----------------------------------------------------------------------- | --------------------------------------------- |
+| `list(options?)`                           | → `{ totalCreated, subaccounts }`                                       | Owned + shared.                               |
+| `get(input, options?)`                     | `subaccountId` → subaccount + `apiKeys`, `policy`, `members`, `invites` | Throws if missing.                            |
+| `createChallenge(input, options?)`         | `ownerAddress`, `uri` → `SubaccountChallenge`                           | Next smart account + authorization message.   |
+| `create(input, options?)`                  | address/message/signature proof → `CreateSubaccountResult`              | Browser apps: prefer `auth.createSubaccount`. |
+| `update(input, options?)`                  | `subaccountId`, label/status → result                                   |                                               |
+| `inviteMember(input, options?)`            | `subaccountId`, invitee, role → `SubaccountInvite`                      |                                               |
+| `respondInvite(input, options?)`           | accept/reject/cancel → `SubaccountInvite`                               |                                               |
+| `listInvites(input, options?)`             | direction filter → `SubaccountInvite[]`                                 |                                               |
+| `listRoles(options?)`                      | → role and permission catalog                                           | Public.                                       |
+| `getEffectivePermissions(input, options?)` | `subaccountId` → role, permissions, policy ID                           | Authenticated caller.                         |
+| `listMembers(input, options?)`             | `subaccountId` → `SubaccountMember[]`                                   | Owner + delegates.                            |
+| `updateMemberRole(input, options?)`        | → result                                                                |                                               |
+| `setMemberMfaRequirement(input, options?)` | → result                                                                | Owner-controlled MFA gate.                    |
+| `listEvents(input, options?)`              | `subaccountId`, pagination → `{ events, nextPageToken }`                | Audit trail, ≤ 200/page.                      |
+| `subscribe(input)`                         | `accountId` → **stream** of subaccount updates                          |                                               |
+| `subscribeApiKeys(input)`                  | `accountId` → **stream** of API key updates                             |                                               |
+### `client.subaccounts.policies`
+Reusable permission templates for subaccounts.
+| Method                       | Input → Result                                                  |
+| ---------------------------- | --------------------------------------------------------------- |
+| `list(options?)`             | → `SubaccountPolicy[]`                                          |
+| `get(input, options?)`       | `{ policyId }` → `SubaccountPolicy \| null`                     |
+| `create(input, options?)`    | scopes/actions/limits (+ optional target) → `SubaccountPolicy`  |
+| `update(input, options?)`    | `{ policyId, expectedRevision, ...patch }` → `SubaccountPolicy` |
+| `delete(policyId, options?)` | → `void` (only when unused)                                     |
+| `apply(input, options?)`     | `{ subaccountId, policyId \| null }` → `void`                   |
+| `subscribePolicies(input)`   | `accountId` → **stream**                                        |
+## `client.apiKeys`
+| Method                      | Input → Result                                                                                        | Notes                               |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `generateKeypair()`         | → `{ publicKey: { hex, bytes }, secretKey: { hex, bytes } }`                                          | Local only; never sends the secret. |
+| `create(payload, options?)` | `label`, `publicKeyEd25519` (bytes), `ipWhitelist?`, `icon?`, `color?`, `account?` → `ApiKey \| null` | May require `stepUpToken`.          |
+| `list(params?, options?)`   | → `ApiKey[]`                                                                                          | Non-revoked, newest first.          |
+| `get(input, options?)`      | `keyId` (`ak_…`) → `ApiKey \| null`                                                                   |                                     |
+| `update(payload, options?)` | `keyId` + metadata/status/whitelist/expiry → `ApiKey \| null`                                         |                                     |
+| `delete(input, options?)`   | `keyId` → `void`                                                                                      | Permanent revocation.               |
+| `subscribe(input)`          | `accountId` → **stream** of `ApiKey`                                                                  |                                     |
+`client.apiKeys.policies` mirrors the subaccount policies API (`list` / `get` / `create` / `update` / `delete` / `apply`) for API key policy templates.
+## `client.balances`
+| Method                                       | Input → Result                                               | Notes            |
+| -------------------------------------------- | ------------------------------------------------------------ | ---------------- |
+| `list(input?, options?)`                     | `account?` → `LedgerBalance[]`                               | Decimal strings. |
+| `getBalanceHistory(input, options?)`         | time range + asset/bucket filters → `BalanceHistoryResponse` | Columnar.        |
+| `getEquityHistory(input, options?)`          | time range + grouping → `EquityHistoryResponse`              | Columnar.        |
+| `getPortfolioEquityHistory(input, options?)` | range → `PortfolioEquityHistoryResponse`                     | Root portfolio.  |
+| `getPortfolioEquitySnapshot(options?)`       | → `PortfolioEquitySnapshotResponse`                          | Root portfolio.  |
+| `subscribe(input)`                           | `accountId` → **stream** of `LedgerBalance`                  |                  |
+## `client.claims`
+Daily campaign rewards belong to the authenticated root account. These endpoints require a session JWT; API keys are not accepted.
+| Method                          | Result                   | Notes                                                                  |
+| ------------------------------- | ------------------------ | ---------------------------------------------------------------------- |
+| `getDailyClaimStatus(options?)` | `DailyClaimStatus`       | Read the current UTC day's available or existing claim and reset time. |
+| `claimDailyReward(options?)`    | `ClaimDailyRewardResult` | Claim the current UTC day's reward; retries return the same claim.     |
+```ts
+const status = await client.claims.getDailyClaimStatus();
+if (status.state === "available") {
+const claim = await client.claims.claimDailyReward();
+console.log(claim.claimId, claim.state, claim.rewards);
+}
+```
+Both results include `state`, `claimId`, `rewards`, optional `resetAt`, and optional `campaign`. `state` is `"available"`, `"processing"`, `"claimed"`, `"unavailable"`, or `"unspecified"`. Each reward has `assetId`, `assetCode`, and an exact decimal-string `amount`.
+The claim result also includes optional `claimedAt` and `transfers`, an array of `{ assetId, transferId }`. Timestamps are epoch milliseconds when present. A campaign has `campaignId`, `name`, `description`, and `claimPolicy` (`"utc_daily"` or `"unspecified"`). Read status again to follow a `"processing"` claim rather than treating it as completed.
+## `client.mfa`
+| Method                                                                           | Purpose                                                                         |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `listFactors(options?)`                                                          | Enrolled factors + whether unused recovery codes exist.                         |
+| `beginTotpEnrollment` / `finishTotpEnrollment`                                   | TOTP enrollment, recovery codes, and optional elevated session/access token.    |
+| `beginPasskeyEnrollment` / `finishPasskeyEnrollment`                             | Passkey enrollment, recovery codes, and optional elevated session/access token. |
+| `beginChallenge(input, options?)`                                                | Start a challenge with `purpose: "sessionElevation" \| "freshStepUp"`.          |
+| `verifyTotpChallenge` / `finishPasskeyChallenge` / `verifyRecoveryCodeChallenge` | Complete a challenge → `{ stepUpToken?, … }`.                                   |
+| `updateFactor` / `deleteFactor`                                                  | Relabel / remove a factor.                                                      |
+| `regenerateRecoveryCodes(input?, options?)`                                      | Rotate recovery codes (step-up required).                                       |
+| `claimFreshStepUp` / `consumeFreshStepUp` / `releaseFreshStepUp`                 | Bind, finalize, or release a step-up proof for one protected request.           |
+See [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling) for the step-up retry pattern.
+## `client.addressBook`
+| Method                                                                      | Purpose                                               |
+| --------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `listBooks(options?)`                                                       | Root/subaccount books visible to the caller.          |
+| `listEntries` / `createEntry` / `updateEntry` / `deleteEntry` / `copyEntry` | Saved destination CRUD (+ copy across books).         |
+| `createTag` / `updateTag` / `deleteTag`                                     | Organizational tags.                                  |
+| `listTransferCounterparties(input?, options?)`                              | Recent counterparties incl. unsaved ones.             |
+| `listTransferDestinations(input?, options?)`                                | Saved + whitelisted destinations for transfer flows.  |
+| `listInternalTransferWhitelistEntries(input?, options?)`                    | Internal-transfer whitelist with resolution status.   |
+| `getWithdrawWhitelistView(input?, options?)`                                | Withdrawal whitelist requirements + mirrored entries. |
+| `getView(input?, options?)`                                                 | Composite view, optionally at `minimumViewRevision`.  |
+| `subscribeViewInvalidations(input)`                                         | **stream** of signals to refetch `getView`.           |
+## `client.vip`
+VIP policy service. `listTiers` is public. `getStatus` is authenticated and always reads the root account. Full shapes: [VIP](https://testnet.polyester.com/docs/sdk/typescript/reference/vip).
+| Method                | Input → Result     | Notes                                                |
+| --------------------- | ------------------ | ---------------------------------------------------- |
+| `listTiers(options?)` | → `VipTierCatalog` | Public. VIP0+ thresholds, fee rates, policy version. |
+| `getStatus(options?)` | → `VipStatus`      | Authenticated. Always the caller's root account.     |
+## `client.socialVerification`
+| Method                       | Purpose                                                           |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `start(input, options?)`     | Begin provider verification → `poly_…` challenge code (\~15 min). |
+| `markReady(input, options?)` | Queue the provider check once the code is placed.                 |
+| `get(input, options?)`       | Current status, attempts, last error.                             |
+## `client.guardSigner`
+Backend guard wallets that co-sign protected account actions.
+| Method                                       | Purpose                                                    |
+| -------------------------------------------- | ---------------------------------------------------------- |
+| `createWallet(input?, options?)`             | Create the guard wallet → signer EVM address.              |
+| `getStatus(input?, options?)`                | Stored/live status, `null` if absent.                      |
+| `signProtectedAction(input, options?)`       | One approval signature.                                    |
+| `batchSignProtectedActions(input, options?)` | Ordered approvals for a batch.                             |
+| `rotateWallet(input?, options?)`             | Replacement wallet + rotation approval.                    |
+| `exportWallet(input?, options?)`             | Export key material (owner authorization + fresh step-up). |
+## `client.whiteboard`
+Collaborative whiteboards: `create`, `get`, `list`, `update`, `updateAcl`, `archive`, and `mintJoinToken` (string shorthand accepted where an id is the only field).

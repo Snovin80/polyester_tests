@@ -1,0 +1,413 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/POST/v1/auth/address-book-entries
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+AddressBookService
+Create Address Book Entry
+Create one saved address-book entry in the selected root or subaccount book. Interactive callers with enrolled MFA need recent assurance; API keys need MANAGE_ADDRESS_BOOK.
+Copy URL
+Method
+POST
+Path
+/v1/auth/address-book-entries
+Visibility
+Authentication required
+Authentication
+Session token or API key
+MFA Requirement
+Conditionally required
+POST
+/v1/auth/address-book-entries
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/auth/address-book-entries' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"external": {
+"address": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1
+},
+"label": "Treasury Wallet",
+"newTags": [
+"color": "#7C3AED",
+"name": "Treasury"
+}
+],
+"note": "Primary treasury destination.",
+"subaccountId": "6789012345678",
+"tagIds": [
+"1"
+]
+}'
+Responses
+"entry": {
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"external": {
+"address": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1
+},
+"kind": "EXTERNAL_CHAIN",
+"label": "Treasury Wallet",
+"note": "Primary treasury destination.",
+"revision": "1",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "ROOT",
+"subaccountId": "37HAHbBRCeY"
+},
+"tags": [
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"name": "Treasury",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "ROOT",
+"subaccountId": "37bbZLLApNf"
+},
+"tagId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+entry
+object
+Newly created address book entry.
+11 fields
+addressBookEntryId
+string (fixed64)
+Stable public id of the saved address-book entry.
+Example
+1
+scope
+object
+Address book that owns this entry.
+3 fields
+scopeType
+enum
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+Example
+ROOT
+rootAccountId
+string (fixed64)
+Root account that owns this address book.
+Example
+7563897446546
+subaccountId
+string (fixed64)
+Subaccount for subaccount-scoped books. Empty for root account books.
+Example
+37HAHbBRCeY
+kind
+enum
+Type of saved destination.
+EXTERNAL_CHAIN
+INTERNAL_ACCOUNT
+Example
+EXTERNAL_CHAIN
+label
+string
+User-defined display label.
+Example
+Treasury Wallet
+note
+string
+Optional user-defined note.
+Example
+Primary treasury destination.
+createdAt
+string (date-time)
+Time this entry was created, as a UTC timestamp.
+Example
+2025-01-01T00:00:00Z
+updatedAt
+string (date-time)
+Time this entry was last updated, as a UTC timestamp.
+Example
+2025-01-01T00:00:00Z
+external
+object
+External chain withdraw destination.
+2 fields
+polychainChainId
+integer (int32)
+External network identifier for the destination address.
+Example
+1
+address
+string
+Destination address on the selected external network.
+Example
+0x3333333333333333333333333333333333333333
+internal
+object
+Internal account transfer destination.
+6 fields
+rootAccountId
+string (fixed64)
+Root account that owns the target internal account.
+targetAccountId
+string (fixed64)
+Target account or subaccount public id.
+targetScopeType
+enum
+Whether target_account_id identifies a root account or a subaccount.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+smartAccountAddress
+string
+Smart account address for the internal transfer destination.
+rootUsername
+string
+Username for the destination root account, when available.
+subaccountLabel
+string
+Label for the destination subaccount, when the destination is a subaccount.
+tags
+object[]
+Tags currently attached to this entry.
+6 fields
+tagId
+string (fixed64)
+Stable public id of the tag.
+Example
+1
+scope
+object
+Address book scope where this tag exists.
+3 fields
+scopeType
+enum
+Address-book scope type.
+SCOPE_ROOT
+SCOPE_SUBACCOUNT
+Example
+ROOT
+rootAccountId
+string (fixed64)
+Root account that owns this address book.
+Example
+7563897446546
+subaccountId
+string (fixed64)
+Subaccount for subaccount-scoped books. Empty for root account books.
+Example
+37bbZLLApNf
+name
+string
+Human-readable tag name.
+Example
+Treasury
+color
+string (color)
+Optional UI color token for this tag.
+Example
+#7C3AED
+createdAt
+string (date-time)
+Time the tag was created, as a UTC timestamp.
+Example
+2025-01-01T00:00:00Z
+updatedAt
+string (date-time)
+Time this tag was last updated, as a UTC timestamp.
+Example
+2025-01-01T00:00:00Z
+revision
+string (uint64)
+Monotonic resource revision used for conditional updates.
+Example
+1
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+POST
+/v1/auth/address-book-entries
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s382" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request POST \ \
+--url 'https://api.testnet.polyester.com/v1/auth/address-book-entries' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+--header 'Content-Type: application/json' \
+--data '{
+"external": {
+"address": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1
+},
+"label": "Treasury Wallet",
+"newTags": [
+"color": "#7C3AED",
+"name": "Treasury"
+}
+],
+"note": "Primary treasury destination.",
+"subaccountId": "6789012345678",
+"tagIds": [
+"1"
+]
+}'
+Responses
+"entry": {
+"addressBookEntryId": "1",
+"createdAt": "2025-01-01T00:00:00Z",
+"external": {
+"address": "0x3333333333333333333333333333333333333333",
+"polychainChainId": 1
+},
+"kind": "EXTERNAL_CHAIN",
+"label": "Treasury Wallet",
+"note": "Primary treasury destination.",
+"revision": "1",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "ROOT",
+"subaccountId": "37HAHbBRCeY"
+},
+"tags": [
+"color": "#7C3AED",
+"createdAt": "2025-01-01T00:00:00Z",
+"name": "Treasury",
+"scope": {
+"rootAccountId": "7563897446546",
+"scopeType": "ROOT",
+"subaccountId": "37bbZLLApNf"
+},
+"tagId": "1",
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+],
+"updatedAt": "2025-01-01T00:00:00Z"
+}
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request POST \ \
+  --url 'https://api.testnet.polyester.com/v1/auth/address-book-entries' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "external": {
+    "address": "0x3333333333333333333333333333333333333333",
+    "polychainChainId": 1
+  },
+  "label": "Treasury Wallet",
+  "newTags": [
+    {
+      "color": "#7C3AED",
+      "name": "Treasury"
+    }
+  ],
+  "note": "Primary treasury destination.",
+  "subaccountId": "6789012345678",
+  "tagIds": [
+    "1"
+  ]
+}'
+
+---
+
+{
+  "entry": {
+    "addressBookEntryId": "1",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "external": {
+      "address": "0x3333333333333333333333333333333333333333",
+      "polychainChainId": 1
+    },
+    "kind": "EXTERNAL_CHAIN",
+    "label": "Treasury Wallet",
+    "note": "Primary treasury destination.",
+    "revision": "1",
+    "scope": {
+      "rootAccountId": "7563897446546",
+      "scopeType": "ROOT",
+      "subaccountId": "37HAHbBRCeY"
+    },
+    "tags": [
+      {
+        "color": "#7C3AED",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "name": "Treasury",
+        "scope": {
+          "rootAccountId": "7563897446546",
+          "scopeType": "ROOT",
+          "subaccountId": "37bbZLLApNf"
+        },
+        "tagId": "1",
+        "updatedAt": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "updatedAt": "2025-01-01T00:00:00Z"
+  }
+}

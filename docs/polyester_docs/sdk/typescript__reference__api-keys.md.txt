@@ -1,0 +1,169 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/api-keys.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API keys
+Generate Ed25519 keypairs, create and manage API keys, and attach reusable permission policies.
+`client.apiKeys` manages API key metadata and the client-generated Ed25519 keypairs that back it. Every method is authenticated and account-scoped, so inputs accept an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`). See [Authentication](https://testnet.polyester.com/docs/sdk/typescript/reference/auth) for how a key becomes a session.
+The secret half of a keypair is generated locally and never leaves your process. You send only the public key when you create a key, and you keep the secret to sign requests later. Reusable permission policies live under `client.apiKeys.policies`.
+## Methods
+| Method            | Summary                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| `generateKeypair` | Generate an Ed25519 keypair locally. Never sends the secret. |
+| `create`          | Register a key from a public key. May require MFA step-up.   |
+| `list`            | List non-revoked keys, newest first.                         |
+| `get`             | Fetch one key by `ak_...` key id.                            |
+| `update`          | Patch metadata, status, whitelist, or expiry.                |
+| `delete`          | Permanently revoke a key.                                    |
+| `subscribe`       | Stream live key updates over a private channel.              |
+### `generateKeypair()`
+Generates an Ed25519 keypair locally and returns both halves as hex strings and byte arrays. This call never touches the network. Send `publicKey.bytes` to `create`, and store `secretKey` yourself: it is the only copy.
+```ts
+const { publicKey, secretKey } = await client.apiKeys.generateKeypair();
+// Send publicKey.bytes to create(); persist secretKey somewhere safe.
+console.log(publicKey.hex); // "a1b2c3..."
+```
+### `create(payload, options?)`
+The root account must have accepted the current terms. Use [`client.auth.acceptTerms()`](https://testnet.polyester.com/docs/sdk/typescript/reference/auth#accepttermsoptions) from an interactive JWT session after the user agrees. Missing acceptance produces the typed auth detail `AUTH_TERMS_NOT_ACCEPTED`.
+Registers a new API key from a locally generated public key and returns the created `ApiKey`, or `null` if the backend returns no key. Security-sensitive settings can require a fresh MFA step-up.
+```ts
+const { publicKey } = await client.apiKeys.generateKeypair();
+const key = await client.apiKeys.create({
+label: "trading bot",
+publicKeyEd25519: publicKey.bytes,
+ipWhitelist: ["203.0.113.4/32"],
+icon: "robot",
+color: "#4f46e5",
+});
+```
+#### `ApiKeysCreateInput`
+| Field              | Type           | Required | Notes                                    |
+| ------------------ | -------------- | -------- | ---------------------------------------- |
+| `label`            | `string`       | yes      | Display name for the key.                |
+| `publicKeyEd25519` | `Uint8Array`   | yes      | Public key bytes from `generateKeypair`. |
+| `ipWhitelist`      | `string[]`     | no       | CIDR ranges. Defaults to `[]` (any IP).  |
+| `icon`             | `string`       | no       | Icon token for UI display.               |
+| `color`            | `string`       | no       | Color token for UI display.              |
+| `account`          | `AccountScope` | no       | Scope override.                          |
+> **Creating a key may require MFA step-up**
+>
+> When the account requires it, `create` throws a `StepUpRequiredError`. Complete a fresh step-up challenge, then retry the same call with `options.stepUpToken` set to the returned token. See [error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling) for the full pattern, and [MFA](https://testnet.polyester.com/docs/sdk/typescript/reference/mfa) for how to run the challenge.
+```ts
+import { StepUpRequiredError } from "@polyester/sdk";
+try {
+await client.apiKeys.create({ label: "trading bot", publicKeyEd25519: publicKey.bytes });
+} catch (err) {
+if (err instanceof StepUpRequiredError) {
+const stepUpToken = await runStepUpChallenge(); // see the MFA page
+await client.apiKeys.create(
+);
+} else {
+throw err;
+}
+}
+```
+### `list(params?, options?)`
+Returns non-revoked API keys owned by the caller, newest first.
+```ts
+const keys = await client.apiKeys.list();
+for (const key of keys) {
+console.log(key.keyId, key.label, key.status);
+}
+```
+### `get(input, options?)`
+Fetches one key by its `ak_...` key id, or `null` when no matching key is returned.
+```ts
+const key = await client.apiKeys.get({ keyId: "ak_9f2c..." });
+if (key) console.log(key.publicKeyHex, key.status);
+```
+### `update(payload, options?)`
+Patches mutable metadata, `active` / `disabled` status, the IP whitelist, and an optional expiry. Identify the key by `keyId` and pass its latest `revision`. The returned key contains the next revision. Revocation is permanent and goes through `delete`, not `update`.
+```ts
+// Disable a key and pin an expiry
+await client.apiKeys.update({
+keyId: "ak_9f2c...",
+expectedRevision: key.revision,
+status: "disabled",
+expiresAtIso: "2026-01-01T00:00:00Z",
+});
+// Replace the IP whitelist
+await client.apiKeys.update({
+keyId: "ak_9f2c...",
+expectedRevision: key.revision,
+ipWhitelist: ["198.51.100.0/24"],
+});
+// Clear the expiry (pass null)
+await client.apiKeys.update({
+keyId: "ak_9f2c...",
+expectedRevision: key.revision,
+expiresAtIso: null,
+});
+```
+`status` accepts `"active"` or `"disabled"`. `expiresAtIso` takes an ISO 8601 string, or `null` to clear a previously set expiry. Omit a field to leave it unchanged.
+If the key changed after it was read, the SDK throws `RevisionConflictError`. Refetch the key and ask the user to review their draft against the latest values; do not retry the stale update.
+### `delete(input, options?)`
+Permanently revokes the key. A revoked key can never authenticate again, so this is not reversible.
+```ts
+await client.apiKeys.delete({ keyId: "ak_9f2c..." });
+```
+### `subscribe(input)`
+Streams live API key updates over a private channel. Takes an `accountId` plus the standard handler fields, and returns an idempotent unsubscribe function. See the [realtime client reference](https://testnet.polyester.com/docs/sdk/typescript/reference/realtime) for the handler contract.
+```ts
+const unsubscribe = client.apiKeys.subscribe({
+accountId,
+onEvent: (key) => console.log(key.keyId, key.status),
+onError: (ctx) => console.error(ctx.channel, ctx.error),
+});
+// later
+unsubscribe();
+```
+## The `ApiKey` shape
+`list`, `get`, `create`, `update`, and `subscribe` return the same parsed shape. Display timestamps are epoch milliseconds. `updatedAtNs` is the exact decimal-string freshness token for reconciling REST and realtime copies without losing sub-millisecond ordering. `status` includes `"unspecified"`. `publicKeyEd25519` is a `Uint8Array`. `expiresAt` is an ISO 8601 string when set.
+```ts
+import type { ApiKey } from "@polyester/sdk";
+```
+## Policies
+`client.apiKeys.policies` manages reusable permission templates and their assignment to keys. It controls spot-market scopes and allowed actions. A key with no policy has no permissions. `list`, `create`, `update`, `delete`, and `apply` need an interactive session. An API key gets `PermissionError: interactive session required`.
+Actions: `"trade-spot"`, `"internal-transfer"`, `"external-withdraw"`, `"read-balances"`, `"read-spot"`, `"read-internal-transfers"`, `"read-address-book"`, and `"manage-address-book"`.
+`"trade-spot"` allows every spot order mutation: create, modify, replace, cancel, batch operations, live cancel-all, and arming or disabling cancel-all-after. It includes reading spot orders and trades and placing or modifying triggers. `"read-spot"` allows reading spot orders, trades, and subscriptions, plus a cancel-all dry run; it is strictly non-mutating, so cancellation and cancel-all-after changes require `"trade-spot"`. When trading is disabled, an otherwise authorized caller can still cancel.
+| Method   | Summary                                                          |
+| -------- | ---------------------------------------------------------------- |
+| `list`   | List policy templates available to the caller.                   |
+| `get`    | Fetch one policy by id (falls back to the default no-op policy). |
+| `create` | Create a policy, optionally assigning it to a key immediately.   |
+| `update` | Patch selected fields on an existing policy.                     |
+| `delete` | Delete a policy that is not in use.                              |
+| `apply`  | Attach a policy to a key, or clear it with `policyId: null`.     |
+```ts
+await client.catalog.ensureReady();
+const symbolId = client.catalog.market.requireSymbolIdByPairSymbol("BTC-USDT");
+// Create a policy and attach it to a key in one call
+const policy = await client.apiKeys.policies.create({
+name: "read-only",
+spotMarketScope: "allowlist",
+spotMarkets: [{ symbolId }],
+actions: ["read-balances", "read-spot"],
+assignToKeyId: apiKey.keyId,
+});
+// Or attach an existing policy later
+await client.apiKeys.policies.apply({ keyId: apiKey.keyId, policyId: policy.id });
+// Clear a key's policy (back to no permissions)
+await client.apiKeys.policies.apply({ keyId: apiKey.keyId, policyId: null });
+```
+`spotMarketScope: "all"` permits current and future spot markets and ignores `spotMarkets` for enforcement. `"allowlist"` permits only the listed `symbolId` values; an empty allowlist permits no market. Each ID must be an integer from 1 through 4,294,967,295.
+Policy updates require the latest policy revision and return the updated policy:
+```ts
+const updatedPolicy = await client.apiKeys.policies.update({
+policyId: policy.id,
+expectedRevision: policy.revision,
+name: "restricted trading",
+});
+```
+If the revision is stale, the SDK throws `RevisionConflictError`. Refetch the policy and ask the user to review their draft against the latest version; do not retry automatically.
+`get` returns a default no-permissions policy when you pass no id, an empty id, or an unknown id, so it never returns `null`. That default policy's `id` is `""`, and a key with no policy reports `policyId: ""`, so keys match policies by ID. Test for a missing policy with `!apiKey.policyId`.
+## Related
+- [Authentication](https://testnet.polyester.com/docs/sdk/typescript/reference/auth) for signing requests with a key.
+- [MFA](https://testnet.polyester.com/docs/sdk/typescript/reference/mfa) for running the step-up challenge that `create` may require.
+- [Subaccounts](https://testnet.polyester.com/docs/sdk/typescript/reference/subaccounts) for the policy model this mirrors.
+- [Error handling](https://testnet.polyester.com/docs/sdk/typescript/guides/error-handling) for `StepUpRequiredError` and retries.
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for the error type reference.

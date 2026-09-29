@@ -1,0 +1,52 @@
+Источник: https://testnet.polyester.com/docs/sdk/go/reference/catalog.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Catalog
+Spot/Zipper catalog hydration via HydrateCatalogs and WaitForCatalogs, plus Manager lookups.
+`client.Catalogs` is a `*catalogs.Manager`. With `Config.HydrateCatalogs: true` (default via `FromEnv`), the client starts background hydration of spot config and deposit-withdraw config.
+```go
+if err := client.WaitForCatalogs(ctx); err != nil {
+// Hydration failed or the context was canceled. Do not treat the client as ready.
+return err
+}
+```
+> **Fail-closed hydration**
+>
+> `WaitForCatalogs` returns when the background attempt finishes. **Failed fetches, invalid catalog scales/IDs, empty names, and duplicate/conflicting identities return an error** (inspect `CatalogsLastError()`). A rejected refresh does not partially replace the previous valid snapshot. Scale `0` is valid; use the lookup's `ok` value to distinguish it from an unavailable scale. Disable with `HydrateCatalogs: false` (then `WaitForCatalogs` returns immediately).
+## Manual hydrate / lookups
+```go
+spot, err := client.MarketData.GetSpotConfig(ctx)
+if err != nil {
+return err
+}
+if err := client.Catalogs.HydrateSpotConfig(spot.Raw); err != nil {
+return err
+}
+dw, err := client.Zipper.GetDepositWithdrawConfig(ctx)
+if err != nil {
+return err
+}
+if err := client.Catalogs.HydrateZipperConfig(dw); err != nil {
+return err
+}
+id := client.Catalogs.SymbolIDForSymbol("BTC-USDT")
+scale, ok := client.Catalogs.BaseQuantityScaleForSymbol("BTC-USDT")
+if id == nil || !ok {
+return fmt.Errorf("BTC-USDT is not present in the hydrated catalog")
+}
+buckets := client.Catalogs.OrderbookPriceBucketsForSymbol("BTC-USDT")
+```
+| Method                                       | Notes                                                |
+| -------------------------------------------- | ---------------------------------------------------- |
+| `HydrateSpotConfig` / `HydrateZipperConfig`  | Replace snapshots                                    |
+| `SymbolIDForSymbol`                          | `*uint32`                                            |
+| `BaseQuantityScaleForSymbol` / `…SymbolID`   | Returns `(scale, ok)`; `ok` is false when unresolved |
+| `OrderbookPriceBucketsForSymbol`             | `[]string`                                           |
+| `LedgerIDForAsset` / `QuantityScaleForAsset` | Zipper-backed                                        |
+| `PatchZipperSupply`                          | Live supply patches                                  |
+There is no TS-style `catalog.orders.validateSpotOrderDecimalInput` helper. Invalid precision typically fails at encode time (`*ValidationError`) or as an API error.
+## Related
+- [Catalog & precision](https://testnet.polyester.com/docs/sdk/go/concepts/catalog-and-precision)
+- [Orders](https://testnet.polyester.com/docs/sdk/go/reference/orders)
+- [Errors](https://testnet.polyester.com/docs/sdk/go/reference/errors)

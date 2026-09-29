@@ -1,0 +1,61 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/realtime.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Realtime
+Shared Centrifugo WebSocket client, subscription contract, handshake-before-return, and fail-closed overflow.
+`client.realtime` is the `AsyncRealtimeClient` that every service `subscribe*` method uses. Order updates, market data, balances, and triggers multiplex over the binary Centrifugo Protobuf WebSocket protocol (not ConnectRPC streaming, not SBE). Prefer the typed service helpers; reach for `client.realtime.subscribe_proto(...)` only when you need a raw channel.
+The transport negotiates `centrifuge-protobuf` and uses length-delimited Protobuf control frames and publication payloads. JSON wire mode applies only to ConnectRPC debugging, never to realtime. Inbound WebSocket messages are capped at 4 MiB and oversized messages fail the subscription closed.
+## Subscription contract
+Service subscribe methods return an `AsyncSubscription[T]`:
+| API                     | Behavior                                 |
+| ----------------------- | ---------------------------------------- |
+| `async for item in sub` | Yield decoded events until close/error   |
+| `async with sub`        | Ensures `aclose()` on exit               |
+| `await sub.aclose()`    | Stop the subscription                    |
+| `sub.error`             | Terminal error if the stream failed      |
+| `sub.set_on_error(...)` | Observe background transport/feed errors |
+```python
+sub = await client.orders.subscribe(account_id=account_id)
+sub.set_on_error(lambda error: print(f"realtime interruption: {error}"))
+async with sub:
+async for order in sub:
+print(order.status, order.order_id)
+```
+Consume events with the async iterator. `set_on_error` is for feed-health notification; it does not replace event consumption. Callback exceptions are isolated from the subscription worker.
+## Handshake before return
+`subscribe_proto` (and every service helper that uses it) **awaits the Centrifugo connect/subscribe handshake**, including private token fetch, before returning the subscription.
+- Initial auth / handshake failures **raise** instead of reconnecting forever in the background.
+- Do not treat “no event for a few seconds” as proof that auth succeeded; success means the subscribe call returned without raising.
+After a successful handshake, transient transport failures may reconnect (when `auto_reconnect=True`, the default for most channels). Reconnect uses capped exponential backoff with per-subscription jitter and resets after a successful resubscription.
+## Private channels need Account ID
+Private channels require API-key credentials **and** an Account ID. Pass `account_id=` to the subscribe helper, or set `default_account_id` on the client / `POLYESTER_ACCOUNT_ID` in the environment.
+Without credentials, private subscribe raises synchronously. Hyphenated channel segments such as `api-keys` are valid for API-key auth; failures here are usually signing or handshake errors.
+## Fail-closed overflow
+> **No silent drops**
+>
+> Subscription queues are bounded. Generic typed subscriptions default to 1000 items; the managed order-book subscription uses a dedicated 200-item queue. If the consumer falls behind, the SDK raises `PolyesterRealtimeOverflowError` and faults the subscription. It does **not** silently drop updates. Resubscribe after you catch up.
+## Lower-level API
+```python
+from polyester.codecs.realtime_decode import decode_order_bytes
+from polyester.gen.chain.zipper.v1.zipper_pb2 import ZippedAssetSupplyBatch
+def decode_supply(payload: bytes) -> ZippedAssetSupplyBatch:
+message = ZippedAssetSupplyBatch()
+message.ParseFromString(payload)
+return message
+# Public protobuf example
+public_sub = await client.realtime.subscribe_proto(
+"public:chain:zipped-asset:supply:proto",
+decode=decode_supply,
+)
+# Private protobuf example, credentials + account scoping required by channel name
+private_sub = await client.realtime.subscribe_proto(
+f"private:spot:orders:{account_id}:proto",
+decode=decode_order_bytes,
+)
+```
+Managed snapshot-then-stream helpers (order book, market overview) typically disable blind auto-reconnect so they can rebuild REST state between attempts. Their create methods await both the WebSocket handshake and initial snapshot, and their `on_error=` callback is isolated from the worker. See the [Streaming guide](https://testnet.polyester.com/docs/sdk/python/guides/streaming).
+## Related
+- [Streaming guide](https://testnet.polyester.com/docs/sdk/python/guides/streaming)
+- [WebSocket session model](https://testnet.polyester.com/docs/developer-docs/shared-concepts/websocket-session-model)
+- [Orders](https://testnet.polyester.com/docs/sdk/python/reference/orders), [Balances](https://testnet.polyester.com/docs/sdk/python/reference/balances), [Triggers](https://testnet.polyester.com/docs/sdk/python/reference/triggers)

@@ -1,0 +1,42 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/reference/internal-transfers.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Internal transfers
+Move trading balances between Polyester accounts without touching a chain.
+`client.internal_transfers` moves funds between Polyester accounts without touching a chain: from your source scope to another root account, a subaccount, or a smart-account address.
+Transfers are idempotent on `idempotency_key`: repeat requests with the same key return the existing transfer instead of creating a second one. Quantity must be an `AssetAmount` in the ledger domain.
+## Methods
+| Method   | Summary                                             |
+| -------- | --------------------------------------------------- |
+| `create` | Create (or return) an idempotent internal transfer. |
+### Create
+Provide exactly one destination: `destination_account_id`, `destination_subaccount_id`, or `destination_smart_account_address`.
+```rust
+use polyester::models::CreateInternalTransferParams;
+use polyester::types::{AssetAmount, QuantityDomain};
+let quantity = AssetAmount::from_decimal_str(
+"125.50",
+2, // input/catalog precision
+QuantityDomain::LedgerE18,
+Some(2), // asset_id
+)?;
+let result = client
+asset_id: 2,
+quantity,
+idempotency_key: "xfer-stable-1".into(),
+subaccount_id: None,
+destination_account_id: None,
+destination_subaccount_id: Some("123".into()),
+destination_smart_account_address: None,
+quantity_scale: Some(2),
+})
+println!("{} {}", result.transfer_id, result.request_id);
+```
+The second constructor argument and `quantity_scale` describe the input precision. If `AssetAmount` already carries a scale, `quantity_scale` must match it; when the amount has no scale, the option supplies one. The final `Some(2)` constructor argument is the asset ID.
+The request field is always canonical 18-decimal `amount_e18`. The SDK rescales exactly: it rejects overflow, zero values, and downscaling that would discard non-zero digits. It never rounds.
+## Related
+- [Deposits & withdrawals guide](https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals)
+- [Balances](https://testnet.polyester.com/docs/sdk/rust/reference/balances)
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/rust/reference/withdrawals)
+- [Requests & idempotency](https://testnet.polyester.com/docs/sdk/rust/concepts/requests-and-idempotency)

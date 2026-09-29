@@ -1,0 +1,62 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/api-keys.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# API Keys
+Create API keys, choose what they can access, and keep their private signing keys safe.
+An **API key** lets software access one Polyester Main Account or Subaccount. You choose whether the key can view balances, trade, or move funds, and you can disable or revoke it at any time.
+Open **[API Keys](https://testnet.polyester.com/account/api-keys)** to create a key and manage its access.
+![API Keys list with name, Key ID, permissions, and status](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/107adfd6f45147c9e22cfb03fb543c0a6e854cfe2c9b8f89e63151719e7def3a/source.webp)
+For request signing, authentication headers, replay protection, and implementation examples, use [Ed25519 API Keys in the Developer Docs](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys).
+## How an API key works
+Polyester API keys use an Ed25519 keypair:
+- The **private key** stays with your software and signs each request.
+- The **public key** lets Polyester verify the signature.
+- The **Key ID** tells Polyester which public key and permissions apply.
+- The **account** limits the key to one Main Account or Subaccount.
+- The **permissions** control which actions the key can perform.
+Polyester never stores or redisplays the private key.
+> **Keep the private key secret**
+>
+> Store it in a secret manager. Never paste it into support, chat, source code, screenshots, logs, analytics, or an untrusted browser form. Revoke the key immediately if it may have been exposed.
+## Choose how to create the key
+## Generate in browser
+Your browser creates the public and private key. Save the private key securely before completing creation; it is shown only once.
+## Bring your own key
+Create the Ed25519 keypair in your own security system and provide only the public key to Polyester. The private key never leaves your system.
+## Create an API key
+1. Choose the account
+Select the Main Account or Subaccount the software should use.
+2. Name the key
+Use a label that identifies the application and environment, such as 'Reporting production' or 'Market maker testnet'.
+3. Create or provide the keypair
+Generate it in the browser or enter a public key you created elsewhere. Save the private key before continuing.
+![Create API Key with Generate in browser, then the created Key ID](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/d250f367651455114ea8848499f936c5db7463e78588a5428661af7345c0ca0b/source.webp)
+4. Choose its access
+Enable only the data and actions the application needs. Add an expiry and IP whitelist when appropriate.
+5. Save the Key ID
+Store the Key ID with the private key and application configuration, then test one low-risk request.
+## Choose permissions and limits
+- **Spot Trading** can allow market data access, order access, or order placement for all or selected markets.
+- **Balances** lets the key view private account balances.
+- **Outgoing Internal Transfers** can allow internal transfer access.
+- **External Withdrawals** can allow withdrawal access.
+- **Address Book** can allow the key read or write access to saved internal accounts and external addresses.
+- **IP whitelist** limits requests to specified IP addresses or network ranges.
+The most restrictive account, Subaccount, API-key, whitelist, and endpoint rule always applies.
+![API Key Details with Spot Trading permissions](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/102c4513765170dfba9d10d60dfe28977d1960ba054c2e5058fd3e94d8a094bf/source.webp)
+> **API keys do not open MFA prompts**
+>
+> A software request cannot complete an interactive MFA challenge. Protect write access with a narrow account, limited permissions, an expiry, a stable IP whitelist when available, and a separate key for each application.
+## Manage and replace keys
+The API Keys page shows each key's account, permissions, creation time, last use, status, and expiry.
+- **Disable** pauses a key and can be reversed.
+- **Revoke** permanently stops the key.
+- **Replace** a key by creating and testing a new one before revoking the old one.
+If a key is no longer needed or its private key may be exposed, revoke it instead of leaving it active.
+## Developer guides
+Use the Developer Docs for request signing and API integration:
+- [Ed25519 API Keys](https://testnet.polyester.com/docs/developer-docs/authentication-security/ed25519-api-keys)
+- [API Key IP Allowlists](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-ip-allowlists)
+- [API Key Replay Policy](https://testnet.polyester.com/docs/developer-docs/authentication-security/api-key-replay-policy)
+- [REST Guide](https://testnet.polyester.com/docs/developer-docs/rest/getting-started)

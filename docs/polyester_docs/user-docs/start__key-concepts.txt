@@ -1,0 +1,354 @@
+Источник: https://testnet.polyester.com/docs/user-docs/start/key-concepts
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Key Concepts · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Start Here
+svg]:size-3.5">
+/
+Key Concepts
+Key Concepts
+Copy page
+View as Markdown
+Open in
+To use Polyester confidently, it helps to understand how Assets move, where balances live, and how trades are processed. These concepts follow an Asset from its source chain into Polyester, through your account, and onto an order book.
+Core Systems
+Polyester Chain
+Polyester Chain
+is Polyester's EVM-compatible Layer 1. It is the on-chain foundation of the Polyester Exchange and
+Zipper
+, where
+Zipped Assets
+, Safe
+smart accounts
+,
+Funding Account
+balances, and the Trading Gateway and Zipper contracts live.
+Validators verify every transaction and agree on each new block. This creates a shared, publicly auditable record of Asset supplies, balances, account controls, and protocol activity that you can view through
+Polyester Scan
+Polyester Chain
+How the chain, accounts, and on-chain balances work.
+Zipper
+Zipper connects supported external chains to Polyester. It wraps ("zips") external Assets into tokens on Polyester Chain and unwraps ("unzips") them for supported Withdrawals.
+Every Zipped Asset stays tied to its exact Asset and source chain. Zipper validates Deposits and Withdrawals while keeping the supply, backing, and Withdrawal path for each
+route
+separate.
+Zipped Assets
+A
+Zipped Asset
+is an ERC-20 token on Polyester Chain that represents an Asset from an external chain. Its on-chain supply is backed 1:1 by the equivalent Asset held in that route's
+vault
+on the original source chain.
+Example: Separate zUSDT routes
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+If 100
+USDT
+is deposited through
+Ethereum
+and 50
+USDT
+through
+Solana
+, Polyester creates 100
+Ethereum
+zUSDT
+and 50
+Solana
+zUSDT
+The Asset held in the vault on the original source chain and the corresponding Zipped Asset supply on Polyester Chain are both publicly auditable. Each route remains independent, so its supply, backing, and Withdrawal path can be verified separately.
+Zipper
+How source-chain Assets become Zipped Assets and Unified Assets.
+PolyEngine
+PolyEngine
+powers Polyester's order-book trading, settlement, and lending liquidations. It maintains order books, reserves balances, matches Orders, settles Fills, and provides API connectivity for
+market makers
+, high-frequency traders, AI agents, and other services.
+PolyEngine matches up to 1 million transactions per second, with 1 ms 99th percentile (P99) latency. This gives traders institutional-grade execution speed, while PolyEngine's reservation, settlement, and liquidation controls keep balances, trades, and lending positions consistent throughout their lifecycle.
+PolyEngine
+Order matching, settlement, and API connectivity.
+Polyester Scan
+Polyester Scan is Polyester's blockchain Explorer. Use it to view public records for blocks, Transactions, contracts, Zipped Assets, and Deposit and
+Withdrawal Flows
+Polyester Scan focuses on public chain evidence. Private credentials, account balances, active Orders, Fill attribution, and the internal trading ledger remain outside the public Explorer.
+Polyester Scan
+Public records for blocks, Transactions, and Flows.
+Accounts and Balances
+Smart Wallet
+Your smart wallet is the on-chain account controlled by your connected or embedded
+owner wallet
+The smart wallet establishes who can act on the account. Zipper custody paths and Polyester application contracts separately hold or account for Assets as they move through supported products.
+Polyester sponsors the gas fees for current user-facing activity on Polyester Chain, so you can authorize on-chain actions without holding its native gas Asset. This
+gas abstraction
+applies to Polyester Chain. External chains still charge their own transaction fees.
+Smart wallet
+The on-chain account your owner wallet controls.
+Gas abstraction
+How Polyester sponsors gas on Polyester Chain.
+Funding Account
+The Funding Account is where you manage on-chain balances for Deposits, Withdrawals, internal transfers, and transfers to Trading. When a supported Deposit arrives, Polyester keeps the Zipped Asset as backing and credits the matching
+Unified Asset
+balance to Funding.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-neutral-bg); --alert-line: var(--status-new-neutral-border); --alert-fg: var(--status-new-neutral-fg);" data-slot="alert" data-variant="neutral" role="alert">
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-secondary-foreground [&_strong]:text-foreground">
+Zipper credits deposits directly to your Polyester Funding or Trading Account under your smart wallet's control. You never need to receive or hold Zipped Assets in MetaMask, Phantom, or another external wallet.
+Assets remain outside the lending liquidation engine while they are in Funding, so they cannot be liquidated or used as collateral for margin trading. Transfer a balance to the
+Unified Trading Account
+when you want to use it for an Order.
+Funding Account
+On-chain balances for deposits, withdrawals, and transfers.
+Unified Assets
+A
+Unified Asset
+combines supported versions of the same Asset into one Funding or Trading balance. Polyester explicitly assigns eligible Zipped Asset routes to the same Unified Asset, so a matching ticker or wrapped variant alone does not combine them.
+A Unified Asset is an on-chain accounting record rather than an ERC-20 token. It is publicly auditable, while every Zipped Asset beneath it keeps its own token supply and 1:1 vault backing.
+Unified Assets
+On-chain balances for deposits, withdrawals, and transfers.
+Example: Combine zUSDT into one balance
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+A user's 100
+Ethereum
+zUSDT
+and 50
+Solana
+zUSDT
+appear as one 150
+uUSDT
+balance for Funding and Trading. Polyester still tracks each
+zUSDT
+supply and its source-chain backing separately.
+Unified Trading Account
+The Unified Trading Account holds the private balances you use for trading. When you transfer a balance from Funding to Trading, PolyEngine can use it to create and settle Orders for that Asset.
+Each Trading balance shows a total, available, and reserved amount. Active Orders and other pending activity can reserve part of the balance until they Fill, are canceled, or reach another final state.
+Unified Trading Account
+Private balances used to place and settle Orders.
+Main Accounts and Subaccounts
+A
+Main Account
+is your top-level Polyester account. It controls account-wide settings, security, the VIP tier, and every
+Subaccount
+created beneath it. All Subaccounts share the Main Account's VIP tier.
+A Subaccount gives you a separate environment for balances, members, policies, activity, and
+API keys
+Subaccounts
+Separate balances, members, and API keys under a Main Account.
+Trading
+Pair
+A
+Pair
+is one market between two Assets: a
+base Asset
+and a
+quote Asset
+The source chain does not change the Pair. Supported versions of each Asset trade through the same Unified Asset balance and order book.
+Example: ETH/USDT across multiple source chains
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+The
+ETH/USDT
+Pair trades
+uETH
+against
+uUSDT
+ETH
+deposited from
+Base
+or
+Arbitrum
+becomes part of the same
+uETH
+Trading balance, while
+USDT
+deposited from
+Ethereum
+or
+Solana
+becomes part of the same
+uUSDT
+balance. Polyester uses one
+ETH/USDT
+order book, not a separate Pair for each source chain.
+Order Book
+An
+order book
+lists the buy and sell Orders available for one Pair. Polyester uses price-time priority: the best price comes first, and earlier Orders take priority when multiple Orders have the same price.
+PolyEngine maintains a separate order book for every Pair. Its liquidity comes from balances held in Polyester Unified Trading Accounts rather than an external DEX, AMM, bridge pool, exchange, or third-party solver.
+How These Concepts Fit Together
+Follow an Asset through Polyester from Deposit to Withdrawal:
+Your smart wallet authorizes the account on Polyester Chain.
+Zipper brings a supported Asset into Polyester from its source chain.
+The Deposit creates a source-chain-specific Zipped Asset backed 1:1 by the original Asset.
+The Funding Account combines eligible Zipped Assets into one Unified Asset balance.
+Moving that balance to the Unified Trading Account makes it available to PolyEngine.
+PolyEngine accepts and matches Orders on the Pair's order book.
+Fills update private Trading records, while Market Trades publish completed exchange activity.
+Move funds back to the Funding Account before making a supported external Withdrawal.
+Polyester Scan shows the public chain and cross-chain Flow records for the journey.
+Next Steps
+Create Your Account
+Choose how to sign in, create your non-custodial Main Account, and protect the wallet that controls it.
+Secure Your Account
+Protect your owner credential, add MFA, save recovery codes, and configure withdrawal and transfer whitelists.
+First Deposit & Trade
+Deposit an Asset, make it available in Trading, and place your first spot Order.
+Previous
+What is Polyester?
+Next
+Create Your Account
+On this page
+Core Systems
+Polyester Chain
+Zipper
+Zipped Assets
+PolyEngine
+Polyester Scan
+Accounts and Balances
+Smart Wallet
+Funding Account
+Unified Assets
+Unified Trading Account
+Main Accounts and Subaccounts
+Trading
+Pair
+Order Book
+How These Concepts Fit Together
+Next Steps
+Share this page
+Key Concepts
+Learn how Polyester moves Assets across chains, keeps balances on-chain, and processes order-book trades.
+Share
+Copy Link

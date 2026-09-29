@@ -1,0 +1,274 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/access-and-security/address-book-and-whitelist
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Address Book & Whitelists · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Account
+svg]:size-3.5">
+/
+Access & Security
+svg]:size-3.5">
+/
+Address Book & Whitelists
+Address Book & Whitelists
+Copy page
+View as Markdown
+Open in
+Your
+Address Book
+saves external wallet addresses and Polyester accounts you use regularly. Whitelists add another layer of protection by limiting where your account can send funds.
+Each
+Main Account
+and
+Subaccount
+has its own Address Book and whitelist settings.
+Save external and internal destinations
+External
+Internal
+Save a wallet or contract address on a supported external chain. Each entry includes its chain, complete address, label, and any optional notes or tags you add.
+An Ethereum address and a Solana address are different destinations, even when they belong to the same person.
+Save another Polyester account for transfers inside Polyester. The entry connects a friendly label to the account identity used by the transfer page.
+Favorites, recent destinations, tags, and chain filters help you find an entry. They do not change its security permissions.
+Add a destination
+1
+Choose the account
+Select the Main Account or Subaccount that should save the entry.
+2
+Choose External or Internal
+External is for an address on another chain. Internal is for another Polyester account.
+3
+Enter and verify the destination
+For an external entry, choose the chain and paste the complete address. For an internal entry, select the intended Polyester account. Compare it with a trusted source before continuing.
+4
+Name and save it
+Add a clear label and optional tags or notes, then save the entry.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Check the complete destination
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Lookalike addresses can share the same beginning and ending characters. Compare the full address and chain before saving, whitelisting, or sending funds.
+How whitelists protect your account
+Open Withdraw. Polyester checks the External Withdrawal Whitelist first. If the destination is allowed, or the whitelist is off,
+MFA
+is next when it is enrolled. Then you approve in the wallet.
+Whitelist
+On
+Off
+Whitelist is on. Entering an address or picking one from the address book that is not
+whitelisted blocks the withdrawal. A whitelisted address book entry continues to MFA, then
+wallet, then proceeds.
+Withdraw
+Enter address
+0x8A7F…a3C2B
+Address book
+0x3E9B…F4Daa
+Whitelisted destination
+Address book
+0x1A2C…f5a2c
+Not whitelisted
+MFA
+Wallet
+Whitelist on. Only an approved address book entry can continue.
+Polyester provides two separate controls:
+External Withdrawal Whitelist
+limits withdrawals to approved external addresses.
+Internal Transfer Whitelist
+limits internal transfers to approved Polyester accounts.
+Saving an
+Address Book entry
+does not automatically whitelist it. Add it to the appropriate whitelist when you want it approved for a protected movement.
+Whitelist settings apply only to the selected Main Account or Subaccount. Turn them on separately for every account you want protected.
+Change a whitelist
+Open Security or the relevant Address Book destination.
+Choose the account and the External or Internal whitelist.
+Add or remove the intended destination, or turn the requirement on or off.
+Complete the requested MFA,
+GuardSigner
+, and wallet approval.
+Wait for the destination's whitelist status to update before moving funds.
+Adding or removing an approved destination and turning a whitelist off are sensitive actions. Polyester uses fresh verification and
+GuardSigner
+to protect them.
+GuardSigner
+Protected whitelist changes need
+GuardSigner
+Open
+Security
+to check whether GuardSigner is ready. Complete setup before you change a protected whitelist. See
+GuardSigner
+for setup, rotation, and private-key export.
+Use a saved destination
+When you withdraw or transfer, select a saved entry and check the asset, chain, complete destination, and whitelist status shown in the review. A saved label makes the destination easier to recognize, but the complete address or account remains the destination that receives the funds.
+FAQ
+Does adding an Address Book entry automatically allow transfers or withdrawals to that entry?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+No. The Address Book lets you save destinations without whitelisting them. The whitelist toggle is off by default when adding an entry. Turn it on to approve the destination for internal transfers or withdrawals, depending on the entry type. You can also do this later by editing the entry. When the relevant whitelist is enabled, you can only transfer or withdraw to whitelisted destinations.
+Learn about securing your account.
+What is the difference between MFA and an on-chain whitelist?
+p]:my-0 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 w-full">
+MFA adds a verification step before sensitive actions are performed, including but not limited to changes to whitelist settings. An on-chain whitelist limits withdrawals or internal transfers to destinations you have approved, but you must have MFA enabled to use the whitelist.
+Learn about securing your account.
+Related Topics
+Sign-In & Ownership
+Understand how your wallet, Google account, or email connects you to your Polyester account.
+MFA & Recovery
+Add a passkey or authenticator app and keep recovery codes available if you lose a method.
+Sessions & Alerts
+Manage account sessions, understand security alerts, and respond to unfamiliar activity.
+GuardSigner
+Set up and manage the additional signer that protects withdrawal and internal transfer whitelist changes.
+API Keys
+Create API keys, choose what they can access, and keep their private signing keys safe.
+Previous
+Sessions & Alerts
+Next
+GuardSigner
+On this page
+Save external and internal destinations
+Add a destination
+How whitelists protect your account
+Change a whitelist
+GuardSigner
+Use a saved destination
+FAQ
+Related Topics
+Share this page
+Address Book & Whitelists
+Save trusted destinations and control where withdrawals and internal transfers can be sent.
+Share
+Copy Link

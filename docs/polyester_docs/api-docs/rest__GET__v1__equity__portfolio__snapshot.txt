@@ -1,0 +1,225 @@
+Источник: https://testnet.polyester.com/docs/api-docs/rest/GET/v1/equity/portfolio/snapshot
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+LedgerReadService
+Get Portfolio Equity Snapshot
+Retrieve current root portfolio equity grouped by logical account and asset.
+Copy URL
+Method
+GET
+Path
+/v1/equity/portfolio/snapshot
+Visibility
+Authentication required
+Authentication
+Session token
+MFA Requirement
+Not required
+GET
+/v1/equity/portfolio/snapshot
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s317" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/equity/portfolio/snapshot' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"accounts": [
+"accountId": "4Rh4iXdT",
+"equity": "0.0001",
+"topAssetIds": [
+100
+]
+}
+],
+"assets": [
+"asset": "USDT",
+"balance": "0.0000001",
+"equity": "0.0001"
+}
+],
+"btcPrice": "0.005",
+"quoteAsset": "USDT",
+"totalEquity": "0.0001"
+}
+Authorization
+x-api-key
+string
+required
+Samples use
+X-API-KEY-ID
+,
+X-API-TIMESTAMP
+,
+X-API-SIGNATURE
+span]:line-clamp-1 material-input-primary [&:not([data-placeholder])]:text-foreground rounded-sm h-8 w-full justify-between gap-2 px-2.5 text-left text-xs font-normal" type="button" aria-label="Choose API key" data-slot="button" id="bits-s332" aria-haspopup="menu" aria-expanded="false" data-state="closed" data-dropdown-menu-trigger="">
+Default key
+Headers
+Accept
+string
+header
+Requested response media type.
+*/*
+x-polyester-mock
+boolean
+default:
+false
+Enable mocked API responses for this request.
+Response
+Form
+JSON
+accounts
+object[]
+Master account first, followed by every owned subaccount ordered by current equity descending and public ID ascending for ties.
+3 fields
+accountId
+string
+/^[1-9A…m-z]+$/
+Public master-account or subaccount ID.
+Example
+4Rh4iXdT
+equity
+string
+/^[0-9]…9]+)?$/
+Current equity in USDT scaled by 1e4 (4 decimals).
+Example
+0.0001
+topAssetIds
+integer[]
+Up to three assets with the highest current equity value, ordered highest first. Assets without a current value are omitted.
+Example
+assets
+object[]
+Non-zero asset balances ordered by current equity descending and public asset ID ascending for ties.
+3 fields
+asset
+string
+Public unified asset ID.
+Example
+USDT
+balance
+string
+/^[0-9]…9]+)?$/
+Combined Funding and Trading balance in asset units scaled by 1e7 (7 decimals).
+Example
+0.0000001
+equity
+string
+/^[0-9]…9]+)?$/
+Current equity in USDT scaled by 1e4 (4 decimals).
+Example
+0.0001
+btcPrice
+string
+/^[0-9]…9]+)?$/
+Current BTC-USDT price scaled by 1e9. Zero when unavailable.
+Example
+0.005
+quoteAsset
+string
+Human-readable quote asset symbol (always "USDT").
+Example
+USDT
+totalEquity
+string
+/^[0-9]…9]+)?$/
+Current equity across the master account and all owned subaccounts in USDT, scaled by 1e4 (4 decimals).
+Example
+0.0001
+Possible errors
+Possible errors: 5
+Key
+Status
+Error
+When
+unauthenticated
+401
+Unauthenticated
+Authentication required.
+permission-denied
+403
+Permission Denied
+Permission denied.
+invalid-argument
+400
+Invalid Argument
+Invalid argument.
+not-found
+404
+Not Found
+Not found.
+unavailable
+503
+Unavailable
+Service unavailable.
+GET
+/v1/equity/portfolio/snapshot
+Send
+Request
+Testnet
+span]:line-clamp-1 material-button-tertiary [--overlay-active:var(--button-tertiary-overlay-hover)] [--overlay-hover:var(--button-tertiary-overlay-hover)] [&:not([data-placeholder])]:text-button-tertiary-foreground [&:not([data-placeholder])]:hover:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-hovered:text-button-tertiary-foreground-hover [&:not([data-placeholder])]:data-[state=open]:text-button-tertiary-foreground-hover h-7 pr-1.5 pl-2 text-xs w-fit gap-0 rounded-md border-none bg-transparent [&_svg]:size-2.5" id="bits-s368" aria-haspopup="listbox" aria-expanded="false" data-state="closed" data-select-trigger="" type="button">
+cURL
+curl --request GET \ \
+--url 'https://api.testnet.polyester.com/v1/equity/portfolio/snapshot' \
+--header 'Accept: */*' \
+--header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+--header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+--header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+Responses
+"accounts": [
+"accountId": "4Rh4iXdT",
+"equity": "0.0001",
+"topAssetIds": [
+100
+]
+}
+],
+"assets": [
+"asset": "USDT",
+"balance": "0.0000001",
+"equity": "0.0001"
+}
+],
+"btcPrice": "0.005",
+"quoteAsset": "USDT",
+"totalEquity": "0.0001"
+}
+
+=== ПРИМЕРЫ (дословно) ===
+
+curl --request GET \ \
+  --url 'https://api.testnet.polyester.com/v1/equity/portfolio/snapshot' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY-ID: YOUR_API_KEY_ID' \
+  --header 'X-API-TIMESTAMP: YOUR_API_TIMESTAMP' \
+  --header 'X-API-SIGNATURE: YOUR_API_SIGNATURE'
+
+---
+
+{
+  "accounts": [
+    {
+      "accountId": "4Rh4iXdT",
+      "equity": "0.0001",
+      "topAssetIds": [
+        100
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "asset": "USDT",
+      "balance": "0.0000001",
+      "equity": "0.0001"
+    }
+  ],
+  "btcPrice": "0.005",
+  "quoteAsset": "USDT",
+  "totalEquity": "0.0001"
+}

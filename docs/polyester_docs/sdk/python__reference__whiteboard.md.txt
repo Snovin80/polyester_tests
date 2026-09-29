@@ -1,0 +1,18 @@
+Источник: https://testnet.polyester.com/docs/sdk/python/reference/whiteboard.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Whiteboard
+Whiteboard collaboration APIs (reference-only).
+`client.whiteboard` wraps collaborative whiteboard RPCs:
+| Method                                | Purpose                |
+| ------------------------------------- | ---------------------- |
+| `create(...)`                         | Create a board         |
+| `get(board_id=...)` / `list(...)`     | Read boards            |
+| `update(...)` / `update_acl(...)`     | Change metadata or ACL |
+| `archive(board_id=..., archived=...)` | Archive/restore        |
+| `mint_join_token(board_id=...)`       | Create a join token    |
+Methods accept dict-shaped ACL/snapshot payloads and return `ApiData`.
+Whiteboard is an interactive JWT/session feature, **not a supported API-key flow**. The wrappers remain for protocol coverage; correctly configured environments may reject these calls or leave the routes unmounted. Use the TypeScript session client.
+Join tokens and ACL payloads are credentials: never log them. Whiteboard availability must not be included in a trading bot's health gate.
+Related: [Limitations](https://testnet.polyester.com/docs/sdk/python/concepts/limitations-and-non-features).

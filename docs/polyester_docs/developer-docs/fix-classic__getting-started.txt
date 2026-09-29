@@ -1,0 +1,110 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/fix-classic/getting-started
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Getting started · FIX Classic
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+FIX Classic
+Getting started
+Platform Concepts
+Public IDs
+Client order IDs and idempotency
+Order Sizing
+Fee Assets
+Preview Order
+Market Order Price Protection
+Self-Trade Prevention
+Rate limits
+WebSocket session model
+Authentication & Security
+Ed25519 API Keys
+API key replay protection
+Multi-Factor Authentication
+Guard Signer
+Withdrawals and transfer security
+API key IP allowlists
+Funds & Transfers
+Overview
+Withdraw from Trading
+Integrations
+Polyester MCP
+Developer Docs
+svg]:size-3.5">
+/
+FIX Classic
+svg]:size-3.5">
+/
+Getting started
+Getting started
+Copy page
+View as Markdown
+Open in
+FIX Classic provides institutional connectivity for firms that operate established FIX session and
+tag-value message workflows.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-info-bg); --alert-line: var(--status-new-info-border); --alert-fg: var(--status-new-info-fg);" data-slot="alert" data-variant="info" role="alert">
+Your session package is authoritative
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use the Polyester dictionary and session profile assigned to your connection. Generic FIX
+dictionaries do not define the fields, workflows, or limits enabled for your session.
+When to use FIX Classic
+Use FIX Classic when your integration requires:
+established FIX session tooling
+operational sequence and recovery workflows
+institutional onboarding and certification
+integration with existing order-management infrastructure
+Use
+FIX-SBE
+when you need FIX session behavior
+with fixed-layout binary application messages.
+Integration flow
+1
+Review the session package
+Confirm the assigned FIX versions, dictionary, CompIDs, endpoint, authentication method, enabled
+business workflows, and operational limits.
+2
+Implement session behavior
+Implement logon, heartbeat, sequence persistence, resend, reset, logout, and recovery exactly as
+defined by the session profile.
+3
+Validate application messages
+Generate or configure message types from the assigned Polyester dictionary. Reject messages that do
+not match the required fields, enums, and extensions.
+4
+Complete certification
+Run the conformance and recovery cases for the assigned workflows before connecting the production
+session.
+Recovery boundaries
+Session recovery
+Application state
+Persist sequence state and follow the assigned resend and reset policy. Session recovery restores
+FIX protocol sequence.
+Protocol recovery does not necessarily provide a complete trading snapshot. Reconcile application
+state through the assigned FIX workflow or Polyester read APIs.
+See the
+Connectivity matrix
+to
+combine FIX with REST, ConnectRPC, or WebSocket realtime.
+On this page
+When to use FIX Classic
+Integration flow
+Recovery boundaries
+Share this page
+Getting started
+Use Polyester's tag-value FIX interface for institutional trading connectivity.
+Share
+Copy Link

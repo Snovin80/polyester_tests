@@ -1,0 +1,23 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/concepts/limitations-and-non-features.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Limitations & non-features
+What API-key SDKs intentionally omit, and where to go instead.
+Python, Go, and Rust are **API-key SDKs**. They share the ConnectRPC + WebSocket Protobuf trading surface. They do **not** replace the TypeScript browser client.
+## Not available here
+| Capability                          | Use instead                                                                                                                                                                        |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wallet / browser login              | [TypeScript SDK](https://testnet.polyester.com/docs/sdk/typescript/get-started/overview)                                                                                           |
+| Session MFA enrollment / challenges | TypeScript SDK                                                                                                                                                                     |
+| Account resolve / lookup            | TypeScript / session clients                                                                                                                                                       |
+| SBE WebSocket                       | [SBE getting started](https://testnet.polyester.com/docs/developer-docs/sbe-websocket/getting-started)                                                                             |
+| FIX Classic / FIX-SBE               | [FIX Classic](https://testnet.polyester.com/docs/developer-docs/fix-classic/getting-started), [FIX-SBE](https://testnet.polyester.com/docs/developer-docs/fix-sbe/getting-started) |
+Subaccount MFA **requirement flags** (policy) may still appear on API-key policy APIs, that is not the same as performing MFA challenges in this SDK.
+## Easy to miss
+- On-chain **Funding → Trading** and **Funding → external** via the `chain` module (not ConnectRPC). See [Deposits & withdrawals](https://testnet.polyester.com/docs/sdk/rust/guides/deposits-and-withdrawals).
+- Collaboration wrappers (polychart / layout / whiteboard / social verification) may appear in the client tree, but live API-key access is limited: whiteboard and social verification are JWT/session-only, and some layout/polychart endpoints may be unmounted. Treat them as non-features for automated trading bots. Thin [reference](https://testnet.polyester.com/docs/sdk/rust/reference/polychart) pages exist for discovery only.
+- Client aliases and sync/async differences, see [Architecture](https://testnet.polyester.com/docs/sdk/rust/concepts/architecture).
+> **Capability matrix**
+>
+> Compare languages: [SDK capability matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix). Transports: [connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix).

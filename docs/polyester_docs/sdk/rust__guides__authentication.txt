@@ -1,0 +1,350 @@
+Источник: https://testnet.polyester.com/docs/sdk/rust/guides/authentication
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Authentication · Rust SDK
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Rust
+Get started
+Overview
+Installation
+Quickstart
+Concepts
+Architecture
+Environments
+Authentication model
+Catalog & precision
+Requests & idempotency
+Limitations & non-features
+Guides
+Authentication
+Market data
+Trading
+Streaming
+Accounts & balances
+Deposits & withdrawals
+Server-side usage
+Error handling
+Production trading operations
+Reference
+Address book
+API keys
+Auth
+Balances
+Candles
+Catalog
+Chain helpers
+Chain analytics
+Client configuration
+Deposit
+Errors
+Guard signer
+Heatmap
+Internal transfers
+Layout
+Lifecycle
+Market overview
+Order book
+Orders
+Policies
+Polychart
+Profile
+Public trades
+Realtime
+Social verification
+Subaccounts
+User trades
+Transfers
+Triggers
+Whiteboard
+Withdrawals
+Zipper
+Tutorials
+Live market ticker
+Build a production trading bot
+Portfolio tracker
+Two-sided quoting
+SDK
+svg]:size-3.5">
+/
+Rust
+svg]:size-3.5">
+/
+Guides
+Authentication
+Copy page
+View as Markdown
+Open in
+Programmatic access uses
+Ed25519
+API keys
+fetches private realtime tokens for you.
+Recommended: explicit credentials
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+api_key_id
+Some
+(
+"ak_..."
+into
+()),
+api_private_key
+Some
+(
+"..."
+into
+()),
+// 64-char hex from key creation
+default_account_id
+Some
+(
+"..."
+into
+()),
+// Profile → Account ID
+Default
+default
+()
+})
+?
+;
+client
+wait_for_catalogs
+()
+;
+Environment variables
+Read secrets in your process and pass them in:
+use
+std
+env;
+use
+polyester
+Client
+,
+Config
+};
+let
+client
+=
+Client
+new
+(
+Config
+environment
+Some
+(
+polyester
+POLYESTER_TESTNET_ENVIRONMENT
+clone
+()),
+api_key_id
+env
+var
+(
+"POLYESTER_API_KEY_ID"
+)
+ok
+(),
+api_private_key
+env
+var
+(
+"POLYESTER_API_PRIVATE_KEY"
+)
+ok
+(),
+default_account_id
+env
+var
+(
+"POLYESTER_ACCOUNT_ID"
+)
+ok
+(),
+Default
+default
+()
+})
+?
+;
+For scripts only,
+Client::from_env()
+loads credentials, Account ID,
+POLYESTER_ENV
+(set it to
+testnet
+), and optional
+POLYESTER_API_URL
+/
+POLYESTER_WS_URL
+Config
+in production.
+Variable
+Purpose
+POLYESTER_API_KEY_ID
+API key id
+POLYESTER_API_PRIVATE_KEY
+64-char hex private key
+POLYESTER_ACCOUNT_ID
+Profile Account ID
+POLYESTER_ENV
+Environment preset:
+testnet
+POLYESTER_API_URL
+Optional API base override (
+from_env
+)
+POLYESTER_WS_URL
+Optional WebSocket URL override (
+from_env
+)
+Unlike Python/Go, Rust
+from_env
+does
+load API and WebSocket URL env vars.
+svg]:grid-cols-[0.875rem_1fr] has-[>svg]:gap-x-2 [&>svg]:mt-[3px] has-[[role=heading]]:[&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-current not-prose my-[calc(var(--block-spacing))] flex gap-4! overflow-hidden rounded-lg px-5 py-4" style="--alert-tint: var(--status-new-warning-bg); --alert-line: var(--status-new-warning-border); --alert-fg: var(--status-new-warning-fg);" data-slot="alert" data-variant="warning" role="alert">
+Never commit secrets
+p]:my-0 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 text-current/70 [&_strong]:text-current mt-0.5">
+Use placeholders in docs and samples. Store production keys in your secret manager.
+Generate a keypair
+let
+pair
+=
+client
+api_keys
+generate_keypair
+();
+Local key material only. Listing and subscribing to keys uses
+client.api_keys
+with an API key.
+Creating
+API keys is JWT/session-only (TypeScript / browser), not exposed on this SDK.
+See
+API keys
+Configure trading permissions
+After creating a key in the Polyester app, open that key's
+Permissions
+page:
+Enable
+Spot trading
+Select the markets the bot may trade.
+Set the maximum order size and any transfer or withdrawal limits.
+Save the policy and confirm it is assigned to the key.
+The Rust API-key SDK uses the assigned policy but cannot create or assign one. Policy
+administration requires an interactive JWT/session.
+Public vs private
+Public market data works with no key.
+Private RPCs and private WebSocket channels need a key
+and
+Account ID.
+Realtime support is always included. The legacy
+realtime
+Cargo feature is a no-op
+compatibility flag.
+Subaccount scope
+Set
+default_sub_account_id
+for default scoping, or pass per-call account scope where the
+service supports it.
+Related
+Authentication model
+Client configuration
+API keys
+Related Topics
+Market data
+Read candles, public trades, order books, and market overview, no credentials required.
+Trading
+Place, modify, cancel, and batch spot orders; use triggers with the Rust SDK.
+Streaming
+Subscribe with observable errors, handshake-before-return, fail-closed overflow, and private Account ID requirements.
+Accounts & balances
+Funding vs trading balances, holds, subaccounts, policies, and transfer history.
+Deposits & withdrawals
+Deposit addresses, trading withdraws, internal transfers, and funding flows.
+Server-side usage
+Long-running bots, process lifecycle, catalogs, and configuration tips.
+Error handling
+Classify errors with is_retryable and mutation_outcome_unknown, then retry with stable identities.
+Production trading operations
+Operate, test, troubleshoot, and upgrade an automated Rust trading system safely.
+Previous
+Limitations & non-features
+Next
+Market data
+On this page
+Recommended: explicit credentials
+Environment variables
+Generate a keypair
+Configure trading permissions
+Public vs private
+Subaccount scope
+Related
+Related Topics
+Share this page
+Authentication
+Configure Ed25519 API keys, Account ID, and env-based wiring for bots.
+Share
+Copy Link
+
+=== ПРИМЕРЫ (дословно) ===
+
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    api_key_id: Some("ak_...".into()),
+    api_private_key: Some("...".into()), // 64-char hex from key creation
+    default_account_id: Some("...".into()), // Profile → Account ID
+    ..Default::default()
+})?;
+client.wait_for_catalogs().await?;
+
+---
+
+use std::env;
+use polyester::{Client, Config};
+
+let client = Client::new(Config {
+    environment: Some(polyester::POLYESTER_TESTNET_ENVIRONMENT.clone()),
+    api_key_id: env::var("POLYESTER_API_KEY_ID").ok(),
+    api_private_key: env::var("POLYESTER_API_PRIVATE_KEY").ok(),
+    default_account_id: env::var("POLYESTER_ACCOUNT_ID").ok(),
+    ..Default::default()
+})?;
+
+---
+
+let pair = client.api_keys.generate_keypair();

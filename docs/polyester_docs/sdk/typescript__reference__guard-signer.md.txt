@@ -1,0 +1,94 @@
+Источник: https://testnet.polyester.com/docs/sdk/typescript/reference/guard-signer.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Guard signer
+Manage backend guard wallets that co-sign protected account actions like whitelist changes.
+`client.guardSigner` manages backend-managed guard wallets that co-sign protected account actions, such as whitelist updates and whitelist-requirement changes. Every method is authenticated and account-scoped: inputs accept an optional `account` field (`"main"`, `"active"`, or `{ subaccountId }`).
+A guard wallet holds a signer key on the backend. When you perform a protected funding action, you ask the guard signer for an approval signature and submit it alongside the action. See the [funding](https://testnet.polyester.com/docs/sdk/typescript/reference/withdrawals) flows for where these approvals are consumed.
+## Methods
+| Method                      | Summary                                                   |
+| --------------------------- | --------------------------------------------------------- |
+| `createWallet`              | Create a guard wallet and return its signer address.      |
+| `getStatus`                 | Read stored and live signer status, or `null` if absent.  |
+| `signProtectedAction`       | Produce one approval signature for a protected action.    |
+| `batchSignProtectedActions` | Produce ordered approvals for a batch of actions.         |
+| `rotateWallet`              | Replace the signer wallet and return a rotation approval. |
+| `exportWallet`              | Export the signer's private key (owner + fresh step-up).  |
+### `createWallet(input?, options?)`
+Creates a guard wallet for the resolved account target and returns the generated signer EVM address.
+```ts
+const { signerAddress } = await client.guardSigner.createWallet();
+console.log(signerAddress); // "0x..."
+```
+### `getStatus(input?, options?)`
+Returns stored and live guard signer status: signer address, on-chain signer, initialization state, nonce, and nonce space. Returns `null` when the backend reports no wallet. `nonceSpace` is a `bigint`; do not `JSON.stringify` the whole object.
+```ts
+const status = await client.guardSigner.getStatus();
+if (status) {
+console.log(status.signerAddress, status.initialized, status.nonce);
+}
+```
+### `signProtectedAction(input, options?)`
+Produces one guard approval signature for a supported protected `action` and returns a `GuardApproval`, or `null` when the response has no approval payload. Some actions carry `args`.
+```ts
+const approval = await client.guardSigner.signProtectedAction({
+action: "fundingAddExternalWhitelist",
+args: {
+case: "externalWhitelist",
+polychainChainId: 1,
+addresses: ["0xabc..."],
+},
+});
+if (approval) {
+// Submit approval.signature, approval.nonceSpace, approval.deadlineUnix with the action.
+console.log(approval.signature); // "0x..."
+}
+```
+Supported actions are `fundingSetExternalWhitelistRequired`, `fundingAddExternalWhitelist`, `fundingRemoveExternalWhitelist`, `fundingAddInternalWhitelist`, `fundingRemoveInternalWhitelist`, and `fundingSetInternalWhitelistRequired`. The `args` union has three cases: `externalWhitelist` (`polychainChainId` + `addresses`), `internalWhitelist` (`addresses`), and `whitelistRequirement` (`required`). `polychainChainId` must be an integer from 1 through 4,294,967,295.
+### `batchSignProtectedActions(input, options?)`
+Produces ordered approvals for a batch of protected actions and returns `{ approvals }`, one per requested action in the same order. It throws if the backend returns a mismatched count.
+```ts
+const { approvals } = await client.guardSigner.batchSignProtectedActions({
+actions: [
+action: "fundingSetExternalWhitelistRequired",
+args: { case: "whitelistRequirement", required: true },
+},
+action: "fundingAddExternalWhitelist",
+args: { case: "externalWhitelist", polychainChainId: 1, addresses: ["0xabc..."] },
+},
+],
+});
+console.log(approvals.length); // 2, matching the request order
+```
+### `rotateWallet(input?, options?)`
+Generates a backend-managed replacement guard signer and returns the new signer address plus the rotation `approval` (or `null`). Submit the rotation approval to complete the swap on-chain.
+```ts
+const { newSignerAddress, approval } = await client.guardSigner.rotateWallet();
+console.log(newSignerAddress);
+```
+### `exportWallet(input?, options?)`
+Exports the guard signer's private key material and returns `{ privateKey }` as a `0x`-prefixed hex string. This is a high-privilege action.
+> **Export requires owner authorization and fresh step-up**
+>
+> `exportWallet` returns raw private key material. The backend requires owner authorization and a fresh MFA step-up before it will export, and the key gives full control of the signer. Handle the result as a secret and never log it. See [MFA](https://testnet.polyester.com/docs/sdk/typescript/reference/mfa) for the step-up flow.
+```ts
+const { privateKey } = await client.guardSigner.exportWallet();
+// Store privateKey securely; do not log or transmit it.
+```
+## The `GuardApproval` shape
+`signProtectedAction`, `batchSignProtectedActions`, and `rotateWallet` return approvals in this shape. `nonceSpace` and `deadlineUnix` are stringified big integers; `signature` is `0x`-prefixed hex.
+```ts
+interface GuardApproval {
+nonceSpace: string;
+deadlineUnix: string;
+signature: `0x${string}`;
+raw: { nonceSpace: bigint; deadlineUnix: bigint; signature: Uint8Array
+};
+}
+```
+## Related
+- [Withdrawals](https://testnet.polyester.com/docs/sdk/typescript/reference/withdrawals) for protected funding actions these approvals authorize.
+- [MFA](https://testnet.polyester.com/docs/sdk/typescript/reference/mfa) for the fresh step-up that `exportWallet` requires.
+- [Address book](https://testnet.polyester.com/docs/sdk/typescript/reference/address-book) for the whitelists these actions modify.
+- [Errors](https://testnet.polyester.com/docs/sdk/typescript/reference/errors) for the error type reference.

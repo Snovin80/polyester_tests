@@ -1,0 +1,367 @@
+Источник: https://testnet.polyester.com/docs/user-docs/reference/glossary
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+Glossary · User Docs
+TESTNET
+Markets
+Trade
+Docs
+Announcements
+More
+options
+Search
+/
+Connect
+Connect
+User Docs
+Developer Docs
+SDK
+API Docs
+Discord
+Start Here
+What is Polyester?
+Key Concepts
+Create Your Account
+Secure Your Account
+First Deposit & Trade
+Funds
+Unified Assets
+Supported Assets
+Funding Account
+Trading Account
+Deposit Funds
+Withdraw Funds
+Internal Transfers
+Trading
+Overview
+Trading Screen
+Widgets
+Overview
+Polyester Chart
+TradingView Chart
+Depth Chart
+Order Book
+Market Trades
+Order Form
+Open Orders
+Order Triggers
+Order History
+Funds
+Order Types
+Market Order
+Limit Order
+Time-in-Force & Post-Only
+Iceberg
+TWAP
+Ladder
+Stop-Loss Market
+Stop-Loss Limit
+Trailing Stop
+Manage Orders
+Quick Swap
+Fees & VIP
+Trading Fees
+VIP Tiers
+Deposit & Withdrawal Fees
+Referrals
+Overview
+Rewards
+Analytics
+Account
+Dashboard
+Access & Security
+Sign-In & Ownership
+MFA & Recovery
+Sessions & Alerts
+Address Book & Whitelists
+GuardSigner
+API Keys
+Ledger
+Overview
+Account Statements
+Preferences
+Overview
+Appearance
+Language & Region
+Sounds
+Notifications
+Balances
+Footer
+Subaccounts
+Overview
+Manage Subaccounts
+Members & Roles
+Permissions & Policies
+Address Book & Whitelists
+Audit Logs
+API Keys
+PolyEngine
+Overview
+Admission
+Matching
+Settlement
+PolyEngine Relay
+Verifier Nodes
+Escape Hatch
+Zipper
+Overview
+Asset Lifecycle
+Vaults
+Validators
+Security
+Polyester Chain
+Overview
+Smart Account
+Gas Abstraction
+Validators
+RPC Nodes
+Polyester Scan
+Overview
+zAssets & uAssets
+Asset Flows
+Chain Activity
+Tokens & Chains
+Contracts & Tools
+Reference
+Confirmation Requirements
+Testnet Faucets
+Faucet Backups
+Polyester Contracts
+Audits
+Official Links
+Glossary
+LLMs.txt
+Help & Support
+FAQs
+Feature Requests
+Submit a Support Ticket
+User Docs
+svg]:size-3.5">
+/
+Reference
+svg]:size-3.5">
+/
+Glossary
+Glossary
+Copy page
+View as Markdown
+Open in
+This glossary defines Polyester terminology. Each entry links to the page where the concept is
+covered in depth. For a broader map of how these systems fit together, see
+Key Concepts
+Term
+Definition
+Applies to
+Term
+Address Book Entry
+Definition
+A saved destination address and its label.
+Applies to
+Wallet, Withdrawals, Security
+Term
+API key
+Definition
+A revocable credential used to access Polyester programmatically.
+Applies to
+API, Security, Desktop
+Term
+Base Asset
+Definition
+The first asset in a trading pair and the asset being bought or sold.
+Applies to
+Trading, Markets
+Term
+Deposit Flow
+Definition
+The complete journey of an asset moving from an external chain into Polyester.
+Applies to
+Funds, Zipper, Scan
+Term
+EOA
+Definition
+A blockchain account controlled directly by a private key.
+Applies to
+Accounts, Security
+Term
+Finality
+Definition
+The point when a chain transaction is considered sufficiently permanent.
+Applies to
+Deposits, Withdrawals, Chains
+Term
+Funding Account
+Definition
+The account area where deposits arrive and assets remain available for transfers or withdrawals.
+Applies to
+Funds, Transfers, Deposits
+Term
+Gas abstraction
+Definition
+Polyester's system for sponsoring Polyester Chain gas on supported actions.
+Applies to
+Polyester Chain, Accounts
+Term
+GuardSigner
+Definition
+A security signer used to approve protected account actions.
+Applies to
+Accounts, Security
+Term
+Index Price
+Definition
+A volume-weighted reference price built from normalized Asset prices across leading centralized and decentralized exchanges.
+Applies to
+Trading, Funds, Lending
+Term
+Main Account
+Definition
+The main Polyester account that owns its Subaccounts.
+Applies to
+Accounts, Subaccounts
+Term
+Maker
+Definition
+An order that rests on the order book and provides liquidity.
+Applies to
+Trading, Fees, API
+Term
+Market Maker
+Definition
+A participant or strategy that quotes buy and sell orders to provide liquidity to a market.
+Applies to
+—
+Term
+MFA
+Definition
+An additional identity check used to protect sensitive account actions.
+Applies to
+Accounts, Security
+Term
+Owner wallet
+Definition
+The external or embedded wallet that authorizes actions for your Polyester Smart account.
+Applies to
+Accounts, Security
+Term
+$P
+Definition
+The native gas asset of Polyester Chain. Polyester sponsors gas for supported product actions.
+Applies to
+Polyester Chain, Gas
+Term
+PolyEngine
+Definition
+Polyester's high-performance system for order admission, matching, and settlement.
+Applies to
+Trading, Matching, Settlement
+Term
+Polyester Chain
+Definition
+Polyester's EVM-compatible blockchain for accounts, assets, and protocol activity.
+Applies to
+Polyester Chain, Accounts, Assets
+Term
+Polyester Scan
+Definition
+The public explorer for Polyester Chain activity, contracts, assets, and Zipper Flows.
+Applies to
+Scan, Explorer
+Term
+Post-only
+Definition
+An order setting that prevents the order from immediately executing as a taker.
+Applies to
+Trading, Orders, API
+Term
+Quote Asset
+Definition
+The second asset in a pair and the asset used to express its price.
+Applies to
+Trading, Markets
+Term
+Route
+Definition
+The configured connection between one asset on an external chain and its matching Zipped Asset on Polyester Chain.
+Applies to
+Zipper, Funds, Deposits
+Term
+Smart account
+Definition
+The Safe account on Polyester Chain that represents a Polyester account.
+Applies to
+Accounts, Polyester Chain
+Term
+Subaccount
+Definition
+A separate account under a Main Account with its own balances, members, and activity.
+Applies to
+Accounts, Trading, API
+Term
+Taker
+Definition
+An incoming order that executes against liquidity already on the order book.
+Applies to
+Trading, Fees, API
+Term
+Unified Asset
+Definition
+The account-facing balance that combines compatible source-chain asset routes.
+Applies to
+Funds, Trading, Zipper
+Term
+Unified Trading Account
+Definition
+The private balance area used for trading, lending, collateral, and margin.
+Applies to
+Trading, Funds, Margin
+Term
+Vault
+Definition
+A protected external custody location used by Zipper for a specific asset route.
+Applies to
+Zipper, Custody
+Term
+Withdrawal Flow
+Definition
+The complete journey of an asset moving from Polyester to an external chain.
+Applies to
+Funds, Zipper, Scan
+Term
+Zipped Asset
+Definition
+The Polyester Chain representation of one asset from one source chain.
+Applies to
+Funds, Zipper, Scan
+Term
+Zipper
+Definition
+Polyester's protocol for bringing supported external assets onto and off Polyester Chain.
+Applies to
+Funds, Deposits, Withdrawals
+Related Topics
+Confirmation Requirements
+See the confirmation requirements and estimated deposit times for supported chains.
+Testnet Faucets
+Claim testnet Assets from faucets that do not require a mainnet balance.
+Faucet Backups
+Use backup faucets when a primary faucet is unavailable. Some require a mainnet balance.
+Polyester Contracts
+Open official Polyester Chain contract deployments in Polyester Scan.
+Audits
+Open published security reviews for Polyester and Zipper.
+Official Links
+Open official Polyester products, documentation, support, community, and developer resources.
+LLMs.txt
+Open Polyester documentation as a plain-text resource for language models and other tools.
+Previous
+Official Links
+Next
+LLMs.txt
+On this page
+Related Topics
+Share this page
+Glossary
+Search definitions for Polyester product and trading terms.
+Share
+Copy Link

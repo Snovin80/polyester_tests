@@ -1,0 +1,39 @@
+Источник: https://testnet.polyester.com/docs/user-docs/account/ledger.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# Overview
+See every balance change in your account and connect it to the trade, transfer, or fee that created it.
+Your **[Ledger](https://testnet.polyester.com/account/ledger)** is the complete history of changes to your Polyester balances. It includes deposits, withdrawals, transfers, trades, fees, and rebates.
+Ledger activity is private to your account. Public explorers show on-chain transactions, while the Ledger shows how those events affected your Polyester balance.
+![Ledger with All, Transfers, and Trades tabs, grouped entries, and Flow IDs](https://media.polyester.com/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/content-assets/a/387f39c4c01e2ba9f3fc6c70a7a138b70df5aea60f0c74660699dc74921cce10/source.webp)
+## Find the activity you need
+Use **All** for the complete history, **Transfers** for deposits, withdrawals, and internal movement, or **Trades** for executions, fees, and rebates. Search by asset, Flow ID, source, destination, or activity type.
+Turn on **Group transactions** to combine entries created by the same action. Turn it off when you want to see every debit, credit, fee, or rebate separately.
+## What each entry shows
+| Field                  | What it tells you                                                          |
+| ---------------------- | -------------------------------------------------------------------------- |
+| Time                   | When the balance change was recorded                                       |
+| Type                   | The action, such as Deposit, Withdraw, Transfer, Buy, Sell, Fee, or Rebate |
+| Amount                 | How much of the asset was added or removed                                 |
+| Asset                  | The balance that changed                                                   |
+| Balance After          | Your balance immediately after that entry                                  |
+| Source and Destination | Where the value came from and where it went                                |
+| Flow ID                | The deposit, withdrawal, or transfer connected to the entry                |
+Select an entry with a Flow ID to open the related transaction and see its complete progress.
+## Why one action can create several entries
+One trade or transfer can affect more than one balance:
+- A **spot buy** removes the quote asset, adds the base asset, and records the fee or rebate.
+- A **spot sell** removes the base asset, adds the quote asset, and records the fee or rebate.
+- A **Funding-to-Trading transfer** removes the amount from Funding and adds it to Trading.
+- An **internal transfer** records the amount leaving one account and entering another.
+- A **withdrawal** can reserve the amount before the final debit is completed.
+Grouped transactions keep those connected entries together.
+## Available and reserved balances
+An open order, transfer, or withdrawal can reserve part of your Trading balance. The reserved amount still belongs to your account, but it is not available for another action. The Unified Trading Account shows the amount currently reserved by open orders. The Ledger does not reflect balances being reserved or released.
+When an order fills, the Ledger records the completed trade and its fee or rebate. If the order is canceled or fails, the unused amount returns to your available balance. A partially filled order keeps its completed trades and releases only the unused remainder.
+> **Several requests can reserve one asset**
+>
+> Your available balance can be lower because of multiple open orders, transfers, or withdrawals. Check the Unified Trading Account and active requests to understand the difference. The Ledger does not show the current reserved amounts.
+## Ledger and statements
+The Ledger shows individual balance changes. [Account Statements](https://testnet.polyester.com/docs/user-docs/account/ledger/account-statements) groups those records into a report for a selected period.

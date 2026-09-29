@@ -1,0 +1,61 @@
+Источник: https://testnet.polyester.com/docs/developer-docs/getting-started/sdk-capability-matrix.md
+Скачано: 2026-09-29 11:20 UTC (curl с компьютера автора)
+
+=== ТЕКСТ ===
+# SDK capability matrix
+Compare official Polyester SDK capability coverage across TypeScript, Python, Go, and Rust.
+Official Polyester SDKs share the same ConnectRPC + WebSocket Protobuf product surface for API-key trading bots and backend integrations. Use this matrix to compare languages before you pick an SDK.
+> **How to read this table**
+>
+> means the capability is available on the public client for that language. means it is intentionally out of scope for that SDK (not an unfinished stub).
+## Capability coverage
+| Capability                                         | TypeScript | Python |  Go | Rust |
+| -------------------------------------------------- | :--------: | :----: | :-: | :--: |
+| Public market data (spot config, trades, candles)  |            |        |     |      |
+| Order book snapshot + realtime                     |            |        |     |      |
+| Market overview (list + subscribe)                 |            |        |     |      |
+| Order book heatmap                                 |            |        |     |      |
+| API-key (Ed25519 HMAC) auth                        |            |        |     |      |
+| Wallet / browser login                             |            |        |     |      |
+| Session MFA enrollment and challenges              |            |        |     |      |
+| Profile                                            |            |        |     |      |
+| API keys                                           |            |        |     |      |
+| Subaccounts (members, invites, activity)           |            |        |     |      |
+| Address book                                       |            |        |     |      |
+| Policies                                           |            |        |     |      |
+| Guard signer                                       |            |        |     |      |
+| Balances, holds, equity history                    |            |        |     |      |
+| Orders (create, cancel, modify, batch, cancel-all) |            |        |     |      |
+| User trades                                        |            |        |     |      |
+| Triggers                                           |            |        |     |      |
+| Internal transfers                                 |            |        |     |      |
+| Transfer history                                   |            |        |     |      |
+| Deposit addresses                                  |            |        |     |      |
+| Trading / funding withdraws                        |            |        |     |      |
+| Zipper deposit-withdraw config                     |            |        |     |      |
+| Chain analytics                                    |            |        |     |      |
+| Lifecycle flows                                    |            |        |     |      |
+| Polychart / layout / whiteboard                    |            |        |     |      |
+| Realtime account and market streams                |            |        |     |      |
+| Reference catalogs + wait-for-ready                |            |        |     |      |
+| Qty / price decimal + scaled-int inputs            |            |        |     |      |
+| Social verification                                |            |        |     |      |
+| Account resolve / lookup                           |            |        |     |      |
+## Language notes
+- **TypeScript** also supports browser wallet login and MFA. Use it for full-stack and browser apps; Python, Go, and Rust are API-key SDKs.
+- **Python** offers async and sync clients. Install the `[realtime]` extra for WebSocket streams.
+- **Go** is synchronous. Client aliases such as `Candles`, `Accounts`, and `TradingWithdraws` match the Python naming style.
+- **Rust** is async (Tokio). Realtime is behind the default-on `realtime` feature. Prefer `market_data`, `resolve`, and `withdraw` (no `Candles` / `Accounts` / `TradingWithdraws` aliases).
+## Intentionally out of scope (API-key SDKs)
+Python, Go, and Rust do **not** wrap:
+- MFA enrollment and challenge APIs
+- Wallet login (`GetNonce`, `LoginWithWallet`)
+Those flows belong in browser / session clients. Subaccount MFA *requirements* (policy flags) are still available on the API-key SDKs.
+## Repositories and docs
+| SDK        | Docs                                                                               | Repository                                                                          |
+| ---------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| TypeScript | [Overview](https://testnet.polyester.com/docs/sdk/typescript/get-started/overview) | [polyester-sdk-typescript](https://github.com/Fabric-Labs/polyester-sdk-typescript) |
+| Python     | [Overview](https://testnet.polyester.com/docs/sdk/python/get-started/overview)     | [polyester-sdk-python](https://github.com/Fabric-Labs/polyester-sdk-python)         |
+| Go         | [Overview](https://testnet.polyester.com/docs/sdk/go/get-started/overview)         | [polyester-sdk-go](https://github.com/Fabric-Labs/polyester-sdk-go)                 |
+| Rust       | [Overview](https://testnet.polyester.com/docs/sdk/rust/get-started/overview)       | [polyester-sdk-rust](https://github.com/Fabric-Labs/polyester-sdk-rust)             |
+Also see the [connectivity matrix](https://testnet.polyester.com/docs/developer-docs/getting-started/connectivity-matrix) for transport choice (REST, ConnectRPC, WebSocket, SBE, FIX).
